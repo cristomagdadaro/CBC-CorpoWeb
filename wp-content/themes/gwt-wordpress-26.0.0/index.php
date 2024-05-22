@@ -19,6 +19,7 @@ include_once('inc/banner.php');
 <div class="container-main" role="document">
     <div id="main-content" class="row">
         <div id="content" class="text-justify <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
+             style="display: flex; flex-direction: column; justify-content: space-between;"
             role="main">
 
             <?php if ( have_posts() ) : ?>
@@ -37,7 +38,7 @@ include_once('inc/banner.php');
 						gwt_wp_content_nav( 'nav-below' );
 
 						else :
-							get_template_part( 'no-results', 'index' ); 
+							get_template_part( 'no-results', 'index' );
 						endif; ?>
         </div><!-- end content -->
 
