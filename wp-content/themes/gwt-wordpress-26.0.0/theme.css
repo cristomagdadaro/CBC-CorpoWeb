@@ -53,6 +53,12 @@
  */
 
 /**
+Custom Header Styles
+*/
+#textlogo-wrapper {
+    width: fit-content;
+}
+/**
  * 1.0 - Normalize
  *
  * Normalizing styles have been helped along thanks to the fine work of
@@ -157,10 +163,9 @@ h6 {
 /*top bar & auxiliary*/
 #main-nav {
   background-color: #f7f7f7;
-  position: fixed;
   z-index: 4;
   width: 100%;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 #main-nav .name a {
   font-size: 1.19rem !important;
@@ -518,7 +523,7 @@ h1.logo img {
 
 /*masthead*/
 .container-masthead {
-  margin-top: 58px;
+  /*margin-top: 58px;*/
   background-position: center;
 }
 .logo,
@@ -858,7 +863,7 @@ this is for mobile menus */
  */
 @media screen and (max-width: 63.9375em) {
   .container-masthead {
-    margin-top: 42px;
+    /*margin-top: 42px;*/
     border-bottom: 1px solid #f2f2f2;
   }
   .banner-content {

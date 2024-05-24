@@ -21,15 +21,15 @@ function govph_default_widget() {
 	);
 	update_option('widget_text',array( 
 		1 => array(
-			'title' => '',
+			'title' => 'Philippines Transparency Seal',
 			'text' => '<a href=""><img id="tp-seal" src="'. $templatedir . '/images/transparency-seal-160x160.png" alt="transparency seal logo" title="Transparency Seal"></a>',
 		),
 		2 => array(
-			'title' => '',
+			'title' => 'Philippines Freedom of Information',
 			'text' => '<a href="https://www.foi.gov.ph/"><img id="foi-logo" src="'. $templatedir . '/images/foi-logo-160x160.png" alt="freedom of infromation logo" title="Freedom of Information"></a>',
 		),
 		3 => array(
-			'title' => '',
+			'title' => 'Philippines Standard Time',
 			'text' => '<div id="pst-container">
 						<div>Philippine Standard Time:</div><div id="pst-time"></div>
 					   </div>',

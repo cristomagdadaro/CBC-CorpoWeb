@@ -895,18 +895,20 @@ if (!function_exists('govph_displayoptions')) {
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img src="' . $logo_image . '" />' :
 					'<div id="textlogo-wrapper">
-            <div id="textlogo-image"><img alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
-            <div id="textlogo-inner-wrapper">
-              <div id="agency-heading">Republic of the Philippines</div>
-              <div id="agency-name">' . $option['govph_agency_name'] . '</div>
-              <div id="agency-tagline">' . $option['govph_agency_tagline'] . '</div>
-            </div>
-           </div>';
+                        <div id="textlogo-image"><img alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
+                        <div id="textlogo-inner-wrapper">
+                          <div id="agency-heading">Republic of the Philippines</div>
+                          <div id="agency-name " style="white-space: nowrap;">' . $option['govph_agency_name'] . '</div>
+                          <div id="agency-tagline">' . $option['govph_agency_tagline'] . '</div>
+                        </div>
+                   </div>';
 				echo $addLogo;
 				break;
 			case 'govph_header_setting':
-				$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . $option['govph_headercolor'] . ';' : '' );
-				$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . $option['govph_headerimage'] . '");' : '' );
+				//$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . $option['govph_headercolor'] . ';' : '' );
+				//$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . $option['govph_headerimage'] . '");' : '' );
+                //set background color to transparent
+				$headerSetting = 'background-color:transparent;';
 				echo $headerSetting;
 				break;
 			case 'govph_background_header_size_setting':

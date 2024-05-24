@@ -331,6 +331,22 @@ Press esc, or click the close the button to close this dialog box.
             </div>
 
         </div>
+	    <?php
+	    $name_slogan_class   = 'large-12 ';
+	    $ear_content_class   = '';
+	    $ear_content_2_class = '';
+	    if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class   = 'large-6 ';
+		    $ear_content_class   = 'large-3 ';
+		    //$ear_content_2_class = 'large-3 ';
+	    } elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class = 'large-9 ';
+		    //$ear_content_class = 'large-3 ';
+	    } elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class   = 'large-9 ';
+		    //$ear_content_2_class = 'large-3 ';
+	    }
+	    ?>
 
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
@@ -338,9 +354,27 @@ Press esc, or click the close the button to close this dialog box.
                 <div class="large-12 columns">
                     <nav class="top-bar-left">
                         <ul class="dropdown menu" data-dropdown-menu>
-                            <li class=" nav-item"><a style="font-size: 1.2rem;" href="https://www.gov.ph">GOVPH
+                            <!--<li class=" nav-item"><a style="font-size: 1.2rem;" href="https://www.gov.ph">GOVPH
                                 </a>
-                            </li>
+                            </li>-->
+                            <!-- masthead -->
+                            <header class="container-masthead">
+                                <div class="row">
+                                    <h1 class="<?php echo $name_slogan_class ?> columns">
+                                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                           title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                                           rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                                    </h1>
+
+			                        <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
+                                        <div class="<?php echo $ear_content_class ?> columns">
+					                        <?php do_action( 'before_sidebar' ); ?>
+					                        <?php dynamic_sidebar( 'ear-content-1' ) ?>
+                                        </div>
+			                        <?php endif; ?>
+                                </div>
+                            </header>
+                            <!-- masthead -->
 							<?php
 							wp_nav_menu(
 								array(
@@ -355,7 +389,13 @@ Press esc, or click the close the button to close this dialog box.
                         </ul>
                     </nav>
                     <nav class="top-bar-right">
-
+                        <!-- Philippine Standard Time -->
+	                    <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
+                            <div class="<?php echo $ear_content_2_class ?> columns">
+			                    <?php do_action( 'before_sidebar' ); ?>
+			                    <?php dynamic_sidebar( 'ear-content-2' ) ?>
+                            </div>
+	                    <?php endif; ?>
                         <ul class="dropdown menu" data-dropdown-menu>
 							<?php wp_nav_menu( array(
 								'theme_location' => 'topbar_right',
@@ -442,45 +482,3 @@ Press esc, or click the close the button to close this dialog box.
 
         <!-- original content goes in this container -->
         <div class="off-canvas-content" data-off-canvas-content>
-			<?php
-			$name_slogan_class   = 'large-12 ';
-			$ear_content_class   = '';
-			$ear_content_2_class = '';
-			if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-				$name_slogan_class   = 'large-6 ';
-				$ear_content_class   = 'large-3 ';
-				$ear_content_2_class = 'large-3 ';
-			} elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
-				$name_slogan_class = 'large-9 ';
-				$ear_content_class = 'large-3 ';
-			} elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-				$name_slogan_class   = 'large-9 ';
-				$ear_content_2_class = 'large-3 ';
-			}
-			?>
-
-            <!-- masthead -->
-            <header class="container-masthead">
-                <div class="row">
-                    <div class="<?php echo $name_slogan_class ?> columns">
-                        <h1 class="logo"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                            title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                            rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a></h1>
-                    </div>
-
-					<?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
-                        <div class="<?php echo $ear_content_class ?> columns">
-							<?php do_action( 'before_sidebar' ); ?>
-							<?php dynamic_sidebar( 'ear-content-1' ) ?>
-                        </div>
-					<?php endif; ?>
-
-					<?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                        <div class="<?php echo $ear_content_2_class ?> columns">
-							<?php do_action( 'before_sidebar' ); ?>
-							<?php dynamic_sidebar( 'ear-content-2' ) ?>
-                        </div>
-					<?php endif; ?>
-                </div>
-            </header>
-            <!-- masthead -->
