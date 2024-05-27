@@ -335,9 +335,9 @@ input[type="radio"].disabled:checked:before {
 }
 
 .wp-core-ui select:focus {
-	border-color: #2271b1;
-	color: #0a4b78;
-	box-shadow: 0 0 0 1px #2271b1;
+	border-color: #006837;
+	color: #006837;
+	box-shadow: 0 0 0 1px #006837;
 }
 
 .wp-core-ui select:active {
@@ -366,7 +366,7 @@ input[type="radio"].disabled:checked:before {
 /* This ruleset overrides the color change on :focus thus needs to be after select:focus. */
 .wp-core-ui select:-moz-focusring {
 	color: transparent;
-	text-shadow: 0 0 0 #0a4b78;
+	text-shadow: 0 0 0 #006837;
 }
 
 /* Remove background focus style from IE11 while keeping focus style available on option elements. */
@@ -380,7 +380,7 @@ input[type="radio"].disabled:checked:before {
 }
 
 .wp-core-ui select:focus::-ms-value {
-	color: #0a4b78;
+	color: #006837;
 }
 
 .wp-core-ui select.disabled::-ms-value,

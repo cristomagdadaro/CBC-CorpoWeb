@@ -17,6 +17,7 @@
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title><?php wp_title( '|', true, 'right' ); ?></title>
     <link rel="profile" href="http://gmpg.org/xfn/11">
 	<?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
@@ -285,7 +286,7 @@ Press esc, or click the close the button to close this dialog box.
 </div>
 
 
-<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <!-- off-canvas right menu -->
         <nav id="mySidenav" class="sidenav hide-for-large">
@@ -350,7 +351,7 @@ Press esc, or click the close the button to close this dialog box.
 
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="row">
+            <div class="row sm:py-2 py-0">
                 <div class="large-12 columns">
                     <nav class="top-bar-left">
                         <ul class="dropdown menu" data-dropdown-menu>
@@ -360,8 +361,9 @@ Press esc, or click the close the button to close this dialog box.
                             <!-- masthead -->
                             <header class="container-masthead">
                                 <div class="row">
-                                    <h1 class="<?php echo $name_slogan_class ?> columns">
+                                    <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
                                         <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                           draggable="false"
                                            title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
                                            rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
                                     </h1>
@@ -391,22 +393,20 @@ Press esc, or click the close the button to close this dialog box.
                     <nav class="top-bar-right">
                         <!-- Philippine Standard Time -->
 	                    <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                            <div class="<?php echo $ear_content_2_class ?> columns">
-			                    <?php do_action( 'before_sidebar' ); ?>
-			                    <?php dynamic_sidebar( 'ear-content-2' ) ?>
-                            </div>
+                        <div class="<?php echo $ear_content_2_class ?>">
+                            <?php do_action( 'before_sidebar' ); ?>
+                            <?php dynamic_sidebar( 'ear-content-2' ) ?>
+                        </div>
+		                   <ul class="border-none">
+			                   <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
+                                   <li><?php get_search_form(); ?></li>
+			                   <?php endif ?>
+                           </ul>
 	                    <?php endif; ?>
-                        <ul class="dropdown menu" data-dropdown-menu>
-							<?php wp_nav_menu( array(
-								'theme_location' => 'topbar_right',
-								'items_wrap'     => '%3$s',
-								'container'      => false,
-								'fallback_cb'    => false,
-								'walker'         => new Topbar_Nav_Menu()
-							) ); ?>
-							<?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
-                                <li class="search right"><?php get_search_form(); ?></li>
-							<?php endif ?>
+                        <!--<ul class="dropdown menu" data-dropdown-menu>
+							<?php /*if ( govph_displayoptions( 'govph_disable_search' ) ): */?>
+                                <li class="search right"><?php /*get_search_form(); */?></li>
+							<?php /*endif */?>
                             <li>
 
                                 <button id="accessibility-button" class="button" type="button">
@@ -442,9 +442,9 @@ Press esc, or click the close the button to close this dialog box.
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li>-->
                             <!-- This is an additional on the right side menu for text-magnifier -->
-                            <li>
+                            <!--<li>
                                 <button id="magnifier-button" class="button" type="button">
                                     <span class="show-for-sr">Accessibility Button</span>
                                     <i class="fa fa-font fa-2x" aria-hidden="true"></i>
@@ -472,13 +472,42 @@ Press esc, or click the close the button to close this dialog box.
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li>-->
                             <!-- end for text magnifier -->
+                        <!--</ul>-->
+                    </nav>
+                </div>
+                <ul class="dropdown menu flex flex-row justify-between" data-dropdown-menu>
+		            <?php wp_nav_menu( array(
+			            'theme_location' => 'topbar_right',
+			            'items_wrap'     => '%3$s',
+			            'container'      => false,
+			            'fallback_cb'    => false,
+			            'walker'         => new Topbar_Nav_Menu()
+		            ) ); ?>
+                </ul>
+            </div>
+        </div>
+        <div id="auxiliary" class="show-for-large">
+            <div class="row">
+                <div class="small-12 large-12 columns toplayer">
+                    <nav id="aux-main" class="nomargin show-for-medium-up" data-dropdown-content>
+                        <ul class="dropdown menu" data-dropdown-menu>
+						    <?php
+						    wp_nav_menu(
+							    array(
+								    'theme_location'  => 'aux_nav',
+								    'items_wrap' => '%3$s',
+								    'container' => false,
+								    'fallback_cb' => false,
+								    'walker' => new Topbar_Nav_Menu()
+							    )
+						    );
+						    ?>
                         </ul>
                     </nav>
                 </div>
             </div>
         </div>
-
         <!-- original content goes in this container -->
         <div class="off-canvas-content" data-off-canvas-content>

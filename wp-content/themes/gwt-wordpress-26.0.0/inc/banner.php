@@ -28,27 +28,6 @@ if(!is_home()){
 	$line_class="line";
 }
 ?>
-<div id="auxiliary" class="show-for-large">
-    <div class="row">
-        <div class="small-12 large-12 columns toplayer">
-            <nav id="aux-main" class="nomargin show-for-medium-up" data-dropdown-content>
-                <ul class="dropdown menu" data-dropdown-menu>
-                    <?php 
-                        wp_nav_menu( 
-                            array(
-                                'theme_location'  => 'aux_nav', 
-                                'items_wrap' => '%3$s', 
-                                'container' => false, 
-                                'fallback_cb' => false, 
-                                'walker' => new Topbar_Nav_Menu() 
-                            )
-                        ); 
-                    ?>
-                </ul>
-            </nav>
-        </div>
-    </div>
-</div>
 <!-- banner -->
 <div class="container-banner <?php echo $container_class; ?>">
     <?php govph_displayoptions( 'govph_slider_start' ); ?>
@@ -109,7 +88,7 @@ if(!is_home()){
         <div class="large-9 columns container-main">
             <header>
                 <?php while ( have_posts() ) : the_post(); ?>
-                <h1 class="entry-title"><?php the_title(); ?></h1>
+                <h1 class="entry-title sm:text-3xl text-xl font-bold"><?php the_title(); ?></h1>
                 <?php endwhile; // end of the loop. ?>
             </header>
         </div>
@@ -125,4 +104,7 @@ if(!is_home()){
     <span class="<?php echo $line_class; ?>"> </span>
     <!-- end of line class as a separator -->
 
-    <?php include_once('breadcrumbs.php'); ?>
+    <!-- show breadcrumbs when not in home page -->
+    <?php if(!is_home()):
+        include_once('breadcrumbs.php');
+    endif; ?>

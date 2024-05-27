@@ -21,10 +21,10 @@
 			endif;
 		?>
 
-        <div class="entry-wrapper <?php echo $content_class; ?> medium-12 small-12">
+        <div class="entry-wrapper <?php echo $content_class; ?> medium-12 small-12 w-full">
             <!-- entry-header -->
             <header class="entry-header">
-                <h2 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
+                <h2 class="entry-title font-bold sm:text-lg text-md"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
                 </h2>
                 <div class="entry-meta">
                     <?php gwt_wp_posted_on(); ?>

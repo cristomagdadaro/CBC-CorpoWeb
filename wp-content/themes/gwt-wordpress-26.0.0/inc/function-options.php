@@ -895,9 +895,10 @@ if (!function_exists('govph_displayoptions')) {
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img src="' . $logo_image . '" />' :
 					'<div id="textlogo-wrapper">
-                        <div id="textlogo-image"><img alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
+                        <div id="textlogo-image"><img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
                         <div id="textlogo-inner-wrapper">
-                          <div id="agency-heading">Republic of the Philippines</div>
+                          <!--<div id="agency-heading">Republic of the Philippines</div>-->
+                          <div id="agency-heading">Department of Agriculture</div>
                           <div id="agency-name " style="white-space: nowrap;">' . $option['govph_agency_name'] . '</div>
                           <div id="agency-tagline">' . $option['govph_agency_tagline'] . '</div>
                         </div>

@@ -11,7 +11,7 @@
 	
 	<!-- entry-content -->
 	<div class="entry-content">
-		<div class="entry-meta">
+		<div class="entry-meta my-1">
 			<?php gwt_wp_posted_on(); ?>
 			<p></p>
 		</div>

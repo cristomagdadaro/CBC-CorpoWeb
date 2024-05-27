@@ -47,7 +47,7 @@
             <div class="entry-wrapper <?php echo $content_class; ?> text-justify medium-12 small-12 ">
                 <!-- entry-header -->
                 <header class="entry-header ">
-                    <h2 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
+                    <h2 class="entry-title font-bold sm:text-lg text-md"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
                     </h2>
 
                     <?php if ( 'post' == get_post_type() ) : ?>

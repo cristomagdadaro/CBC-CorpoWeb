@@ -271,7 +271,7 @@ div {
 
 a:hover,
 a:active {
-	color: #135e96;
+	color: #006837;
 }
 
 a:focus,
@@ -651,13 +651,13 @@ code {
 .wrap .add-new-h2:hover, /* deprecated */
 .wrap .page-title-action:hover {
 	background: #f0f0f1;
-	border-color: #0a4b78;
-	color: #0a4b78;
+	border-color: #006837;
+	color: #006837;
 }
 
 /* lower specificity: color needs to be overridden by :hover and :active */
 .page-title-action:focus {
-	color: #0a4b78;
+	color: #006837;
 }
 
 /* Dashicon for language options on General Settings and Profile screens */

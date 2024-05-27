@@ -15,20 +15,20 @@ function gwt_wp_breadcrumb() {
 	if (!is_home()) {
 		echo '<ul class="breadcrumbs">';
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
-			echo '<li>Navigate:</li>';
+			echo '<li class="select-none">Navigate:</li>';
 			echo '<li><a class="pathway" href="';
 			echo home_url();
 			echo '">';
 			echo 'Home';
 			echo '</a>'.$separator_block.'</li>';
 		} else {
-			echo '<li>Navigate:</li>';
+			echo '<li class="select-none">Navigate:</li>';
 		}
 		
 	} else {
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
 			echo '<ul class="breadcrumbs">';
-			echo '<li>Navigate:</li>';
+			echo '<li class="select-none">Navigate:</li>';
 			echo '<li><a class="pathway" href="';
 			echo home_url();
 			echo '">';
