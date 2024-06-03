@@ -353,30 +353,31 @@ Press esc, or click the close the button to close this dialog box.
         <div id="main-nav">
             <div class="row sm:py-2 py-0">
                 <div class="large-12 columns">
-                    <nav class="top-bar-left">
+                    <nav class="top-bar-left flex flex-col gap-1">
+                        <!-- masthead -->
+                        <header class="container-masthead">
+                            <div class="row">
+                                <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
+                                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                       draggable="false"
+                                       title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                                       rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                                </h1>
+
+			                    <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
+                                    <div class="<?php echo $ear_content_class ?> columns">
+					                    <?php do_action( 'before_sidebar' ); ?>
+					                    <?php dynamic_sidebar( 'ear-content-1' ) ?>
+                                    </div>
+			                    <?php endif; ?>
+                            </div>
+                        </header>
+                        <!-- masthead -->
                         <ul class="dropdown menu" data-dropdown-menu>
                             <!--<li class=" nav-item"><a style="font-size: 1.2rem;" href="https://www.gov.ph">GOVPH
                                 </a>
                             </li>-->
-                            <!-- masthead -->
-                            <header class="container-masthead">
-                                <div class="row">
-                                    <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
-                                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                           draggable="false"
-                                           title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                           rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
-                                    </h1>
 
-			                        <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
-                                        <div class="<?php echo $ear_content_class ?> columns">
-					                        <?php do_action( 'before_sidebar' ); ?>
-					                        <?php dynamic_sidebar( 'ear-content-1' ) ?>
-                                        </div>
-			                        <?php endif; ?>
-                                </div>
-                            </header>
-                            <!-- masthead -->
 							<?php
 							wp_nav_menu(
 								array(

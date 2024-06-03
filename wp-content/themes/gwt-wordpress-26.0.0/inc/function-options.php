@@ -894,15 +894,18 @@ if (!function_exists('govph_displayoptions')) {
 			case 'govph_logo':
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
-					'<div id="textlogo-wrapper">
-                        <div id="textlogo-image"><img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
-                        <div id="textlogo-inner-wrapper">
-                          <!--<div id="agency-heading">Republic of the Philippines</div>-->
-                          <div id="agency-heading">Department of Agriculture</div>
-                          <div id="agency-name " style="white-space: nowrap;">' . $option['govph_agency_name'] . '</div>
-                          <div id="agency-tagline">' . $option['govph_agency_tagline'] . '</div>
+					'<div id="textlogo-wrapper" class="flex flex-row gap-2">
+                        <div id="textlogo-image" class="flex items-center"> <!-- Added flex container class -->
+                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full" /> <!-- Added h-full class -->
                         </div>
-                   </div>';
+                        <div id="textlogo-inner-wrapper" class="flex flex-col justify-center"> <!-- Added flex container class and padding -->
+                            <!--<div id="agency-heading">Republic of the Philippines</div>-->
+                            <div id="agency-heading">Department of Agriculture</div>
+                            <div id="agency-name" class="whitespace-nowrap uppercase">' . $option['govph_agency_name'] . '</div>
+                            <div id="agency-tagline" class="tracking-[0.3rem]">' . $option['govph_agency_tagline'] . '</div>
+                        </div>
+                    </div>';
+
 				echo $addLogo;
 				break;
 			case 'govph_header_setting':
@@ -914,7 +917,7 @@ if (!function_exists('govph_displayoptions')) {
 				break;
 			case 'govph_background_header_size_setting':
 				if ( $option['govph_background_header_size'] == 'true' ) {
-					$backgroundHeaderImageSizeSetting .= 'background-size: cover;';
+					$backgroundHeaderImageSizeSetting .= 'backgroundsize: cover;';
 					$backgroundHeaderImageSizeSetting .= 'background-position: center;';
 				}
 				echo $backgroundHeaderImageSizeSetting;

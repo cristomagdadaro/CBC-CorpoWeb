@@ -48,7 +48,7 @@ function efs_get_slider(){
 		        <figcaption class="orbit-caption absolute bottom-0 w-full text-center text-white bg-black bg-opacity-0 py-2 sm:text-2xl md:text-xl lg:text-3xl text-lg">' . $caption . '</figcaption>
 		    </div>
 		    </a>
-		    <div class="orbit-slide-number absolute top-0 left-0 z-10 text-white p-2">
+		    <div class="hidden orbit-slide-number absolute top-0 left-0 z-10 text-white p-2">
 		        <span>' . $x . '</span> of <span>' . $count . '</span>
 		    </div>
 			</li>';
@@ -59,8 +59,8 @@ function efs_get_slider(){
 		endwhile;
 
 		if($count > 1) {
-			$slider .= '<button class="orbit-previous"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
-						<button class="orbit-next"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>';
+			$slider .= '<button class="hidden orbit-previous"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
+						<button class="hidden orbit-next"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>';
 		}
 	endif;
 	wp_reset_query();

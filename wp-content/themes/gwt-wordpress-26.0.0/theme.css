@@ -55,6 +55,10 @@
 /**
 Custom Header Styles
 */
+.orbit-button-controls {
+  display: none;
+}
+
 #textlogo-wrapper {
     width: fit-content;
     display: flex;
@@ -208,7 +212,7 @@ h6 {
 .top-bar-right > ul > li,
 #aux-main > ul > li {
   /* For appoval to remove border right |*/
-  border-right: 1px solid #ebebeb;
+ /* border-right: 1px solid #ebebeb;*/
 }
 #main-nav .has-dropdown > a,
 #aux-main .has-dropdown > a {
@@ -600,13 +604,12 @@ this is for mobile menus */
 
 /*masthead with text*/
 #textlogo-image {
+  height: auto;
+  width: 70px;
   display: inline-block;
-  width: 100px;
-  height: 100px;
   vertical-align: middle;
 }
 #textlogo-image img {
-  height: 100px;
   object-fit: contain;
 }
 #textlogo-inner-wrapper {
@@ -620,24 +623,19 @@ this is for mobile menus */
 #agency-heading {
   display: block;
   position: relative;
-  font-size: 1.06rem;
-  text-transform: none;
+  font-size: 0.7rem;
+  text-transform: uppercase;
 }
 #agency-name {
   display: block;
   position: relative;
-  margin-top: 4px;
-  text-transform: none;
   border-top: 2px solid;
-  padding-top: 2px;
   line-height: 1;
 }
 #agency-tagline {
   display: block;
   position: relative;
-  font-size: 1.06rem;
-  margin-top: 5px;
-  text-transform: none;
+  font-size: 0.8rem;
 }
 
 /*banner*/
@@ -826,7 +824,6 @@ this is for mobile menus */
     object-fit: contain;
   }
   #textlogo-image img {
-    height: 100px;
     object-fit: contain;
   }
   #textlogo-wrapper {

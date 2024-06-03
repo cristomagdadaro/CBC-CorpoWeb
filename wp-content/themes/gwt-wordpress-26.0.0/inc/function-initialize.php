@@ -161,7 +161,7 @@ function gwt_wp_setup() {
 			$class_names = $value = '';
 			$classes = empty( $item->classes ) ? array() : (array) $item->classes;
 
-			$classes[] = 'menu-item-' . $item->ID;
+			$classes[] = 'select-none menu-item-' . $item->ID;
 			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
 			$class_names = $class_names ? ' class="' . esc_attr( $class_names ) . '"' : '';
 			
