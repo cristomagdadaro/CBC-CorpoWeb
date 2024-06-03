@@ -114,7 +114,7 @@ function gwt_wp_setup() {
 			$classes[] = 'menu-item-' . $item->ID;
 			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
 			$class_names = $class_names ? ' class="' . esc_attr( $class_names ) . '"' : '';
-			
+
 			$id = apply_filters( 'nav_menu_item_id', 'menu-item-'. $item->ID, $item, $args );
 			$id = $id ? ' id="' . esc_attr( $id ) . '"' : '';
 
@@ -125,14 +125,16 @@ function gwt_wp_setup() {
 			$attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
 			$attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
 
-			$item_output = $args->before;
+			// Check if $args is an array or an object
+			$item_output = is_array($args) ? $args['before'] : $args->before;
 			$item_output .= '<a'. $attributes .'>';
-			$item_output .= $args->link_before . apply_filters( 'the_title', $item->title, $item->ID ) . $args->link_after;
+			$item_output .= (is_array($args) ? $args['link_before'] : $args->link_before) . apply_filters( 'the_title', $item->title, $item->ID ) . (is_array($args) ? $args['link_after'] : $args->link_after);
 			$item_output .= '</a>';
-			$item_output .= $args->after;
-		  
+			$item_output .= is_array($args) ? $args['after'] : $args->after;
+
 			$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
 		}
+
 
 		function end_el( &$output, $item, $depth = 0, $args = array() ) {
 			$indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';

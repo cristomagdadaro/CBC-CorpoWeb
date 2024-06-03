@@ -9,8 +9,8 @@
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
 <div id="panel-top" class="anchor" role="complementary">
     <div class="row">
-        <?php if(is_active_sidebar('panel-top-1')): ?>
-        <aside id="panel-top-1" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
+        <?php if(is_active_sidebar('panel-top-1') && is_front_page()): ?>
+        <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
             role="complementary">
             <?php do_action( 'before_sidebar' ); ?>
             <?php dynamic_sidebar( 'panel-top-1' ); ?>

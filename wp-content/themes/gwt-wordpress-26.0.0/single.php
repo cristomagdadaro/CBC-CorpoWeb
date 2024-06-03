@@ -16,13 +16,13 @@ include_once('inc/banner.php');
         <div id="content" class="text-justify <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
             role="main">
             <!-- for Version 1 -->
-            <!-- <div div class="large-12 container-main">
+             <div class="large-12 container-main">
                 <header>
-                    <?php while ( have_posts() ) : the_post(); ?>
-                    <h1 class="entry-title"><?php the_title(); ?></h1>
-                    <?php endwhile; // end of the loop. ?>
+	                <?php while ( have_posts() ) : the_post(); ?>
+                        <h1 class="entry-title sm:text-3xl text-xl font-bold"><?php the_title(); ?></h1>
+	                <?php endwhile; // end of the loop. ?>
                 </header>
-            </div> -->
+            </div>
             <!-- End for Version 1 -->
             <?php 
 				while( have_posts() ) : the_post();

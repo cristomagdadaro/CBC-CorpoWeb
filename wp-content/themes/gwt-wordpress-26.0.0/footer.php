@@ -51,7 +51,32 @@
         </div><!-- #off-canvass-content -->
     </div><!-- #off-canvass-wrapper inner -->
 </div><!-- #off-canvass-wrapper -->
+<script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
 
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                //get one child element height
+                var child = panel.children[0];
+                var childHeight = child.scrollHeight;
+                //get all child elements height
+                var children = panel.children;
+                var childrenHeight = 0;
+                for (var i = 0; i < children.length; i++) {
+                    childrenHeight += children[i].scrollHeight;
+                }
+                //set max height
+                panel.style.maxHeight = (childHeight + childrenHeight) + "px";
+            }
+        });
+    }
+</script>
 <!-- standard footer script -->
 <script type="text/javascript">
     (function (d, s, id) {

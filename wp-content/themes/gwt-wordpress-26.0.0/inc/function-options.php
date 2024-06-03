@@ -893,7 +893,7 @@ if (!function_exists('govph_displayoptions')) {
 				break;
 			case 'govph_logo':
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
-				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img src="' . $logo_image . '" />' :
+				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
 					'<div id="textlogo-wrapper">
                         <div id="textlogo-image"><img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" height="100px" width="100px"/></div>
                         <div id="textlogo-inner-wrapper">
@@ -922,7 +922,7 @@ if (!function_exists('govph_displayoptions')) {
 			case 'govph_slider_setting':
 				$sliderSetting = ( ! empty( $option['govph_sliderimage'] ) ? 'background-image:url("' . $option['govph_sliderimage'] . '");background-size:cover;' : '' );
 				$sliderSetting .= ( ! empty( $option['govph_slidercolor'] ) ? 'background-color:' . $option['govph_slidercolor'] . ';' : '' );
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ($option['govph_slider_fullwidth'] == 'true' ) {
 					$sliderSetting .= 'padding: 0;';
 					$sliderSetting .= 'border-top: none;';
 				}

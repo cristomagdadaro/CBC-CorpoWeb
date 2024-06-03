@@ -374,10 +374,6 @@ ol {
 	padding: 0;
 }
 
-ul {
-	list-style: none;
-}
-
 ol {
 	list-style-type: decimal;
 	margin-left: 2em;

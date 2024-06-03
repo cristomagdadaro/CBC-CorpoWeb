@@ -43,7 +43,7 @@ include_once('inc/banner.php');
 						else :
 							get_template_part( 'no-results', 'index' );
 						endif; ?>
-            <a href="/articles" class="text-center bg-gray-200 p-2">Read more Articles</a>
+            <a href="/articles" class="text-center bg-gray-200 p-2 my-2">Read more Articles</a>
         </div>
         <!-- end content -->
 

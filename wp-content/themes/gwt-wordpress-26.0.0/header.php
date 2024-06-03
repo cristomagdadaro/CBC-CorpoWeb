@@ -306,7 +306,7 @@ Press esc, or click the close the button to close this dialog box.
 					'fallback_cb'    => false,
 					'walker'         => new Off_Canvass_Menu()
 				) ); ?>
-				<?php // if(has_nav_menu('aux_nav')): ?>
+				<?php if(has_nav_menu('aux_nav')): ?>
                 <li id="aux-offmenu" class="list-item">AUXILIARY MENU</li>
 				<?php wp_nav_menu( array(
 					'theme_location' => 'aux_nav',
@@ -315,7 +315,7 @@ Press esc, or click the close the button to close this dialog box.
 					'fallback_cb'    => false,
 					'walker'         => new Off_Canvass_Menu()
 				) ); ?>
-				<?php //endif; ?>
+				<?php endif; ?>
             </ul>
         </nav>
 

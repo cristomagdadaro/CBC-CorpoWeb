@@ -19,11 +19,11 @@ require_once('slider-img-type.php');
 function efs_get_slider(){
 	$efs_query = "post_type=slider-image";
 	query_posts($efs_query);
-	
+
 	global $post_id;
 	$count = 0;
 	$slider = '<div class="orbit" role="region" aria-label="Banner Slider" data-orbit data-options="animInFromLeft:fade-in; animInFromRight:fade-in; animOutToLeft:fade-out; animOutToRight:fade-out;">
-					<ul class="orbit-container">';
+                <ul class="orbit-container">';
 	if (have_posts()) :
 
 		$x = 1;
@@ -32,15 +32,29 @@ function efs_get_slider(){
 		endwhile;
 
 		while (have_posts()) : the_post();
-			$img = get_the_post_thumbnail($post_id, 'full', array( 'class' => 'orbit-image' ));
-			
-  		$slide_link = slider_link_get_meta_box_data(get_the_ID());
+			$img = get_the_post_thumbnail($post_id, 'full', array( 'class' => 'orbit-image max-h-[600px] object-cover object-center w-full h-full' ));
+
+			$slide_link = slider_link_get_meta_box_data(get_the_ID());
 			$caption = get_the_title();
 
 			if ($x > $count) {
 				$x = 1;
 			}
-			$slider.= $post_id.'<li class="orbit-slide is-active"><div class="orbit-slide-number"><span>'.$x.'</span> of <span>'.$count.'</span></div><a href="'.$slide_link.'">'.$img.'</a><figcaption class="orbit-caption">'.$caption.'</figcaption></li>';
+			$slider .= $post_id . '<li class="orbit-slide is-active relative">' . $img . '
+		    <a href="' . $slide_link . '">
+		    <div class="absolute inset-0 flex justify-center">
+		        <div class="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent"></div>
+		        <div class="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#0a0a0a] via-transparent to-transparent"></div>
+		        <figcaption class="orbit-caption absolute bottom-0 w-full text-center text-white bg-black bg-opacity-0 py-2 sm:text-2xl md:text-xl lg:text-3xl text-lg">' . $caption . '</figcaption>
+		    </div>
+		    </a>
+		    <div class="orbit-slide-number absolute top-0 left-0 z-10 text-white p-2">
+		        <span>' . $x . '</span> of <span>' . $count . '</span>
+		    </div>
+			</li>';
+
+
+
 			$x++;
 		endwhile;
 
@@ -53,9 +67,9 @@ function efs_get_slider(){
 
 	if($count > 1) {
 		$slider .= '</ul>
-		<nav class="orbit-bullets">';
+        <nav class="orbit-bullets">';
 
-		for ($x=0; $x < $count ; $x++) { 
+		for ($x=0; $x < $count ; $x++) {
 			$class = ($x == 0) ? 'is-active' : '' ;
 			$slider .= '<button class="'.$class.'" data-slide="'.$x.'"><span class="show-for-sr">Current Slide</span></button>';
 		}
@@ -64,9 +78,9 @@ function efs_get_slider(){
 	} else {
 		$slider .= '</ul></div>';
 	}
-
 	return $slider;
 }
+
 
 /**add the shortcode for the slider- for use in editor**/
 function efs_insert_slider($atts, $content=null) {

@@ -15,3 +15,68 @@
  */
 
 /** Your style here **/
+.show-bullet {
+	list-style-type: disc; 
+	margin: 0; 
+	padding: 0 0 0 20px;
+}
+.show-bullet > li {
+	display: list-item; 
+	list-style-position: inside;
+	cursor: default;
+}
+
+
+.accordion {
+  background-color: #1A4D2E;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+  margin: 1px;
+}
+
+.panel > ul > li > .accordion {
+  background-color: #E8DFCA;
+  color: #1A4D2E;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+  margin: 1px;
+}
+
+.active, .accordion:hover {
+  background-color: #4F6F52;
+}
+
+.accordion:after {
+  content: '\002B';
+  color: #fff;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
