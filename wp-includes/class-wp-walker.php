@@ -121,16 +121,16 @@ class Walker {
 	 *
 	 * This method should not be called directly, use the walk() method instead.
 	 *
+	 * @since 2.5.0
+	 *
 	 * @param object $element           Data object.
 	 * @param array  $children_elements List of elements to continue traversing (passed by reference).
 	 * @param int    $max_depth         Max depth to traverse.
-	 * @param array  $args An array of arguments.
-	 * @param string $output Used to append additional content (passed by reference).
 	 * @param int    $depth             Depth of current element.
-	 *@since 2.5.0
-	 *
+	 * @param array  $args              An array of arguments.
+	 * @param string $output            Used to append additional content (passed by reference).
 	 */
-	public function display_element( $element, &$children_elements, $max_depth, $args, &$output, $depth) {
+	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
 		if ( ! $element ) {
 			return;
 		}
@@ -156,7 +156,7 @@ class Walker {
 					// Start the child delimiter.
 					$this->start_lvl( $output, $depth, ...array_values( $args ) );
 				}
-				$this->display_element( $child, $children_elements, $max_depth, $args,  $output,$depth + 1 );
+				$this->display_element( $child, $children_elements, $max_depth, $depth + 1, $args, $output );
 			}
 			unset( $children_elements[ $id ] );
 		}
@@ -202,7 +202,7 @@ class Walker {
 		if ( -1 == $max_depth ) {
 			$empty_array = array();
 			foreach ( $elements as $e ) {
-				$this->display_element( $e, $empty_array, 1,$args,  $output, 0 );
+				$this->display_element( $e, $empty_array, 1, 0, $args, $output );
 			}
 			return $output;
 		}
@@ -244,7 +244,7 @@ class Walker {
 		}
 
 		foreach ( $top_level_elements as $e ) {
-			$this->display_element( $e, $children_elements, $max_depth,$args,  $output, 0 );
+			$this->display_element( $e, $children_elements, $max_depth, 0, $args, $output );
 		}
 
 		/*
@@ -255,7 +255,7 @@ class Walker {
 			$empty_array = array();
 			foreach ( $children_elements as $orphans ) {
 				foreach ( $orphans as $op ) {
-					$this->display_element( $op, $empty_array, 1, $args,  $output,0 );
+					$this->display_element( $op, $empty_array, 1, 0, $args, $output );
 				}
 			}
 		}
@@ -332,7 +332,7 @@ class Walker {
 				if ( $count >= $end ) {
 					break;
 				}
-				$this->display_element( $e, $empty_array, 1, $args,  $output,0 );
+				$this->display_element( $e, $empty_array, 1, 0, $args, $output );
 			}
 			return $output;
 		}
@@ -387,14 +387,14 @@ class Walker {
 				break;
 			}
 
-			$this->display_element( $e, $children_elements, $max_depth, $args,  $output,0 );
+			$this->display_element( $e, $children_elements, $max_depth, 0, $args, $output );
 		}
 
 		if ( $end >= $total_top && count( $children_elements ) > 0 ) {
 			$empty_array = array();
 			foreach ( $children_elements as $orphans ) {
 				foreach ( $orphans as $op ) {
-					$this->display_element( $op, $empty_array, 1,$args,  $output, 0 );
+					$this->display_element( $op, $empty_array, 1, 0, $args, $output );
 				}
 			}
 		}

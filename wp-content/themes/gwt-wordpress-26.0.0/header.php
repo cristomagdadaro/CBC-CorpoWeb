@@ -319,19 +319,6 @@ Press esc, or click the close the button to close this dialog box.
             </ul>
         </nav>
 
-        <!-- off-canvas title bar for 'small' screen -->
-        <div id="off-canvas-container" class="title-bar columns hide-for-large" data-responsive-toggle="main-nav"
-             data-hide-for="large">
-            <div class="title-bar-right">
-                <span class="title-bar-title">Menu</span>
-                <button style="font-size:30px;cursor:pointer" id="openNav" class="menu-icon" type="button">&#9776;
-                </button>
-            </div>
-            <div class="title-bar-left">
-                <span class="title-bar-title name"><a href="http://www.gov.ph">GOVPH</a></span>
-            </div>
-
-        </div>
 	    <?php
 	    $name_slogan_class   = 'large-12 ';
 	    $ear_content_class   = '';
@@ -348,15 +335,37 @@ Press esc, or click the close the button to close this dialog box.
 		    //$ear_content_2_class = 'large-3 ';
 	    }
 	    ?>
+        <!-- off-canvas title bar for 'small' screen -->
+        <div id="off-canvas-container" class="title-bar columns sm:hidden block p-0">
+            <div class="title-bar-right">
+                <span class="sr-only">Menu</span>
+                <button style="font-size:30px;cursor:pointer" id="openNav" class="menu-icon" type="button">&#9776;
+                </button>
+            </div>
+            <div class="title-bar-left">
+                <!-- masthead -->
+                <header class="container-masthead border-none text-black">
+                    <div class="row sm:py-0 py-2 mx-auto border-none">
+                        <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
+                            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                               draggable="false"
+                               title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                               rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                        </h1>
+                    </div>
+                </header>
+                <!-- masthead -->
+            </div>
 
+        </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
             <div class="row">
                 <div class="flex flex-row sm:pt-2 pt-0">
-                    <nav class="top-bar-left flex flex-col gap-1">
+                    <nav class="top-bar-left sm:block hidden">
                         <!-- masthead -->
                         <header class="container-masthead">
-                            <div class="row">
+                            <div class="row sm:py-0 py-2 mx-auto">
                                 <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
                                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
                                        draggable="false"
@@ -374,7 +383,7 @@ Press esc, or click the close the button to close this dialog box.
                         </header>
                         <!-- masthead -->
                     </nav>
-                    <nav class="top-bar-right flex flex-col sm:gap-2 gap-1">
+                    <nav class="top-bar-right sm:block hidden">
                         <!-- Philippine Standard Time -->
 	                    <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
                         <div class="<?php echo $ear_content_2_class ?> m-0">

@@ -194,13 +194,13 @@ function gwt_wp_setup() {
 			$output .= "</li>\n";
 		}
 
-		function display_element($element, &$children_elements, $max_depth, $args, &$output, $depth=0)
+		function display_element($element, &$children_elements, $max_depth, $depth=0, $args=[], &$output=null)
 		{
 			$id_field = $this->db_fields['id'];
 			if (!empty($children_elements[$element->$id_field])) {
 				$element->classes[] = 'has-dropdown';
 			}
-			Walker_Nav_Menu::display_element($element, $children_elements, $max_depth, $args, $output, $depth);
+			Walker_Nav_Menu::display_element($element, $children_elements, $max_depth, $depth, $args, $output);
 		}
 
 	}

@@ -271,7 +271,7 @@ div {
 
 a:hover,
 a:active {
-	color: #006837;
+	color: #135e96;
 }
 
 a:focus,
@@ -372,6 +372,10 @@ h6 {
 ul,
 ol {
 	padding: 0;
+}
+
+ul {
+	list-style: none;
 }
 
 ol {
@@ -647,13 +651,13 @@ code {
 .wrap .add-new-h2:hover, /* deprecated */
 .wrap .page-title-action:hover {
 	background: #f0f0f1;
-	border-color: #006837;
-	color: #006837;
+	border-color: #0a4b78;
+	color: #0a4b78;
 }
 
 /* lower specificity: color needs to be overridden by :hover and :active */
 .page-title-action:focus {
-	color: #006837;
+	color: #0a4b78;
 }
 
 /* Dashicon for language options on General Settings and Profile screens */
@@ -1507,25 +1511,6 @@ div.error {
 
 #plugin-information-footer .notice {
     margin-top: -5px;
-}
-
-#plugin-information-footer #plugin-activated-successfully {
-	margin-bottom: 0;
-}
-
-#plugin-information-footer #plugin-activated-successfully p {
-	display: flex;
-	gap: 1em;
-	align-items: center;
-	justify-content: space-between;
-	margin: 0;
-}
-
-#plugin-information-footer #plugin-activated-successfully .refresh-page {
-	flex-grow: 0;
-	line-height: 2.15384615;
-	min-height: 0;
-	margin-bottom: 0;
 }
 
 .update-message p:before,

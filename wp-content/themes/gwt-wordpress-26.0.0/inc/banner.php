@@ -33,7 +33,7 @@ if ( ! is_home() ) {
 <?php if ( $banner_slider = efs_get_slider() ): ?>
 <?php if ( govph_displayoptions( 'govph_slider_full' ) == 'active' ): ?>
     <!-- For GWT 26.0.0 remove class hide-for-small-only after large-12 on id="banner-slider" to show slider image on mobile devices -->
-    <div id="banner-slider" class="large-12 ">
+    <div id="banner-slider" class="large-12">
 		<?php else: ?>
         <div id="banner-slider" class="<?php echo $banner_class ?>">
 			<?php endif; ?>

@@ -128,7 +128,7 @@ class Walker_Comment extends Walker {
 	 * @param array      $args              An array of arguments.
 	 * @param string     $output            Used to append additional content. Passed by reference.
 	 */
-	public function display_element( $element, &$children_elements, $max_depth,$args, &$output,  $depth ) {
+	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
 		if ( ! $element ) {
 			return;
 		}
@@ -136,7 +136,7 @@ class Walker_Comment extends Walker {
 		$id_field = $this->db_fields['id'];
 		$id       = $element->$id_field;
 
-		parent::display_element( $element, $children_elements, $max_depth,$args,  $output, $depth );
+		parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
 
 		/*
 		 * If at the max depth, and the current element still has children, loop over those
@@ -145,7 +145,7 @@ class Walker_Comment extends Walker {
 		 */
 		if ( $max_depth <= $depth + 1 && isset( $children_elements[ $id ] ) ) {
 			foreach ( $children_elements[ $id ] as $child ) {
-				$this->display_element( $child, $children_elements, $max_depth,$args, $output, $depth);
+				$this->display_element( $child, $children_elements, $max_depth, $depth, $args, $output );
 			}
 
 			unset( $children_elements[ $id ] );
