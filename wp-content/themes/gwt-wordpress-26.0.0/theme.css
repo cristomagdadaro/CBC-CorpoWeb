@@ -199,11 +199,10 @@ h6 {
 #main-nav li.active:not(.has-form) a:not(.button),
 #aux-main li:not(.has-form) a:not(.button),
 #aux-main li.active:not(.has-form) a:not(.button) {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #000;
-  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
   padding: 0px 15px;
-  line-height: 58px;
+  line-height: 38px;
   white-space: nowrap;
   /* For Approval */
   /* font-weight: bold; */
@@ -242,9 +241,10 @@ h6 {
 	#aux-main ul li:hover:not(.has-form) > a,
 	#aux-main .dropdown li:not(.has-form) a:not(.button):hover,
 	#aux-main .dropdown li:not(.has-form):hover > a:not(.button) {
-  background: #e4e4e4;
-  font-size: 0.9rem;
-  font-weight: bold;
+  background: #006837;
+  color: #fff;
+  /*font-size: 0.9rem;
+  font-weight: bold;*/
   -webkit-transition: all 400ms ease;
   -moz-transition: all 400ms ease;
   -ms-transition: all 400ms ease;
@@ -254,8 +254,9 @@ h6 {
 #main-nav li.current-menu-item:not(.has-form) a:not(.button),
 #aux-main li.current-menu-item:not(.has-form) a:not(.button),
 #offCanvasRight li.current-menu-item:not(.has-form) > a:not(.button) {
-  background-color: #e4e4e4;
-  font-size: 0.9rem;
+  background-color: #006837;
+  color: #fff;
+  /*font-size: 0.9rem;*/
   font-weight: bold;
 }
 #main-nav .vertical li a::after,
@@ -718,11 +719,11 @@ this is for mobile menus */
  * 11.5 - Sidebar
  */
 
-#panel-top .widget,
+/*#panel-top .widget,
 #panel-bottom .widget,
 #footer .widget {
   padding: 1rem 0;
-}
+}*/
 
 /**
  * 11.6 - Footer

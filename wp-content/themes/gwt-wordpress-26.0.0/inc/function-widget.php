@@ -48,7 +48,7 @@ function gwt_wp_widgets_init() {
 	register_sidebar( array(
 		'name'			=> __( 'Ear Content 1', 'gwt_wp' ),
 		'id'			=> 'ear-content-1',
-		'before_widget'	=> '<div id="%1$s" class="ear-content widget anchor %2$s">',
+		'before_widget'	=> '<div id="%1$s" class="ear-content widget anchor m-0 %2$s">',
 		'after_widget'	=> '</div>',
 		'before_title'	=> '<h3 class="widget-title">',
 		'after_title'	=> '</h3>',
@@ -56,7 +56,7 @@ function gwt_wp_widgets_init() {
 	register_sidebar( array(
 		'name'			=> __( 'Ear Content 2', 'gwt_wp' ),
 		'id'			=> 'ear-content-2',
-		'before_widget'	=> '<div id="%1$s" class="ear-content widget anchor %2$s">',
+		'before_widget'	=> '<div id="%1$s" class="ear-content widget anchor m-0 %2$s">',
 		'after_widget'	=> '</div>',
 		'before_title'	=> '<h3 class="widget-title">',
 		'after_title'	=> '</h3>',

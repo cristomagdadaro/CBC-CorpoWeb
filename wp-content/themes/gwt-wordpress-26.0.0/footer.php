@@ -12,30 +12,30 @@
             <?php if ( is_active_sidebar( 'footer-1' ) || is_active_sidebar( 'footer-2' ) || is_active_sidebar( 'footer-3' ) ||
                        is_active_sidebar( 'footer-4' ) ): ?>
                 <div id="footer" class="anchor" name="agencyfooter">
-                    <div id="supplementary" class="row">
+                    <div id="supplementary">
                         <?php if ( is_active_sidebar( 'footer-1' ) ): ?>
-                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?>" role="complementary">
+                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?> p-0" role="complementary">
                                 <?php do_action( 'before_sidebar' ); ?>
                                 <?php dynamic_sidebar( 'footer-1' ) ?>
                             </div>
                         <?php endif; // if active footer-1 ?>
 
                         <?php if ( is_active_sidebar( 'footer-2' ) ): ?>
-                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?>" role="complementary">
+                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?> p-0" role="complementary">
                                 <?php do_action( 'before_sidebar' ); ?>
                                 <?php dynamic_sidebar( 'footer-2' ) ?>
                             </div>
                         <?php endif; // if active footer-2 ?>
 
                         <?php if ( is_active_sidebar( 'footer-3' ) ): ?>
-                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?>" role="complementary">
+                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?> p-0" role="complementary">
                                 <?php do_action( 'before_sidebar' ); ?>
                                 <?php dynamic_sidebar( 'footer-3' ) ?>
                             </div>
                         <?php endif; // if active footer-3 ?>
 
                         <?php if ( is_active_sidebar( 'footer-4' ) ): ?>
-                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?>" role="complementary">
+                            <div class="<?php govph_displayoptions( 'govph_position_agency_footer' ); ?> p-0" role="complementary">
                                 <?php do_action( 'before_sidebar' ); ?>
                                 <?php dynamic_sidebar( 'footer-4' ) ?>
                             </div>
@@ -43,14 +43,80 @@
                     </div>
                 </div>
             <?php endif; ?>
-
+            <div class="bg-[#559f46] w-full">
+                <div class="row lg:p-4 p-1">
+                    <div class="flex flex-col gap-1 select-none sm:mb-5 mb-2">
+                        <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Agencies under DA-Biotechnology Program</p>
+                        <div class="flex flex-row gap-1 items-center justify-center">
+                            <a href="/" class="hover:scale-105 duration-200">
+                                <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-w-DA-white-bg.png"
+                                     alt="logo" class="w-48 h-auto">
+                            </a>
+                            <a draggable="false" href="https://livestockbiotech.ph/" target="_blank" class="hover:scale-105 duration-200">
+                                <img src="/wp-content/uploads/2024/06/LBC-Logo.png"
+                                     alt="logo" class="w-48 h-auto">
+                            </a>
+                            <a draggable="false" href="https://fbc.nfrdi.da.gov.ph/" target="_blank" class="hover:scale-105 duration-200">
+                                <img src="/wp-content/uploads/2024/06/FBC-Logo.png"
+                                     alt="logo" class="w-48 h-auto">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="grid sm:grid-cols-3 grid-cols-1 text-white select-none">
+                        <div>
+                            <h1 class="text-center border-b m-5 p-1">Quick Links</h1>
+                            <ul class="show-bullet">
+                                <li><a href="/about-us">About Us</a></li>
+                                <li><a href="/articles">Articles</a></li>
+                                <li><a href="/contact-us">Contact Us</a></li>
+                                <li><a href="/faqs">FAQs</a></li>
+                                <li><a href="/sitemap">Sitemap</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h1 class="text-center border-b m-5 p-1">Contact Us</h1>
+                            <ul class="show-bullet">
+                                <li>Telephone: <a href="tel:+639088897135">(+63) 908 889 7135</a></li>
+                                <li>Email:
+                                    <a href="mailto:cropbiotechcenter@gmail.com">cropbiotechcenter@gmail.com</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h1 class="text-center border-b m-5 p-1">Follow Us</h1>
+                            <ul class="show-bullet">
+                                <li>Facebook: <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center </a></li>
+                                <li>Instagram: <a href="https://www.instagram.com/da_cbcph/" target="_blank">@da_cbcph</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- standard footer -->
-            <div id="gwt-standard-footer"></div>
+            <div id="gwt-standard-footer" class="select-none"></div>
             <!-- end standard footer -->
 
         </div><!-- #off-canvass-content -->
     </div><!-- #off-canvass-wrapper inner -->
 </div><!-- #off-canvass-wrapper -->
+<footer class="bg-[#EFEFEF] text-[#505050]">
+    <div class="select-none text-xs mx-auto flex sm:p-0 p-2 flex-col sm:flex-row justify-between items-center text-center sm:text-left">
+        <a href="/" class="hidden sm:block text-center w-full">
+            Department of Agriculture - Crop Biotechnology Center &copy; <span id="current-year"></span>. All rights reserved.
+        </a>
+        <div class="sm:hidden block text-center w-full">
+            DA-CBC &copy; 2024. All rights reserved.
+        </div>
+    </div>
+</footer>
+<script>
+    // Get the current year
+    const currentYear = new Date().getFullYear();
+
+    // Set the year in the respective span elements
+    document.getElementById('current-year').textContent = currentYear;
+    document.getElementById('current-year-small').textContent = currentYear;
+</script>
 <script>
     var acc = document.getElementsByClassName("accordion");
     var i;

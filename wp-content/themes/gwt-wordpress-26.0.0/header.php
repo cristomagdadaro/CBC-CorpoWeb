@@ -351,8 +351,8 @@ Press esc, or click the close the button to close this dialog box.
 
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="row sm:py-2 py-0">
-                <div class="large-12 columns">
+            <div class="row">
+                <div class="flex flex-row sm:pt-2 pt-0">
                     <nav class="top-bar-left flex flex-col gap-1">
                         <!-- masthead -->
                         <header class="container-masthead">
@@ -373,28 +373,11 @@ Press esc, or click the close the button to close this dialog box.
                             </div>
                         </header>
                         <!-- masthead -->
-                        <ul class="dropdown menu" data-dropdown-menu>
-                            <!--<li class=" nav-item"><a style="font-size: 1.2rem;" href="https://www.gov.ph">GOVPH
-                                </a>
-                            </li>-->
-
-							<?php
-							wp_nav_menu(
-								array(
-									'theme_location' => 'topbar_left',
-									'items_wrap'     => '%3$s',
-									'container'      => false,
-									'fallback_cb'    => false,
-									'walker'         => new Topbar_Nav_Menu()
-								)
-							);
-							?>
-                        </ul>
                     </nav>
-                    <nav class="top-bar-right">
+                    <nav class="top-bar-right flex flex-col sm:gap-2 gap-1">
                         <!-- Philippine Standard Time -->
 	                    <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                        <div class="<?php echo $ear_content_2_class ?>">
+                        <div class="<?php echo $ear_content_2_class ?> m-0">
                             <?php do_action( 'before_sidebar' ); ?>
                             <?php dynamic_sidebar( 'ear-content-2' ) ?>
                         </div>
@@ -404,89 +387,36 @@ Press esc, or click the close the button to close this dialog box.
 			                   <?php endif ?>
                            </ul>
 	                    <?php endif; ?>
-                        <!--<ul class="dropdown menu" data-dropdown-menu>
-							<?php /*if ( govph_displayoptions( 'govph_disable_search' ) ): */?>
-                                <li class="search right"><?php /*get_search_form(); */?></li>
-							<?php /*endif */?>
-                            <li>
-
-                                <button id="accessibility-button" class="button" type="button">
-                                    <span class="show-for-sr">Accessibility Button</span>
-                                    <i class="fa fa-universal-access fa-2x" aria-hidden="true"></i>
-                                </button>
-
-                                <ul class="menu" style="min-width:inherit;">
-                                    <li>
-                                        <a href="#" id="accessibility-statement" title="Accessibility Statement"
-                                           class="toggle-statement" data-toggle="a11y-modal">
-                                            <span class="show-for-sr">Accessibility Statement</span>
-                                            <i class="fa fa-file-text-o fa-2x"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" id="accessibility-contrast" title="Toggle High Contrast"
-                                           class="toggle-contrast">
-                                            <span class="show-for-sr">High Contrast</span>
-                                            <i class="fa fa-low-vision fa-2x"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" id="accessibility-skip-content" title="Skip to Content">
-                                            <span class="show-for-sr">Skip to Content</span>
-                                            <i class="fa fa-arrow-circle-o-down fa-2x"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" id="accessibility-skip-footer" title="Skip to Footer">
-                                            <span class="show-for-sr">Skip to Footer</span>
-                                            <i class="fa fa-chevron-down fa-2x"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>-->
-                            <!-- This is an additional on the right side menu for text-magnifier -->
-                            <!--<li>
-                                <button id="magnifier-button" class="button" type="button">
-                                    <span class="show-for-sr">Accessibility Button</span>
-                                    <i class="fa fa-font fa-2x" aria-hidden="true"></i>
-                                </button>
-                                <ul class="menu" style="min-width:inherit;">
-                                    <li>
-                                        <a href="#" id="text-default" title="Toggle Default Text"
-                                           class="toggle-text-default">
-                                            <span class="show-for-sr">Default Text Size</span>
-                                            <i class="fa fa-font "></i><i class="fa fa-undo "></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" id="text-reduce" title="Toggle Reduce Text"
-                                           class="toggle-text-reduce">
-                                            <span class="show-for-sr">Reduce Text Size</span>
-                                            <i class="fa fa-font ">- -</i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" id="text-enlarge" title="Toggle Enlarge Text"
-                                           class="toggle-text-enlarge">
-                                            <span class="show-for-sr">Enlarge Text Size</span>
-                                            <i class="fa fa-font ">+ +</i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>-->
-                            <!-- end for text magnifier -->
-                        <!--</ul>-->
                     </nav>
                 </div>
-                <ul class="dropdown menu flex flex-row justify-between" data-dropdown-menu>
-		            <?php wp_nav_menu( array(
-			            'theme_location' => 'topbar_right',
-			            'items_wrap'     => '%3$s',
-			            'container'      => false,
-			            'fallback_cb'    => false,
-			            'walker'         => new Topbar_Nav_Menu()
-		            ) ); ?>
-                </ul>
+                <div class="flex flex-row justify-between">
+                    <ul class="dropdown menu" data-dropdown-menu>
+                        <!--<li class=" nav-item">
+                            <a href="https://www.gov.ph">GOVPH</a>
+                        </li>-->
+
+		                <?php
+		                wp_nav_menu(
+			                array(
+				                'theme_location' => 'topbar_left',
+				                'items_wrap'     => '%3$s',
+				                'container'      => false,
+				                'fallback_cb'    => false,
+				                'walker'         => new Topbar_Nav_Menu()
+			                )
+		                );
+		                ?>
+                    </ul>
+                    <ul class="dropdown menu flex flex-row justify-between" data-dropdown-menu>
+		                <?php wp_nav_menu( array(
+			                'theme_location' => 'topbar_right',
+			                'items_wrap'     => '%3$s',
+			                'container'      => false,
+			                'fallback_cb'    => false,
+			                'walker'         => new Topbar_Nav_Menu()
+		                ) ); ?>
+                    </ul>
+                </div>
             </div>
         </div>
         <div id="auxiliary" class="show-for-large">
