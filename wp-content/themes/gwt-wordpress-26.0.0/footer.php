@@ -43,7 +43,7 @@
                     </div>
                 </div>
             <?php endif; ?>
-            <div class="bg-[#559f46] w-full">
+            <div class="bg-[#006837] w-full">
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 select-none sm:mb-5 mb-2">
                         <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Agencies under DA-Biotechnology Program</p>

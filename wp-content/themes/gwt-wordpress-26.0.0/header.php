@@ -404,7 +404,7 @@ Press esc, or click the close the button to close this dialog box.
                     </nav>
                 </div>
             </div>
-            <div class="row sm:py-0.5 py-0">
+            <div class="row sm:pt-0.5 pt-0">
                 <div class="flex flex-row justify-between">
                     <ul class="dropdown menu" data-dropdown-menu>
                         <!--<li class=" nav-item">

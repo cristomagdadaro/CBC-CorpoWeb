@@ -358,7 +358,7 @@ a {
 }
 a:focus,
 a:hover {
-  color: #006837;
+  color: #2E5021;
 }
 a img {
   border: 0;
@@ -3012,7 +3012,7 @@ table.hover tr:nth-of-type(even):hover {
 .orbit-previous:active,
 .orbit-previous:focus,
 .orbit-previous:hover {
-  color: #006837;
+  color: #2E5021;
 }
 .orbit-previous {
   left: 0;
@@ -3039,7 +3039,7 @@ table.hover tr:nth-of-type(even):hover {
 }
 .orbit-bullets button.is-active,
 .orbit-bullets button:hover {
-  background-color: #006837;
+  background-color: #2E5021;
 }
 .thumbnail {
   border: 4px solid #fefefe;
