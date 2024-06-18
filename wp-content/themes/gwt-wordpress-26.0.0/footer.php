@@ -115,7 +115,6 @@
 
     // Set the year in the respective span elements
     document.getElementById('current-year').textContent = currentYear;
-    document.getElementById('current-year-small').textContent = currentYear;
 </script>
 <script>
     var acc = document.getElementsByClassName("accordion");

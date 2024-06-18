@@ -497,10 +497,10 @@ jQuery(document).ready(function($) {
 
   public function govph_custom_pst()
   {
-    $govph_custom_pst = !empty($this->options['govph_custom_pst']) ? $this->options['govph_custom_pst'] : '#000000';
+    $govph_custom_pst = !empty($this->options['govph_custom_pst']) ? $this->options['govph_custom_pst'] : '#ffffff';
   ?>
 <input name="govph_options[govph_custom_pst]" type="text" value="<?php echo $this->options['govph_custom_pst']; ?>"
-    class="my-color-field" id="color-field-pst" data-default-color="#000000" />
+    class="my-color-field" id="color-field-pst" data-default-color="#ffffff" />
 <br><span class="description">Philippine Standard Time (PST) font customization</span>
 <?php
   }
@@ -894,15 +894,15 @@ if (!function_exists('govph_displayoptions')) {
 			case 'govph_logo':
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
-					'<div id="textlogo-wrapper" class="flex flex-row gap-2">
-                        <div id="textlogo-image" class="flex items-center"> <!-- Added flex container class -->
-                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full" /> <!-- Added h-full class -->
+					'<div id="textlogo-wrapper" class="w-full items-center">
+                        <div id="textlogo-image" class="flex items-center justify-center"> <!-- Added flex container class -->
+                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full sm:w-full w-[80%] mx-auto" /> <!-- Added h-full class -->
                         </div>
-                        <div id="textlogo-inner-wrapper" class="flex flex-col justify-center"> <!-- Added flex container class and padding -->
+                        <div id="textlogo-inner-wrapper" class="flex flex-col justify-center sm:mt-2 mt-0 mx-auto"> <!-- Added flex container class and padding -->
                             <!--<div id="agency-heading">Republic of the Philippines</div>-->
-                            <div id="agency-heading">Department of Agriculture</div>
-                            <div id="agency-name" class="whitespace-nowrap uppercase">' . $option['govph_agency_name'] . '</div>
-                            <div id="agency-tagline" class="tracking-[0.3rem]">' . $option['govph_agency_tagline'] . '</div>
+                            <div id="agency-heading" class="whitespace-nowrap sm:text-sm text-[0.5rem] text-white">Department of Agriculture</div>
+                            <div id="agency-name" class="whitespace-nowrap uppercase sm:text-[1.7rem] text-[0.8rem] sm:pt-0 pt-0.5 sm:mt-0 mt-0.5F text-white">' . $option['govph_agency_name'] . '</div>
+                            <div id="agency-tagline" class="whitespace-nowrap sm:tracking-[0.3rem] tracking-[0.1rem] sm:text-[0.7rem] text-[0.5rem] text-white">' . $option['govph_agency_tagline'] . '</div>
                         </div>
                     </div>';
 

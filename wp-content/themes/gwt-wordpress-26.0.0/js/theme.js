@@ -320,15 +320,27 @@ function eraseCookie(name) {
 
     $("#openNav").click(function (event) {
       event.preventDefault();
-      document.getElementById("mySidenav").style.width = "250px";
-      document.getElementById("main").style.marginLeft = "250px";
+      document.getElementById("mySidenav").style.width = "60%";
+      document.getElementById("mySidenav").style.minWidth = "50%";
+      //document.getElementById("main").style.marginLeft = "60%";
+      const closeBtnOverlay = document.getElementById("closeBtnOverlay");
+      if (closeBtnOverlay) {
+        closeBtnOverlay.classList.remove('hidden');
+      }
     });
 
-    $("#closeNav").click(function (event) {
+    $("#closeNav, #closeBtnOverlay").click(function (event) {
       event.preventDefault();
+      document.getElementById("mySidenav").style.minWidth = "0";
       document.getElementById("mySidenav").style.width = "0";
-      document.getElementById("main").style.marginLeft = "0";
+      //document.getElementById("main").style.marginLeft = "0";
+      const closeBtnOverlay = document.getElementById("closeBtnOverlay");
+      if (closeBtnOverlay) {
+        closeBtnOverlay.classList.add('hidden');
+      }
     });
+
+
     // End for Testing
   });
 })(jQuery, Foundation);

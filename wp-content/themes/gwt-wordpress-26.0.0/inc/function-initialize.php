@@ -127,7 +127,7 @@ function gwt_wp_setup() {
 
 			// Check if $args is an array or an object
 			$item_output = is_array($args) ? $args['before'] : $args->before;
-			$item_output .= '<a'. $attributes .'>';
+			$item_output .= '<a style="color: white;"'. $attributes .'>';
 			$item_output .= (is_array($args) ? $args['link_before'] : $args->link_before) . apply_filters( 'the_title', $item->title, $item->ID ) . (is_array($args) ? $args['link_after'] : $args->link_after);
 			$item_output .= '</a>';
 			$item_output .= is_array($args) ? $args['after'] : $args->after;

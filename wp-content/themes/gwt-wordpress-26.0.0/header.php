@@ -289,21 +289,14 @@ Press esc, or click the close the button to close this dialog box.
 <div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <!-- off-canvas right menu -->
-        <nav id="mySidenav" class="sidenav hide-for-large">
+        <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]">
             <a href="javascript:void(0)" class="closebtn" id="closeNav">&times;</a>
             <div style="padding:10px;" class="list-item"><?php get_search_form(); ?></div>
-            <ul style="list-style: none;">
+            <ul style="list-style: none; padding:10px;">
 				<?php wp_nav_menu( array(
 					'theme_location' => 'topbar_left',
 					'items_wrap'     => '%3$s',
 					'container'      => false,
-					'walker'         => new Off_Canvass_Menu()
-				) ); ?>
-				<?php wp_nav_menu( array(
-					'theme_location' => 'topbar_right',
-					'items_wrap'     => '%3$s',
-					'container'      => false,
-					'fallback_cb'    => false,
 					'walker'         => new Off_Canvass_Menu()
 				) ); ?>
 				<?php if(has_nav_menu('aux_nav')): ?>
@@ -317,9 +310,21 @@ Press esc, or click the close the button to close this dialog box.
 				) ); ?>
 				<?php endif; ?>
             </ul>
+            <ul class="flex items-center justify-evenly border-t p-2">
+                <li class="opacity-75 font-semibold text-gray-300">Contact Us</li>
+	            <?php wp_nav_menu( array(
+		            'theme_location' => 'topbar_right',
+		            'items_wrap'     => '%3$s',
+		            'container'      => false,
+		            'fallback_cb'    => false,
+		            'walker'         => new Off_Canvass_Menu()
+	            ) ); ?>
+            </ul>
         </nav>
 
-	    <?php
+        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80]" id="closeBtnOverlay"></div>
+
+        <?php
 	    $name_slogan_class   = 'large-12 ';
 	    $ear_content_class   = '';
 	    $ear_content_2_class = '';
@@ -337,93 +342,95 @@ Press esc, or click the close the button to close this dialog box.
 	    ?>
         <!-- off-canvas title bar for 'small' screen -->
         <div id="off-canvas-container" class="title-bar columns sm:hidden block p-0">
-            <div class="title-bar-right">
-                <span class="sr-only">Menu</span>
-                <button style="font-size:30px;cursor:pointer" id="openNav" class="menu-icon" type="button">&#9776;
-                </button>
+            <div class="flex justify-between w-full drop-shadow">
+                <div class="title-bar-left flex flex-row items-center w-full">
+                    <!-- masthead -->
+                    <header class="container-masthead border-none text-black w-full">
+                        <div class="row p-0 mx-auto border-none w-full">
+                            <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
+                                <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                   draggable="false"
+                                   title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                                   rel="home" class="w-full flex"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                            </h1>
+                        </div>
+                    </header>
+                    <!-- masthead -->
+                </div>
+                <div class="title-bar-right flex items-center justify-end h-full my-auto pr-4">
+                    <span class="sr-only hidden">Menu</span>
+                    <button style="cursor:pointer" id="openNav" class="menu-icon" type="button"></button>
+                </div>
             </div>
-            <div class="title-bar-left">
-                <!-- masthead -->
-                <header class="container-masthead border-none text-black">
-                    <div class="row sm:py-0 py-2 mx-auto border-none">
-                        <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
-                            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                               draggable="false"
-                               title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                               rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
-                        </h1>
-                    </div>
-                </header>
-                <!-- masthead -->
-            </div>
-
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="row">
-                <div class="flex flex-row sm:pt-2 pt-0">
+            <div class="bg-[#2E5021] drop-shadow">
+                <div class="row sm:py-2 py-0">
                     <nav class="top-bar-left sm:block hidden">
                         <!-- masthead -->
                         <header class="container-masthead">
                             <div class="row sm:py-0 py-2 mx-auto">
-                                <h1 class="<?php echo $name_slogan_class ?> columns select-none" draggable="false">
+                                <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
                                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
                                        draggable="false"
                                        title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
                                        rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
                                 </h1>
 
-			                    <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
+				                <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
                                     <div class="<?php echo $ear_content_class ?> columns">
-					                    <?php do_action( 'before_sidebar' ); ?>
-					                    <?php dynamic_sidebar( 'ear-content-1' ) ?>
+						                <?php do_action( 'before_sidebar' ); ?>
+						                <?php dynamic_sidebar( 'ear-content-1' ) ?>
                                     </div>
-			                    <?php endif; ?>
+				                <?php endif; ?>
                             </div>
                         </header>
                         <!-- masthead -->
                     </nav>
-                    <nav class="top-bar-right sm:block hidden">
+                    <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1">
                         <!-- Philippine Standard Time -->
-	                    <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                        <div class="<?php echo $ear_content_2_class ?> m-0">
-                            <?php do_action( 'before_sidebar' ); ?>
-                            <?php dynamic_sidebar( 'ear-content-2' ) ?>
-                        </div>
-		                   <ul class="border-none">
-			                   <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
-                                   <li><?php get_search_form(); ?></li>
-			                   <?php endif ?>
-                           </ul>
-	                    <?php endif; ?>
+		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
+                            <div class="<?php echo $ear_content_2_class ?> m-0">
+				                <?php do_action( 'before_sidebar' ); ?>
+				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
+                            </div>
+                            <ul class="border-none">
+				                <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
+                                    <li><?php get_search_form(); ?></li>
+				                <?php endif ?>
+                            </ul>
+		                <?php endif; ?>
                     </nav>
                 </div>
+            </div>
+            <div class="row sm:py-0.5 py-0">
                 <div class="flex flex-row justify-between">
                     <ul class="dropdown menu" data-dropdown-menu>
                         <!--<li class=" nav-item">
                             <a href="https://www.gov.ph">GOVPH</a>
                         </li>-->
 
-		                <?php
-		                wp_nav_menu(
-			                array(
-				                'theme_location' => 'topbar_left',
-				                'items_wrap'     => '%3$s',
-				                'container'      => false,
-				                'fallback_cb'    => false,
-				                'walker'         => new Topbar_Nav_Menu()
-			                )
-		                );
-		                ?>
+                        <?php
+                        wp_nav_menu(
+                            array(
+                                'theme_location' => 'topbar_left',
+                                'items_wrap'     => '%3$s',
+                                'container'      => false,
+                                'fallback_cb'    => false,
+                                'walker'         => new Topbar_Nav_Menu()
+                            )
+                        );
+                        ?>
                     </ul>
                     <ul class="dropdown menu flex flex-row justify-between" data-dropdown-menu>
-		                <?php wp_nav_menu( array(
-			                'theme_location' => 'topbar_right',
-			                'items_wrap'     => '%3$s',
-			                'container'      => false,
-			                'fallback_cb'    => false,
-			                'walker'         => new Topbar_Nav_Menu()
-		                ) ); ?>
+                        <?php wp_nav_menu( array(
+                            'theme_location' => 'topbar_right',
+                            'items_wrap'     => '%3$s',
+                            'container'      => false,
+                            'fallback_cb'    => false,
+                            'walker'         => new Topbar_Nav_Menu()
+                        ) ); ?>
                     </ul>
                 </div>
             </div>
@@ -450,4 +457,4 @@ Press esc, or click the close the button to close this dialog box.
             </div>
         </div>
         <!-- original content goes in this container -->
-        <div class="off-canvas-content" data-off-canvas-content>
+        <div class="off-canvas-content min-w-full" data-off-canvas-content>

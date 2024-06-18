@@ -60,7 +60,6 @@ Custom Header Styles
 }
 
 #textlogo-wrapper {
-    width: fit-content;
     display: flex;
     flex-direction: row;
     gap: 0.2rem;
@@ -614,7 +613,6 @@ this is for mobile menus */
   object-fit: contain;
 }
 #textlogo-inner-wrapper {
-  display: inline-block;
   /* Change size for Agency name | default is 35-40px to be set to 27px or 18pt*/
   font-size: 27px;
   /* End of Agency name  */
@@ -624,7 +622,7 @@ this is for mobile menus */
 #agency-heading {
   display: block;
   position: relative;
-  font-size: 0.7rem;
+  /*font-size: 0.7rem;*/
   text-transform: uppercase;
 }
 #agency-name {
@@ -636,7 +634,7 @@ this is for mobile menus */
 #agency-tagline {
   display: block;
   position: relative;
-  font-size: 0.8rem;
+  /*font-size: 0.8rem;*/
 }
 
 /*banner*/
@@ -796,9 +794,9 @@ this is for mobile menus */
  * <= 360px
  */
 @media only screen and (max-width: 20em) {
-  #agency-name {
+/*  #agency-name {
     font-size: 11.5vw !important;
-  }
+  }*/
   .thumbnail {
     width: 300%;
   }
@@ -810,7 +808,7 @@ this is for mobile menus */
 @media only screen and (max-width: 30.063em) {
   #agency-name {
     /* Todo for improvement */
-    font-size: 6vw;
+    /*font-size: 6vw;*/
     /* Todo for improvement -- end*/
   }
 }
@@ -831,7 +829,7 @@ this is for mobile menus */
     text-align: center;
   }
   #textlogo-inner-wrapper {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
   }
 }
 
@@ -842,7 +840,7 @@ this is for mobile menus */
  */
 @media only screen and (min-width: 43.6875em) {
   #agency-name {
-    font-size: 3vw;
+    /*font-size: 3vw;*/
   }
   #textlogo-inner-wrapper {
     margin: 0;
@@ -913,7 +911,7 @@ this is for mobile menus */
  */
 @media only screen and (min-width: 64.0625em) and (max-width: 90em) {
   #agency-name {
-    font-size: inherit;
+    /*font-size: inherit;*/
   }
 }
 
@@ -924,7 +922,7 @@ this is for mobile menus */
  */
 @media only screen and (min-width: 90.063em) {
   #agency-name {
-    font-size: inherit;
+    /*font-size: inherit;*/
   }
 }
 
