@@ -43,22 +43,22 @@
                     </div>
                 </div>
             <?php endif; ?>
-            <div class="bg-[#1a4d2e] w-full">
+            <div class="bg-[#006837] w-full">
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 select-none sm:mb-5 mb-2">
-                        <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotech Centers under DA-Biotechnology Program Office</p>
+                        <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Agencies under DA-Biotechnology Program</p>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-w-DA-white-bg.png"
-                                     alt="logo" class="w-48 h-auto drop-shadow">
+                                     alt="logo" class="w-48 h-auto">
                             </a>
                             <a draggable="false" href="https://livestockbiotech.ph/" target="_blank" class="hover:scale-105 duration-200">
                                 <img src="/wp-content/uploads/2024/06/LBC-Logo.png"
-                                     alt="logo" class="w-48 h-auto drop-shadow">
+                                     alt="logo" class="w-48 h-auto">
                             </a>
                             <a draggable="false" href="https://fbc.nfrdi.da.gov.ph/" target="_blank" class="hover:scale-105 duration-200">
                                 <img src="/wp-content/uploads/2024/06/FBC-Logo.png"
-                                     alt="logo" class="w-48 h-auto drop-shadow">
+                                     alt="logo" class="w-48 h-auto">
                             </a>
                         </div>
                     </div>

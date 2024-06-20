@@ -900,9 +900,9 @@ if (!function_exists('govph_displayoptions')) {
                         </div>
                         <div id="textlogo-inner-wrapper" class="flex flex-col justify-center sm:mt-2 mt-0 mx-auto"> <!-- Added flex container class and padding -->
                             <!--<div id="agency-heading">Republic of the Philippines</div>-->
-                            <div id="agency-heading" class="whitespace-nowrap sm:text-sm text-[0.5rem] text-white roboto-font">Department of Agriculture</div>
-                            <div id="agency-name" class="whitespace-nowrap uppercase sm:text-[1.7rem] text-[0.8rem] sm:pt-0 pt-0.5 sm:mt-0 mt-0.5F text-white montserrat-font font-normal">' . $option['govph_agency_name'] . '</div>
-                            <div id="agency-tagline" class="whitespace-nowrap sm:tracking-[0.3rem] tracking-[0.1rem] sm:text-[0.7rem] text-[0.5rem] text-white montserrat-font">' . $option['govph_agency_tagline'] . '</div>
+                            <div id="agency-heading" class="whitespace-nowrap sm:text-sm text-[0.5rem] text-white">Department of Agriculture</div>
+                            <div id="agency-name" class="whitespace-nowrap uppercase sm:text-[1.7rem] text-[0.8rem] sm:pt-0 pt-0.5 sm:mt-0 mt-0.5F text-white">' . $option['govph_agency_name'] . '</div>
+                            <div id="agency-tagline" class="whitespace-nowrap sm:tracking-[0.3rem] tracking-[0.1rem] sm:text-[0.7rem] text-[0.5rem] text-white">' . $option['govph_agency_tagline'] . '</div>
                         </div>
                     </div>';
 

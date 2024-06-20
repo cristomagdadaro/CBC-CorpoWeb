@@ -27,8 +27,8 @@
         <!-- This is the second option approved for images in blogs | 
         To replace image into full width when small screens |
         Original Code is in the top for reference -->
-        <div class="flex-container">
-            <div class="flex items-center justify-center">
+        <div class="flex-container ">
+            <div>
                 <?php 
 			$content_class = 'large-12';
 			if (has_post_thumbnail() && is_active_sidebar('left-sidebar') && is_active_sidebar('right-sidebar')){

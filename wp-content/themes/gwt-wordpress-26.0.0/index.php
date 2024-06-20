@@ -44,23 +44,6 @@ include_once('inc/banner.php');
 							get_template_part( 'no-results', 'index' );
 						endif; ?>
             <a href="/articles" class="text-center bg-gray-200 p-2 my-2">Read more Articles</a>
-           <!-- <div class="overflow-hidden w-full">
-                <h1 class="sm:py-2 py-1 font-bold">Collaborators</h1>
-                <ul class="slider flex flex-row gap-5 whitespace-nowrap bg-transparent h-fit m-0 p-2">
-                    <li>
-                        <img class="w-28 h-auto" src="/wp-content/uploads/2024/06/FBC-Logo.png" />
-                    </li>
-                    <li>
-                        <img class="w-28 h-auto" src="/wp-content/uploads/2024/06/LBC-Logo.png" />
-                    </li>
-                    <li>
-                        <img class="w-28 h-auto" src="/wp-content/uploads/2024/06/PhilRiceDA-logo_standard-colored.png" />
-                    </li>
-                    <li>
-                        <img class="w-28 h-auto" src="/wp-content/uploads/2024/06/PRRI-1.png" />
-                    </li>
-                </ul>
-            </div>-->
         </div>
         <!-- end content -->
 
