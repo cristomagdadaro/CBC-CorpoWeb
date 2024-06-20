@@ -55,10 +55,50 @@
 /**
 Custom Header Styles
 */
+
+.roboto-font {
+  font-family: "Roboto" ,sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+
+.montserrat-font {
+   font-family: "Montserrat", "Roboto" ,sans-serif;
+   font-optical-sizing: auto;
+   font-weight: 300;
+   font-style: normal;
+ }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(50%);
+  }
+  50% {
+    transform: translateX(-100%);
+  }
+  50.1% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.slider {
+  display: flex;
+  animation: scroll 25s linear infinite;
+}
+
+.slider::after {
+  content: "";
+  display: block;
+}
+
 .orbit-button-controls {
   display: none;
 }
-
 #textlogo-wrapper {
     display: flex;
     flex-direction: row;
@@ -273,7 +313,7 @@ h6 {
 
 /*off-canvass*/
 #off-canvas-container {
-  z-index: 4;
+  z-index: 999;
   box-shadow: -3px 0px 4px rgba(0, 0, 0, 0.2);
 }
 .title-bar {

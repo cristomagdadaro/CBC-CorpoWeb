@@ -24,6 +24,9 @@
         <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 	<?php endif; ?>
     <link rel="icon" href="<?php echo get_template_directory_uri() ?>/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 	<?php wp_head(); ?>
 
     <style <?php the_tags(); ?>>
@@ -341,7 +344,7 @@ Press esc, or click the close the button to close this dialog box.
 	    }
 	    ?>
         <!-- off-canvas title bar for 'small' screen -->
-        <div id="off-canvas-container" class="title-bar columns sm:hidden block p-0">
+        <div id="off-canvas-container" class="title-bar columns sm:hidden block p-0 bg-[#2E5021]">
             <div class="flex justify-between w-full drop-shadow">
                 <div class="title-bar-left flex flex-row items-center w-full">
                     <!-- masthead -->
@@ -364,7 +367,7 @@ Press esc, or click the close the button to close this dialog box.
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
-        <div id="main-nav">
+        <div id="main-nav" class="hidden sm:block">
             <div class="bg-[#2E5021] drop-shadow">
                 <div class="row sm:py-2 py-0">
                     <nav class="top-bar-left sm:block hidden">
