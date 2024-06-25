@@ -49,15 +49,15 @@
                         <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Agencies under DA-Biotechnology Program</p>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
-                                <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-w-DA-white-bg.png"
+                                <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"
                                      alt="logo" class="w-48 h-auto">
                             </a>
                             <a draggable="false" href="https://livestockbiotech.ph/" target="_blank" class="hover:scale-105 duration-200">
-                                <img src="/wp-content/uploads/2024/06/LBC-Logo.png"
+                                <img src="/wp-content/uploads/2024/06/LBC-white-Logo.png"
                                      alt="logo" class="w-48 h-auto">
                             </a>
                             <a draggable="false" href="https://fbc.nfrdi.da.gov.ph/" target="_blank" class="hover:scale-105 duration-200">
-                                <img src="/wp-content/uploads/2024/06/FBC-Logo.png"
+                                <img src="/wp-content/uploads/2024/06/FBC-white-Logo.png"
                                      alt="logo" class="w-48 h-auto">
                             </a>
                         </div>
@@ -115,6 +115,36 @@
 
     // Set the year in the respective span elements
     document.getElementById('current-year').textContent = currentYear;
+</script>
+// Script for when a priority crop is clicked, the additional information shows up
+<script>
+    const priorityCropsImg = document.getElementsByClassName('priority-crop-img');
+
+    for (let i = 0; i < priorityCropsImg.length; i++) {
+        const priorityCropImg = priorityCropsImg[i];
+        const priorityCropInfo = document.getElementsByClassName('priority-crop-info')[i];
+
+        priorityCropImg.addEventListener('mouseenter', function() {
+            priorityCropInfo.classList.add('block');
+            priorityCropInfo.classList.remove('hidden');
+        });
+
+        priorityCropImg.addEventListener('mouseleave', function() {
+            priorityCropInfo.classList.add('hidden');
+            priorityCropInfo.classList.remove('block');
+        });
+
+        priorityCropImg.addEventListener('focus', function() {
+            priorityCropInfo.classList.add('block');
+            priorityCropInfo.classList.remove('hidden');
+        });
+
+        // For mobile devices
+        priorityCropImg.addEventListener('click', function() {
+            priorityCropInfo.classList.add('block');
+            priorityCropInfo.classList.remove('hidden');
+        });
+    }
 </script>
 <script>
     var acc = document.getElementsByClassName("accordion");
