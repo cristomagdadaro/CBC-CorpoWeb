@@ -44,9 +44,9 @@
                 </div>
             <?php endif; ?>
 
-            <div class="bg-[#006837] w-full">
+            <div class="bg-[#006837] w-full sm:py-0 py-2">
                 <div class="row lg:p-4 p-1">
-                    <div class="flex flex-col gap-1 select-none sm:mb-5 mb-2">
+                    <div class="flex flex-col gap-1 sm:mb-5 mb-2">
                         <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Agencies under DA-Biotechnology Program</p>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
@@ -63,29 +63,29 @@
                             </a>
                         </div>
                     </div>
-                    <div class="grid sm:grid-cols-3 grid-cols-1 text-white select-none">
+                    <div class="grid sm:grid-cols-3 grid-cols-1 text-white">
                         <div>
                             <h1 class="text-center border-b m-5 p-1">Quick Links</h1>
                             <ul class="show-bullet">
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/articles">Articles</a></li>
-                                <li><a href="/contact-us">Contact Us</a></li>
                                 <li><a href="/faqs">FAQs</a></li>
                                 <li><a href="/sitemap">Sitemap</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h1 class="text-center border-b m-5 p-1">Contact Us</h1>
+                            <h1 class="text-center border-b m-5 p-1">Headquarters</h1>
                             <ul class="show-bullet">
-                                <li>Telephone: <a href="tel:+639088897135">(+63) 908 889 7135</a></li>
-                                <li>Email:
-                                    <a href="mailto:cropbiotechcenter@gmail.com">cropbiotechcenter@gmail.com</a>
-                                </li>
+                                <li>PhilRice Compound, Science City of Muñoz, Nueva Ecija 3119, Philippines</li>
                             </ul>
                         </div>
                         <div>
-                            <h1 class="text-center border-b m-5 p-1">Follow Us</h1>
+                            <h1 class="text-center border-b m-5 p-1">Contact Us</h1>
                             <ul class="show-bullet">
+                            <li>Telephone: <a href="tel:+639088897135">(+63) 908 889 7135</a></li>
+                                <li>Email:
+                                    <a href="mailto:cropbiotechcenter@gmail.com">cropbiotechcenter@gmail.com</a>
+                                </li>
                                 <li>Facebook: <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center </a></li>
                                 <li>Instagram: <a href="https://www.instagram.com/da_cbcph/" target="_blank">@da_cbcph</a></li>
                             </ul>

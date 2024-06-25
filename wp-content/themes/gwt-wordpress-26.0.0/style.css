@@ -15,6 +15,19 @@
  */
 
 /** Your style here **/
+.text-shadow-white {
+  text-shadow: 2px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+#post-container {
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+#post-container::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, and Opera */
+}
+
 .show-bullet {
 	list-style-type: disc; 
 	margin: 0; 
