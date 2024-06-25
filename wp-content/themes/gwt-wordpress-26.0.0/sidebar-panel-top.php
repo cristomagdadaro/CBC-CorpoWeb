@@ -5,7 +5,6 @@
  * @package gwt_wp
  */
 ?>
-
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
 <div id="panel-top" class="anchor" role="complementary">
     <div class="row">

@@ -365,7 +365,7 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-[#2E5021] drop-shadow">
+            <div class="bg-[#006837] drop-shadow">
                 <div class="row sm:py-2 py-0">
                     <nav class="top-bar-left sm:block hidden">
                         <!-- masthead -->

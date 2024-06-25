@@ -43,6 +43,7 @@
                     </div>
                 </div>
             <?php endif; ?>
+
             <div class="bg-[#006837] w-full">
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 select-none sm:mb-5 mb-2">
@@ -116,8 +117,9 @@
     // Set the year in the respective span elements
     document.getElementById('current-year').textContent = currentYear;
 </script>
-// Script for when a priority crop is clicked, the additional information shows up
+
 <script>
+    // Script for when a priority crop is clicked, the additional information shows up
     const priorityCropsImg = document.getElementsByClassName('priority-crop-img');
 
     for (let i = 0; i < priorityCropsImg.length; i++) {
