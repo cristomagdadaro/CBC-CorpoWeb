@@ -285,12 +285,40 @@ Press esc, or click the close the button to close this dialog box.
     </button>
 </div>
 
+<?php
+	    $name_slogan_class   = 'large-12 ';
+	    $ear_content_class   = '';
+	    $ear_content_2_class = '';
+	    if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class   = 'large-6 ';
+		    $ear_content_class   = 'large-3 ';
+		    //$ear_content_2_class = 'large-3 ';
+	    } elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class = 'large-9 ';
+		    //$ear_content_class = 'large-3 ';
+	    } elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
+		    $name_slogan_class   = 'large-9 ';
+		    //$ear_content_2_class = 'large-3 ';
+	    }
+	    ?>
 
 <div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <!-- off-canvas right menu -->
         <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]">
-            <a href="javascript:void(0)" class="closebtn" id="closeNav">&times;</a>
+            <div class="flex flex-row justify-between items-center px-1 w-full absolute top-0">
+            <?php
+                if (function_exists('the_custom_logo')) {
+                    echo "<div class='max-w-12'>";
+                    the_custom_logo();
+                    echo "</div>";
+                } else {
+                    // Fallback to site title if no logo is set
+                    echo '<h1>' . get_bloginfo('name') . '</h1>';
+                }
+                ?>
+                <a href="javascript:void(0)" class="closebtn" id="closeNav">&times;</a>
+            </div>
             <div style="padding:10px;" class="list-item"><?php get_search_form(); ?></div>
             <ul style="list-style: none; padding:10px;">
 				<?php wp_nav_menu( array(
@@ -324,24 +352,10 @@ Press esc, or click the close the button to close this dialog box.
 
         <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80]" id="closeBtnOverlay"></div>
 
-        <?php
-	    $name_slogan_class   = 'large-12 ';
-	    $ear_content_class   = '';
-	    $ear_content_2_class = '';
-	    if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class   = 'large-6 ';
-		    $ear_content_class   = 'large-3 ';
-		    //$ear_content_2_class = 'large-3 ';
-	    } elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class = 'large-9 ';
-		    //$ear_content_class = 'large-3 ';
-	    } elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class   = 'large-9 ';
-		    //$ear_content_2_class = 'large-3 ';
-	    }
-	    ?>
+    
         <!-- off-canvas title bar for 'small' screen -->
-        <div id="off-canvas-container" class="title-bar columns sm:hidden block p-0">
+        <div class="py-8 md:hidden lg:hidden"></div>
+        <div id="off-canvas-container" class="title-bar fixed top-0 columns sm:hidden block py-1 bg-[#006837]">
             <div class="flex justify-between w-full drop-shadow">
                 <div class="title-bar-left flex flex-row items-center w-full">
                     <!-- masthead -->
@@ -357,15 +371,15 @@ Press esc, or click the close the button to close this dialog box.
                     </header>
                     <!-- masthead -->
                 </div>
-                <div class="title-bar-right flex items-center justify-end h-full my-auto pr-4">
+                <div class="title-bar-right flex items-center justify-end h-full my-auto">
                     <span class="sr-only hidden">Menu</span>
-                    <button style="cursor:pointer" id="openNav" class="menu-icon" type="button"></button>
+                    <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button"></button>
                 </div>
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-[#006837] drop-shadow">
+            <div class="bg-[#006837] drop-shadow lg:flex md:flex hidden">
                 <div class="row sm:py-2 py-0">
                     <nav class="top-bar-left sm:block hidden">
                         <!-- masthead -->
@@ -404,7 +418,7 @@ Press esc, or click the close the button to close this dialog box.
                     </nav>
                 </div>
             </div>
-            <div class="row sm:pt-0.5 pt-0">
+            <div class="row sm:pt-0.5 pt-0 hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
                     <ul class="dropdown menu" data-dropdown-menu>
                         <!--<li class=" nav-item">

@@ -74,7 +74,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h1 class="text-center border-b m-5 p-1">Headquarters</h1>
+                            <h1 class="text-center border-b m-5 p-1">Headquarter</h1>
                             <ul class="show-bullet">
                                 <li>PhilRice Compound, Science City of Muñoz, Nueva Ecija 3119, Philippines</li>
                             </ul>

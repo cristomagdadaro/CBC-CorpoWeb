@@ -12,7 +12,7 @@
                 <a href="<?php the_permalink(); ?>">
                     <?php 
                     $content_class = 'large-12';
-                    $custom_image_class = "rounded w-full h-full object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 lg:w-96 lg:max-w-96 lg:min-w-96 w-64 max-w-64 min-w-64 h-44 max-h-44 min-h-44 lg:max-h-64 lg:min-h-64";
+                    $custom_image_class = "rounded w-full h-full object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 w-96 max-w-96 min-w-96 h-64 max-h-64 min-h-64";
                     if (has_post_thumbnail() && is_active_sidebar('left-sidebar') && is_active_sidebar('right-sidebar')){
                         the_post_thumbnail( 'large'  , array( 'class' => $custom_image_class) );
                     }elseif(has_post_thumbnail() && !is_active_sidebar('left-sidebar') && is_active_sidebar('right-sidebar')){
