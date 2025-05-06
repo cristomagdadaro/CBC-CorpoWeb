@@ -894,7 +894,7 @@ if (!function_exists('govph_displayoptions')) {
 			case 'govph_logo':
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
-					'<div id="textlogo-wrapper" class="w-full items-center">
+					'<div id="textlogo-wrapper" class="w-full items-center gap-2">
                         <div id="textlogo-image" class="flex items-center justify-center"> <!-- Added flex container class -->
                             <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full sm:w-full w-[80%] mx-auto" /> <!-- Added h-full class -->
                         </div>
@@ -909,16 +909,16 @@ if (!function_exists('govph_displayoptions')) {
 				echo $addLogo;
 				break;
 			case 'govph_header_setting':
-				//$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . $option['govph_headercolor'] . ';' : '' );
-				//$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . $option['govph_headerimage'] . '");' : '' );
+				$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . $option['govph_headercolor'] . ';' : '' );
+				$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . $option['govph_headerimage'] . '");' : '' );
                 //set background color to transparent
-				$headerSetting = 'background-color:transparent;';
+				//$headerSetting = 'background-color:transparent;';
 				echo $headerSetting;
 				break;
 			case 'govph_background_header_size_setting':
 				if ( $option['govph_background_header_size'] == 'true' ) {
-					$backgroundHeaderImageSizeSetting .= 'backgroundsize: cover;';
-					$backgroundHeaderImageSizeSetting .= 'background-position: center;';
+					$backgroundHeaderImageSizeSetting = '';
+					$backgroundHeaderImageSizeSetting .= 'background-position: center; ';
 				}
 				echo $backgroundHeaderImageSizeSetting;
 				break;

@@ -16,7 +16,7 @@ function gwt_wp_widgets_init() {
 	register_sidebar( array(
 		'name'			=> __( 'Left Sidebar', 'gwt_wp' ),
 		'id'			=> 'left-sidebar',
-		'before_widget'	=> '<aside id="%1$s" class="widget callout secondary %2$s">',
+		'before_widget'	=> '<aside id="%1$s" class="widget callout border-none secondary %2$s">',
 		'after_widget'	=> '</aside>',
 		'before_title'	=> '<h3 class="widget-title">',
 		'after_title'	=> '</h3>',
@@ -24,7 +24,7 @@ function gwt_wp_widgets_init() {
 	register_sidebar( array(
 		'name'			=> __( 'Right Sidebar', 'gwt_wp' ),
 		'id'			=> 'right-sidebar',
-		'before_widget'	=> '<aside id="%1$s" class="widget callout secondary %2$s">',
+		'before_widget'	=> '<aside id="%1$s" class="widget callout border-none secondary %2$s">',
 		'after_widget'	=> '</aside>',
 		'before_title'	=> '<h3 class="widget-title">',
 		'after_title'	=> '</h3>',

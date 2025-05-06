@@ -380,7 +380,7 @@ Press esc, or click the close the button to close this dialog box.
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
             <div class="bg-[#006837] drop-shadow lg:flex md:flex hidden">
-                <div class="row sm:py-2 py-0">
+                <div class="row sm:py-2 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden">
                         <!-- masthead -->
                         <header class="container-masthead">
@@ -402,7 +402,7 @@ Press esc, or click the close the button to close this dialog box.
                         </header>
                         <!-- masthead -->
                     </nav>
-                    <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1">
+                    <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1 my-auto">
                         <!-- Philippine Standard Time -->
 		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
                             <div class="<?php echo $ear_content_2_class ?> m-0">
