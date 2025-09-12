@@ -118,4 +118,25 @@ require get_template_directory() . '/inc/function-enable-classic-widgets.php';
  */
 require get_template_directory() . '/inc/function-enable-classic-posts.php';
 
+
+function enqueue_particles_js() {
+	// Load particles.js library
+	wp_enqueue_script(
+		'particles-js',
+		get_stylesheet_directory_uri() . '/js/particles.min.js',
+		array(),
+		null,
+		true
+	);
+
+	// Load your custom init script
+	wp_enqueue_script(
+		'particles-init',
+		get_stylesheet_directory_uri() . '/js/particles-init.js',
+		array('particles-js'),
+		null,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_particles_js' );
 ?>

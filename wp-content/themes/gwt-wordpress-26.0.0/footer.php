@@ -102,12 +102,9 @@
 </div><!-- #off-canvass-wrapper -->
 <footer class="bg-[#EFEFEF] text-[#505050]">
     <div class="select-none text-xs mx-auto flex sm:p-0 p-2 flex-col sm:flex-row justify-between items-center text-center sm:text-left">
-        <a href="/" class="hidden sm:block text-center w-full">
-            Department of Agriculture - Crop Biotechnology Center &copy; <span id="current-year"></span>. All rights reserved.
+        <a href="/" class="text-center w-full pb-3">
+            All content is in the public domain unless otherwise stated.
         </a>
-        <div class="sm:hidden block text-center w-full">
-            DA-CBC &copy; 2024. All rights reserved.
-        </div>
     </div>
 </footer>
 <script>
@@ -120,7 +117,7 @@
 
 <script>
     // Script for when a priority crop is clicked, the additional information shows up
-    const priorityCropsImg = document.getElementsByClassName('priority-crop-img');
+   /* const priorityCropsImg = document.getElementsByClassName('priority-crop-img');
 
     for (let i = 0; i < priorityCropsImg.length; i++) {
         const priorityCropImg = priorityCropsImg[i];
@@ -146,7 +143,7 @@
             priorityCropInfo.classList.add('block');
             priorityCropInfo.classList.remove('hidden');
         });
-    }
+    }*/
 </script>
 <script>
     var acc = document.getElementsByClassName("accordion");

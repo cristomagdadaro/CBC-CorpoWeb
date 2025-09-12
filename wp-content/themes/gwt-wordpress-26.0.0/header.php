@@ -352,7 +352,7 @@ Press esc, or click the close the button to close this dialog box.
 
         <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80]" id="closeBtnOverlay"></div>
 
-    
+
         <!-- off-canvas title bar for 'small' screen -->
         <div class="py-8 md:hidden lg:hidden"></div>
         <div id="off-canvas-container" class="title-bar fixed top-0 columns sm:hidden block py-1 bg-[#006837]">
@@ -372,16 +372,16 @@ Press esc, or click the close the button to close this dialog box.
                     <!-- masthead -->
                 </div>
                 <div class="title-bar-right flex items-center justify-end h-full my-auto">
-                    <span class="sr-only hidden">Menu</span>
+                    <span class="sr-only hidden">Menu</span>com
                     <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button"></button>
                 </div>
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-[#006837] drop-shadow lg:flex md:flex hidden">
-                <div class="row sm:py-2 py-0 w-full">
-                    <nav class="top-bar-left sm:block hidden">
+            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden">
+                <div class="row flex items-center sm:py-2 py-0 w-full">
+                    <nav class="top-bar-left sm:block hidden w-full">
                         <!-- masthead -->
                         <header class="container-masthead">
                             <div class="row sm:py-0 py-2 mx-auto">

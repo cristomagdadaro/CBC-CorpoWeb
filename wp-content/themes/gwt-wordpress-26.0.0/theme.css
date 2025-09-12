@@ -624,11 +624,13 @@ this is for mobile menus */
   position: relative;
   /*font-size: 0.7rem;*/
   text-transform: uppercase;
+    line-height: 1;
 }
 #agency-name {
   display: block;
   position: relative;
-  border-top: 2px solid;
+    font-family: "League Spartan", "Times New Roman";
+    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.9));
   line-height: 1;
 }
 #agency-tagline {
@@ -904,38 +906,4 @@ this is for mobile menus */
   .container-banner {
     padding: 1rem 0;
   }
-}
-
-/**
- * 1025px <=> 1440px
- */
-@media only screen and (min-width: 64.0625em) and (max-width: 90em) {
-  #agency-name {
-    /*font-size: inherit;*/
-  }
-}
-
-/*XLarge screens*/
-
-/**
- * >= 1441px
- */
-@media only screen and (min-width: 90.063em) {
-  #agency-name {
-    /*font-size: inherit;*/
-  }
-}
-
-/**
- * 1441px <=> 1920px
- */
-@media only screen and (min-width: 90.063em) and (max-width: 120em) {
-}
-
-/*XXLarge screens*/
-
-/**
- * >= 1921px
- */
-@media only screen and (min-width: 120.063em) {
 }
