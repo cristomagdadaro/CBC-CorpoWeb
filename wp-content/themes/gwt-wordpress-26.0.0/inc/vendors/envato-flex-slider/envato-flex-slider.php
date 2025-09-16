@@ -32,7 +32,7 @@ function efs_get_slider(){
 		endwhile;
 
 		while (have_posts()) : the_post();
-			$img = get_the_post_thumbnail($post_id, 'full', array( 'class' => 'orbit-image object-cover object-center w-full h-full sm:max-h-[600px] sm:min-h-[600px] min-h-[200px] max-h-[200px]' ));
+			$img = get_the_post_thumbnail($post_id, 'large', array( 'class' => 'orbit-image object-cover object-center w-full h-full sm:max-h-[600px] sm:min-h-[600px] min-h-[200px] max-h-[200px]' ));
 
 			$slide_link = slider_link_get_meta_box_data(get_the_ID());
 			$caption = get_the_title();
@@ -40,7 +40,8 @@ function efs_get_slider(){
 			if ($x > $count) {
 				$x = 1;
 			}
-			$slider .= $post_id . '<li class="orbit-slide is-active relative">' . $img . '
+			$active_class = ($x === 1) ? ' is-active' : '';
+			$slider .= '<li class="orbit-slide' . $active_class . ' relative">' . $img . '
 		    <a href="' . $slide_link . '">
 		    <div class="absolute inset-0 flex justify-center">
 		        <div class="hidden absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#1f5d2b] via-transparent to-transparent opacity-25"></div>
