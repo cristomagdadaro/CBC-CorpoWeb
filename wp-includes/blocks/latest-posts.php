@@ -61,253 +61,140 @@ function render_block_core_latest_posts( $attributes ) {
 	if ( isset( $attributes['displayFeaturedImage'] ) && $attributes['displayFeaturedImage'] ) {
 		update_post_thumbnail_cache( $query );
 	}
-	$list_items_markup = '<div class="grid grid-rows-3 gap-5">';
+
+	// Reusable renderer to avoid duplicating logic for each post card.
+	$render_item = function( $post, $attributes, $container_classes, $image_wrapper_template ) use ( &$block_core_latest_posts_excerpt_length ) {
+		$post_link = esc_url( get_permalink( $post ) );
+		$title     = get_the_title( $post );
+		if ( ! $title ) {
+			$title = __( '(no title)' );
+		}
+
+		$item_markup  = '<div class="' . esc_attr( $container_classes ) . '">';
+
+		if ( ! empty( $attributes['displayFeaturedImage'] ) && has_post_thumbnail( $post ) ) {
+			$image_classes = 'wp-block-latest-posts__featured-image object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
+			if ( isset( $attributes['featuredImageAlign'] ) ) {
+				$image_classes .= ' align' . $attributes['featuredImageAlign'];
+			}
+			$featured_image = get_the_post_thumbnail(
+				$post,
+				$attributes['featuredImageSizeSlug'],
+				array(
+					'class' => esc_attr( $image_classes ),
+				)
+			);
+			if ( ! empty( $attributes['addLinkToFeaturedImage'] ) ) {
+				$featured_image = sprintf(
+					'<a href="%1$s" aria-label="%2$s">%3$s</a>',
+					esc_url( $post_link ),
+					esc_attr( $title ),
+					$featured_image
+				);
+			}
+			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
+		}
+
+		$item_markup .= '<div class="flex flex-col h-full justify-center"><div class="flex flex-col leading-[1rem]">';
+		$item_markup .= sprintf(
+			'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md" href="%1$s">%2$s</a>',
+			esc_url( $post_link ),
+			$title
+		);
+
+		if ( isset( $attributes['displayAuthor'] ) && $attributes['displayAuthor'] ) {
+			$author_display_name = get_the_author_meta( 'display_name', $post->post_author );
+			/* translators: byline. %s: current author. */
+			$byline = sprintf( __( 'by %s' ), $author_display_name );
+			if ( ! empty( $author_display_name ) ) {
+				$item_markup .= sprintf(
+					'<div class="wp-block-latest-posts__post-author text-xs">%1$s</div>',
+					$byline
+				);
+			}
+		}
+
+		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
+			$item_markup .= sprintf(
+				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs">%2$s</time>',
+				esc_attr( get_the_date( 'c', $post ) ),
+				get_the_date( '', $post )
+			);
+		}
+
+		$item_markup .= '</div>';
+
+		if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
+		     && isset( $attributes['displayPostContentRadio'] ) && 'excerpt' === $attributes['displayPostContentRadio'] ) {
+			$trimmed_excerpt = get_the_excerpt( $post );
+			if ( str_ends_with( $trimmed_excerpt, ' [&hellip;]' ) ) {
+				$excerpt_length = (int) apply_filters( 'excerpt_length', $block_core_latest_posts_excerpt_length );
+				if ( $excerpt_length <= $block_core_latest_posts_excerpt_length ) {
+					$trimmed_excerpt  = substr( $trimmed_excerpt, 0, -11 );
+					$trimmed_excerpt .= sprintf(
+						__( '… <a href="%1$s" rel="noopener noreferrer">Read more<span class="screen-reader-text">: %2$s</span></a>' ),
+						esc_url( $post_link ),
+						esc_html( $title )
+					);
+				}
+			}
+			if ( post_password_required( $post ) ) {
+				$trimmed_excerpt = __( 'This content is password protected.' );
+			}
+			$item_markup .= sprintf(
+				'<div class="wp-block-latest-posts__post-excerpt entry-content block leading-[1.1rem] text-sm">%1$s</div>',
+				$trimmed_excerpt
+			);
+		}
+
+		if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
+		     && isset( $attributes['displayPostContentRadio'] ) && 'full_post' === $attributes['displayPostContentRadio'] ) {
+			$post_content = html_entity_decode( $post->post_content, ENT_QUOTES, get_option( 'blog_charset' ) );
+			if ( post_password_required( $post ) ) {
+				$post_content = __( 'This content is password protected.' );
+			}
+			$item_markup .= sprintf(
+				'<div class="wp-block-latest-posts__post-full-content">%1$s</div>',
+				wp_kses_post( $post_content )
+			);
+		}
+
+		$item_markup .= '</div></div>';
+
+		return $item_markup;
+	};
+
+	$list_items_markup = '<div class="flex flex-col justify-between gap-1 md:gap-5">';
+
+	$total = count( $recent_posts );
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
-		if ($count===3)
-			$list_items_markup .= '</div><div class="flex flex-col gap-5">';
+		if ( 3 === $count ) {
+			$list_items_markup .= '</div><div class="flex flex-col ';
 
-		if ( $count < 3 )
-		{
-			$post_link = esc_url( get_permalink( $post ) );
-			$title     = get_the_title( $post );
-
-			if ( ! $title ) {
-				$title = __( '(no title)' );
-			}
-
-			$list_items_markup .= '<div class="relative flex gap-2 w-full items-center overflow-x-auto border p-5 bg-[#FDFCFD] rounded h-fit">';
-
-			if ( $attributes['displayFeaturedImage'] && has_post_thumbnail( $post ) ) {
-				$image_classes = 'wp-block-latest-posts__featured-image object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 w-full min-h-[20rem]';
-
-				if ( isset( $attributes['featuredImageAlign'] ) ) {
-					$image_classes .= ' align' . $attributes['featuredImageAlign'];
-				}
-
-				$featured_image = get_the_post_thumbnail(
-					$post,
-					$attributes['featuredImageSizeSlug'],
-					array(
-						'class' => esc_attr( $image_classes ), // ✅ use Tailwind classes instead of inline style
-					)
-				);
-
-				if ( $attributes['addLinkToFeaturedImage'] ) {
-					$featured_image = sprintf(
-						'<a href="%1$s" aria-label="%2$s">%3$s</a>',
-						esc_url( $post_link ),
-						esc_attr( $title ),
-						$featured_image
-					);
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[15rem] lg:min-w-[20rem] h-full">%s</div>',
-					$featured_image
-				);
-			}
-
-			$list_items_markup .= '<div class="flex flex-col"><div class="flex flex-col">';
-			$list_items_markup .= sprintf(
-				'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md text-shadow-white" href="%1$s">%2$s</a>',
-				esc_url( $post_link ),
-				$title
-			);
-
-			if ( isset( $attributes['displayAuthor'] ) && $attributes['displayAuthor'] ) {
-				$author_display_name = get_the_author_meta( 'display_name', $post->post_author );
-
-				/* translators: byline. %s: current author. */
-				$byline = sprintf( __( 'by %s' ), $author_display_name );
-
-				if ( ! empty( $author_display_name ) ) {
-					$list_items_markup .= sprintf(
-						'<div class="wp-block-latest-posts__post-author">%1$s</div>',
-						$byline
-					);
-				}
-			}
-
-			if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
-				$list_items_markup .= sprintf(
-					'<time datetime="%1$s" class="wp-block-latest-posts__post-date">%2$s</time>',
-					esc_attr( get_the_date( 'c', $post ) ),
-					get_the_date( '', $post )
-				);
-			}
-
-			$list_items_markup .= '</div>';
-
-			if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
-			     && isset( $attributes['displayPostContentRadio'] ) && 'excerpt' === $attributes['displayPostContentRadio'] ) {
-
-				$trimmed_excerpt = get_the_excerpt( $post );
-
-				/*
-				 * Adds a "Read more" link with screen reader text.
-				 * [&hellip;] is the default excerpt ending from wp_trim_excerpt() in Core.
-				 */
-				if ( str_ends_with( $trimmed_excerpt, ' [&hellip;]' ) ) {
-					$excerpt_length = (int) apply_filters( 'excerpt_length', $block_core_latest_posts_excerpt_length );
-					if ( $excerpt_length <= $block_core_latest_posts_excerpt_length ) {
-						$trimmed_excerpt  = substr( $trimmed_excerpt, 0, -11 );
-						$trimmed_excerpt .= sprintf(
-						/* translators: 1: A URL to a post, 2: Hidden accessibility text: Post title */
-							__( '… <a href="%1$s" rel="noopener noreferrer">Read more<span class="screen-reader-text">: %2$s</span></a>' ),
-							esc_url( $post_link ),
-							esc_html( $title )
-						);
-					}
-				}
-
-				if ( post_password_required( $post ) ) {
-					$trimmed_excerpt = __( 'This content is password protected.' );
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="wp-block-latest-posts__post-excerpt entry-content block leading-1">%1$s</div>',
-					$trimmed_excerpt
-				);
-			}
-
-			if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
-			     && isset( $attributes['displayPostContentRadio'] ) && 'full_post' === $attributes['displayPostContentRadio'] ) {
-
-				$post_content = html_entity_decode( $post->post_content, ENT_QUOTES, get_option( 'blog_charset' ) );
-
-				if ( post_password_required( $post ) ) {
-					$post_content = __( 'This content is password protected.' );
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="wp-block-latest-posts__post-full-content">%1$s</div>',
-					wp_kses_post( $post_content )
-				);
-			}
-
-			$list_items_markup .= '</div></div>';
+			if (isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'])
+				$list_items_markup .= 'gap-1 md:gap-5">';
+			else
+				$list_items_markup .= 'gap-1 lg:gap-0 lg:border">';
 		}
-		else
-		{
-			$post_link = esc_url( get_permalink( $post ) );
-			$title     = get_the_title( $post );
 
-			if ( ! $title ) {
-				$title = __( '(no title)' );
-			}
-
-			$list_items_markup .= '<div class="relative flex gap-2 w-full items-center overflow-x-auto border p-5 bg-[#FDFCFD] rounded h-fit">';
-
-			if ( $attributes['displayFeaturedImage'] && has_post_thumbnail( $post ) ) {
-				$image_classes = 'wp-block-latest-posts__featured-image object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 w-full min-h-[20rem]';
-
-				if ( isset( $attributes['featuredImageAlign'] ) ) {
-					$image_classes .= ' align' . $attributes['featuredImageAlign'];
-				}
-
-				$featured_image = get_the_post_thumbnail(
-					$post,
-					$attributes['featuredImageSizeSlug'],
-					array(
-						'class' => esc_attr( $image_classes ), // ✅ use Tailwind classes instead of inline style
-					)
-				);
-
-				if ( $attributes['addLinkToFeaturedImage'] ) {
-					$featured_image = sprintf(
-						'<a href="%1$s" aria-label="%2$s">%3$s</a>',
-						esc_url( $post_link ),
-						esc_attr( $title ),
-						$featured_image
-					);
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[15rem] lg:hidden md:block lg:min-w-[20rem] h-full">%s</div>',
-					$featured_image
-				);
-			}
-
-			$list_items_markup .= '<div class="flex flex-col"><div class="flex flex-col">';
-			$list_items_markup .= sprintf(
-				'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md text-shadow-white" href="%1$s">%2$s</a>',
-				esc_url( $post_link ),
-				$title
+		if ( $count < 3 || isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout']) {
+			$list_items_markup .= $render_item(
+				$post,
+				$attributes,
+				'relative flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 bg-[#FDFCFD] rounded h-fit',
+				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] h-full">%s</div>'
 			);
-
-			if ( isset( $attributes['displayAuthor'] ) && $attributes['displayAuthor'] ) {
-				$author_display_name = get_the_author_meta( 'display_name', $post->post_author );
-
-				/* translators: byline. %s: current author. */
-				$byline = sprintf( __( 'by %s' ), $author_display_name );
-
-				if ( ! empty( $author_display_name ) ) {
-					$list_items_markup .= sprintf(
-						'<div class="wp-block-latest-posts__post-author">%1$s</div>',
-						$byline
-					);
-				}
+		} else {
+			$list_items_markup .= $render_item(
+				$post,
+				$attributes,
+				'relative flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 lg:border-none bg-[#FDFCFD] rounded h-fit lg:h-full',
+				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] h-full lg:hidden md:block ">%s</div>'
+			);
+			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
+				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 lg:block hidden"></div>';
 			}
-
-			if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
-				$list_items_markup .= sprintf(
-					'<time datetime="%1$s" class="wp-block-latest-posts__post-date">%2$s</time>',
-					esc_attr( get_the_date( 'c', $post ) ),
-					get_the_date( '', $post )
-				);
-			}
-
-			$list_items_markup .= '</div>';
-
-			if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
-			     && isset( $attributes['displayPostContentRadio'] ) && 'excerpt' === $attributes['displayPostContentRadio'] ) {
-
-				$trimmed_excerpt = get_the_excerpt( $post );
-
-				/*
-				 * Adds a "Read more" link with screen reader text.
-				 * [&hellip;] is the default excerpt ending from wp_trim_excerpt() in Core.
-				 */
-				if ( str_ends_with( $trimmed_excerpt, ' [&hellip;]' ) ) {
-					$excerpt_length = (int) apply_filters( 'excerpt_length', $block_core_latest_posts_excerpt_length );
-					if ( $excerpt_length <= $block_core_latest_posts_excerpt_length ) {
-						$trimmed_excerpt  = substr( $trimmed_excerpt, 0, -11 );
-						$trimmed_excerpt .= sprintf(
-						/* translators: 1: A URL to a post, 2: Hidden accessibility text: Post title */
-							__( '… <a href="%1$s" rel="noopener noreferrer">Read more<span class="screen-reader-text">: %2$s</span></a>' ),
-							esc_url( $post_link ),
-							esc_html( $title )
-						);
-					}
-				}
-
-				if ( post_password_required( $post ) ) {
-					$trimmed_excerpt = __( 'This content is password protected.' );
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="wp-block-latest-posts__post-excerpt entry-content block leading-1">%1$s</div>',
-					$trimmed_excerpt
-				);
-			}
-
-			if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
-			     && isset( $attributes['displayPostContentRadio'] ) && 'full_post' === $attributes['displayPostContentRadio'] ) {
-
-				$post_content = html_entity_decode( $post->post_content, ENT_QUOTES, get_option( 'blog_charset' ) );
-
-				if ( post_password_required( $post ) ) {
-					$post_content = __( 'This content is password protected.' );
-				}
-
-				$list_items_markup .= sprintf(
-					'<div class="wp-block-latest-posts__post-full-content">%1$s</div>',
-					wp_kses_post( $post_content )
-				);
-			}
-
-			$list_items_markup .= '</div></div>';
 		}
 
 		$count++;
@@ -317,7 +204,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 	remove_filter( 'excerpt_length', 'block_core_latest_posts_get_excerpt_length', 20 );
 
-	$classes = array( 'wp-block-latest-posts__list gap-5 flex lg:flex-row flex-col' );
+	$classes = array( 'wp-block-latest-posts__list gap-5 flex lg:flex-row flex-col' . isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-1 md:gap-5' : 'gap-1 md:gap-5 flex lg:flex-row flex-col' );
 	if ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
 		$classes[] = 'is-grid';
 	}

@@ -623,7 +623,6 @@ this is for mobile menus */
   display: block;
   position: relative;
   /*font-size: 0.7rem;*/
-  text-transform: uppercase;
     line-height: 1;
 }
 #agency-name {

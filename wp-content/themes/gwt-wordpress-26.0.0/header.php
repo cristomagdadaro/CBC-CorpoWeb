@@ -18,6 +18,7 @@
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title><?php wp_title( '|', true, 'right' ); ?></title>
     <link rel="profile" href="http://gmpg.org/xfn/11">
 	<?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
@@ -372,7 +373,7 @@ Press esc, or click the close the button to close this dialog box.
                     <!-- masthead -->
                 </div>
                 <div class="title-bar-right flex items-center justify-end h-full my-auto">
-                    <span class="sr-only hidden">Menu</span>com
+                    <span class="sr-only hidden">Menu</span>
                     <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button"></button>
                 </div>
             </div>
@@ -387,7 +388,6 @@ Press esc, or click the close the button to close this dialog box.
                             <div class="row sm:py-0 py-2 mx-auto">
                                 <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
                                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                       draggable="false"
                                        title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
                                        rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
                                 </h1>

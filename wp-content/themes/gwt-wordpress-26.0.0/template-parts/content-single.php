@@ -11,7 +11,7 @@
 	
 	<!-- entry-content -->
 	<div class="entry-content">
-		<div class="entry-meta my-1">
+		<div class="entry-meta my-1 flex flex-col leading-[0.8rem] mb-3">
 			<?php gwt_wp_posted_on(); ?>
 			<p></p>
 		</div>

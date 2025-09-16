@@ -7,7 +7,7 @@
 ?>
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
 <div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
-    <div id="particles-js" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
+    <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
     <div class="row z-[99]">
         <?php if(is_active_sidebar('panel-top-1') && is_front_page()): ?>
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"

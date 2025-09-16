@@ -898,11 +898,11 @@ if (!function_exists('govph_displayoptions')) {
                         <div id="textlogo-image" class="flex items-center justify-center"> <!-- Added flex container class -->
                             <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full sm:w-full w-[80%] mx-auto" /> <!-- Added h-full class -->
                         </div>
-                        <div id="textlogo-inner-wrapper" class="flex flex-col justify-center sm:mt-2 mt-0 mx-auto"> <!-- Added flex container class and padding -->
+                        <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white"> <!-- Added flex container class and padding -->
                             <!--<div id="agency-heading">Republic of the Philippines</div>-->
-                            <div id="agency-heading" class="whitespace-nowrap sm:text-sm text-[0.5rem] text-white">Department of Agriculture</div>
-                            <div id="agency-name" class="whitespace-nowrap uppercase sm:text-[1.7rem] text-[0.8rem] sm:pt-0 pt-0.5 sm:mt-0 mt-0.5F text-white drop-shadow-lg">' . $option['govph_agency_name'] . '</div>
-                            <div id="agency-tagline" class="whitespace-nowrap sm:tracking-[0.3rem] tracking-[0.1rem] sm:text-[0.7rem] text-[0.5rem] text-white">' . $option['govph_agency_tagline'] . '</div>
+                            <div id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] capitalize">Department of Agriculture</div>
+                            <div id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] drop-shadow-lg font-league"><strong>' . $option['govph_agency_name'] . '</strong></div>
+                            <div id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize">' . $option['govph_agency_tagline'] . '</div>
                         </div>
                     </div>';
 
