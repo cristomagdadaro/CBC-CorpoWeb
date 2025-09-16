@@ -17,6 +17,22 @@
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        // Tailwind CDN config: safelist classes used by scroll reveal so they are available even if added via JS
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            safelist: [
+                'opacity-0',
+                'opacity-100',
+                'translate-y-8',
+                'translate-y-0',
+                'transition',
+                'duration-700',
+                'ease-out',
+                'will-change-transform'
+            ]
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title><?php wp_title( '|', true, 'right' ); ?></title>

@@ -61,7 +61,7 @@ include_once('inc/banner.php');
 
             <div class="grid grid-cols-3 gap-2 lg:gap-5">
                 <?php foreach ( $videos as $video ) : ?>
-                    <div class="relative flex flex-col gap-2 w-auto h-fit">
+                    <div class="relative flex flex-col gap-2 w-auto h-fit reveal-on-scroll">
                         <div class="relative w-full shadow" style="padding-bottom: 56.25%;">
                             <iframe class="absolute top-0 left-0 w-full h-full border-none rounded"
                                     src="<?php echo esc_url( $video['src'] ); ?>"

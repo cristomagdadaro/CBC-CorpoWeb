@@ -161,6 +161,61 @@
         });
     }
 </script>
+
+<!-- Scroll reveal (slide-up + fade-in) using Tailwind classes -->
+<script>
+    (function(){
+        function initReveal() {
+            var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Select all elements with reveal classes
+            var targets = document.querySelectorAll('[class*="reveal-on-scroll"]');
+            if (!targets.length) return;
+
+            targets.forEach(function(el){
+                if (prefersReduced) {
+                    el.classList.add('opacity-100', 'translate-y-0');
+                    el.classList.remove('opacity-0', 'translate-y-8');
+                    return;
+                }
+                // initial state
+                el.classList.add('opacity-0', 'translate-y-8', 'transition', 'duration-700', 'ease-out', 'will-change-transform');
+            });
+
+            if (prefersReduced) return;
+
+            var io = new IntersectionObserver(function(entries, observer){
+                entries.forEach(function(entry){
+                    if (entry.isIntersecting) {
+                        var t = entry.target;
+
+                        // 🔍 Check if class has delay (e.g., reveal-on-scroll-300)
+                        var match = t.className.match(/reveal-on-scroll-(\d+)/);
+                        var delay = match ? parseInt(match[1], 10) : 0;
+
+                        setTimeout(function(){
+                            t.classList.remove('opacity-0', 'translate-y-8');
+                            t.classList.add('opacity-100', 'translate-y-0');
+                        }, delay);
+
+                        observer.unobserve(t);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+
+            targets.forEach(function(el){ io.observe(el); });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initReveal);
+        } else {
+            initReveal();
+        }
+    })();
+</script>
+
+<!-- end scroll reveal -->
+
 <!-- standard footer script -->
 <script type="text/javascript">
     (function (d, s, id) {
