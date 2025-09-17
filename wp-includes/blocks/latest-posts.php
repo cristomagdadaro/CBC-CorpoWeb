@@ -182,15 +182,15 @@ function render_block_core_latest_posts( $attributes ) {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 bg-[#FDFCFD] rounded h-fit reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] h-full">%s</div>'
+				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 bg-[#FDFCFD] rounded h-fit reveal-on-scroll-' . 200 + $count * 100,
+				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full">%s</div>'
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 lg:border-none bg-[#FDFCFD] rounded h-fit lg:h-full reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] h-full lg:hidden md:block ">%s</div>'
+				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 lg:border-none bg-[#FDFCFD] rounded h-fit lg:h-full reveal-on-scroll-' . 200 + $count * 100,
+				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full lg:hidden md:block ">%s</div>'
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
 				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 lg:block hidden"></div>';

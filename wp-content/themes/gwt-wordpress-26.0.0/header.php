@@ -351,7 +351,7 @@ Press esc, or click the close the button to close this dialog box.
             </ul>
         </nav>
 
-        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80]" id="closeBtnOverlay"></div>
+        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80] backdrop-blur" id="closeBtnOverlay"></div>
 
 
         <!-- off-canvas title bar for 'small' screen -->
@@ -362,7 +362,7 @@ Press esc, or click the close the button to close this dialog box.
                     <!-- masthead -->
                     <header class="container-masthead border-none text-black w-full">
                         <div class="row p-0 mx-auto border-none w-full">
-                            <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
+                            <h1 class="<?php echo $name_slogan_class ?> select-none w-full" draggable="false">
                                 <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
                                    draggable="false"
                                    title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
@@ -420,8 +420,8 @@ Press esc, or click the close the button to close this dialog box.
             </div>
             <div class="row sm:pt-0.5 pt-0 hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
-                    <ul class="dropdown menu" data-dropdown-menu>
-                        <!--<li class=" nav-item">
+                    <ul class="dropdown menu flex w-full flex-row justify-between" data-dropdown-menu>
+                       <!-- <li class=" nav-item">
                             <a href="https://www.gov.ph">GOVPH</a>
                         </li>-->
 

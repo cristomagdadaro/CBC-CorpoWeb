@@ -7,7 +7,7 @@
  */
 ?>
 <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-    <input type="search" class="search-field active:border-green-600 focus:border-green-600"
+    <input type="search" class="search-field active:border-green-600 focus:border-green-600 w-64"
         placeholder="<?php echo esc_attr_x( 'Search &hellip;', 'placeholder', 'gwt_wp' ); ?>"
         value="<?php echo esc_attr( get_search_query() ); ?>" name="s"
         title="<?php _ex( 'Search for:', 'label', 'gwt_wp' ); ?>">

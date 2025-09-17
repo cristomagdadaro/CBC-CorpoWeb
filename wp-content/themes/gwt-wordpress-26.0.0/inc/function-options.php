@@ -896,7 +896,7 @@ if (!function_exists('govph_displayoptions')) {
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
 					'<div id="textlogo-wrapper" class="w-full items-center gap-2">
                         <div id="textlogo-image" class="flex items-center justify-center"> <!-- Added flex container class -->
-                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full sm:w-full w-[80%] mx-auto" /> <!-- Added h-full class -->
+                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full sm:w-full w-[60%] mx-auto" /> <!-- Added h-full class -->
                         </div>
                         <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white"> <!-- Added flex container class and padding -->
                             <!--<div id="agency-heading">Republic of the Philippines</div>-->
