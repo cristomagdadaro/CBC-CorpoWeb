@@ -97,44 +97,7 @@
         </div><!-- #off-canvass-content -->
     </div><!-- #off-canvass-wrapper inner -->
 </div><!-- #off-canvass-wrapper -->
-<script>
-    // Get the current year
-    const currentYear = new Date().getFullYear();
 
-    // Set the year in the respective span elements
-    document.getElementById('current-year').textContent = currentYear;
-</script>
-
-<script>
-    // Script for when a priority crop is clicked, the additional information shows up
-   /* const priorityCropsImg = document.getElementsByClassName('priority-crop-img');
-
-    for (let i = 0; i < priorityCropsImg.length; i++) {
-        const priorityCropImg = priorityCropsImg[i];
-        const priorityCropInfo = document.getElementsByClassName('priority-crop-info')[i];
-
-        priorityCropImg.addEventListener('mouseenter', function() {
-            priorityCropInfo.classList.add('block');
-            priorityCropInfo.classList.remove('hidden');
-        });
-
-        priorityCropImg.addEventListener('mouseleave', function() {
-            priorityCropInfo.classList.add('hidden');
-            priorityCropInfo.classList.remove('block');
-        });
-
-        priorityCropImg.addEventListener('focus', function() {
-            priorityCropInfo.classList.add('block');
-            priorityCropInfo.classList.remove('hidden');
-        });
-
-        // For mobile devices
-        priorityCropImg.addEventListener('click', function() {
-            priorityCropInfo.classList.add('block');
-            priorityCropInfo.classList.remove('hidden');
-        });
-    }*/
-</script>
 <script>
     var acc = document.getElementsByClassName("accordion");
     var i;
