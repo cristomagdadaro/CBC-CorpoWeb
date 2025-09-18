@@ -46,8 +46,8 @@
 
             <div class="bg-[#006837] w-full sm:py-0 py-2">
                 <div class="row lg:p-4 p-1">
-                    <div class="flex flex-col gap-1 sm:mb-5 mb-2">
-                        <p class="lg:text-2xl md:text-xl text-lg text-white w-full border border-white sm:p-3 p-1 rounded text-center">Biotechnology Centers under DA-Biotechnology Program Office</p>
+                    <div class="flex flex-col gap-1 sm:my-5 my-2">
+                        <p class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border font-bold border-white bg-white sm:p-3 p-1 rounded text-center">Biotechnology Centers under DA-Biotechnology Program Office</p>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"
@@ -68,7 +68,7 @@
                             <h1 class="text-center border-b font-bold m-5 p-1">Quick Links</h1>
                             <ul class="list-none m-5">
                                 <li><a href="/about-us">About Us</a></li>
-                                <li><a href="/articles">Articles</a></li>
+                                <li><a href="/stories">Stories</a></li>
                                 <li><a href="/faqs">FAQs</a></li>
                                 <li><a href="/sitemap">Sitemap</a></li>
                             </ul>
