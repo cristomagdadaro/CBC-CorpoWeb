@@ -320,23 +320,44 @@ jQuery(document).ready(function($) {
   // Handle delete item requests from Theme Options lists
   public function handle_option_item_delete() {
     if (!is_admin() || !current_user_can('manage_options')) { return; }
-    if (empty($_GET['govph_del_field']) || !isset($_GET['govph_del_index'])) { return; }
+    // require field and nonce; index is optional (we'll also accept a value fallback)
+    if (empty($_GET['govph_del_field'])) { return; }
     if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'govph_del_item')) { return; }
 
     $field = sanitize_key(wp_unslash($_GET['govph_del_field']));
-    $index = intval(wp_unslash($_GET['govph_del_index']));
     $allowed = ['govph_facebook_posts','govph_featured_videos','govph_announcements','govph_events','govph_holidays'];
     if (!in_array($field, $allowed, true)) { return; }
 
     $opts = get_option('govph_options', []);
     $raw = isset($opts[$field]) ? (string)$opts[$field] : '';
     $items = $raw !== '' ? preg_split("/(\r\n|\n|\r)/", $raw) : [];
-    if (isset($items[$index])) {
-      unset($items[$index]);
-      $items = array_values(array_map('trim', $items));
-      $opts[$field] = implode("\n", array_filter($items));
-      update_option('govph_options', $opts);
+
+    // try deletion by index first (if provided)
+    $index_provided = isset($_GET['govph_del_index']);
+    if ($index_provided) {
+      $index = intval(wp_unslash($_GET['govph_del_index']));
+      if (isset($items[$index])) {
+        unset($items[$index]);
+      }
     }
+
+    // If index wasn't provided or item at index didn't match/exists, allow deletion by value fallback
+    if ((!$index_provided || !isset($items[$index])) && isset($_GET['govph_del_value'])) {
+      $del_value = trim(sanitize_text_field(wp_unslash($_GET['govph_del_value'])));
+      if ($del_value !== '') {
+        foreach ($items as $k => $v) {
+          if (trim($v) === $del_value) {
+            unset($items[$k]);
+            break;
+          }
+        }
+      }
+    }
+
+    // normalize and save
+    $items = array_values(array_map('trim', $items));
+    $opts[$field] = implode("\n", array_filter($items));
+    update_option('govph_options', $opts);
 
     $redirect = admin_url('themes.php?page=govph-options');
     wp_safe_redirect($redirect);
@@ -374,7 +395,7 @@ jQuery(document).ready(function($) {
       <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
         <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
           <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_facebook_posts','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this URL?');">Delete</a>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_facebook_posts','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this URL?');">Delete</a>
         </li>
       <?php endforeach; ?>
       <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
@@ -406,7 +427,7 @@ jQuery(document).ready(function($) {
           <span style="word-break:break-all;">
             <?php echo esc_html($line); ?>
           </span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_featured_videos','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this entry?');">Delete</a>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_featured_videos','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this entry?');">Delete</a>
         </li>
       <?php endforeach; ?>
       <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
@@ -436,7 +457,7 @@ jQuery(document).ready(function($) {
       <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
         <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
           <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_announcements','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this announcement?');">Delete</a>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_announcements','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this announcement?');">Delete</a>
         </li>
       <?php endforeach; ?>
       <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
@@ -466,7 +487,7 @@ jQuery(document).ready(function($) {
       <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
         <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
           <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_events','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this event?');">Delete</a>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_events','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this event?');">Delete</a>
         </li>
       <?php endforeach; ?>
       <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
@@ -496,7 +517,7 @@ jQuery(document).ready(function($) {
       <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
         <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
           <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_holidays','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this holiday?');">Delete</a>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_holidays','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this holiday?');">Delete</a>
         </li>
       <?php endforeach; ?>
       <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
