@@ -60,6 +60,10 @@ class GOVPH
     'govph_acc_link_search' => '',
     'govph_facebook_posts' => '',
     'govph_featured_videos' => '',
+    // Announcements & Events
+    'govph_announcements' => '',
+    'govph_events' => '',
+    'govph_holidays' => '',
   );
 
   public function __construct(){
@@ -69,6 +73,10 @@ class GOVPH
     if(sizeof($this->options) > 0){
       $this->options = array_merge($this->_default_options, $this->options);
     }
+
+    // Hooks to support list-style management (append-on-save, delete items)
+    add_action('admin_init', [$this, 'handle_option_item_delete']);
+    add_filter('pre_update_option_govph_options', [$this, 'merge_list_fields'], 10, 2);
 
     $this->register_settings_fields();
   }
@@ -265,6 +273,11 @@ jQuery(document).ready(function($) {
     add_settings_field('govph_facebook_posts', 'Featured Latest Facebook Post URLs', array($this, 'govph_facebook_posts'), __FILE__, 'govph_main_section');
     add_settings_field('govph_featured_videos', 'Featured Videos (Facebook) ', array($this, 'govph_featured_videos'), __FILE__, 'govph_main_section');
 
+    // announcements & events
+    add_settings_field('govph_announcements', 'Announcements (manual)', array($this, 'govph_announcements'), __FILE__, 'govph_main_section');
+    add_settings_field('govph_events', 'Events & Trainings', array($this, 'govph_events'), __FILE__, 'govph_main_section');
+    add_settings_field('govph_holidays', 'Holidays (Local/International)', array($this, 'govph_holidays'), __FILE__, 'govph_main_section');
+
     // publishing options
     add_settings_field('govph_content_section', '<h3>Publishing Options<h3>', array($this, 'govph_content_section'), __FILE__, 'govph_main_section');
     add_settings_field('govph_content_show_pub_date', 'Show Published Date', array($this, 'govph_content_show_pub_date'), __FILE__, 'govph_main_section');
@@ -287,6 +300,49 @@ jQuery(document).ready(function($) {
 
   public function govph_main_section_cb() { }
 
+  // Merge posted textarea values into existing stored lists for selected fields
+  public function merge_list_fields($new_value, $old_value) {
+    if (!is_array($new_value)) { return $new_value; }
+    $list_fields = ['govph_facebook_posts','govph_featured_videos','govph_announcements','govph_events','govph_holidays'];
+    foreach ($list_fields as $field) {
+      $incoming = isset($new_value[$field]) ? trim((string)$new_value[$field]) : '';
+      $existing = isset($old_value[$field]) ? trim((string)$old_value[$field]) : '';
+      $incoming_items = $incoming !== '' ? preg_split("/(\r\n|\n|\r)/", $incoming) : [];
+      $existing_items = $existing !== '' ? preg_split("/(\r\n|\n|\r)/", $existing) : [];
+      $incoming_items = array_map('trim', $incoming_items);
+      $existing_items = array_map('trim', $existing_items);
+      $merged = array_values(array_unique(array_filter(array_merge($existing_items, $incoming_items))));
+      $new_value[$field] = implode("\n", $merged);
+    }
+    return $new_value;
+  }
+
+  // Handle delete item requests from Theme Options lists
+  public function handle_option_item_delete() {
+    if (!is_admin() || !current_user_can('manage_options')) { return; }
+    if (empty($_GET['govph_del_field']) || !isset($_GET['govph_del_index'])) { return; }
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'govph_del_item')) { return; }
+
+    $field = sanitize_key(wp_unslash($_GET['govph_del_field']));
+    $index = intval(wp_unslash($_GET['govph_del_index']));
+    $allowed = ['govph_facebook_posts','govph_featured_videos','govph_announcements','govph_events','govph_holidays'];
+    if (!in_array($field, $allowed, true)) { return; }
+
+    $opts = get_option('govph_options', []);
+    $raw = isset($opts[$field]) ? (string)$opts[$field] : '';
+    $items = $raw !== '' ? preg_split("/(\r\n|\n|\r)/", $raw) : [];
+    if (isset($items[$index])) {
+      unset($items[$index]);
+      $items = array_values(array_map('trim', $items));
+      $opts[$field] = implode("\n", array_filter($items));
+      update_option('govph_options', $opts);
+    }
+
+    $redirect = admin_url('themes.php?page=govph-options');
+    wp_safe_redirect($redirect);
+    exit;
+  }
+
   /*
    * Inputs
    */
@@ -301,29 +357,159 @@ jQuery(document).ready(function($) {
   }
 
   public function govph_facebook_posts(){
-    $value = isset($this->options['govph_facebook_posts']) ? $this->options['govph_facebook_posts'] : '';
+    $saved = isset($this->options['govph_facebook_posts']) ? $this->options['govph_facebook_posts'] : '';
+    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
+    $page_url = admin_url('themes.php?page=govph-options');
+    $nonce = wp_create_nonce('govph_del_item');
     ?>
-<textarea name="govph_options[govph_facebook_posts]" rows="6" cols="80" style="max-width: 100%; width: 600px;">
-<?php echo esc_textarea($value); ?>
-</textarea>
-<br />
-<span class="description">Enter one public Facebook post URL per line. Example: https://www.facebook.com/{page}/posts/{id}</span>
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:300px;">
+    <textarea name="govph_options[govph_facebook_posts]" rows="6" cols="80" style="max-width: 100%; width: 100%;" placeholder="Paste one public Facebook post URL per line, then click Save. The box will clear after saving."></textarea>
+    <br />
+    <span class="description">Enter one public Facebook post URL per line. Example: https://www.facebook.com/{page}/posts/{id}</span>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <strong>Saved URLs</strong>
+    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
+      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
+        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+          <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_facebook_posts','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this URL?');">Delete</a>
+        </li>
+      <?php endforeach; ?>
+      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
+        <li style="color:#777;">No items saved yet.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+</div>
 <?php
   }
 
   public function govph_featured_videos(){
-    $value = isset($this->options['govph_featured_videos']) ? $this->options['govph_featured_videos'] : '';
+    $saved = isset($this->options['govph_featured_videos']) ? $this->options['govph_featured_videos'] : '';
+    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
+    $page_url = admin_url('themes.php?page=govph-options');
+    $nonce = wp_create_nonce('govph_del_item');
     ?>
-<textarea name="govph_options[govph_featured_videos]" rows="6" cols="80" style="max-width: 100%; width: 600px;" placeholder="https://www.facebook.com/{page}/videos/{id}|Optional Title|Optional description (one per line)">
-<?php echo esc_textarea($value); ?>
-</textarea>
-<br />
-<span class="description">Enter one Facebook video per line using the format: URL|Title|Description. Title and Description are optional. Example: https://www.facebook.com/DACropBiotechCenter/videos/1093880421705089|Last Year's Accomplishments|Short description...</span>
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:300px;">
+    <textarea name="govph_options[govph_featured_videos]" rows="6" cols="80" style="max-width: 100%; width: 100%;" placeholder="https://www.facebook.com/{page}/videos/{id}|Optional Title|Optional description (one per line)"></textarea>
+    <br />
+    <span class="description">Enter one Facebook video per line using the format: URL|Title|Description. Title and Description are optional.</span>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <strong>Saved Videos</strong>
+    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
+      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
+        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+          <span style="word-break:break-all;">
+            <?php echo esc_html($line); ?>
+          </span>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_featured_videos','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this entry?');">Delete</a>
+        </li>
+      <?php endforeach; ?>
+      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
+        <li style="color:#777;">No items saved yet.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+</div>
 <?php
   }
 
-  public function govph_disable_search()
-  {
+  public function govph_announcements(){
+    $saved = isset($this->options['govph_announcements']) ? $this->options['govph_announcements'] : '';
+    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
+    $page_url = admin_url('themes.php?page=govph-options');
+    $nonce = wp_create_nonce('govph_del_item');
+    ?>
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:300px;">
+    <textarea name="govph_options[govph_announcements]" rows="4" cols="80" style="max-width: 100%; width: 100%;" placeholder="Plain text announcements; optional link after a pipe (|). One per line.&#10;Example: Pest advisory in Region III|https://example.com/advisory"></textarea>
+    <br />
+    <span class="description">Format per line: Message[|URL]. These will appear in the Announcements ticker.</span>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <strong>Saved Announcements</strong>
+    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
+      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
+        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+          <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_announcements','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this announcement?');">Delete</a>
+        </li>
+      <?php endforeach; ?>
+      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
+        <li style="color:#777;">No items saved yet.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+</div>
+<?php
+  }
+
+  public function govph_events(){
+    $saved = isset($this->options['govph_events']) ? $this->options['govph_events'] : '';
+    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
+    $page_url = admin_url('themes.php?page=govph-options');
+    $nonce = wp_create_nonce('govph_del_item');
+    ?>
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:300px;">
+    <textarea name="govph_options[govph_events]" rows="8" cols="80" style="max-width: 100%; width: 100%;" placeholder="YYYY-MM-DD|Title|URL(optional)|Type(event/training)|Location(optional)&#10;2025-10-05|Hands-on Training on Tissue Culture|https://example.com/event/123|training|DA-CBC Center&#10;2025-11-12|Field Day: Hybrid Rice Demo|||Nueva Ecija"></textarea>
+    <br />
+    <span class="description">Enter one event/training per line in the format above. Upcoming items are shown in the ticker and calendar.</span>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <strong>Saved Events/Trainings</strong>
+    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
+      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
+        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+          <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_events','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this event?');">Delete</a>
+        </li>
+      <?php endforeach; ?>
+      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
+        <li style="color:#777;">No items saved yet.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+</div>
+<?php
+  }
+
+  public function govph_holidays(){
+    $saved = isset($this->options['govph_holidays']) ? $this->options['govph_holidays'] : '';
+    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
+    $page_url = admin_url('themes.php?page=govph-options');
+    $nonce = wp_create_nonce('govph_del_item');
+    ?>
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:300px;">
+    <textarea name="govph_options[govph_holidays]" rows="6" cols="80" style="max-width: 100%; width: 100%;" placeholder="YYYY-MM-DD|Holiday name|Scope(optional e.g., PH/Intl)&#10;2025-11-30|Bonifacio Day|PH&#10;2025-12-25|Christmas Day|Intl"></textarea>
+    <br />
+    <span class="description">Add official holidays you want shown on the calendar and ticker. Scope is optional.</span>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <strong>Saved Holidays</strong>
+    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
+      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
+        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+          <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
+          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_holidays','govph_del_index'=>$idx,'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this holiday?');">Delete</a>
+        </li>
+      <?php endforeach; ?>
+      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
+        <li style="color:#777;">No items saved yet.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+</div>
+<?php
+  }
+
+   public function govph_disable_search()
+   {
     $true = ($this->options['govph_disable_search'] == 'true' ? "checked" : "");
   ?>
 <input type="checkbox" name="govph_options[govph_disable_search]" value="true" <?php echo $true ?>>

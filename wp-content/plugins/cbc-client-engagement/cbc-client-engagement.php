@@ -13,6 +13,7 @@ if (!defined('ABSPATH')) {
 class CBC_Client_Engagement {
     const APPOINTMENT_POST_TYPE = 'cbc_appointment';
     const FEEDBACK_POST_TYPE    = 'cbc_feedback';
+    const INTERNSHIP_POST_TYPE  = 'cbc_internship';
 
     public function __construct() {
         // Register post types
@@ -25,12 +26,15 @@ class CBC_Client_Engagement {
         // Shortcodes
         add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
         add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
+        add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
 
         // Form handlers (admin-post)
         add_action('admin_post_nopriv_cbc_submit_appointment', [$this, 'handle_submit_appointment']);
         add_action('admin_post_cbc_submit_appointment',        [$this, 'handle_submit_appointment']);
         add_action('admin_post_nopriv_cbc_submit_feedback',    [$this, 'handle_submit_feedback']);
         add_action('admin_post_cbc_submit_feedback',           [$this, 'handle_submit_feedback']);
+        add_action('admin_post_nopriv_cbc_submit_internship',  [$this, 'handle_submit_internship']);
+        add_action('admin_post_cbc_submit_internship',         [$this, 'handle_submit_internship']);
 
         // Admin menu
         add_action('admin_menu', [$this, 'register_admin_menu']);
@@ -40,6 +44,8 @@ class CBC_Client_Engagement {
         add_action('manage_' . self::APPOINTMENT_POST_TYPE . '_posts_custom_column', [$this, 'appt_column_content'], 10, 2);
         add_filter('manage_' . self::FEEDBACK_POST_TYPE . '_posts_columns', [$this, 'fb_columns']);
         add_action('manage_' . self::FEEDBACK_POST_TYPE . '_posts_custom_column', [$this, 'fb_column_content'], 10, 2);
+        add_filter('manage_' . self::INTERNSHIP_POST_TYPE . '_posts_columns', [$this, 'intern_columns']);
+        add_action('manage_' . self::INTERNSHIP_POST_TYPE . '_posts_custom_column', [$this, 'intern_column_content'], 10, 2);
 
         // Meta boxes
         add_action('add_meta_boxes', [$this, 'register_metaboxes']);
@@ -103,6 +109,27 @@ class CBC_Client_Engagement {
             'map_meta_cap'       => true,
             'supports'           => ['title'],
         ]);
+
+        // Internship Applications
+        register_post_type(self::INTERNSHIP_POST_TYPE, [
+            'labels' => [
+                'name'               => __('Internship Applications', 'cbc'),
+                'singular_name'      => __('Internship Application', 'cbc'),
+                'menu_name'          => __('Internship', 'cbc'),
+                'add_new_item'       => __('Add Application', 'cbc'),
+                'edit_item'          => __('View Application', 'cbc'),
+                'view_item'          => __('View Application', 'cbc'),
+                'search_items'       => __('Search Applications', 'cbc'),
+                'not_found'          => __('No applications found', 'cbc'),
+                'not_found_in_trash' => __('No applications found in Trash', 'cbc'),
+            ],
+            'public'             => false,
+            'show_ui'            => true,
+            'show_in_menu'       => false,
+            'capability_type'    => 'post',
+            'map_meta_cap'       => true,
+            'supports'           => ['title'],
+        ]);
     }
 
     public function register_admin_menu() {
@@ -125,6 +152,9 @@ class CBC_Client_Engagement {
 
         // Submenu: Feedback (link to CPT list)
         add_submenu_page('cbc-client-engagement', __('Feedback', 'cbc'), __('Feedback', 'cbc'), $cap, 'edit.php?post_type=' . self::FEEDBACK_POST_TYPE);
+
+        // Submenu: Internship Applications (link to CPT list)
+        add_submenu_page('cbc-client-engagement', __('Internship Applications', 'cbc'), __('Internship Applications', 'cbc'), $cap, 'edit.php?post_type=' . self::INTERNSHIP_POST_TYPE);
     }
 
     public function render_dashboard_page() {
@@ -259,6 +289,62 @@ class CBC_Client_Engagement {
         return ob_get_clean();
     }
 
+    // Shortcode: Internship application form
+    public function render_internship_form($atts = []) {
+        wp_enqueue_style('cbc-client-engagement');
+        $defaults = [ 'redirect' => '' ];
+        $atts = shortcode_atts($defaults, $atts, 'cbc_internship_form');
+
+        $errors = isset($_GET['cbc_err']) ? sanitize_text_field(wp_unslash($_GET['cbc_err'])) : '';
+        $success = isset($_GET['cbc_ok']) ? sanitize_text_field(wp_unslash($_GET['cbc_ok'])) : '';
+        $action_url = esc_url(admin_url('admin-post.php'));
+        $redirect = esc_url_raw($atts['redirect']);
+
+        ob_start();
+        ?>
+        <form class="cbc-form" method="post" enctype="multipart/form-data" action="<?php echo $action_url; ?>">
+            <input type="hidden" name="action" value="cbc_submit_internship" />
+            <?php wp_nonce_field('cbc_submit_internship', 'cbc_nonce'); ?>
+            <?php if ($redirect) : ?><input type="hidden" name="_redirect" value="<?php echo esc_attr($redirect); ?>" /><?php endif; ?>
+            <div class="cbc-row">
+                <label for="intern_name">Full Name<span class="req">*</span></label>
+                <input type="text" id="intern_name" name="name" required />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_email">Email<span class="req">*</span></label>
+                <input type="email" id="intern_email" name="email" required />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_phone">Phone</label>
+                <input type="text" id="intern_phone" name="phone" />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_school">School/University<span class="req">*</span></label>
+                <input type="text" id="intern_school" name="school" required />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_program">Program / Course<span class="req">*</span></label>
+                <input type="text" id="intern_program" name="program" required />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_year">Year Level<span class="req">*</span></label>
+                <input type="text" id="intern_year" name="year_level" placeholder="e.g., 3rd Year" required />
+            </div>
+            <div class="cbc-row">
+                <label for="intern_letter_file">Letter of Intent<span class="req">*</span></label>
+                <input type="file" id="intern_letter_file" name="letter_file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required />
+                <p class="description">Allowed file types: PDF, DOC, DOCX. Max 10 MB.</p>
+            </div>
+            <div class="cbc-row">
+                <button type="submit">Submit Application</button>
+            </div>
+            <?php if ($errors) : ?><p class="cbc-error"><?php echo esc_html($errors); ?></p><?php endif; ?>
+            <?php if ($success) : ?><p class="cbc-success"><?php echo esc_html($success); ?></p><?php endif; ?>
+        </form>
+        <?php
+        return ob_get_clean();
+    }
+
     public function handle_submit_appointment() {
         if (!isset($_POST['cbc_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cbc_nonce'])), 'cbc_submit_appointment')) {
             $this->redirect_with_message('Invalid request.', false);
@@ -325,6 +411,85 @@ class CBC_Client_Engagement {
         update_post_meta($post_id, 'cbc_message', $message);
 
         $this->redirect_with_message('Thank you for your feedback!', true);
+    }
+
+    public function handle_submit_internship() {
+        if (!isset($_POST['cbc_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cbc_nonce'])), 'cbc_submit_internship')) {
+            $this->redirect_with_message('Invalid request.', false);
+        }
+        $name       = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        $email      = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+        $phone      = isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '';
+        $school     = isset($_POST['school']) ? sanitize_text_field(wp_unslash($_POST['school'])) : '';
+        $program    = isset($_POST['program']) ? sanitize_text_field(wp_unslash($_POST['program'])) : '';
+        $year_level = isset($_POST['year_level']) ? sanitize_text_field(wp_unslash($_POST['year_level'])) : '';
+
+        // Validate file upload for Letter of Intent
+        if (!isset($_FILES['letter_file']) || empty($_FILES['letter_file']['name'])) {
+            $this->redirect_with_message('Please upload your Letter of Intent (PDF/DOC/DOCX).', false);
+        }
+        $file = $_FILES['letter_file'];
+        if (!empty($file['error'])) {
+            $this->redirect_with_message('File upload error. Please try again.', false);
+        }
+        if ($file['size'] > 10 * 1024 * 1024) { // 10MB
+            $this->redirect_with_message('File too large. Maximum size is 10 MB.', false);
+        }
+        $allowed_exts = ['pdf','doc','docx'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_exts, true)) {
+            $this->redirect_with_message('Invalid file type. Allowed: PDF, DOC, DOCX.', false);
+        }
+
+        // Handle upload
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        $overrides = ['test_form' => false];
+        $uploaded = wp_handle_upload($file, $overrides);
+        if (isset($uploaded['error'])) {
+            $this->redirect_with_message('Upload failed: ' . $uploaded['error'], false);
+        }
+
+        $title = $name . ' - ' . $school . ' (' . $program . ')';
+        $post_id = wp_insert_post([
+            'post_type'   => self::INTERNSHIP_POST_TYPE,
+            'post_title'  => $title,
+            'post_status' => 'publish',
+        ], true);
+
+        if (is_wp_error($post_id)) {
+            // Cleanup uploaded file if post creation failed
+            @unlink($uploaded['file']);
+            $this->redirect_with_message('Could not save your application. Please try again later.', false);
+        }
+
+        // Insert as attachment to media library and attach to this post
+        $filetype = wp_check_filetype(basename($uploaded['file']), null);
+        $attachment = [
+            'guid'           => $uploaded['url'],
+            'post_mime_type' => $filetype['type'],
+            'post_title'     => sanitize_file_name(basename($uploaded['file'])),
+            'post_content'   => '',
+            'post_status'    => 'inherit'
+        ];
+        $attach_id = wp_insert_attachment($attachment, $uploaded['file'], $post_id);
+        if (!is_wp_error($attach_id)) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+            $attach_data = wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+            wp_update_attachment_metadata($attach_id, $attach_data);
+        }
+
+        update_post_meta($post_id, 'cbc_name', $name);
+        update_post_meta($post_id, 'cbc_email', $email);
+        update_post_meta($post_id, 'cbc_phone', $phone);
+        update_post_meta($post_id, 'cbc_school', $school);
+        update_post_meta($post_id, 'cbc_program', $program);
+        update_post_meta($post_id, 'cbc_year_level', $year_level);
+        if (!is_wp_error($attach_id)) {
+            update_post_meta($post_id, 'cbc_letter_file_id', intval($attach_id));
+            update_post_meta($post_id, 'cbc_letter_file_url', esc_url_raw($uploaded['url']));
+        }
+
+        $this->redirect_with_message('Thank you! Your internship application has been submitted.', true);
     }
 
     private function redirect_with_message($message, $success) {
@@ -394,9 +559,44 @@ class CBC_Client_Engagement {
         }
     }
 
+    // Admin list columns for Internship Applications
+    public function intern_columns($columns) {
+        $new = [];
+        $new['cb'] = $columns['cb'];
+        $new['title'] = __('Application', 'cbc');
+        $new['cbc_name'] = __('Name', 'cbc');
+        $new['cbc_email'] = __('Email', 'cbc');
+        $new['cbc_school'] = __('School', 'cbc');
+        $new['cbc_program'] = __('Program', 'cbc');
+        $new['cbc_year_level'] = __('Year Level', 'cbc');
+        $new['date'] = $columns['date'];
+        return $new;
+    }
+
+    public function intern_column_content($column, $post_id) {
+        switch ($column) {
+            case 'cbc_name':
+                echo esc_html(get_post_meta($post_id, 'cbc_name', true));
+                break;
+            case 'cbc_email':
+                echo esc_html(get_post_meta($post_id, 'cbc_email', true));
+                break;
+            case 'cbc_school':
+                echo esc_html(get_post_meta($post_id, 'cbc_school', true));
+                break;
+            case 'cbc_program':
+                echo esc_html(get_post_meta($post_id, 'cbc_program', true));
+                break;
+            case 'cbc_year_level':
+                echo esc_html(get_post_meta($post_id, 'cbc_year_level', true));
+                break;
+        }
+    }
+
     public function register_metaboxes() {
         add_meta_box('cbc_appt_details', __('Appointment Details', 'cbc'), [$this, 'render_appt_metabox'], self::APPOINTMENT_POST_TYPE, 'normal', 'high');
         add_meta_box('cbc_fb_details', __('Feedback Details', 'cbc'), [$this, 'render_fb_metabox'], self::FEEDBACK_POST_TYPE, 'normal', 'high');
+        add_meta_box('cbc_intern_details', __('Internship Application Details', 'cbc'), [$this, 'render_intern_metabox'], self::INTERNSHIP_POST_TYPE, 'normal', 'high');
     }
 
     public function render_appt_metabox($post) {
@@ -428,6 +628,40 @@ class CBC_Client_Engagement {
             $val = get_post_meta($post->ID, $key, true);
             echo '<tr><th style="width:150px;">' . esc_html($label) . '</th><td>' . nl2br(esc_html($val)) . '</td></tr>';
         }
+        echo '</table>';
+    }
+
+    public function render_intern_metabox($post) {
+        $fields = [
+            'cbc_name' => 'Name',
+            'cbc_email' => 'Email',
+            'cbc_phone' => 'Phone',
+            'cbc_school' => 'School/University',
+            'cbc_program' => 'Program',
+            'cbc_year_level' => 'Year Level',
+        ];
+        echo '<table class="form-table">';
+        foreach ($fields as $key => $label) {
+            $val = get_post_meta($post->ID, $key, true);
+            echo '<tr><th style="width:150px;">' . esc_html($label) . '</th><td>' . nl2br(esc_html($val)) . '</td></tr>';
+        }
+        // Letter of Intent (file, backward compatible)
+        $file_url = get_post_meta($post->ID, 'cbc_letter_file_url', true);
+        $file_id  = intval(get_post_meta($post->ID, 'cbc_letter_file_id', true));
+        $legacy_text = get_post_meta($post->ID, 'cbc_letter', true);
+        echo '<tr><th style="width:150px;">Letter of Intent</th><td>';
+        if ($file_url) {
+            $filename = basename(parse_url($file_url, PHP_URL_PATH));
+            echo '<a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
+            if ($file_id) {
+                echo ' (Attachment ID: ' . intval($file_id) . ')';
+            }
+        } elseif (!empty($legacy_text)) {
+            echo nl2br(esc_html($legacy_text));
+        } else {
+            echo '<em>No file uploaded.</em>';
+        }
+        echo '</td></tr>';
         echo '</table>';
     }
 
