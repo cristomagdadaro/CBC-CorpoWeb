@@ -27,6 +27,8 @@ class CBC_Client_Engagement {
         add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
         add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
         add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
+    // Combined page shortcode (renders all forms)
+    add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
 
         // Form handlers (admin-post)
         add_action('admin_post_nopriv_cbc_submit_appointment', [$this, 'handle_submit_appointment']);
@@ -163,6 +165,7 @@ class CBC_Client_Engagement {
         }
         $appt_count = wp_count_posts(self::APPOINTMENT_POST_TYPE);
         $fb_count   = wp_count_posts(self::FEEDBACK_POST_TYPE);
+        $intern_count = wp_count_posts(self::INTERNSHIP_POST_TYPE);
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__('Client Engagement', 'cbc'); ?></h1>
@@ -178,10 +181,41 @@ class CBC_Client_Engagement {
                     <p><strong>Total:</strong> <?php echo intval($fb_count->publish + $fb_count->draft + $fb_count->pending + $fb_count->private); ?></p>
                     <p><a class="button button-primary" href="<?php echo admin_url('edit.php?post_type=' . self::FEEDBACK_POST_TYPE); ?>">Manage Feedback</a></p>
                 </div>
+                <div class="card" style="padding:16px; border:1px solid #ddd; background:#fff; width:280px;">
+                    <h2>Internships</h2>
+                    <p><strong>Total:</strong> <?php echo intval($fb_count->publish + $fb_count->draft + $fb_count->pending + $fb_count->private); ?></p>
+                    <p><a class="button button-primary" href="<?php echo admin_url('edit.php?post_type=' . self::INTERNSHIP_POST_TYPE); ?>">Manage Interns</a></p>
+                </div>
             </div>
-            <p style="margin-top:20px;">Embed forms using these shortcodes: <code>[cbc_appointment_form]</code> and <code>[cbc_feedback_form]</code>.</p>
+            <p style="margin-top:20px;">Embed forms using these shortcodes: <code>[cbc_appointment_form]</code>, <code>[cbc_feedback_form]</code>, and <code>[cbc_internship_form]</code>. You can also use the combined shortcode <code>[cbc_client_engagement_page]</code> to render all forms on a single page.</p>
         </div>
         <?php
+    }
+
+    /**
+     * Combined shortcode that renders appointment, feedback, and internship forms stacked.
+     * Usage: [cbc_client_engagement_page]
+     */
+    public function render_client_engagement_page($atts = []) {
+        wp_enqueue_style('cbc-client-engagement');
+        $out  = '<div class="cbc-client-engagement-page">';
+        $out .= '<section class="cbc-section cbc-appointment">';
+        $out .= '<h2>Book an Appointment</h2>';
+        $out .= $this->render_appointment_form($atts);
+        $out .= '</section>';
+
+        $out .= '<section class="cbc-section cbc-feedback">';
+        $out .= '<h2>Send Feedback</h2>';
+        $out .= $this->render_feedback_form($atts);
+        $out .= '</section>';
+
+        $out .= '<section class="cbc-section cbc-internship">';
+        $out .= '<h2>Internship Application</h2>';
+        $out .= $this->render_internship_form($atts);
+        $out .= '</section>';
+
+        $out .= '</div>';
+        return $out;
     }
 
     // Shortcode: Appointment form
