@@ -27,8 +27,11 @@ class CBC_Client_Engagement {
         add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
         add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
         add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
-    // Combined page shortcode (renders all forms)
-    add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
+        // Combined page shortcode (renders all forms)
+        add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
+        // Events listing shortcodes
+        add_shortcode('cbc_events_list', [$this, 'render_events_list']);
+        add_shortcode('cbc_events_section', [$this, 'render_events_section']);
 
         // Form handlers (admin-post)
         add_action('admin_post_nopriv_cbc_submit_appointment', [$this, 'handle_submit_appointment']);
@@ -63,6 +66,20 @@ class CBC_Client_Engagement {
     public function activate() {
         $this->register_post_types();
         flush_rewrite_rules();
+        // Ensure default event types exist
+        if ( function_exists('wp_insert_term') ) {
+            $terms = [
+                'event'    => 'Event',
+                'training' => 'Training',
+                'seminar'  => 'Seminar',
+                'holiday'  => 'Holiday',
+            ];
+            foreach ($terms as $slug => $name) {
+                if (!term_exists($slug, 'cbc_event_type')) {
+                    wp_insert_term($name, 'cbc_event_type', ['slug' => $slug]);
+                }
+            }
+        }
     }
 
     public function deactivate() {
@@ -132,6 +149,40 @@ class CBC_Client_Engagement {
             'map_meta_cap'       => true,
             'supports'           => ['title'],
         ]);
+
+        // Events (for Event / Training / Seminar / Holiday)
+        register_post_type('cbc_event', [
+            'labels' => [
+                'name'               => __('Events', 'cbc'),
+                'singular_name'      => __('Event', 'cbc'),
+                'menu_name'          => __('Events', 'cbc'),
+                'add_new_item'       => __('Add Event', 'cbc'),
+                'edit_item'          => __('Edit Event', 'cbc'),
+                'view_item'          => __('View Event', 'cbc'),
+                'search_items'       => __('Search Events', 'cbc'),
+                'not_found'          => __('No events found', 'cbc'),
+                'not_found_in_trash' => __('No events found in Trash', 'cbc'),
+            ],
+            'public'             => true,
+            'show_ui'            => true,
+            'show_in_menu'       => false,
+            'capability_type'    => 'post',
+            'map_meta_cap'       => true,
+            'supports'           => ['title','editor','excerpt','custom-fields'],
+            'has_archive'        => true,
+        ]);
+
+        // Event Type taxonomy (event, training, seminar, holiday)
+        register_taxonomy('cbc_event_type', ['cbc_event'], [
+            'labels' => [
+                'name' => __('Event Types', 'cbc'),
+                'singular_name' => __('Event Type', 'cbc'),
+            ],
+            'hierarchical' => false,
+            'public' => true,
+            'show_ui' => true,
+            'show_in_nav_menus' => true,
+        ]);
     }
 
     public function register_admin_menu() {
@@ -157,6 +208,9 @@ class CBC_Client_Engagement {
 
         // Submenu: Internship Applications (link to CPT list)
         add_submenu_page('cbc-client-engagement', __('Internship Applications', 'cbc'), __('Internship Applications', 'cbc'), $cap, 'edit.php?post_type=' . self::INTERNSHIP_POST_TYPE);
+
+        // Submenu: Events
+        add_submenu_page('cbc-client-engagement', __('Events', 'cbc'), __('Events', 'cbc'), $cap, 'edit.php?post_type=cbc_event');
     }
 
     public function render_dashboard_page() {
@@ -214,6 +268,62 @@ class CBC_Client_Engagement {
         $out .= $this->render_internship_form($atts);
         $out .= '</section>';
 
+        $out .= '</div>';
+        return $out;
+    }
+
+    /**
+     * Shortcode: [cbc_events_list type="training" limit="5"]
+     * Renders a simple list of events filtered by event type (slug).
+     */
+    public function render_events_list($atts = []) {
+        $defaults = ['type' => '', 'limit' => 5];
+        $atts = shortcode_atts($defaults, $atts, 'cbc_events_list');
+        $type = sanitize_text_field($atts['type']);
+        $limit = intval($atts['limit']);
+
+        $args = [
+            'post_type' => 'cbc_event',
+            'posts_per_page' => $limit,
+            'post_status' => 'publish',
+        ];
+        if ($type) {
+            $args['tax_query'] = [[
+                'taxonomy' => 'cbc_event_type',
+                'field' => 'slug',
+                'terms' => $type,
+            ]];
+        }
+
+        $q = new WP_Query($args);
+        ob_start();
+        if ($q->have_posts()) {
+            echo '<ul class="cbc-events-list">';
+            while ($q->have_posts()) { $q->the_post();
+                $date = get_post_meta(get_the_ID(), 'event_date', true);
+                echo '<li><a href="' . esc_url(get_permalink()) . '">' . get_the_title() . '</a>' . ($date ? ' - <small>' . esc_html($date) . '</small>' : '') . '</li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<p class="no-events">No events found.</p>';
+        }
+        wp_reset_postdata();
+        return ob_get_clean();
+    }
+
+    /**
+     * Shortcode: [cbc_events_section]
+     * Renders grouped sections for Event / Training / Seminar / Holiday
+     */
+    public function render_events_section($atts = []) {
+        $types = ['event' => 'Event', 'training' => 'Training', 'seminar' => 'Seminar', 'holiday' => 'Holiday'];
+        $out = '<div class="cbc-events-sections">';
+        foreach ($types as $slug => $label) {
+            $out .= '<section class="cbc-events-group cbc-events-' . esc_attr($slug) . '">';
+            $out .= '<h3>' . esc_html($label) . '</h3>';
+            $out .= do_shortcode('[cbc_events_list type="' . esc_attr($slug) . '" limit="5"]');
+            $out .= '</section>';
+        }
         $out .= '</div>';
         return $out;
     }
