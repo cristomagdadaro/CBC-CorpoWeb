@@ -58,6 +58,8 @@ class GOVPH
     'govph_acc_link_faq' => '',
     'govph_acc_link_sitemap' => '',
     'govph_acc_link_search' => '',
+    'govph_facebook_posts' => '',
+    'govph_featured_videos' => '',
   );
 
   public function __construct(){
@@ -259,6 +261,10 @@ jQuery(document).ready(function($) {
     add_settings_field('govph_custom_headings_inner_page_size', 'Banner Title Header', array($this, 'govph_custom_headings_inner_page_size'), __FILE__, 'govph_main_section');
     add_settings_field('govph_custom_footer_background_color', 'Agency Footer Color', array($this, 'govph_custom_footer_background_color'), __FILE__, 'govph_main_section');
 
+    // homepage social options
+    add_settings_field('govph_facebook_posts', 'Featured Latest Facebook Post URLs', array($this, 'govph_facebook_posts'), __FILE__, 'govph_main_section');
+    add_settings_field('govph_featured_videos', 'Featured Videos (Facebook) ', array($this, 'govph_featured_videos'), __FILE__, 'govph_main_section');
+
     // publishing options
     add_settings_field('govph_content_section', '<h3>Publishing Options<h3>', array($this, 'govph_content_section'), __FILE__, 'govph_main_section');
     add_settings_field('govph_content_show_pub_date', 'Show Published Date', array($this, 'govph_content_show_pub_date'), __FILE__, 'govph_main_section');
@@ -291,6 +297,28 @@ jQuery(document).ready(function($) {
   public function govph_general_section(){
   ?>
 <hr />
+<?php
+  }
+
+  public function govph_facebook_posts(){
+    $value = isset($this->options['govph_facebook_posts']) ? $this->options['govph_facebook_posts'] : '';
+    ?>
+<textarea name="govph_options[govph_facebook_posts]" rows="6" cols="80" style="max-width: 100%; width: 600px;">
+<?php echo esc_textarea($value); ?>
+</textarea>
+<br />
+<span class="description">Enter one public Facebook post URL per line. Example: https://www.facebook.com/{page}/posts/{id}</span>
+<?php
+  }
+
+  public function govph_featured_videos(){
+    $value = isset($this->options['govph_featured_videos']) ? $this->options['govph_featured_videos'] : '';
+    ?>
+<textarea name="govph_options[govph_featured_videos]" rows="6" cols="80" style="max-width: 100%; width: 600px;" placeholder="https://www.facebook.com/{page}/videos/{id}|Optional Title|Optional description (one per line)">
+<?php echo esc_textarea($value); ?>
+</textarea>
+<br />
+<span class="description">Enter one Facebook video per line using the format: URL|Title|Description. Title and Description are optional. Example: https://www.facebook.com/DACropBiotechCenter/videos/1093880421705089|Last Year's Accomplishments|Short description...</span>
 <?php
   }
 

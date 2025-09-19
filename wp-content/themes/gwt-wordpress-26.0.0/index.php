@@ -22,32 +22,29 @@ include_once('inc/banner.php');
              style="display: flex; flex-direction: column; justify-content: space-between;"
             role="main">
 
-            <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Videos</strong></h2>
-
             <?php
-            $videos = [
-                [
-                    'src'   => 'https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FDACropBiotechCenter%2Fvideos%2F1093880421705089%2F&show_text=false&width=560&t=0',
-                    'title' => "Last Year's Accomplishments",
-                    'description' => "Let's rewind and celebrate the breakthroughs of 2023 at the DA-Crop Biotechnology Center! Check out our recap video and stay tuned for even more exciting developments in the coming months!"
-                ],
-                [
-                        'src'   => 'https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FDACropBiotechCenter%2Fvideos%2F2629670060546947%2F&show_text=false&width=560&t=0',
-                        'title' => 'Official Launch of the New DA-CBC Logo',
-                        'description' => "This Labor Day, the DA-Crop Biotechnology Center is proud to reveal its new logo representing the tireless effort and commitment of our agricultural workers- whether in the fields or in the labs. The logo combines elements of DNA and crops, underscoring the valuable contributions of our farmers, laborers, and researchers who nurture the soil and guarantee bountiful crops. On this day, let us acknowledge their hard work and anticipate a tomorrow that values progress, with biotechnology at the forefront of enhancing agricultural efficiency and longevity. Join us in honoring the ethos of hard work and devotion!"
-                ],
-                [
-                        'src'   => 'https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FDACropBiotechCenter%2Fvideos%2F1092606405765452%2F&show_text=false&width=560&t=0',
-                        'title' => 'DA-CBC: Cultivating not just crops, but also researchers!',
-                        'description' => "Thirteen trainees from Benguet State University, Regional Crop Protection Center Region VII, Caraga State University, and Bureau of Soils and Water Management, recently completed the 4-day Training on Basic Molecular Biology Techniques for Bacterial Identification held at DA-CBC last October 28-31. The training, combining lectures and hands-on activities, provided participants with a comprehensive understanding of general laboratory procedures, microbial biotechnology, basic molecular biology techniques, and advanced bioinformatics analyses such as 16s rRNA Sequence Data Analysis, Diversity Analysis, and Metagenomics."
-                ],
-              /*[
-                    'src' => "",
-                    'title' => "",
-                    'description' => ""
-                ],*/
-                // add more here...
-            ];
+
+            // Build videos from Theme Options if provided
+            $videos = [];
+            $option = get_option('govph_options');
+            if (!empty($option['govph_featured_videos'])) {
+                $lines = preg_split("/(\r\n|\n|\r)/", $option['govph_featured_videos']);
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (!$line) { continue; }
+                    $parts = array_map('trim', explode('|', $line, 3));
+                    $url = $parts[0] ?? '';
+                    if ($url && filter_var($url, FILTER_VALIDATE_URL) && strpos($url, 'facebook.com') !== false) {
+                        $encoded = urlencode($url);
+                        $src = "https://www.facebook.com/plugins/video.php?height=314&href={$encoded}&show_text=false&width=560&t=0";
+                        $videos[] = [
+                            'src' => $src,
+                            'title' => $parts[1] ?? '',
+                            'description' => $parts[2] ?? '',
+                        ];
+                    }
+                }
+            }
 
             function limit_words( $string, $limit = 10 ) {
                 $words = explode( ' ', $string );
@@ -58,6 +55,10 @@ include_once('inc/banner.php');
                 }
             }
             ?>
+
+            <?php  if (count($videos) > 0):  ?>
+                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Videos</strong></h2>
+            <?php endif; ?>
 
             <div class="grid grid-cols-3 gap-2 lg:gap-5">
                 <?php foreach ( $videos as $video ) : ?>
@@ -82,12 +83,18 @@ include_once('inc/banner.php');
 
 
             <?php
-            // Add or remove Facebook post URLs in this array.
-            $postUrls = [
-                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid029KuPP6JMWBYe31sc8aTDqpw9MmsuZLtL6KFLjBMewTDFGAPnatuFsXv33jXWYgBxl',
-                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid0RJZ3PBmKzS2yTpgeQ5JCzUZ2AhvZhHT6GZokg9m9G4JBqRbgPAKAS6V79kDyXUvFl',
-                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid0LmnzMZsaLCofiV2Q1izXp5pUri8A1ja1gNLkaYp7Hw4s66si2b2chS35qkim8sdml',
-            ];
+            // Load Facebook post URLs from Theme Options (Appearance > Theme Options), one per line.
+            $option = get_option('govph_options');
+            $postUrls = [];
+            if (!empty($option['govph_facebook_posts'])) {
+                $lines = preg_split("/(\r\n|\n|\r)/", $option['govph_facebook_posts']);
+                foreach ($lines as $line) {
+                    $url = trim($line);
+                    if ($url && filter_var($url, FILTER_VALIDATE_URL) && strpos($url, 'facebook.com') !== false) {
+                        $postUrls[] = $url;
+                    }
+                }
+            }
 
             $iframeWidth = "300";
             $iframeHeight = "300";
@@ -99,8 +106,10 @@ include_once('inc/banner.php');
             $gapBetweenPosts = "1rem";
             ?>
 
-
-                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Latest Facebook Posts</strong></h2><div class="scrolling-container">
+            <?php if (count($postUrls) > 0): ?>
+                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Facebook Posts</strong></h2>
+            <?php endif; ?>
+            <div class="scrolling-container">
                 <div class="scrolling-track">
                     <?php
                     for ($i = 0; $i < 2; $i++):
