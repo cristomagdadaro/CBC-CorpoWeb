@@ -118,7 +118,6 @@ require get_template_directory() . '/inc/function-enable-classic-widgets.php';
  */
 require get_template_directory() . '/inc/function-enable-classic-posts.php';
 
-
 function enqueue_particles_js() {
 	// Load particles.js library
 	wp_enqueue_script(
