@@ -1,0 +1,235 @@
+/*
+Theme Name: GreenVista FSE
+Theme URI: https://gracethemes.com/themes/greenvista-fse/
+Author: Grace Themes
+Author URI: https://gracethemes.com/
+Description: The GreenVista FSE is a free lawnshaper WordPress theme for agriculture, environment, florist, garden, gardeners, gardening, landscape architects, landscaper, landscaping, lawn services. This theme is highly aesthetically pleasing and compatible with the latest version of WordPress. The homepage of the GreenVista FSE theme is really striking. The headers and footers on the homepage enhance the look of the website. This theme is one of the greatest choices for lawn service providers because it has every element they need to attract as many customers to their website as possible. This WordPress theme is search-engine optimized. You don't have to worry about it because using this theme will make your website rank better on search engine results pages (SERPs). Furthermore, this theme is compatible with a wide range of SEO plugins, including Yoast SEO and Rank Math. This theme for WordPress is flexible and dynamic. Regardless of resolution quality, anyone may easily use this theme. This WordPress theme is compatible with a wide range of devices. This implies that you can use this theme on any smart device, including smartphones, tablets, laptops, PCs, and more. With pride, the internet behemoth Google has approved this theme for its mobile-friendly test. Because of all these features, this theme is the greatest choice for you. 
+Version: 1.0
+License: GNU General Public License version 2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: greenvista-fse
+Requires PHP:  5.6
+Tested up to: 6.8
+Tags:blog, news, one-column, two-columns, right-sidebar, block-styles, custom-colors, editor-style, custom-background, custom-menu, featured-images, template-editing, full-site-editing, block-patterns,  threaded-comments, wide-blocks, translation-ready
+GreenVista FSE WordPress Theme has been created by Grace Themes(gracethemes.com), 2025.
+GreenVista FSE WordPress Theme is released under the terms of GNU GPL
+*/
+body.page-template-front .site-main-header {  
+	width:100%; 
+	z-index:999;
+}
+.site-main-header{  
+	position:relative;
+}
+.clear{ clear:both; }
+
+/*dropdown menu background color*/
+.wp-block-navigation .has-child .wp-block-navigation__submenu-container{ 
+	background-color:#ffffff;
+}
+.wp-block-navigation .has-child .wp-block-navigation__submenu-container li{ 
+	padding:5px 0; 
+	border-bottom:1px solid #eee !important;
+}
+.wp-block-navigation__submenu-container.wp-block-navigation-submenu{ 
+	padding-top:30px !important
+}
+.wp-block-navigation__submenu-container.wp-block-navigation-submenu li ul{ 
+	padding-top:0 !important; 
+	left:100% !important; 
+	right:auto !important;
+}
+
+.header-navigation.wp-block-navigation{ 
+	padding:5px 0 !important;
+}
+
+
+.wp-block-group.header-main-banner{ 
+	position:relative;
+}
+.fse-sections-02{ 
+	position:relative !important;
+}
+.welcome-wrap{ 
+	position:relative !important; 
+	z-index:9999;
+}
+.energix_about_small{ 
+	margin-top:-360px !important; 
+	position:relative; 
+	z-index:999;
+}
+ul.wp-block-social-links.head-social li a{ width:35px; height:35px; border:1px solid #fff; border-radius:100%; text-align:center; vertical-align:middle; display:table-cell;}
+
+.wp-block-columns.gv-4-column-row{ margin-top:-75px; z-index:999;}
+
+
+/* = Sidebar CSS
+----------------------------------------------- */
+.st-widgetBX ul.wp-block-latest-posts li{ 
+	margin-bottom:20px; 
+	min-height:80px;
+}
+.st-widgetBX ul.wp-block-latest-posts li a.wp-block-latest-posts__post-title{ 
+	margin-bottom:5px !important; 
+	display:block; 
+	line-height:20px;
+}
+
+/* = Contact Form 7 CSS
+----------------------------------------------- */
+.wpcf7{ 
+	margin:30px 0 0;padding:0;
+}
+.wpcf7 input[type="text"], 
+.wpcf7 input[type="tel"], 
+.wpcf7 input[type="email"]{ 
+	width:40%;	
+	color:#797979;
+	margin-bottom:0;
+	border:1px solid #cccccc;
+	box-shadow:inset 1px 1px 2px #ccc;
+	height:40px;
+	padding:0 15px;
+}	
+.wpcf7 textarea{
+	color:#797979;
+	margin-bottom:25px;
+	border:1px solid #cccccc;
+	box-shadow:inset 1px 1px 2px #ccc;
+	padding:10px;
+	width:60%;
+	height:160px;
+	font-size:12px;
+}
+.wpcf7 input[type="submit"]{
+	border-radius:40px;	
+	cursor:pointer;
+	background-color:#60c19f;
+	padding:20px 40px;
+	color:#ffffff;
+	font-weight:600;
+	border:none;
+	font-size:16px;
+	width:auto;	
+	text-transform:uppercase;
+}
+.wpcf7 input[type="submit"]:hover{
+	background-color:#101010;
+}
+
+
+
+/* = Blog page Design CSS
+----------------------------------------------- */
+ul.blog-list-style{ 
+	margin:0; 
+	padding:0; 
+}
+ul.blog-list-style li{ 
+	margin-bottom:40px; 	
+	display:flow-root; 
+	
+}
+
+ul.blog-list-style li a.wp-block-post-excerpt__more-link{ 
+	padding:10px 20px; 
+	border-radius:10px
+}
+
+ul.blog-list-style li .blog-thumbnail.wp-block-post-featured-image a,
+ul.blog-list-style li .blog-thumbnail.wp-block-post-featured-image img{ 
+	height:auto;
+	width:auto;
+	border-radius:10px;
+}
+
+ul.blog-list-style li h3.wp-block-post-title{ 
+	display:flex;
+}
+
+
+.wp-block-group.PostStyle-1{ 
+	display:flow-root;
+}
+.wp-block-column.fse-page-layout{
+	padding:30px;
+	border-radius:5px; 
+	display:flow-root; 
+	box-shadow:0 0 30px rgb(193 193 193/30%);
+}
+
+
+.wp-block-group.st-widgetBX{
+	display:flow-root; 
+	padding:10px !important;
+	border-radius:15px;
+}
+
+
+/* = Footer CSS
+----------------------------------------------- */
+.site-footer{ 
+	position:relative;
+}
+.site-footer h3.wp-block-heading{ 
+	position:relative; 
+}
+
+.site-footer h3.wp-block-heading::after{  
+	content: ''; 
+	width: 30px; 
+	height: 7px; 
+	background-image: linear-gradient(90deg, #9cc312 55%, #7a9419 45%) !important; 
+	position: absolute; 
+	left: 0; 
+	top: 0;
+}
+
+footer.wp-block-template-part{ 
+	margin-block-start:0 !important
+}
+
+.Footer-QuickLinks{ 
+	list-style:none !important; 
+	padding:0 !important;
+}
+.Footer-QuickLinks li{ 
+	list-style:none !important; 
+	padding:5px 0 5px 0 !important;
+}
+.Footer-QuickLinks li a:hover{ 
+	text-decoration:none; 
+}
+.footer-latest-news li{ 
+	margin-bottom:10px;
+}
+.wp-block-social-links.footer-social li{ 
+	border-radius:10px;
+}
+.wp-block-social-links.footer-social li a{ 
+	padding:12px;
+}
+ul.gv-latest-posts{ 
+	margin:0; 
+	padding:0;
+}
+ul.gv-latest-posts li{ 
+	list-style:none; 
+	margin-bottom:15px;
+}
+ul.gv-latest-posts li .wp-block-latest-posts__featured-image{ 
+	margin-top:6px;
+}
+ul.gv-latest-posts li .wp-block-latest-posts__featured-image img{ 
+	border-radius:10px;
+}
+ul.gv-latest-posts li .wp-block-latest-posts__post-title{ 
+	margin-bottom:15px; 
+	display:block; 
+	line-height:22px;
+}
+ul.gv-latest-posts li .wp-block-latest-posts__post-title:hover{ 
+	color:#8cc73e;
+}
