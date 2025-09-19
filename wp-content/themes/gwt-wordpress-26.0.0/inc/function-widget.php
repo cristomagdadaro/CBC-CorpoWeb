@@ -134,6 +134,14 @@ function gwt_wp_widgets_init() {
 		'after_title'	=> '</h3>',
 	) );
 	register_sidebar( array(
+		'name' 			=> __( 'Floating Sidebar', 'gwt_wp' ),
+		'id' 			=> 'floating-sidebar',
+		'before_widget' 	=> '<div id="%1$s" class="widget my-auto floating-widget %2$s">',
+		'after_widget' 		=> '</div>',
+		'before_title' 		=> '<h3 class="widget-title">',
+		'after_title' 		=> '</h3>',
+	) );
+	register_sidebar( array(
 		'name'			=> __( 'Agency Footer 2', 'gwt_wp' ),
 		'id'			=> 'footer-2',
 		'before_widget'	=> '<aside id="%1$s" class="widget %2$s">',

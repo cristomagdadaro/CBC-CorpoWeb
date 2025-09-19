@@ -209,6 +209,92 @@
 
 <?php wp_footer(); ?>
 
+<!-- Floating Sidebar (right side) -->
+<?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
+    <div id="floating-sidebar-container" aria-hidden="false">
+        <button id="floating-sidebar-toggle" aria-expanded="true" aria-controls="floating-sidebar" class="h-full" title="Toggle sidebar">&raquo;</button>
+        <div id="floating-sidebar" role="complementary" class="flex items-center gap-2">
+            <?php dynamic_sidebar( 'floating-sidebar' ); ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<style>
+    /* Floating sidebar styles */
+    #floating-sidebar-container {
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 9999;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        pointer-events: auto;
+    }
+
+    #floating-sidebar-toggle {
+        background: #006837;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 0.6rem;
+        border-radius: 4px 0 0 4px;
+        cursor: pointer;
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+
+    #floating-sidebar {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        max-width: 320px;
+        width: 320px;
+        max-height: 70vh;
+        overflow: auto;
+        padding: 1rem;
+        border-radius: 4px 0 0 4px;
+    }
+
+    /* When collapsed, hide the panel and rotate the toggle */
+    #floating-sidebar-container.collapsed #floating-sidebar {
+        display: none;
+    }
+    #floating-sidebar-container.collapsed #floating-sidebar-toggle {
+        transform: rotate(180deg);
+        border-radius: 4px;
+    }
+
+    /* Small screens: hide floating sidebar to avoid covering content */
+    @media (max-width: 768px) {
+        #floating-sidebar-container { display: none; }
+    }
+
+    /* Minimal styles for widgets inside floating sidebar */
+    #floating-sidebar .widget .widget-title { margin-top: 0; }
+</style>
+
+<script>
+    (function(){
+        var container = document.getElementById('floating-sidebar-container');
+        var toggle = document.getElementById('floating-sidebar-toggle');
+        if (!container || !toggle) return;
+
+        // Remember state in localStorage
+        var stateKey = 'gwt_floating_sidebar_collapsed';
+        var collapsed = localStorage.getItem(stateKey) === '1';
+        if (collapsed) container.classList.add('collapsed');
+
+        toggle.addEventListener('click', function(e){
+            e.preventDefault();
+            container.classList.toggle('collapsed');
+            var isCollapsed = container.classList.contains('collapsed');
+            localStorage.setItem(stateKey, isCollapsed ? '1' : '0');
+            toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+        });
+    })();
+</script>
+
 <div><a href="#page" id="back-to-top" style="display: inline;"><i class="fa fa-arrow-circle-up fa-2x"></i></a></div>
 </body>
 
