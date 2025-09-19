@@ -62,8 +62,9 @@ Custom Header Styles
 #textlogo-wrapper {
     display: flex;
     flex-direction: row;
-    gap: 0.2rem;
+    gap: 1rem;
     align-items: center;
+    width: fit-content;
 }
 
 .large-12 .columns {
@@ -623,7 +624,7 @@ this is for mobile menus */
   display: block;
   position: relative;
   /*font-size: 0.7rem;*/
-    line-height: 1;
+  line-height: 0.8rem;
 }
 #agency-name {
   display: block;
@@ -635,6 +636,7 @@ this is for mobile menus */
 #agency-tagline {
   display: block;
   position: relative;
+  line-height: 0.4rem;
   /*font-size: 0.8rem;*/
 }
 
@@ -827,8 +829,12 @@ this is for mobile menus */
     object-fit: contain;
   }
   #textlogo-wrapper {
-    text-align: center;
+    text-align: left;
+    gap: 0.5rem;
   }
+    #textlogo-wrapper div {
+      width: 7rem;
+    }
   #textlogo-inner-wrapper {
     /*margin-top: 10px;*/
   }
@@ -848,6 +854,7 @@ this is for mobile menus */
   }
   #textlogo-wrapper {
     display: flex;
+    gap: 0.5rem;
   }
 
   .flex-container {
@@ -876,7 +883,7 @@ this is for mobile menus */
 @media screen and (max-width: 63.9375em) {
   .container-masthead {
     /*margin-top: 42px;*/
-    border-bottom: 1px solid #f2f2f2;
+
   }
   .banner-content {
     padding: 1rem 0;

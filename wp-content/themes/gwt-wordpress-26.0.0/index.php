@@ -80,6 +80,52 @@ include_once('inc/banner.php');
                 <?php endforeach; ?>
             </div>
 
+
+            <?php
+            // Add or remove Facebook post URLs in this array.
+            $postUrls = [
+                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid029KuPP6JMWBYe31sc8aTDqpw9MmsuZLtL6KFLjBMewTDFGAPnatuFsXv33jXWYgBxl',
+                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid0RJZ3PBmKzS2yTpgeQ5JCzUZ2AhvZhHT6GZokg9m9G4JBqRbgPAKAS6V79kDyXUvFl',
+                'https://www.facebook.com/DACropBiotechCenter/posts/pfbid0LmnzMZsaLCofiV2Q1izXp5pUri8A1ja1gNLkaYp7Hw4s66si2b2chS35qkim8sdml',
+            ];
+
+            $iframeWidth = "300";
+            $iframeHeight = "300";
+
+            // This width is passed to Facebook to determine the post's internal layout.
+            $facebookPostWidth = "100";
+
+            $animationDuration = "60s";
+            $gapBetweenPosts = "1rem";
+            ?>
+
+
+                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Latest Facebook Posts</strong></h2><div class="scrolling-container">
+                <div class="scrolling-track">
+                    <?php
+                    for ($i = 0; $i < 2; $i++):
+                        foreach ($postUrls as $url):
+                            $encodedUrl = urlencode($url);
+                            $iframeSrc = "https://www.facebook.com/plugins/post.php?href={$encodedUrl}&show_text=false&width={$facebookPostWidth}";
+                            ?>
+                            <div class="scrolling-content">
+                                <iframe
+                                        src="<?php echo $iframeSrc; ?>"
+                                        width="<?php echo $iframeWidth; ?>"
+                                        height="<?php echo $iframeHeight; ?>"
+                                        style="border:none;overflow:hidden"
+                                        scrolling="no"
+                                        frameborder="0"
+                                        allowfullscreen="true"
+                                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                                </iframe>
+                            </div>
+                        <?php
+                        endforeach;
+                    endfor;
+                    ?>
+                </div>
+            </div>
         </div>
         <!-- start content -->
 

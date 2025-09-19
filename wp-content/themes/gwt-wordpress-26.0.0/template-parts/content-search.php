@@ -8,13 +8,13 @@
 ?>
 
 <div class="post-box">
-    <article id="post-<?php the_ID(); ?>" <?php post_class('callout secondary'); ?>>
+    <article id="post-<?php the_ID(); ?>" <?php post_class('callout secondary flex gap-2 lg:gap-5'); ?>>
 
         <?php 
 			$content_class = 'large-12';
 			if(has_post_thumbnail()) : 
 				$content_class = 'large-9';
-				the_post_thumbnail( 'large', array( 'class' => 'thumbnail') );
+				the_post_thumbnail( 'thumbnail', array( 'class' => 'thumbnail min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full hidden md:block') );
 			endif;
 			if (has_post_thumbnail() && is_active_sidebar('left-sidebar') && is_active_sidebar('right-sidebar')) :
 				$content_class = 'large-12';

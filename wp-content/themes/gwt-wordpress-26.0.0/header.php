@@ -351,12 +351,12 @@ Press esc, or click the close the button to close this dialog box.
             </ul>
         </nav>
 
-        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80] backdrop-blur" id="closeBtnOverlay"></div>
+        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80] backdrop-blur-sm" id="closeBtnOverlay"></div>
 
 
         <!-- off-canvas title bar for 'small' screen -->
         <div class="py-8 md:hidden lg:hidden"></div>
-        <div id="off-canvas-container" class="title-bar fixed top-0 columns sm:hidden block py-1 bg-[#006837]">
+        <div id="off-canvas-container" class="title-bar fixed top-0 columns sm:hidden block py-1 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]">
             <div class="flex justify-between w-full drop-shadow">
                 <div class="title-bar-left flex flex-row items-center w-full">
                     <!-- masthead -->
@@ -380,7 +380,7 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden">
+            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2">
                 <div class="row flex items-center sm:py-2 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden w-full">
                         <!-- masthead -->
