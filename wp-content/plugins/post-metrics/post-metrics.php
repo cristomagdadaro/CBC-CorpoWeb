@@ -13,9 +13,13 @@ class PM_Post_Metrics {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_shortcode( 'post_metrics', array( __CLASS__, 'shortcode_metrics' ) );
+		// register pm_buttons shortcode
+		add_action( 'init', array( __CLASS__, 'register_shortcodes' ) );
 		// Admin UI
 		add_action( 'add_meta_boxes', array( __CLASS__, 'register_meta_box' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		// dashboard widget
+		add_action( 'init', array( __CLASS__, 'register_dashboard_widgets' ) );
 	}
 
 	public static function register_routes() {
@@ -32,7 +36,8 @@ class PM_Post_Metrics {
 		$event = isset( $params['event'] ) ? sanitize_key( $params['event'] ) : 'view';
 		$label = isset( $params['label'] ) ? sanitize_text_field( $params['label'] ) : '';
 
-		$allowed = array( 'view', 'like', 'share', 'engagement', 'custom' );
+		// support 'comment' as a distinct event that requires auth
+		$allowed = array( 'view', 'like', 'share', 'engagement', 'comment', 'custom' );
 		if ( ! $post_id || ! get_post_status( $post_id ) ) {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'invalid post_id' ), 400 );
 		}
@@ -49,23 +54,48 @@ class PM_Post_Metrics {
 		// lock for 30 seconds
 		set_transient( $transient_key, 1, 30 );
 
+		// Enforce authentication for sensitive actions: likes and comments require a logged-in user
+		if ( in_array( $event, array( 'like', 'comment' ), true ) && ! is_user_logged_in() ) {
+			return new WP_REST_Response( array( 'success' => false, 'message' => 'auth_required' ), 401 );
+		}
+
+		// Reintroduce 'viewers' tracked via cookie (30 days)
 		$meta = get_post_meta( $post_id, 'pm_metrics', true );
 		if ( ! is_array( $meta ) ) {
-			$meta = array( 'views' => 0, 'likes' => 0, 'shares' => 0, 'engagements' => 0, 'custom' => array() );
+			$meta = array( 'views' => 0, 'viewers' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
 		}
+
+		// Determine if visitor cookie exists for this post
+		$cookie_name = 'pm_viewed_' . $post_id;
+		$has_cookie = isset( $_COOKIE[ $cookie_name ] ) && $_COOKIE[ $cookie_name ];
 
 		switch ( $event ) {
 			case 'view':
+				// increment views (raw page views)
 				$meta['views'] = intval( $meta['views'] ?? 0 ) + 1;
+				// If visitor hasn't got the post cookie, count as a unique viewer and set cookie for 30 days
+				if ( ! $has_cookie ) {
+					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
+					// set cookie so subsequent views in the next 30 days won't be double-counted
+					setcookie( $cookie_name, '1', time() + ( DAY_IN_SECONDS * 30 ), COOKIEPATH ? COOKIEPATH : '/' );
+					// also set in PHP superglobal so subsequent logic in this request sees it
+					$_COOKIE[ $cookie_name ] = '1';
+					$has_cookie = true;
+				}
 				break;
 			case 'like':
 				$meta['likes'] = intval( $meta['likes'] ?? 0 ) + 1;
 				break;
 			case 'share':
+				// allow anonymous shares
 				$meta['shares'] = intval( $meta['shares'] ?? 0 ) + 1;
 				break;
 			case 'engagement':
 				$meta['engagements'] = intval( $meta['engagements'] ?? 0 ) + 1;
+				break;
+			case 'comment':
+				// comment event requires login (checked earlier)
+				$meta['comments'] = intval( $meta['comments'] ?? 0 ) + 1;
 				break;
 			default:
 				// custom event aggregated by label
@@ -77,6 +107,39 @@ class PM_Post_Metrics {
 		}
 
 		update_post_meta( $post_id, 'pm_metrics', $meta );
+
+		// Update monthly buckets (YYYY-MM)
+		$month_key = date( 'Y-m' );
+		$monthly = get_post_meta( $post_id, 'pm_metrics_monthly', true );
+		if ( ! is_array( $monthly ) ) $monthly = array();
+		if ( ! isset( $monthly[ $month_key ] ) ) {
+			$monthly[ $month_key ] = array( 'views' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
+		}
+		switch ( $event ) {
+			case 'view':
+				$monthly[ $month_key ]['views'] = intval( $monthly[ $month_key ]['views' ] ?? 0 ) + 1;
+				$monthly[ $month_key ]['viewers'] = intval( $monthly[ $month_key ]['viewers' ] ?? 0 ) + 1;
+				break;
+			case 'like':
+				$monthly[ $month_key ]['likes'] = intval( $monthly[ $month_key ]['likes' ] ?? 0 ) + 1;
+				break;
+			case 'share':
+				$monthly[ $month_key ]['shares'] = intval( $monthly[ $month_key ]['shares' ] ?? 0 ) + 1;
+				break;
+			case 'engagement':
+				$monthly[ $month_key ]['engagements'] = intval( $monthly[ $month_key ]['engagements' ] ?? 0 ) + 1;
+				break;
+			case 'comment':
+				$monthly[ $month_key ]['comments'] = intval( $monthly[ $month_key ]['comments' ] ?? 0 ) + 1;
+				break;
+			default:
+				if ( ! isset( $monthly[ $month_key ]['custom'][ $label ] ) ) {
+					$monthly[ $month_key ]['custom'][ $label ] = 0;
+				}
+				$monthly[ $month_key ]['custom'][ $label ] = intval( $monthly[ $month_key ]['custom'][ $label ] ) + 1;
+				break;
+		}
+		update_post_meta( $post_id, 'pm_metrics_monthly', $monthly );
 
 		return new WP_REST_Response( array( 'success' => true, 'metrics' => $meta ), 200 );
 	}
@@ -90,6 +153,10 @@ class PM_Post_Metrics {
 		wp_localize_script( 'pm-tracker', 'PM_TRACKER', array(
 			'rest_url' => esc_url_raw( rest_url( 'post-metrics/v1/track' ) ),
 			'post_id'  => intval( $post->ID ),
+			'nonce'    => wp_create_nonce( 'wp_rest' ),
+			'is_logged_in' => is_user_logged_in(),
+			'login_url' => wp_login_url( get_permalink( $post->ID ) ),
+			'register_url' => function_exists( 'wp_registration_url' ) ? '/wp-login.php?action=register' : '',
 		) );
 		wp_enqueue_script( 'pm-tracker' );
 	}
@@ -108,10 +175,12 @@ class PM_Post_Metrics {
 		$likes = intval( $meta['likes'] ?? 0 );
 		$shares = intval( $meta['shares'] ?? 0 );
 		$eng = intval( $meta['engagements'] ?? 0 );
+		$comments = intval( $meta['comments'] ?? 0 );
 		echo '<div class="pm-meta-box">';
 		echo '<p><strong>' . esc_html__( 'Views', 'post-metrics' ) . ':</strong> ' . esc_html( $views ) . '</p>';
 		echo '<p><strong>' . esc_html__( 'Likes', 'post-metrics' ) . ':</strong> ' . esc_html( $likes ) . '</p>';
 		echo '<p><strong>' . esc_html__( 'Shares', 'post-metrics' ) . ':</strong> ' . esc_html( $shares ) . '</p>';
+		echo '<p><strong>' . esc_html__( 'Comments', 'post-metrics' ) . ':</strong> ' . esc_html( $comments ) . '</p>';
 		echo '<p><strong>' . esc_html__( 'Engagements', 'post-metrics' ) . ':</strong> ' . esc_html( $eng ) . '</p>';
 		if ( ! empty( $meta['custom'] ) && is_array( $meta['custom'] ) ) {
 			echo '<hr /><p><strong>' . esc_html__( 'Custom events', 'post-metrics' ) . '</strong></p><ul>';
@@ -296,6 +365,9 @@ class PM_Post_Metrics {
 				case 'engagements':
 					$val = intval( $meta['engagements'] ?? 0 );
 					break;
+				case 'comments':
+					$val = intval( $meta['comments'] ?? 0 );
+					break;
 				default:
 					if ( isset( $meta['custom'][ $p ] ) ) {
 						$val = intval( $meta['custom'][ $p ] );
@@ -306,6 +378,92 @@ class PM_Post_Metrics {
 		}
 		$out .= '</div>';
 		return $out;
+	}
+
+	public static function register_shortcodes() {
+		add_shortcode( 'pm_buttons', array( __CLASS__, 'shortcode_buttons' ) );
+	}
+
+	public static function shortcode_buttons( $atts ) {
+		$atts = shortcode_atts( array( 'id' => 0, 'show_counts' => '1' ), $atts, 'pm_buttons' );
+		$post_id = intval( $atts['id'] ) ? intval( $atts['id'] ) : get_the_ID();
+		$meta = get_post_meta( $post_id, 'pm_metrics', true );
+		$likes = intval( $meta['likes'] ?? 0 );
+		$shares = intval( $meta['shares'] ?? 0 );
+
+		$like_btn = '<button class="pm-btn pm-like flex items-center gap-2" data-pm-event="like" data-pm-label="shortcode-like" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+  <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+</svg><span class="pm-like-count">' . esc_html( $likes ) . '</span></button>';
+		$share_btn = '<button class="pm-btn pm-share flex items-center gap-2" data-pm-event="share" data-pm-label="shortcode-share"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-share-fill" viewBox="0 0 16 16">
+  <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+</svg><span class="pm-share-count">' . esc_html( $shares ) . '</span></button>';
+
+		// Inline script: use server-side login state and require login only for like/comment; allow anonymous share
+		$login_url_js = esc_js( wp_login_url( get_permalink( $post_id ) ) );
+		$reg_url_js = esc_js( function_exists( 'wp_registration_url' ) ? wp_registration_url() : '/wp-login.php?action=register' );
+		$script = "<script>(function(){\n";
+		$script .= "var isLogged = " . ( is_user_logged_in() ? 'true' : 'false' ) . ";\n";
+		$script .= "var loginUrl = '" . $login_url_js . "';\n";
+		$script .= "var regUrl = '" . $reg_url_js . "';\n";
+		$script .= "document.addEventListener('click', function(e){\n";
+		$script .= " var el = e.target; while(el && el !== document){ if (el.dataset && el.dataset.pmEvent){ var evt = el.dataset.pmEvent; // only require login for like and comment\n";
+		$script .= " if (!isLogged && (evt === 'like' || evt === 'comment')){ var goLogin = confirm('You must be logged in to perform this action. Press OK to go to Login, Cancel to go to Register.'); if (goLogin) { window.location.href = loginUrl; } else { window.location.href = regUrl; } return; }\n";
+		$script .= " if (evt==='like'){ var c = el.querySelector('.pm-like-count') || document.querySelector('.pm-like-count'); if (c) c.textContent = (parseInt(c.textContent||'0',10)+1); }\n";
+		$script .= " if (evt==='share'){ var c2 = el.querySelector('.pm-share-count') || document.querySelector('.pm-share-count'); if (c2) c2.textContent = (parseInt(c2.textContent||'0',10)+1); } break;} el = el.parentNode; } }, false);\n";
+		$script .= "})();</script>";
+
+		return '<div class="pm-button-wrap flex items-center gap-5">' . $like_btn . ' ' . $share_btn . '</div>' . $script;
+	}
+
+	// Dashboard widget: register and render
+	public static function register_dashboard_widgets() {
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'add_dashboard_widgets' ) );
+	}
+
+	public static function add_dashboard_widgets() {
+		wp_add_dashboard_widget( 'pm_dashboard_widget', __( 'Post Metrics', 'post-metrics' ), array( __CLASS__, 'render_dashboard_widget' ) );
+	}
+
+	public static function render_dashboard_widget() {
+		// Compute month key
+		$month_key = date( 'Y-m' );
+		$total_views = 0;
+		// Find top posts by monthly views
+		$args = array(
+			'post_type' => array( 'post', 'page' ),
+			'post_status' => 'publish',
+			'posts_per_page' => -1,
+			'meta_query' => array( array( 'key' => 'pm_metrics_monthly' ) ),
+		);
+		$all = get_posts( $args );
+		$rows = array();
+		foreach ( $all as $p ) {
+			$m = get_post_meta( $p->ID, 'pm_metrics_monthly', true );
+			$month_val = 0;
+			if ( is_array( $m ) && isset( $m[ $month_key ] ) ) {
+				$month_val = intval( $m[ $month_key ]['views'] ?? 0 );
+			}
+			$meta = get_post_meta( $p->ID, 'pm_metrics', true );
+			$cumulative = intval( $meta['views'] ?? 0 );
+			$rows[] = array( 'id' => $p->ID, 'title' => get_the_title( $p ), 'month' => $month_val, 'cumulative' => $cumulative );
+			$total_views += $month_val;
+		}
+		// If no monthly buckets (0 total), fall back to cumulative top
+		if ( $total_views === 0 ) {
+			foreach ( $rows as &$r ) { $r['month'] = $r['cumulative']; }
+		}
+		usort( $rows, function( $a, $b ) { return $b['month'] <=> $a['month']; } );
+		$top = array_slice( $rows, 0, 5 );
+
+		echo '<div class="pm-dashboard">';
+		echo '<p><strong>' . esc_html__( 'Total views this month', 'post-metrics' ) . ':</strong> ' . esc_html( $total_views ) . '</p>';
+		echo '<ol>';
+		foreach ( $top as $r ) {
+			echo '<li>' . esc_html( $r['title'] ) . ' — ' . esc_html( $r['month'] ) . '</li>';
+		}
+		echo '</ol>';
+		echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=pm-post-metrics' ) ) . '">' . esc_html__( 'View full report', 'post-metrics' ) . '</a></p>';
+		echo '</div>';
 	}
 }
 

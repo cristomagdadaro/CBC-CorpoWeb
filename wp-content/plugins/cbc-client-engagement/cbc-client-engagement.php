@@ -46,6 +46,9 @@ class CBC_Client_Engagement {
         // Admin menu
         add_action('admin_menu', [$this, 'register_admin_menu']);
 
+    // Handler for one-off admin bulk action to enable comments
+    add_action('admin_post_cbc_enable_comments_run', [$this, 'handle_enable_comments_run']);
+
         // Admin columns
         add_filter('manage_' . self::APPOINTMENT_POST_TYPE . '_posts_columns', [$this, 'appt_columns']);
         add_action('manage_' . self::APPOINTMENT_POST_TYPE . '_posts_custom_column', [$this, 'appt_column_content'], 10, 2);
@@ -58,6 +61,9 @@ class CBC_Client_Engagement {
         add_action('add_meta_boxes', [$this, 'register_metaboxes']);
         // Save disabled (we treat as submitted entries) but keep hook for possible future use
         add_action('save_post', [$this, 'prevent_unintended_save'], 10, 2);
+
+    // Ensure events have comments enabled by default on creation
+    add_action('save_post', [$this, 'cbc_set_event_comments_default'], 20, 3);
 
         // Basic styles for forms
         add_action('wp_enqueue_scripts', function() {
@@ -170,7 +176,9 @@ class CBC_Client_Engagement {
             'show_in_menu'       => false,
             'capability_type'    => 'post',
             'map_meta_cap'       => true,
-            'supports'           => ['title','editor','excerpt','custom-fields'],
+            'supports'           => ['title','editor','excerpt','custom-fields','comments'],
+            // Allow block-based comments form to work via REST
+            'show_in_rest'       => true,
             'has_archive'        => true,
         ]);
 
@@ -213,6 +221,39 @@ class CBC_Client_Engagement {
 
         // Submenu: Events
         add_submenu_page('cbc-client-engagement', __('Events', 'cbc'), __('Events', 'cbc'), $cap, 'edit.php?post_type=cbc_event');
+
+        // Submenu: One-off tools
+        add_submenu_page('cbc-client-engagement', __('Tools', 'cbc'), __('Tools', 'cbc'), $cap, 'cbc-client-engagement-tools', [$this, 'render_tools_page']);
+    }
+
+    /**
+     * Ensure comments are enabled by default for newly created events.
+     * Runs on save_post and only acts when a new post is inserted and it's a cbc_event.
+     */
+    public function cbc_set_event_comments_default($post_id, $post, $update) {
+        // Only act for our events
+        if ($post->post_type !== 'cbc_event') {
+            return;
+        }
+
+        // Only act on first insert, not updates
+        if ($update) {
+            return;
+        }
+
+        // Skip autosaves and revisions
+        if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+            return;
+        }
+
+        // Ensure comment status is open
+        if ( 'open' !== $post->comment_status ) {
+            // Use wp_update_post safely to avoid infinite loop: remove this action for update
+            remove_action('save_post', [$this, 'cbc_set_event_comments_default'], 20);
+            wp_update_post( [ 'ID' => $post_id, 'comment_status' => 'open' ] );
+            // Re-add action
+            add_action('save_post', [$this, 'cbc_set_event_comments_default'], 20, 3);
+        }
     }
 
     public function render_dashboard_page() {
@@ -246,6 +287,82 @@ class CBC_Client_Engagement {
             <p style="margin-top:20px;">Embed forms using these shortcodes: <code>[cbc_appointment_form]</code>, <code>[cbc_feedback_form]</code>, and <code>[cbc_internship_form]</code>. You can also use the combined shortcode <code>[cbc_client_engagement_page]</code> to render all forms on a single page.</p>
         </div>
         <?php
+    }
+
+    /**
+     * Render tools page with a nonce-protected button to enable comments on Events.
+     */
+    public function render_tools_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
+        $nonce = wp_create_nonce('cbc_enable_comments');
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html__('Client Engagement Tools', 'cbc'); ?></h1>
+            <p>One-off administrative tools for the Client Engagement plugin.</p>
+            <h2>Enable comments for Events</h2>
+            <p>This action will update existing Event posts (<code>cbc_event</code>) to open their comments where they are not already open. The operation is run in batches to avoid timeouts.</p>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="action" value="cbc_enable_comments_run" />
+                <input type="hidden" name="cbc_enable_comments_nonce" value="<?php echo esc_attr($nonce); ?>" />
+                <p><button type="submit" class="button button-primary" onclick="return confirm('Are you sure you want to enable comments for Event posts? This will update multiple posts.');">Enable comments for Events</button></p>
+            </form>
+            <?php if ( isset( $_GET['cbc_enable_result'] ) ) :
+                $result = json_decode( wp_unslash( $_GET['cbc_enable_result'] ), true );
+                if ( is_array( $result ) ) : ?>
+                    <h3>Results</h3>
+                    <p>Updated: <?php echo intval( $result['updated'] ?? 0 ); ?></p>
+                    <p>Skipped (already open): <?php echo intval( $result['skipped'] ?? 0 ); ?></p>
+                <?php endif; endif; ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Handle the admin_post action to enable comments for events.
+     */
+    public function handle_enable_comments_run() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Insufficient permissions', 'cbc' ) );
+        }
+
+        $nonce = isset( $_POST['cbc_enable_comments_nonce'] ) ? wp_unslash( $_POST['cbc_enable_comments_nonce'] ) : '';
+        if ( ! wp_verify_nonce( $nonce, 'cbc_enable_comments' ) ) {
+            wp_die( __( 'Nonce verification failed', 'cbc' ) );
+        }
+
+        // Query events that are not open
+        $args = [
+            'post_type' => 'cbc_event',
+            'post_status' => 'any',
+            'fields' => 'ids',
+            'posts_per_page' => -1,
+        ];
+        $posts = get_posts( $args );
+        $updated = 0;
+        $skipped = 0;
+
+        if ( ! empty( $posts ) ) {
+            foreach ( $posts as $pid ) {
+                $post = get_post( $pid );
+                if ( ! $post ) {
+                    continue;
+                }
+                if ( 'open' === $post->comment_status ) {
+                    $skipped++;
+                    continue;
+                }
+                // Update safely
+                wp_update_post( [ 'ID' => $pid, 'comment_status' => 'open' ] );
+                $updated++;
+            }
+        }
+
+        $result = wp_json_encode( [ 'updated' => $updated, 'skipped' => $skipped ] );
+        $redirect = add_query_arg( 'cbc_enable_result', rawurlencode( $result ), admin_url( 'admin.php?page=cbc-client-engagement-tools' ) );
+        wp_safe_redirect( $redirect );
+        exit;
     }
 
     /**
