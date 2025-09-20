@@ -27,7 +27,7 @@
     <link rel="icon" href="<?php echo get_template_directory_uri() ?>/favicon.ico">
 	<?php wp_head(); ?>
 
-    <style <?php the_tags(); ?>>
+    <style>
         .container-main a,
         .container-main a:active,
         .container-main a:visited,
