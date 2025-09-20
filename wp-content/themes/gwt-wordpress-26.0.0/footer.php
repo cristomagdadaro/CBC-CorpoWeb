@@ -66,11 +66,15 @@
                     <div class="grid sm:grid-cols-2 grid-cols-1 text-white text-sm">
                         <div>
                             <h1 class="text-center border-b font-bold m-5 p-1">Quick Links</h1>
-                            <ul class="list-none m-5">
+                            <ul class="list-none m-5 grid md:grid-cols-3 md:grid-cols-2 grid-cols-1">
                                 <li><a href="/about-us">About Us</a></li>
+                                <li><a href="/about-us/organizational-structure/">Directory</a></li>
                                 <li><a href="/stories">Stories</a></li>
+                                <li><a href="/about-us/privacy-policy-2/">Privacy Prolicy</a></li>
+                                <li><a href="/about-us/terms-and-conditions/">T&C</a></li>
                                 <li><a href="/faqs">FAQs</a></li>
                                 <li><a href="/sitemap">Sitemap</a></li>
+                                <li><a href="/developers-documentation/">Developer Docs</a></li>
                             </ul>
                         </div>
                         <div>
@@ -213,7 +217,7 @@
 <?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
     <div id="floating-sidebar-container" aria-hidden="false">
         <button id="floating-sidebar-toggle" aria-expanded="true" aria-controls="floating-sidebar" class="h-full" title="Toggle sidebar">&raquo;</button>
-        <div id="floating-sidebar" role="complementary" class="flex items-center gap-2">
+        <div id="floating-sidebar" role="complementary" class="items-center gap-2 grid grid-cols-1">
             <?php dynamic_sidebar( 'floating-sidebar' ); ?>
         </div>
     </div>
