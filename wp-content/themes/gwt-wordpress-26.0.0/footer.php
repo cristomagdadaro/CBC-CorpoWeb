@@ -220,17 +220,24 @@
 <?php endif; ?>
 
 <style>
-    /* Floating sidebar styles */
+    /* Floating sidebar styles - slide animation */
     #floating-sidebar-container {
+        /* widths can be adjusted if you change the panel or toggle sizes */
+        --panel-width: 320px;
+        --toggle-width: 44px;
         position: fixed;
         right: 0;
         top: 50%;
-        transform: translateY(-50%);
+        /* translateY to center vertically; translateX controls slide (0 = visible) */
+        transform: translateY(-50%) translateX(0);
         z-index: 9999;
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
         pointer-events: auto;
+        /* allow overflow so the panel can slide out */
+        overflow: visible;
+        transition: transform .28s ease;
     }
 
     #floating-sidebar-toggle {
@@ -242,27 +249,39 @@
         cursor: pointer;
         font-size: 1.25rem;
         line-height: 1;
+        z-index: 10001;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform .28s ease;
     }
 
     #floating-sidebar {
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
         box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-        max-width: 320px;
-        width: 320px;
+        max-width: var(--panel-width);
+        width: var(--panel-width);
         max-height: 70vh;
         overflow: auto;
         padding: 1rem;
         border-radius: 4px 0 0 4px;
+        transition: opacity .28s ease;
     }
 
-    /* When collapsed, hide the panel and rotate the toggle */
-    #floating-sidebar-container.collapsed #floating-sidebar {
-        display: none;
+    /* When collapsed, slide the entire container to the right so the toggle moves with it
+       We translate by (panel width - toggle width + gap) so the toggle remains visible at the edge */
+    #floating-sidebar-container.collapsed {
+        transform: translateY(-50%) translateX(calc(var(--panel-width) - var(--toggle-width) + 8px));
     }
-    #floating-sidebar-container.collapsed #floating-sidebar-toggle {
+    #floating-sidebar-container.collapsed #floating-sidebar {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* rotate toggle when open to indicate close action */
+    #floating-sidebar-toggle[aria-expanded="true"] {
         transform: rotate(180deg);
-        border-radius: 4px;
     }
 
     /* Small screens: hide floating sidebar to avoid covering content */
@@ -278,19 +297,26 @@
     (function(){
         var container = document.getElementById('floating-sidebar-container');
         var toggle = document.getElementById('floating-sidebar-toggle');
-        if (!container || !toggle) return;
+        var panel = document.getElementById('floating-sidebar');
+        if (!container || !toggle || !panel) return;
 
         // Remember state in localStorage
         var stateKey = 'gwt_floating_sidebar_collapsed';
         var collapsed = localStorage.getItem(stateKey) === '1';
         if (collapsed) container.classList.add('collapsed');
+        // Ensure aria-expanded reflects current state
+        toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        // Set initial icon direction
+        toggle.innerHTML = collapsed ? '&raquo;' : '&laquo;';
 
         toggle.addEventListener('click', function(e){
             e.preventDefault();
             container.classList.toggle('collapsed');
             var isCollapsed = container.classList.contains('collapsed');
             localStorage.setItem(stateKey, isCollapsed ? '1' : '0');
+            // aria-expanded true when panel is visible
             toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+            toggle.innerHTML = isCollapsed ? '&raquo;' : '&laquo;';
         });
     })();
 </script>
