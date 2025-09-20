@@ -19,7 +19,10 @@ include_once('inc/banner.php');
              <div class="large-12 container-main">
                 <header>
 	                <?php while ( have_posts() ) : the_post(); ?>
-                        <h1 class="entry-title sm:text-3xl text-xl font-bold"><?php the_title(); ?></h1>
+                        <h1 class="entry-title sm:text-2xl text-lg font-bold text-gray-900 relative pl-6">
+                            <span class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[#1f5d2b] to-[#a2b917]"></span>
+                            <?php the_title(); ?>
+                        </h1>
 	                <?php endwhile; // end of the loop. ?>
                 </header>
             </div>

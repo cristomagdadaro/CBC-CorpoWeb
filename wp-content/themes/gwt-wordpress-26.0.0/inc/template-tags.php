@@ -202,7 +202,7 @@ function gwt_wp_posted_on() {
 	else
 		$author = "";
 
-	printf( __( '<span class="posted-on">%1$s</span><span class="byline">%2$s</span>', 'gwt_wp' ),
+	printf( __( '<span class="byline">%2$s</span><span class="posted-on text-right">%1$s</span>', 'gwt_wp' ),
 		$published_date,
 		$author
 	);

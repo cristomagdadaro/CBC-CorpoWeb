@@ -32,6 +32,8 @@ class CBC_Client_Engagement {
         // Events listing shortcodes
         add_shortcode('cbc_events_list', [$this, 'render_events_list']);
         add_shortcode('cbc_events_section', [$this, 'render_events_section']);
+    // Reusable section header (shortcode)
+    add_shortcode('govph_section_header', [$this, 'render_section_header_shortcode']);
 
         // Form handlers (admin-post)
         add_action('admin_post_nopriv_cbc_submit_appointment', [$this, 'handle_submit_appointment']);
@@ -812,6 +814,80 @@ class CBC_Client_Engagement {
     public function prevent_unintended_save($post_id, $post) {
         // We don't need to handle here; entries are read-only from admin by default.
         return;
+    }
+
+    /**
+     * Shortcode handler: [govph_section_header title="Latest Features" classes="..."]
+     * Returns the header markup so it can be used in post content / block editor.
+     */
+    public function render_section_header_shortcode($atts = []) {
+        $defaults = [
+            'title'   => '',
+            'classes' => 'text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-center px-5',
+            'tag'     => 'h2',
+            'strong'  => '1',
+            'id'      => '',
+        ];
+        $atts = shortcode_atts($defaults, $atts, 'govph_section_header');
+        if (empty($atts['title'])) {
+            return '';
+        }
+
+        return self::section_header_markup($atts['title'], [
+            'classes' => $atts['classes'],
+            'tag'     => $atts['tag'],
+            'strong'  => $atts['strong'],
+            'id'      => $atts['id'],
+        ]);
+    }
+
+    /**
+     * Return the section header markup. Can be called from templates:
+     * echo CBC_Client_Engagement::section_header_markup('Latest Features', ['classes' => '...']);
+     */
+    public static function section_header_markup($title, $args = []) {
+        $defaults = [
+            'classes' => 'text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-center px-5',
+            'tag'     => 'h2',
+            'strong'  => true,
+            'id'      => '',
+            // text-alignment: left|center|right (default: center)
+            'text_alignment' => 'center',
+        ];
+
+        /**
+         * Filter the default args for the section header markup.
+         *
+         * @param array $defaults Default args (classes, tag, strong, id)
+         */
+        $defaults = apply_filters('govph_section_header_args', $defaults);
+
+        // Backwards-compat: allow only the classes string to be filtered easily
+        $defaults['classes'] = apply_filters('govph_section_header_classes', $defaults['classes']);
+
+        $args = wp_parse_args($args, $defaults);
+        $tag = preg_replace('/[^a-z0-9_-]/i', '', $args['tag']);
+        if (!$tag) {
+            $tag = 'h2';
+        }
+        $classes = $args['classes'];
+        $id_attr = $args['id'] ? ' id="' . esc_attr($args['id']) . '"' : '';
+        $strong = filter_var($args['strong'], FILTER_VALIDATE_BOOLEAN);
+        $align = in_array($args['text_alignment'], ['left','center','right'], true) ? $args['text_alignment'] : 'center';
+        $align_style = ' style="text-align:' . esc_attr($align) . ';"';
+
+        $title_escaped = esc_html($title);
+        $classes_attr = esc_attr($classes);
+
+        $inner = $strong ? '<strong>' . $title_escaped . '</strong>' : $title_escaped;
+    return '<' . $tag . $id_attr . ' class="' . $classes_attr . '"' . $align_style . '>' . $inner . '</' . $tag . '>';
+    }
+}
+
+// Global helper for templates: returns the header markup so themes can call it directly.
+if (!function_exists('govph_section_header')) {
+    function govph_section_header($title, $args = []) {
+        return CBC_Client_Engagement::section_header_markup($title, $args);
     }
 }
 

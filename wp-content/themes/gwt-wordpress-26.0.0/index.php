@@ -109,7 +109,7 @@ include_once('inc/banner.php');
 
             // Render Announcements Ticker if any
             if (count($announcements) > 0) {
-                echo '<h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Announcements</strong></h2>';
+                echo govph_section_header('Announcements', ['id' => 'announcements_header', 'text_alignment' => "left"]);
                 echo '<div class="scrolling-container"><div class="scrolling-track">';
                 // Duplicate once for continuous effect
                 for ($i = 0; $i < 2; $i++) {
@@ -139,7 +139,8 @@ include_once('inc/banner.php');
             foreach ($events as $e) { $byDate[$e['date']][] = ['type' => 'event', 'title' => $e['title'], 'url' => $e['url']]; }
             foreach ($holidays as $h) { $byDate[$h['date']][] = ['type' => 'holiday', 'title' => $h['name'], 'url' => '']; }
 
-            echo '<h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5" style="margin-top:0.5rem;"><strong>Calendar</strong> <span style="font-weight:normal;font-size:0.8em;opacity:0.9;">' . esc_html($monthLabel) . '</span></h2>';
+            echo govph_section_header('Calendar '. esc_html($monthLabel) , ['id' => 'center_chief_header', 'text_alignment' => "left"]);
+
             echo '<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;">';
             // Weekday headers (Mon-Sun)
             $wd = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -197,9 +198,9 @@ include_once('inc/banner.php');
             }
             ?>
 
-            <?php  if (count($videos) > 0):  ?>
-                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Videos</strong></h2>
-            <?php endif; ?>
+            <?php  if (count($videos) > 0):
+                echo govph_section_header('Videos', ['id' => 'videos_header', 'text_alignment' => "left"]);
+            endif; ?>
 
             <div class="grid grid-cols-3 gap-2 lg:gap-5">
                 <?php foreach ( $videos as $video ) : ?>
@@ -247,9 +248,9 @@ include_once('inc/banner.php');
             $gapBetweenPosts = "1rem";
             ?>
 
-            <?php if (count($postUrls) > 0): ?>
-                <h2 class="text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-left px-5"><strong>Facebook Posts</strong></h2>
-            <?php endif; ?>
+            <?php if (count($postUrls) > 0):
+                echo govph_section_header('Facebook Posts', ['id' => 'facebook_posts_header', 'text_alignment' => "left"]);
+            endif; ?>
             <div class="scrolling-container">
                 <div class="scrolling-track">
                     <?php
