@@ -941,6 +941,10 @@ class CBC_Client_Engagement {
         $defaults = [
             'title'   => '',
             'classes' => 'text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] lg:text-3xl text-center px-5',
+            // gradient customization: hex colors (with or without #) and swap flag
+            'from'    => '#1f5d2b',
+            'to'      => '#a2b917',
+            'swap'    => '0',
             'tag'     => 'h2',
             'strong'  => '1',
             'id'      => '',
@@ -952,6 +956,9 @@ class CBC_Client_Engagement {
 
         return self::section_header_markup($atts['title'], [
             'classes' => $atts['classes'],
+            'from'    => $atts['from'],
+            'to'      => $atts['to'],
+            'swap'    => $atts['swap'],
             'tag'     => $atts['tag'],
             'strong'  => $atts['strong'],
             'id'      => $atts['id'],
@@ -970,6 +977,10 @@ class CBC_Client_Engagement {
             'id'      => '',
             // text-alignment: left|center|right (default: center)
             'text_alignment' => 'center',
+            // gradient customization
+            'from'    => '#1f5d2b',
+            'to'      => '#a2b917',
+            'swap'    => false,
         ];
 
         /**
@@ -988,6 +999,24 @@ class CBC_Client_Engagement {
             $tag = 'h2';
         }
         $classes = $args['classes'];
+        // Handle gradient customization: remove any existing gradient tokens then append constructed gradient
+        $from = isset($args['from']) ? trim((string)$args['from']) : '';
+        $to = isset($args['to']) ? trim((string)$args['to']) : '';
+        $swap = filter_var($args['swap'], FILTER_VALIDATE_BOOLEAN);
+        if ($swap) {
+            $tmp = $from; $from = $to; $to = $tmp;
+        }
+        if ($from !== '' && $to !== '') {
+            // normalize hex (allow with or without #)
+            $from_hex = ltrim(strtolower($from), '#');
+            $to_hex = ltrim(strtolower($to), '#');
+            // Remove tokens like bg-gradient-to-r, from[...], to[...] to avoid duplicates
+            $classes = preg_replace('/\b(bg-gradient-to-r|from\[[^\]]+\]|to\[[^\]]+\])\b/', '', $classes);
+            // Collapse multiple spaces
+            $classes = preg_replace('/\s+/', ' ', trim($classes));
+            $gradient_class = 'bg-gradient-to-r from-[#' . $from_hex . '] to-[#' . $to_hex . ']';
+            $classes = trim($classes . ' ' . $gradient_class);
+        }
         $id_attr = $args['id'] ? ' id="' . esc_attr($args['id']) . '"' : '';
         $strong = filter_var($args['strong'], FILTER_VALIDATE_BOOLEAN);
         $align = in_array($args['text_alignment'], ['left','center','right'], true) ? $args['text_alignment'] : 'center';

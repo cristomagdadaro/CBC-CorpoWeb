@@ -9,7 +9,7 @@
 <aside id="sidebar-right" class="relative mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
     role="complementary">
     <?php if ( is_front_page() ) : 
-        echo govph_section_header('Center Chief', ['id' => 'center_chief_header']);
+        echo govph_section_header('Center Chief', ['id' => 'center_chief_header', 'swap'=>true]);
     ?>
         
        <aside id="block-165" class="widget callout border-none secondary widget_block reveal-on-scroll-500">

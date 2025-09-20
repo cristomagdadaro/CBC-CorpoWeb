@@ -71,6 +71,11 @@ require get_template_directory() . '/inc/extras.php';
 require get_template_directory() . '/inc/function-options.php';
 
 /**
+ * Theme helpers
+ */
+require get_template_directory() . '/inc/function-helpers.php';
+
+/**
  * Custom Post Types
  */
 // require get_template_directory() . '/inc/custom-post-types.php';
