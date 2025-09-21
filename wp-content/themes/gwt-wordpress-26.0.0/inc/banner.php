@@ -1,5 +1,5 @@
 <?php
-if ( is_home() ) {
+if ( is_home() || is_front_page() ) {
 	$banner_class   = 'large-12';
 	$banner_2_class = '';
 	$banner_3_class = '';
@@ -20,7 +20,7 @@ if ( is_home() ) {
 
 $container_class = '';
 $line_class      = '';
-if ( ! is_home() ) {
+if ( ! ( is_home() || is_front_page() ) ) {
 	$container_class = 'banner-pads';
 } else {
 	$line_class = "line";
@@ -29,7 +29,7 @@ if ( ! is_home() ) {
 <!-- banner -->
 <div class="container-banner p-0 <?php echo $container_class; ?>">
 	<?php govph_displayoptions( 'govph_slider_start' ); ?>
-	<?php if ( is_home() ): ?>
+	<?php if ( is_home() || is_front_page() ): ?>
 <?php if ( $banner_slider = efs_get_slider() ): ?>
 <?php if ( govph_displayoptions( 'govph_slider_full' ) == 'active' ): ?>
     <!-- For GWT 26.0.0 remove class hide-for-small-only after large-12 on id="banner-slider" to show slider image on mobile devices -->
@@ -99,7 +99,7 @@ if ( ! is_home() ) {
 
     </div>    
 
-    <!-- show breadcrumbs when not in home page -->
-	<?php if ( ! is_home() ):
+		<!-- show breadcrumbs when not in home or front page -->
+		<?php if ( ! ( is_home() || is_front_page() ) ):
 		include_once( 'breadcrumbs.php' );
 	endif; ?>

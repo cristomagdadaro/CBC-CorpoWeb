@@ -94,3 +94,13 @@
   transition: max-height 0.2s ease-out;
 }
 
+/* Ensure banner widget areas are visible on small screens even if framework utilities hide them */
+@media screen and (max-width: 39.9375em) {
+  .container-banner .banner-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: fit !important;
+  }
+}
+

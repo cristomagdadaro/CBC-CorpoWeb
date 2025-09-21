@@ -141,30 +141,70 @@ include_once('inc/banner.php');
 
             echo govph_section_header('Calendar '. esc_html($monthLabel) , ['id' => 'center_chief_header', 'text_alignment' => "left"]);
 
-            echo '<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;">';
-            // Weekday headers (Mon-Sun)
-            $wd = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-            foreach ($wd as $w) { echo '<div style="font-weight:bold;text-align:center;background:#f0f4f0;padding:6px;">' . esc_html($w) . '</div>'; }
-            // Empty slots before first day
-            for ($i=1; $i<$startDow; $i++) { echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fafafa;"></div>'; }
-            // Days
-            for ($day=1; $day <= $daysInMonth; $day++) {
-                $dateStr = $current->format('Y-m-') . str_pad((string)$day, 2, '0', STR_PAD_LEFT);
-                echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fff;min-height:80px;">';
-                echo '<div style="font-weight:bold;color:#006837;">' . $day . '</div>';
-                if (!empty($byDate[$dateStr])) {
-                    foreach ($byDate[$dateStr] as $item) {
-                        $label = ($item['type']==='holiday' ? 'Holiday: ' : '') . $item['title'];
-                        if (!empty($item['url'])) {
-                            echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url($item['url']) . '" target="_blank" rel="noopener">' . esc_html($label) . '</a></div>';
+            $displayMode = isset($opt['govph_calendar_display']) ? $opt['govph_calendar_display'] : 'grid';
+
+            if ($displayMode === 'list') {
+                // Render as a list of cards (upcoming events & holidays grouped by date)
+                echo '<div class="calendar-list" style="display:flex;flex-direction:column;gap:12px;padding:8px;">';
+                // Collate visible dates (today onwards) and show next N items (30 by default)
+                $items = [];
+                foreach ($byDate as $date => $entries) {
+                    $d = DateTime::createFromFormat('Y-m-d', $date);
+                    if (!$d) continue;
+                    if ($d < $today) continue; // only future/current
+                    foreach ($entries as $e) {
+                        $items[] = ['date' => $date, 'datetime' => $d, 'type' => $e['type'], 'title' => $e['title'], 'url' => $e['url']];
+                    }
+                }
+                usort($items, function($a, $b){ return $a['datetime'] <=> $b['datetime']; });
+                $max = 30; $count = 0;
+                if (empty($items)) {
+                    echo '<div style="color:#666;">No upcoming events or holidays.</div>';
+                } else {
+                    foreach ($items as $it) {
+                        if ($count++ >= $max) break;
+                        $dlabel = DateTime::createFromFormat('Y-m-d', $it['date'])->format('M d, Y');
+                        echo '<div class="card" style="border:1px solid #e5e5e5;padding:12px;border-radius:6px;background:#fff;display:flex;flex-direction:row;gap:12px;align-items:center;">';
+                        echo '<div style="min-width:120px;font-weight:bold;color:#006837;">' . esc_html($dlabel) . '</div>';
+                        echo '<div style="flex:1;">';
+                        $label = ($it['type'] === 'holiday' ? 'Holiday: ' : '') . $it['title'];
+                        if (!empty($it['url'])) {
+                            echo '<a href="' . esc_url($it['url']) . '" target="_blank" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html($label) . '</a>';
                         } else {
-                            echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html($label) . '</div>';
+                            echo '<div style="font-weight:600;color:#00391a;">' . esc_html($label) . '</div>';
                         }
+                        echo '</div>';
+                        echo '</div>';
                     }
                 }
                 echo '</div>';
+            } else {
+                // Default: render month calendar grid
+                echo '<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;">';
+                // Weekday headers (Mon-Sun)
+                $wd = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                foreach ($wd as $w) { echo '<div style="font-weight:bold;text-align:center;background:#f0f4f0;padding:6px;">' . esc_html($w) . '</div>'; }
+                // Empty slots before first day
+                for ($i=1; $i<$startDow; $i++) { echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fafafa;"></div>'; }
+                // Days
+                for ($day=1; $day <= $daysInMonth; $day++) {
+                    $dateStr = $current->format('Y-m-') . str_pad((string)$day, 2, '0', STR_PAD_LEFT);
+                    echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fff;min-height:80px;">';
+                    echo '<div style="font-weight:bold;color:#006837;">' . $day . '</div>';
+                    if (!empty($byDate[$dateStr])) {
+                        foreach ($byDate[$dateStr] as $item) {
+                            $label = ($item['type']==='holiday' ? 'Holiday: ' : '') . $item['title'];
+                            if (!empty($item['url'])) {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url($item['url']) . '" target="_blank" rel="noopener">' . esc_html($label) . '</a></div>';
+                            } else {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html($label) . '</div>';
+                            }
+                        }
+                    }
+                    echo '</div>';
+                }
+                echo '</div>';
             }
-            echo '</div>';
             ?>
         </div>
         <!-- start content -->

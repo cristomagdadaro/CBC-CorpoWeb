@@ -274,6 +274,9 @@ jQuery(document).ready(function($) {
     add_settings_field('govph_events', 'Events & Trainings', array($this, 'govph_events'), __FILE__, 'govph_main_section');
     add_settings_field('govph_holidays', 'Holidays (Local/International)', array($this, 'govph_holidays'), __FILE__, 'govph_main_section');
 
+  // Calendar display mode (grid or list)
+  add_settings_field('govph_calendar_display', 'Calendar Display Mode', array($this, 'govph_calendar_display'), __FILE__, 'govph_main_section');
+
     // publishing options
     add_settings_field('govph_content_section', '<h3>Publishing Options<h3>', array($this, 'govph_content_section'), __FILE__, 'govph_main_section');
     add_settings_field('govph_content_show_pub_date', 'Show Published Date', array($this, 'govph_content_show_pub_date'), __FILE__, 'govph_main_section');
@@ -461,6 +464,16 @@ jQuery(document).ready(function($) {
     </ul>
   </div>
 </div>
+<?php
+  }
+
+  public function govph_calendar_display(){
+    $saved = isset($this->options['govph_calendar_display']) ? $this->options['govph_calendar_display'] : 'grid';
+    ?>
+<label for="govph_calendar_display_grid"><input type="radio" id="govph_calendar_display_grid" name="govph_options[govph_calendar_display]" value="grid" <?php echo ($saved==='grid' ? 'checked' : ''); ?>> Grid (month calendar)</label>
+<br />
+<label for="govph_calendar_display_list"><input type="radio" id="govph_calendar_display_list" name="govph_options[govph_calendar_display]" value="list" <?php echo ($saved==='list' ? 'checked' : ''); ?>> List (cards)</label>
+<p class="description">Choose how events/holidays are displayed on the homepage calendar area.</p>
 <?php
   }
 

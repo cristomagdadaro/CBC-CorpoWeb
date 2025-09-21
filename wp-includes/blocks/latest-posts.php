@@ -73,7 +73,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$item_markup  = '<div class="' . esc_attr( $container_classes ) . '">';
 
 		if ( ! empty( $attributes['displayFeaturedImage'] ) && has_post_thumbnail( $post ) ) {
-			$image_classes = 'wp-block-latest-posts__featured-image object-cover object-top hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
+			$image_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
 			if ( isset( $attributes['featuredImageAlign'] ) ) {
 				$image_classes .= ' align' . $attributes['featuredImageAlign'];
 			}
@@ -142,7 +142,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
 			$item_markup .= sprintf(
-				'<div class="wp-block-latest-posts__post-excerpt entry-content block leading-[1.1rem] text-sm">%1$s</div>',
+				'<div class="wp-block-latest-posts__post-excerpt entry-content block leading-[1.1rem] text-sm hidden sm:block">%1$s</div>',
 				$trimmed_excerpt
 			);
 		}
@@ -183,14 +183,14 @@ function render_block_core_latest_posts( $attributes ) {
 				$post,
 				$attributes,
 				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border hover:border-[#1f5d2b] hover:shadow-lg p-1 md:p-3 bg-[#FDFCFD] rounded h-fit opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full">%s</div>'
+				'<div class="overflow-hidden rounded min-h-full min-w-[12rem] aspect-[3/2]">%s</div>'
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
 				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 lg:border-none bg-[#FDFCFD] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full lg:hidden md:block ">%s</div>'
+				'<div class="overflow-hidden rounded min-h-full min-w-[12rem] aspect-[3/2]  lg:hidden md:block">%s</div>'
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
 				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 lg:block hidden"></div>';
