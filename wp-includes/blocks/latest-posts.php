@@ -95,7 +95,7 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
-		$item_markup .= '<div class="flex flex-col h-full justify-center"><div class="flex flex-col leading-[1rem]">';
+		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto"><div class="flex flex-col leading-[1rem]">';
 		$item_markup .= sprintf(
 			'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md" href="%1$s">%2$s</a>',
 			esc_url( $post_link ),
@@ -164,7 +164,7 @@ function render_block_core_latest_posts( $attributes ) {
 		return $item_markup;
 	};
 
-	$list_items_markup = '<div class="flex flex-col justify-between gap-1 md:gap-5">';
+	$list_items_markup = '<div class="flex flex-col justify-between gap-2 md:gap-5">';
 
 	$total = count( $recent_posts );
 	$count = 0;
@@ -173,27 +173,27 @@ function render_block_core_latest_posts( $attributes ) {
 			$list_items_markup .= '</div><div class="flex flex-col ';
 
 			if (isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'])
-				$list_items_markup .= 'gap-1 md:gap-5">';
+				$list_items_markup .= 'gap-2 md:gap-5">';
 			else
-				$list_items_markup .= 'gap-1 lg:gap-0 lg:border">';
+				$list_items_markup .= 'gap-2 lg:gap-0 lg:border bg-transparent md:bg-[#F6F6F6]">';
 		}
 
 		if ( $count < 3 || isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout']) {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border hover:border-[#1f5d2b] hover:shadow-lg p-1 md:p-3 bg-[#FDFCFD] rounded h-fit opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-h-full min-w-[12rem] aspect-[3/2]">%s</div>'
+				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6] rounded h-fit opacity-0 reveal-on-scroll-' . 200 + $count * 100,
+				'<div class="overflow-hidden rounded-l min-h-full min-w-[12rem] aspect-[3/2]">%s</div>'
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-1 md:p-3 lg:border-none bg-[#FDFCFD] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded min-h-full min-w-[12rem] aspect-[3/2]  lg:hidden md:block">%s</div>'
+				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-0 md:p-3 lg:border-none bg-[#F6F6F6] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . 200 + $count * 100,
+				'<div class="overflow-hidden rounded-l min-h-full min-w-[12rem] aspect-[3/2]  lg:hidden md:block">%s</div>'
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
-				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 lg:block hidden"></div>';
+				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 md:block hidden"></div>';
 			}
 		}
 
@@ -204,7 +204,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 	remove_filter( 'excerpt_length', 'block_core_latest_posts_get_excerpt_length', 20 );
 
-	$classes = array( 'wp-block-latest-posts__list gap-5 flex lg:flex-row flex-col' . isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-1 md:gap-5' : 'gap-1 md:gap-5 flex lg:flex-row flex-col' );
+	$classes = array( 'wp-block-latest-posts__list gap-5 flex lg:flex-row flex-col' . isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-2 md:gap-5' : 'gap-2 md:gap-5 flex md:flex-row flex-col' );
 	if ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
 		$classes[] = 'is-grid';
 	}

@@ -104,3 +104,45 @@
   }
 }
 
+/* -----------------------------
+   Slide animation utilities (gwt)
+   Usage: add attribute data-slide="left|right|top|bottom" to element
+   Optional customization via CSS variables on the element:
+     --gwt-slide-duration: 400ms
+     --gwt-slide-easing: cubic-bezier(.22,.9,.36,1)
+     --gwt-slide-distance: 100% (use px or %)
+   The JS helper will add the .gwt-slide-init class on load and .gwt-slide-in-* when in view.
+   ----------------------------- */
+:root{ --gwt-slide-duration: 400ms; --gwt-slide-easing: cubic-bezier(.22,.9,.36,1); --gwt-slide-distance: 100%; }
+
+/* base marker for data-slide elements */
+
+/* Initial state: offscreen and invisible */
+[data-slide].gwt-slide-init{
+  --gwt-slide-duration: var(--gwt-slide-duration);
+  --gwt-slide-easing: var(--gwt-slide-easing);
+  transition: transform var(--gwt-slide-duration) var(--gwt-slide-easing), opacity var(--gwt-slide-duration) var(--gwt-slide-easing);
+  opacity: 0;
+}
+
+[data-slide="left"].gwt-slide-init{ transform: translateX(calc(-1 * var(--gwt-slide-distance))); }
+[data-slide="right"].gwt-slide-init{ transform: translateX(var(--gwt-slide-distance)); }
+[data-slide="top"].gwt-slide-init{ transform: translateY(calc(-1 * var(--gwt-slide-distance))); }
+[data-slide="bottom"].gwt-slide-init{ transform: translateY(var(--gwt-slide-distance)); }
+
+/* When JS marks element as 'in' add the direction-specific class */
+[data-slide="left"].gwt-slide-init.gwt-slide-in{ transform: translateX(0); opacity:1; }
+[data-slide="right"].gwt-slide-init.gwt-slide-in{ transform: translateX(0); opacity:1; }
+[data-slide="top"].gwt-slide-init.gwt-slide-in{ transform: translateY(0); opacity:1; }
+[data-slide="bottom"].gwt-slide-init.gwt-slide-in{ transform: translateY(0); opacity:1; }
+
+/* Convenience immediate classes */
+.gwt-slide-in{ transform: none !important; opacity:1 !important; transition: none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  [data-slide].gwt-slide-init,
+  [data-slide].gwt-slide-init.gwt-slide-in,
+  .gwt-slide-in{ transition: none !important; transform: none !important; opacity:1 !important; }
+}
+
+

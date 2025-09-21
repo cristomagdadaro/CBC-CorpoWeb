@@ -145,76 +145,92 @@ function enqueue_particles_js() {
 add_action( 'wp_enqueue_scripts', 'enqueue_particles_js' );
 
 /**
- * Lightweight page cache for anonymous visitors (helps Site Health detect page caching).
- * - Caches full HTML of front-end GET requests for a short time (default 10 minutes).
- * - Adds Cache-Control, Age, and X-Cache headers so Site Health recognizes caching.
- * - Auto-invalidates globally when content changes by bumping a version key.
+ * Enqueue slide animation helper
  */
-if ( ! function_exists( 'cbc_page_cache_is_eligible' ) ) {
-	function cbc_page_cache_is_eligible() {
-		if ( is_user_logged_in() || is_admin() ) return false;
-		$method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
-		if ( strtoupper($method) !== 'GET' ) return false;
-		if ( ! empty($_GET['nocache']) ) return false;
-		// Let login/register/preview and feeds bypass caching
-		if ( is_feed() || is_trackback() || is_preview() ) return false;
-		return true;
-	}
+function gwt_enqueue_slide_anim(){
+	wp_enqueue_script(
+		'gwt-slide-anim',
+		get_stylesheet_directory_uri() . '/js/slide-anim.js',
+		array(),
+		null,
+		true
+	);
 }
+add_action('wp_enqueue_scripts','gwt_enqueue_slide_anim');
 
-if ( ! function_exists( 'cbc_page_cache_key' ) ) {
-	function cbc_page_cache_key() {
-		$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-		$uri  = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
-		$scheme = ( is_ssl() ? 'https://' : 'http://' );
-		$url = $scheme . $host . $uri;
-		$version = intval( get_option('cbc_page_cache_version', 1) );
-		return 'cbc_pg_' . md5( $url . '|' . $version );
-	}
-}
-
-if ( ! function_exists( 'cbc_page_cache_is_cacheable_status' ) ) {
-	function cbc_page_cache_is_cacheable_status() {
-		$code = function_exists('http_response_code') ? intval(http_response_code()) : 200;
-		return ($code >= 200 && $code < 300);
-	}
-}
-
-if ( ! function_exists( 'cbc_page_cache_maybe_serve' ) ) {
-	function cbc_page_cache_maybe_serve() {
-		if ( ! cbc_page_cache_is_eligible() ) return;
-		$ttl = intval( apply_filters('cbc_page_cache_ttl', 600) ); // 10 minutes
-		$key = cbc_page_cache_key();
-		$cached = get_transient( $key );
-		if ( is_array($cached) && isset($cached['body'], $cached['ts']) ) {
-			$age = max(0, time() - intval($cached['ts']));
-			header('Cache-Control: public, max-age=' . $ttl);
-			header('Age: ' . $age);
-			header('X-Cache: HIT');
-			echo $cached['body'];
-			exit;
+/**
+ * Lightweight page cache for anonymous visitors (helps Site Health detect page caching).
+ *
+ * Only enable this caching when WP_DEBUG is false. During development (WP_DEBUG === true)
+ * the cache is disabled so changes to widgets/templates are reflected immediately.
+ */
+if ( defined('WP_DEBUG') && ! WP_DEBUG ) {
+	if ( ! function_exists( 'cbc_page_cache_is_eligible' ) ) {
+		function cbc_page_cache_is_eligible() {
+			if ( is_user_logged_in() || is_admin() ) return false;
+			$method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+			if ( strtoupper($method) !== 'GET' ) return false;
+			if ( ! empty($_GET['nocache']) ) return false;
+			// Let login/register/preview and feeds bypass caching
+			if ( is_feed() || is_trackback() || is_preview() ) return false;
+			return true;
 		}
-		// MISS: Start buffering and save on output
-		header('Cache-Control: public, max-age=' . $ttl);
-		header('X-Cache: MISS');
-		ob_start( function($buffer) use ($key, $ttl) {
-			if ( cbc_page_cache_is_cacheable_status() && ! empty($buffer) ) {
-				set_transient( $key, [ 'body' => $buffer, 'ts' => time() ], $ttl );
-			}
-			return $buffer;
-		});
 	}
-	add_action( 'template_redirect', 'cbc_page_cache_maybe_serve', 0 );
-}
 
-if ( ! function_exists( 'cbc_page_cache_bump_version' ) ) {
-	function cbc_page_cache_bump_version() {
-		$ver = intval( get_option('cbc_page_cache_version', 1) );
-		update_option('cbc_page_cache_version', $ver + 1, false);
+	if ( ! function_exists( 'cbc_page_cache_key' ) ) {
+		function cbc_page_cache_key() {
+			$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+			$uri  = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+			$scheme = ( is_ssl() ? 'https://' : 'http://' );
+			$url = $scheme . $host . $uri;
+			$version = intval( get_option('cbc_page_cache_version', 1) );
+			return 'cbc_pg_' . md5( $url . '|' . $version );
+		}
 	}
-	add_action('save_post', 'cbc_page_cache_bump_version');
-	add_action('deleted_post', 'cbc_page_cache_bump_version');
-	add_action('trashed_post', 'cbc_page_cache_bump_version');
-	add_action('switch_theme', 'cbc_page_cache_bump_version');
+
+	if ( ! function_exists( 'cbc_page_cache_is_cacheable_status' ) ) {
+		function cbc_page_cache_is_cacheable_status() {
+			$code = function_exists('http_response_code') ? intval(http_response_code()) : 200;
+			return ($code >= 200 && $code < 300);
+		}
+	}
+
+	if ( ! function_exists( 'cbc_page_cache_maybe_serve' ) ) {
+		function cbc_page_cache_maybe_serve() {
+			if ( ! cbc_page_cache_is_eligible() ) return;
+			$ttl = intval( apply_filters('cbc_page_cache_ttl', 600) ); // 10 minutes
+			$key = cbc_page_cache_key();
+			$cached = get_transient( $key );
+			if ( is_array($cached) && isset($cached['body'], $cached['ts']) ) {
+				$age = max(0, time() - intval($cached['ts']));
+				header('Cache-Control: public, max-age=' . $ttl);
+				header('Age: ' . $age);
+				header('X-Cache: HIT');
+				echo $cached['body'];
+				exit;
+			}
+			// MISS: Start buffering and save on output
+			header('Cache-Control: public, max-age=' . $ttl);
+			header('X-Cache: MISS');
+			ob_start( function($buffer) use ($key, $ttl) {
+				if ( cbc_page_cache_is_cacheable_status() && ! empty($buffer) ) {
+					set_transient( $key, [ 'body' => $buffer, 'ts' => time() ], $ttl );
+				}
+				return $buffer;
+			});
+		}
+		add_action( 'template_redirect', 'cbc_page_cache_maybe_serve', 0 );
+	}
+
+	if ( ! function_exists( 'cbc_page_cache_bump_version' ) ) {
+		function cbc_page_cache_bump_version() {
+			$ver = intval( get_option('cbc_page_cache_version', 1) );
+			update_option('cbc_page_cache_version', $ver + 1, false);
+		}
+		add_action('save_post', 'cbc_page_cache_bump_version');
+		add_action('deleted_post', 'cbc_page_cache_bump_version');
+		add_action('trashed_post', 'cbc_page_cache_bump_version');
+		add_action('switch_theme', 'cbc_page_cache_bump_version');
+	}
 }
 ?>
