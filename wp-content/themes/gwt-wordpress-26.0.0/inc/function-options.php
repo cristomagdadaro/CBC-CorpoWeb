@@ -58,8 +58,6 @@ class GOVPH
     'govph_acc_link_faq' => '',
     'govph_acc_link_sitemap' => '',
     'govph_acc_link_search' => '',
-    'govph_facebook_posts' => '',
-    'govph_featured_videos' => '',
     // Announcements & Events
     'govph_announcements' => '',
     'govph_events' => '',
@@ -269,9 +267,7 @@ jQuery(document).ready(function($) {
     add_settings_field('govph_custom_headings_inner_page_size', 'Banner Title Header', array($this, 'govph_custom_headings_inner_page_size'), __FILE__, 'govph_main_section');
     add_settings_field('govph_custom_footer_background_color', 'Agency Footer Color', array($this, 'govph_custom_footer_background_color'), __FILE__, 'govph_main_section');
 
-    // homepage social options
-    add_settings_field('govph_facebook_posts', 'Featured Latest Facebook Post URLs', array($this, 'govph_facebook_posts'), __FILE__, 'govph_main_section');
-    add_settings_field('govph_featured_videos', 'Featured Videos (Facebook) ', array($this, 'govph_featured_videos'), __FILE__, 'govph_main_section');
+  // homepage social options (facebook/video feature removed)
 
     // announcements & events
     add_settings_field('govph_announcements', 'Announcements (manual)', array($this, 'govph_announcements'), __FILE__, 'govph_main_section');
@@ -303,7 +299,7 @@ jQuery(document).ready(function($) {
   // Merge posted textarea values into existing stored lists for selected fields
   public function merge_list_fields($new_value, $old_value) {
     if (!is_array($new_value)) { return $new_value; }
-    $list_fields = ['govph_facebook_posts','govph_featured_videos','govph_announcements','govph_events','govph_holidays'];
+  $list_fields = ['govph_announcements','govph_events','govph_holidays'];
     foreach ($list_fields as $field) {
       $incoming = isset($new_value[$field]) ? trim((string)$new_value[$field]) : '';
       $existing = isset($old_value[$field]) ? trim((string)$old_value[$field]) : '';
@@ -325,7 +321,7 @@ jQuery(document).ready(function($) {
     if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'govph_del_item')) { return; }
 
     $field = sanitize_key(wp_unslash($_GET['govph_del_field']));
-    $allowed = ['govph_facebook_posts','govph_featured_videos','govph_announcements','govph_events','govph_holidays'];
+  $allowed = ['govph_announcements','govph_events','govph_holidays'];
     if (!in_array($field, $allowed, true)) { return; }
 
     $opts = get_option('govph_options', []);
@@ -373,71 +369,10 @@ jQuery(document).ready(function($) {
    */
   public function govph_general_section(){
   ?>
-<hr />
-<?php
+      <hr />
+  <?php
   }
 
-  public function govph_facebook_posts(){
-    $saved = isset($this->options['govph_facebook_posts']) ? $this->options['govph_facebook_posts'] : '';
-    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
-    $page_url = admin_url('themes.php?page=govph-options');
-    $nonce = wp_create_nonce('govph_del_item');
-    ?>
-<div style="display:flex; gap:20px; align-items:flex-start;">
-  <div style="flex:1; min-width:300px;">
-    <textarea name="govph_options[govph_facebook_posts]" rows="6" cols="80" style="max-width: 100%; width: 100%;" placeholder="Paste one public Facebook post URL per line, then click Save. The box will clear after saving."></textarea>
-    <br />
-    <span class="description">Enter one public Facebook post URL per line. Example: https://www.facebook.com/{page}/posts/{id}</span>
-  </div>
-  <div style="flex:1; min-width:280px;">
-    <strong>Saved URLs</strong>
-    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
-      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
-        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
-          <span style="word-break:break-all;"><?php echo esc_html($line); ?></span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_facebook_posts','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this URL?');">Delete</a>
-        </li>
-      <?php endforeach; ?>
-      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
-        <li style="color:#777;">No items saved yet.</li>
-      <?php endif; ?>
-    </ul>
-  </div>
-</div>
-<?php
-  }
-
-  public function govph_featured_videos(){
-    $saved = isset($this->options['govph_featured_videos']) ? $this->options['govph_featured_videos'] : '';
-    $lines = preg_split("/(\r\n|\n|\r)/", (string)$saved);
-    $page_url = admin_url('themes.php?page=govph-options');
-    $nonce = wp_create_nonce('govph_del_item');
-    ?>
-<div style="display:flex; gap:20px; align-items:flex-start;">
-  <div style="flex:1; min-width:300px;">
-    <textarea name="govph_options[govph_featured_videos]" rows="6" cols="80" style="max-width: 100%; width: 100%;" placeholder="https://www.facebook.com/{page}/videos/{id}|Optional Title|Optional description (one per line)"></textarea>
-    <br />
-    <span class="description">Enter one Facebook video per line using the format: URL|Title|Description. Title and Description are optional.</span>
-  </div>
-  <div style="flex:1; min-width:280px;">
-    <strong>Saved Videos</strong>
-    <ul style="margin-top:8px; max-height:200px; overflow:auto; border:1px solid #ddd; padding:8px; background:#fff;">
-      <?php foreach ($lines as $idx => $line): $line = trim($line); if (!$line) continue; ?>
-        <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
-          <span style="word-break:break-all;">
-            <?php echo esc_html($line); ?>
-          </span>
-          <a class="button button-small" href="<?php echo esc_url(add_query_arg(array('govph_del_field'=>'govph_featured_videos','govph_del_index'=>$idx,'govph_del_value'=>rawurlencode($line),'_wpnonce'=>$nonce), $page_url)); ?>" onclick="return confirm('Delete this entry?');">Delete</a>
-        </li>
-      <?php endforeach; ?>
-      <?php if (empty(array_filter(array_map('trim',$lines)))): ?>
-        <li style="color:#777;">No items saved yet.</li>
-      <?php endif; ?>
-    </ul>
-  </div>
-</div>
-<?php
-  }
 
   public function govph_announcements(){
     $saved = isset($this->options['govph_announcements']) ? $this->options['govph_announcements'] : '';
