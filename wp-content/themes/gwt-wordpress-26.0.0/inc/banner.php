@@ -27,9 +27,10 @@ if ( ! ( is_home() || is_front_page() ) ) {
 }
 ?>
 <!-- banner -->
+ <?php if ( is_home() || is_front_page() ): ?>
 <div class="container-banner p-0 <?php echo $container_class; ?>">
 	<?php govph_displayoptions( 'govph_slider_start' ); ?>
-	<?php if ( is_home() || is_front_page() ): ?>
+	
 <?php if ( $banner_slider = efs_get_slider() ): ?>
 <?php if ( govph_displayoptions( 'govph_slider_full' ) == 'active' ): ?>
     <!-- For GWT 26.0.0 remove class hide-for-small-only after large-12 on id="banner-slider" to show slider image on mobile devices -->
@@ -83,13 +84,9 @@ if ( ! ( is_home() || is_front_page() ) ) {
 			<?php else: ?>
 				<?php govph_displayoptions( 'govph_banner_title_start' ); ?>
                 <!-- For Version 2 -->
-                <!--<div class="large-9 columns container-main">
-                        <header>
-                            <?php /*while ( have_posts() ) : the_post(); */ ?>
-                            <h1 class="entry-title sm:text-3xl text-xl font-bold"><?php /*the_title(); */ ?></h1>
-                            <?php /*endwhile; // end of the loop. */ ?>
-                        </header>
-                    </div>-->
+                	<div class="hidden large-9 columns container-main">
+                        <!-- Customize this at the top banner above the breadcrumbs; Remove hidden class to show on mobile devices -->
+                    </div>
                 <!-- End For Version 2-->
 				<?php govph_displayoptions( 'govph_banner_title_end' ); ?>
 			<?php endif ?>
