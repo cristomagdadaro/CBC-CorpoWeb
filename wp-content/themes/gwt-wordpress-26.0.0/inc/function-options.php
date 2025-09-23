@@ -1157,36 +1157,39 @@ if (!function_exists('govph_displayoptions')) {
 			// End of case for disable gutenberg on posts
 			case 'govph_content_position':
 				$content_class = 'large-12 medium-12 ';
+				$right_active = is_active_sidebar( 'right-sidebar' ) || ( function_exists('cbc_force_right_sidebar') && cbc_force_right_sidebar() );
 				if ( is_active_sidebar( 'left-sidebar' ) ) {
 					$content_class = 'large-8 medium-8 large-push-4 medium-push-4 ';
-					if ( is_active_sidebar( 'right-sidebar' ) ) {
+					if ( $right_active ) {
 						$content_class = 'large-6 medium-6 large-push-3 medium-push-3 ';
 					}
-				} elseif ( is_active_sidebar( 'right-sidebar' ) ) {
+				} elseif ( $right_active ) {
 					$content_class = 'large-8 medium-8 ';
 				}
 				echo $content_class;
 				break;
 			case 'govph_sidebar_position_left':
 				$sidebar_class = '';
+				$right_active = is_active_sidebar( 'right-sidebar' ) || ( function_exists('cbc_force_right_sidebar') && cbc_force_right_sidebar() );
 				if ( is_active_sidebar( 'left-sidebar' ) ) {
 					$sidebar_class = 'large-4 medium-4 large-pull-8 medium-pull-8 ';
-					if ( is_active_sidebar( 'right-sidebar' ) ) {
+					if ( $right_active ) {
 						$sidebar_class = 'large-3 medium-3 large-pull-6 medium-pull-6 ';
 					}
-				} elseif ( is_active_sidebar( 'right-sidebar' ) ) {
+				} elseif ( $right_active ) {
 					$sidebar_class = 'large-4 medium-4 large-pull-8 medium-pull-8 ';
 				}
 				echo $sidebar_class;
 				break;
 			case 'govph_sidebar_position_right':
 				$sidebar_class = '';
+				$right_active = is_active_sidebar( 'right-sidebar' ) || ( function_exists('cbc_force_right_sidebar') && cbc_force_right_sidebar() );
 				if ( is_active_sidebar( 'left-sidebar' ) ) {
 					$sidebar_class = 'large-4 medium-4 ';
-					if ( is_active_sidebar( 'right-sidebar' ) ) {
+					if ( $right_active ) {
 						$sidebar_class = 'large-3 medium-3 ';
 					}
-				} elseif ( is_active_sidebar( 'right-sidebar' ) ) {
+				} elseif ( $right_active ) {
 					$sidebar_class = 'large-4 medium-4 ';
 				}
 				echo $sidebar_class;
@@ -1407,20 +1410,24 @@ if (!function_exists('govph_displayoptions')) {
 				echo $widgetSetting;
 				break;
 			case 'govph_menu_color_setting':
+				$menuSetting = '';
 				$menuSetting .= ( ! empty( $option['govph_custom_menu_color'] ) ? 'background-color:' . $option['govph_custom_menu_color'] . ';' : '' );
 				echo $menuSetting;
 				break;
 			case 'govph_menu_font_setting':
+				$menuFontSetting = '';
 				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . $option['govph_custom_menu_font_color'] . ';' : '' );
 				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'border-color:' . $option['govph_custom_menu_font_color'] . ' ' . 'transparent;' : '' );
 				echo $menuFontSetting;
 				break;
 			// $menuFontSetting .= (!empty($option['govph_custom_menu_font_color']) ? 'border-color:'.$option['govph_custom_menu_font_color'].' '.'transparent;' : '');
 			case 'govph_menu_font_hover_setting':
+				$menuFontHoverSetting = '';
 				$menuFontHoverSetting .= ( ! empty( $option['govph_custom_menu_font_color_hover'] ) ? 'color:' . $option['govph_custom_menu_font_color_hover'] . ';' : '' );
 				echo $menuFontHoverSetting;
 				break;
 			case 'govph_menu_font_accessibility_setting':
+				$menuFontSetting = '';
 				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . $option['govph_custom_menu_font_color'] . ';' : '' );
 				echo $menuFontSetting;
 				break;
@@ -1442,3 +1449,4 @@ if (!function_exists('govph_displayoptions')) {
 		}
 	}
 }
+

@@ -91,8 +91,8 @@ textarea:focus {
 
 /* Core UI */
 .wp-core-ui .button {
-  border-color: #7e8993;
-  color: #32373c;
+  border-color: #1f5d2b;
+  color: #1f5d2b;
 }
 .wp-core-ui .button.hover,
 .wp-core-ui .button:hover,

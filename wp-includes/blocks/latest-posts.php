@@ -102,6 +102,16 @@ function render_block_core_latest_posts( $attributes ) {
 			$title
 		);
 
+		$item_markup .= '<div class="flex justify-between">';
+
+		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
+			$item_markup .= sprintf(
+				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs">%2$s</time>',
+				esc_attr( get_the_date( 'c', $post ) ),
+				get_the_date( '', $post )
+			);
+		}
+
 		if ( isset( $attributes['displayAuthor'] ) && $attributes['displayAuthor'] ) {
 			$author_display_name = get_the_author_meta( 'display_name', $post->post_author );
 			/* translators: byline. %s: current author. */
@@ -114,15 +124,8 @@ function render_block_core_latest_posts( $attributes ) {
 			}
 		}
 
-		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
-			$item_markup .= sprintf(
-				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs">%2$s</time>',
-				esc_attr( get_the_date( 'c', $post ) ),
-				get_the_date( '', $post )
-			);
-		}
 
-		$item_markup .= '</div>';
+		$item_markup .= '</div></div>';
 
 		if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
 		     && isset( $attributes['displayPostContentRadio'] ) && 'excerpt' === $attributes['displayPostContentRadio'] ) {
@@ -193,7 +196,7 @@ function render_block_core_latest_posts( $attributes ) {
 				'<div class="overflow-hidden rounded-l min-h-full min-w-[12rem] aspect-[3/2]  lg:hidden md:block">%s</div>'
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
-				$list_items_markup .= '<div class="border-b-4 border-[#215f27] mx-1 md:mx-3 md:block hidden"></div>';
+				$list_items_markup .= '<div class="border-b-4 border-[#a2b917] mx-1 md:mx-3 md:block hidden"></div>';
 			}
 		}
 
@@ -272,4 +275,5 @@ function block_core_latest_posts_migrate_categories( $block ) {
 
 	return $block;
 }
+
 add_filter( 'render_block_data', 'block_core_latest_posts_migrate_categories' );

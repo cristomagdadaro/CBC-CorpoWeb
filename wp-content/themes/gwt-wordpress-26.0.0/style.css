@@ -146,3 +146,35 @@
 }
 
 
+/* Container setup */
+.scrolling-container {
+    width: 100%;                 /* Full width */
+    overflow: hidden;            /* Hide overflowing content */
+    position: relative;
+    background: #fff;            /* Optional background */
+}
+
+/* Track that moves */
+.scrolling-track {
+    display: flex;
+    width: max-content;          /* Ensure content takes full width */
+    animation: scroll-left 40s linear infinite;
+}
+
+/* Each content block */
+.scrolling-content {
+    flex: 0 0 auto;              /* Prevent shrinking */
+    margin-right: 20px;          /* Spacing between iframes */
+}
+
+/* Animation */
+@keyframes scroll-left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%); /* Move left by half of its width */
+    }
+}
+
+

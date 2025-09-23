@@ -217,9 +217,8 @@ include_once('inc/banner.php');
 				}
 				?>
         <?php
-				if(is_active_sidebar('right-sidebar')){
-					govph_displayoptions( 'govph_sidebar_right' );
-				}
+				// Always render right sidebar (width classes now account for forced sidebar)
+				govph_displayoptions( 'govph_sidebar_right' );
 				?>
 
     </div>
