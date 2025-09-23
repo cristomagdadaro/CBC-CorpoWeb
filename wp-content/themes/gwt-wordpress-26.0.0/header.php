@@ -379,8 +379,9 @@ Press esc, or click the close the button to close this dialog box.
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
+        <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-full h-screen "></div>
         <div id="main-nav">
-            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2">
+            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0 py-1 md:py-2">
                 <div class="row flex items-center sm:py-2 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden w-full">
                         <!-- masthead -->
@@ -403,18 +404,22 @@ Press esc, or click the close the button to close this dialog box.
                         <!-- masthead -->
                     </nav>
                     <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1 my-auto">
-                        <!-- Philippine Standard Time -->
+                        <!-- Philippine Standard Timeewe -->
 		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
                             <div class="<?php echo $ear_content_2_class ?> m-0">
 				                <?php do_action( 'before_sidebar' ); ?>
 				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
                             </div>
-                            <ul class="border-none">
-				                <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
-                                    <li><?php get_search_form(); ?></li>
-				                <?php endif ?>
-                            </ul>
 		                <?php endif; ?>
+                        <div id="pst-container" style="color: white !important; font-size: 0.7rem !important;">
+                            <div>Philippine Standard Time</div>
+                            <div id="pst-time" class="whitespace-nowrap"></div>
+                        </div>
+                        <ul class="border-none">
+                            <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
+                                <li><?php get_search_form(); ?></li>
+                            <?php endif ?>
+                        </ul>
                     </nav>
                 </div>
             </div>
@@ -472,4 +477,3 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- original content goes in this container -->
         <div class="off-canvas-content min-w-full" data-off-canvas-content>
-            <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-full h-screen "></div>
