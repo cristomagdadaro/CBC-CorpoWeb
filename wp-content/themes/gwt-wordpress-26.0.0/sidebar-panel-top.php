@@ -7,7 +7,7 @@
 ?>
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
 <div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
-    <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
+    <!--<div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>-->
     <div class="row z-[99]">
         <?php if(is_active_sidebar('panel-top-1') && is_front_page()): ?>
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
@@ -22,25 +22,37 @@
             </div>
 
             <div class="widget widget_block">
-                <div class="flex flex-col md:flex-row gap-2 md:gap-5">
-                    <!-- Video Wrapper -->
-                    <div class="relative w-full md:w-1/2 aspect-video reveal-on-scroll-300 transition duration-700 ease-out will-change-transform opacity-100 translate-y-0">
-                        <iframe title="Featured video" class="absolute top-0 left-0 w-full h-full border-none rounded-lg" src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2FDACropBiotechCenter%2Fvideos%2F606440631062718%2F&amp;show_text=false&amp;width=560&amp;t=0" style="border:none;overflow:hidden;" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 items-start">
 
                     <!-- Text Section -->
-                    <div class="relative flex flex-col md:w-1/2 justify-center backdrop-blur overflow-hidden reveal-on-scroll-500 transition duration-700 ease-out will-change-transform opacity-100 translate-y-0">
-                        <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl backdrop-blur"><strong>DA-CROP BIOTECHNOLOGY CENTER</strong></h3>
-                        <p class="leading-relaxed backdrop-blur">
+                    <div class="order-2 md:order-1 flex flex-col justify-center">
+                        <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl font-bold text-center md:text-left leading-tight hidden sm:block">
+                            DA-CROP BIOTECHNOLOGY CENTER
+                        </h3>
+                        <p class="leading-relaxed mt-2 text-justify md:text-left leading-tight sm:leading-relaxed">
                             DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
                             Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
-                            biotechnologies to boost the nation's agricultural productivity, build the skills of our research partners,
+                            biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
                             and foster a collaborative culture of knowledge-sharing to ensure a more food-secure and resilient Philippines.
                         </p>
-                        <div id="particles-js-helix" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen opacity-25"><canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;" width="922" height="11280"></canvas></div>
+                    </div>
+
+                    <!-- Video Wrapper -->
+                    <div class="order-1 md:order-2 relative w-full aspect-video md:w-full md:h-full">
+                        <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl font-bold text-center md:text-left my-2 leading-tight  sm:hidden block">
+                            DA-CROP BIOTECHNOLOGY CENTER
+                        </h3>
+                        <iframe
+                                title="Featured video"
+                                class="w-full h-full border-none rounded-lg"
+                                src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4"
+                                allowfullscreen
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                        </iframe>
                     </div>
                 </div>
             </div>
+
 
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
@@ -52,36 +64,76 @@
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
 
-            <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 justify-evenly pb-5">
-                <div class="bg-white rounded-md overflow-hidden max-w-[300px] mx-auto reveal-on-scroll-300">
-                    <div class="relative"> <img src="/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png" alt="Technology Development and Innovation" class="w-full h-64 object-cover" /> </div>
-                    <div class="-mt-10 mb-3 mx-4 bg-white shadow-lg rounded-md p-3 relative min-h-[240px]">
-                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-3 h-[3.3rem]">TECHNOLOGY DEVELOPMENT AND INNOVATION</h3>
-                        <p class="text-gray-800 text-center leading-1 mb-6 leading-[1rem] my-auto">We conduct and host cutting-edge crop biotechnology research and development (R&D) activities, including joint research projects, forming dedicated research teams, and implementing impactful research programs.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-5">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                    <div class="relative w-full h-48">
+                        <img src="/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png"
+                             alt="Technology Development and Innovation"
+                             class="absolute inset-0 w-full h-full object-cover" />
+                    </div>
+                    <div class="flex-1 -mt-10 mx-4 bg-white rounded-md p-4 relative">
+                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
+                            TECHNOLOGY DEVELOPMENT AND INNOVATION
+                        </h3>
+                        <p class="text-gray-800 text-center leading-tight md:leading-relaxed">
+                            We conduct and host cutting-edge crop biotechnology research and development (R&D) activities, including joint research projects, forming dedicated research teams, and implementing impactful research programs.
+                        </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden max-w-[300px] mx-auto reveal-on-scroll-500">
-                    <div class="relative"> <img src="/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg" alt="Technology Development and Innovation" class="w-full h-64 object-cover" /> </div>
-                    <div class="-mt-10 mb-3 mx-4 bg-white shadow-lg rounded-md p-3 relative min-h-[240px]">
-                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-3 h-[3.3rem]">R4D Biotechnology Capacity-Building Service</h3>
-                        <p class="text-gray-800 text-center leading-1 mb-6 leading-[1rem] my-auto">We provide essential R&D-related services and training to DA agencies and our network. Our goal is to equip stakeholders with the skills to effectively apply modern crop biotechnology tools.</p>
+
+                <!-- Card 2 -->
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                    <div class="relative w-full h-48">
+                        <img src="/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg"
+                             alt="R4D Biotechnology Capacity-Building Service"
+                             class="absolute inset-0 w-full h-full object-cover" />
+                    </div>
+                    <div class="flex-1 -mt-10 mx-4 bg-white rounded-md p-4 relative">
+                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
+                            R4D Biotechnology Capacity-Building Service
+                        </h3>
+                        <p class="text-gray-800 text-center leading-tight md:leading-relaxed">
+                            We provide essential R&D-related services and training to DA agencies and our network. Our goal is to equip stakeholders with the skills to effectively apply modern crop biotechnology tools.
+                        </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden max-w-[300px] mx-auto reveal-on-scroll-700">
-                    <div class="relative"> <img src="/wp-content/uploads/2025/09/CBC04940-768x461.png" alt="Technology Development and Innovation" class="w-full h-64 object-cover" /> </div>
-                    <div class="-mt-10 mb-3 mx-4 bg-white shadow-lg rounded-md p-3 relative min-h-[240px]">
-                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-3 h-[3.3rem]">Partnership and Fund Generation</h3>
-                        <p class="text-gray-800 text-center leading-1 mb-6 leading-[1rem] my-auto">We actively build and strengthen our connections within the R&D network. We also secure funding for projects from both local and international institutions, as well as public and private donors.</p>
+
+                <!-- Card 3 -->
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                    <div class="relative w-full h-48">
+                        <img src="/wp-content/uploads/2025/09/CBC04940-768x461.png"
+                             alt="Partnership and Fund Generation"
+                             class="absolute inset-0 w-full h-full object-cover" />
+                    </div>
+                    <div class="flex-1 -mt-10 mx-4 bg-white rounded-md p-4 relative">
+                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
+                            Partnership and Fund Generation
+                        </h3>
+                        <p class="text-gray-800 text-center leading-tight md:leading-relaxed">
+                            We actively build and strengthen our connections within the R&D network. We also secure funding for projects from both local and international institutions, as well as public and private donors.
+                        </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden max-w-[300px] mx-auto reveal-on-scroll-900">
-                    <div class="relative"> <img src="/wp-content/uploads/2025/09/CBC06408-768x432.png" alt="Technology Development and Innovation" class="w-full h-64 object-cover" /> </div>
-                    <div class="-mt-10 mb-3 mx-4 bg-white shadow-lg rounded-md p-3 relative min-h-[240px]">
-                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-3 h-[3.3rem]">Technology Commercialization and Management</h3>
-                        <p class="text-gray-800 text-center leading-1 mb-6 leading-[1rem] my-auto">We promote the commercialization and transfer of developed technologies. We also foster a culture of knowledge-sharing to ensure our network and stakeholders have easy access to a wealth of information.</p>
+
+                <!-- Card 4 -->
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                    <div class="relative w-full h-48">
+                        <img src="/wp-content/uploads/2025/09/CBC06408-768x432.png"
+                             alt="Technology Commercialization and Management"
+                             class="absolute inset-0 w-full h-full object-cover" />
+                    </div>
+                    <div class="flex-1 -mt-10 mx-4 bg-white rounded-md p-4 relative">
+                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
+                            Technology Commercialization and Management
+                        </h3>
+                        <p class="text-gray-800 text-center leading-tight md:leading-relaxed">
+                            We promote the commercialization and transfer of developed technologies. We also foster a culture of knowledge-sharing to ensure our network and stakeholders have easy access to a wealth of information.
+                        </p>
                     </div>
                 </div>
             </div>
+
 
             <?php echo govph_section_header('Latest Stories', ['id' => 'latest_stories_header']); ?>
 

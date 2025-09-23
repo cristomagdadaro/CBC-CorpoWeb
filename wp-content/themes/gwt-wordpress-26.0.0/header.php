@@ -472,3 +472,4 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- original content goes in this container -->
         <div class="off-canvas-content min-w-full" data-off-canvas-content>
+            <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-full h-screen "></div>
