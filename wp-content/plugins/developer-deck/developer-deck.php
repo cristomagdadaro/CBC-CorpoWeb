@@ -3,7 +3,7 @@
  * Plugin Name: Developer Deck (Developer's Page)
  * Description: Simple developer dashboard to scan the codebase for features/shortcodes/CPTs/sidebars and to save developer notes and tips. Provides an admin UI and a shortcode [devs_developer_page] to render the Developer's Page.
  * Version: 0.1.0
- * Author: Dev Tools
+ * Author: Cristo Rey C. Magdadaro
  */
 
 if (!defined('ABSPATH')) {

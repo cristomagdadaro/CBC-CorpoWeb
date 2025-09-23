@@ -3,7 +3,7 @@
  * Plugin Name: CBC Media Archive (Photos & Videos)
  * Description: Separate Photos and Videos archive management with front-end display (grid/list). Photos support 300x300 grid, double‑click 50% zoom, and full-size download.
  * Version: 1.0.0
- * Author: CBC
+ * Author: Cristo Rey C. Magdadaro
  */
 
 if (!defined('ABSPATH')) { exit; }

@@ -24,31 +24,32 @@ include_once('inc/banner.php');
 
             <?php
 
-            // Build Announcements, Events, Holidays from Theme Options
-            $opt = get_option('govph_options');
+            // Build Announcements, Events, Holidays from plugin (fallback to theme via plugin)
+            $cbc = apply_filters('cbc_calendar_options', []);
 
-            // Manual announcements (Message|URL)
+            // Manual announcements (Message|URL|ImageURL)
             $manualAnnouncements = [];
-            if (!empty($opt['govph_announcements'])) {
-                $lines = preg_split("/(\r\n|\n|\r)/", $opt['govph_announcements']);
+            if (!empty($cbc['announcements'])) {
+                $lines = preg_split("/(\r\n|\n|\r)/", (string)$cbc['announcements']);
                 foreach ($lines as $line) {
-                    $line = trim($line);
-                    if (!$line) continue;
-                    $parts = array_map('trim', explode('|', $line, 2));
+                    $line = trim((string)$line);
+                    if ($line === '') continue;
+                    $parts = array_map('trim', explode('|', $line, 3));
                     $manualAnnouncements[] = [
-                        'text' => $parts[0],
-                        'url'  => $parts[1] ?? ''
+                        'text' => $parts[0] ?? '',
+                        'url'  => $parts[1] ?? '',
+                        'img'  => $parts[2] ?? '',
                     ];
                 }
             }
 
-            // Events (YYYY-MM-DD|Title|URL|Type|Location)
+            // Events (YYYY-MM-DD|Title|URL|Type|Location|announce?)
             $events = [];
-            if (!empty($opt['govph_events'])) {
-                $lines = preg_split("/(\r\n|\n|\r)/", $opt['govph_events']);
+            if (!empty($cbc['events'])) {
+                $lines = preg_split("/(\r\n|\n|\r)/", (string)$cbc['events']);
                 foreach ($lines as $line) {
-                    $line = trim($line);
-                    if (!$line) continue;
+                    $line = trim((string)$line);
+                    if ($line === '') continue;
                     $parts = array_map('trim', explode('|', $line));
                     $date = $parts[0] ?? '';
                     $title = $parts[1] ?? '';
@@ -56,52 +57,60 @@ include_once('inc/banner.php');
                     $url = $parts[2] ?? '';
                     $type = $parts[3] ?? '';
                     $loc  = $parts[4] ?? '';
-                    $events[] = [
-                        'date' => $date,
-                        'title'=> $title,
-                        'url'  => $url,
-                        'type' => $type,
-                        'loc'  => $loc,
-                    ];
+                    // Detect announce flag in any trailing part
+                    $announceFlag = false;
+                    if (count($parts) > 5) {
+                        for ($i=5; $i<count($parts); $i++) {
+                            if (strtolower(trim($parts[$i])) === 'announce') { $announceFlag = true; break; }
+                        }
+                    }
+                    // Some users may append announce directly as the 5th part (location)
+                    if (!$announceFlag && strtolower(trim($loc)) === 'announce') { $announceFlag = true; $loc = ''; }
+                    $events[] = [ 'date'=>$date, 'title'=>$title, 'url'=>$url, 'type'=>$type, 'loc'=>$loc, 'announce'=>$announceFlag ];
                 }
             }
 
-            // Holidays (YYYY-MM-DD|Name|Scope)
+            // Holidays (YYYY-MM-DD|Name|Scope|announce?)
             $holidays = [];
-            if (!empty($opt['govph_holidays'])) {
-                $lines = preg_split("/(\r\n|\n|\r)/", $opt['govph_holidays']);
+            if (!empty($cbc['holidays'])) {
+                $lines = preg_split("/(\r\n|\n|\r)/", (string)$cbc['holidays']);
                 foreach ($lines as $line) {
-                    $line = trim($line);
-                    if (!$line) continue;
+                    $line = trim((string)$line);
+                    if ($line === '') continue;
                     $parts = array_map('trim', explode('|', $line));
                     $date = $parts[0] ?? '';
                     $name = $parts[1] ?? '';
                     if (!$date || !$name) continue;
                     $scope = $parts[2] ?? '';
-                    $holidays[] = [
-                        'date' => $date,
-                        'name' => $name,
-                        'scope'=> $scope,
-                    ];
+                    $announceFlag = false;
+                    if (count($parts) > 2) {
+                        for ($i=2; $i<count($parts); $i++) {
+                            if (strtolower(trim($parts[$i])) === 'announce') { $announceFlag = true; break; }
+                        }
+                    }
+                    if (!$announceFlag && strtolower(trim($scope)) === 'announce') { $announceFlag = true; $scope = ''; }
+                    $holidays[] = [ 'date'=>$date, 'name'=>$name, 'scope'=>$scope, 'announce'=>$announceFlag ];
                 }
             }
 
-            // Build upcoming items for ticker (next 14 days)
+            // Build upcoming items for ticker (next 14 days) but only those explicitly flagged with announce
             $today = new DateTime('today');
             $cutoff = (new DateTime('today'))->modify('+14 days');
             $upcoming = [];
             foreach ($events as $e) {
+                if (empty($e['announce'])) continue;
                 $d = DateTime::createFromFormat('Y-m-d', $e['date']);
                 if ($d && $d >= $today && $d <= $cutoff) {
                     $label = $d->format('M d') . ': ' . $e['title'];
-                    $upcoming[] = [ 'text' => $label, 'url' => $e['url'] ?? '' ];
+                    $upcoming[] = [ 'text' => $label, 'url' => $e['url'] ?? '', 'img' => '' ];
                 }
             }
             foreach ($holidays as $h) {
+                if (empty($h['announce'])) continue;
                 $d = DateTime::createFromFormat('Y-m-d', $h['date']);
                 if ($d && $d >= $today && $d <= $cutoff) {
                     $label = $d->format('M d') . ': ' . $h['name'];
-                    $upcoming[] = [ 'text' => $label, 'url' => '' ];
+                    $upcoming[] = [ 'text' => $label, 'url' => '', 'img' => '' ];
                 }
             }
 
@@ -114,9 +123,13 @@ include_once('inc/banner.php');
                 // Duplicate once for continuous effect
                 for ($i = 0; $i < 2; $i++) {
                     foreach ($announcements as $a) {
-                        $text = esc_html($a['text']);
-                        $url = !empty($a['url']) ? esc_url($a['url']) : '';
-                        echo '<div class="scrolling-content" style="display:flex;align-items:center;min-width:300px;padding:0.5rem 1rem;">';
+                        $text = esc_html($a['text'] ?? '');
+                        $url  = !empty($a['url']) ? esc_url($a['url']) : '';
+                        $img  = !empty($a['img']) ? esc_url($a['img']) : '';
+                        echo '<div class="scrolling-content" style="display:flex;align-items:center;gap:8px;min-width:300px;padding:0.5rem 1rem;">';
+                        if ($img) {
+                            echo '<img src="' . $img . '" alt="" style="height:24px;width:auto;border-radius:3px;object-fit:cover;" loading="lazy" />';
+                        }
                         if ($url) {
                             echo '<a href="' . $url . '" target="_blank" rel="noopener" style="color:#006837;text-decoration:underline;">' . $text . '</a>';
                         } else {

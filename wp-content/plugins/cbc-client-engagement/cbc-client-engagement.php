@@ -3,7 +3,7 @@
  * Plugin Name: CBC Client Engagement (Appointments & Feedback)
  * Description: Provides front-end forms for clients to book appointments and send feedback. Adds an admin panel to manage submissions.
  * Version: 1.0.0
- * Author: CBC Dev Team
+ * Author: Cristo Rey C. Magdadaro
  */
 
 if (!defined('ABSPATH')) {
