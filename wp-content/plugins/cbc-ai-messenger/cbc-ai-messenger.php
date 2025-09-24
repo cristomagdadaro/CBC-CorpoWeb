@@ -106,7 +106,7 @@ function cbc_ai_render_settings_page(){
     ?>
     <div class="wrap">
         <h1>CBC AI Messenger</h1>
-        <form method="post" action="options.php">
+        <form method="post" action="<?php echo esc_url(admin_url('options.php')); ?>">
             <?php settings_fields('cbc_ai_group'); ?>
             <?php do_settings_sections('cbc-ai-messenger'); ?>
             <?php submit_button(); ?>
@@ -192,7 +192,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
         'placeholder' => 'Ask about DA-CBC, biotechnology, agriculture, genetic engineering, or biology...',
         'floating' => '1',
-        'title' => 'CBC AI Assistant',
+        'title' => 'DA-CBC Chatbot',
     ), $atts, 'cbc_ai_messenger');
 
     $floating = in_array(strtolower((string)$atts['floating']), array('1','true','yes','on'), true);
@@ -208,19 +208,33 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div class="cbc-ai-box<?php echo $floating ? ' cbc-ai-floating cbc-ai-collapsed' : ''; ?>">
+    <div class="cbc-ai-box flex flex-col justify-end items-end <?php echo $floating ? ' cbc-ai-floating cbc-ai-collapsed' : ''; ?>">
         <?php if ($floating): ?>
-            <div class="cbc-ai-header">
-                <div class="cbc-ai-title"><?php echo esc_html($atts['title']); ?></div>
-                <button type="button" class="cbc-ai-toggle" aria-label="Toggle chat" aria-expanded="false">Open</button>
+            <div class="cbc-ai-header flex justify-center w-full">
+                <div class="cbc-ai-title cbc-ai-open text-center drop-shadow"><?php echo esc_html($atts['title']); ?></div>
+                <button type="button" class="cbc-ai-toggle cbc-ai-toggle-open flex items-center" aria-label="Open CBC Chatbot" aria-expanded="false">
+                    <span class="cbc-ai-toggle-open-icon drop-shadow" aria-hidden="true">
+                        <!-- bubble / chat icon (used when collapsed - open action) -->
+                        <svg viewBox="0 0 16 16">
+                          <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                        </svg>
+                    </span>
+                    <span class="cbc-ai-toggle-close-icon drop-shadow" aria-hidden="true">
+                        <!-- close (X) icon (used when open - close action) -->
+                        <svg viewBox="0 0 16 16">
+                          <path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/>
+                        </svg>
+                    </span>
+                </button>
             </div>
             <div class="cbc-ai-body">
         <?php endif; ?>
-        <div class="cbc-ai-log" aria-live="polite"></div>
+        <span class="text-sm text-gray-500">Conversation:</span>
+        <div class="cbc-ai-log shadow mb-3" aria-live="polite"></div>
         <form class="cbc-ai-form">
             <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name (optional)" aria-label="Your name" />
             <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email (optional)" aria-label="Your email" />
-            <input type="text" name="message" class="cbc-ai-input" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question" />
+            <textarea name="message" class="cbc-ai-input" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question" ></textarea>
             <button type="submit" class="cbc-ai-send">Ask</button>
         </form>
         <div class="cbc-ai-note">Answers are limited to DA-CBC and related science topics.</div>

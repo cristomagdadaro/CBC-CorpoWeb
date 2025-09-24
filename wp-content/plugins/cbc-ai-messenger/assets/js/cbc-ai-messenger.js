@@ -7,30 +7,56 @@
     $log.scrollTop($log[0].scrollHeight);
   }
 
-  // Toggle open/close for floating widget
+  function updateToggleAria($box, $btn, isOpen){
+    var title = ($box.find('.cbc-ai-title').text() || 'CBC AI Assistant').trim();
+    if (isOpen) {
+      $btn.attr('aria-label', 'Close ' + title);
+    } else {
+      $btn.attr('aria-label', 'Open ' + title);
+    }
+  }
+
+  // Toggle open/close for floating widget, using icon-only classes
   $(document).on('click', '.cbc-ai-box .cbc-ai-toggle', function(){
     var $btn = $(this);
     var $box = $btn.closest('.cbc-ai-box');
     var isCollapsed = $box.hasClass('cbc-ai-collapsed');
     if (isCollapsed) {
       $box.removeClass('cbc-ai-collapsed').addClass('cbc-ai-open');
-      $btn.attr('aria-expanded', 'true').text('Close');
+      $btn.attr('aria-expanded', 'true');
+      // swap classes to show close icon
+      $btn.removeClass('cbc-ai-toggle-open').addClass('cbc-ai-toggle-close');
+      updateToggleAria($box, $btn, true);
       try { localStorage.setItem('cbc_ai_open', '1'); } catch(e) {}
     } else {
       $box.removeClass('cbc-ai-open').addClass('cbc-ai-collapsed');
-      $btn.attr('aria-expanded', 'false').text('Open');
+      $btn.attr('aria-expanded', 'false');
+      // swap classes to show open icon
+      $btn.removeClass('cbc-ai-toggle-close').addClass('cbc-ai-toggle-open');
+      updateToggleAria($box, $btn, false);
       try { localStorage.setItem('cbc_ai_open', '0'); } catch(e) {}
     }
   });
 
-  // Restore open state if saved
+  // Restore open state if saved; ensure button classes reflect state
   $(function(){
     try {
       var open = localStorage.getItem('cbc_ai_open');
-      if (open === '1') {
-        $('.cbc-ai-box.cbc-ai-floating').removeClass('cbc-ai-collapsed').addClass('cbc-ai-open')
-          .find('.cbc-ai-toggle').attr('aria-expanded','true').text('Close');
-      }
+      $('.cbc-ai-box.cbc-ai-floating').each(function(){
+        var $box = $(this);
+        var $btn = $box.find('.cbc-ai-toggle');
+        if (open === '1') {
+          $box.removeClass('cbc-ai-collapsed').addClass('cbc-ai-open');
+          $btn.attr('aria-expanded','true');
+          $btn.removeClass('cbc-ai-toggle-open').addClass('cbc-ai-toggle-close');
+          updateToggleAria($box, $btn, true);
+        } else {
+          $box.removeClass('cbc-ai-open').addClass('cbc-ai-collapsed');
+          $btn.attr('aria-expanded','false');
+          $btn.removeClass('cbc-ai-toggle-close').addClass('cbc-ai-toggle-open');
+          updateToggleAria($box, $btn, false);
+        }
+      });
     } catch(e) {}
   });
 

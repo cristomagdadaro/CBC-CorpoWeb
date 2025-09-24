@@ -292,7 +292,7 @@
         padding: 0.5rem 0.6rem;
         border-radius: 4px 0 0 4px;
         cursor: pointer;
-        font-size: 1.25rem;
+        font-size: 2rem;
         line-height: 1;
         z-index: 10001;
         display: inline-flex;
@@ -317,7 +317,7 @@
     /* When collapsed, slide the entire container to the right so the toggle moves with it
        We translate by (panel width - toggle width + gap) so the toggle remains visible at the edge */
     #floating-sidebar-container.collapsed {
-        transform: translateY(-50%) translateX(calc(var(--panel-width) - var(--toggle-width) + 8px));
+        transform: translateY(-50%) translateX(calc(var(--panel-width) - var(--toggle-width) + 50px));
     }
     #floating-sidebar-container.collapsed #floating-sidebar {
         opacity: 0;

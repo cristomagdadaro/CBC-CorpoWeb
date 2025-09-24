@@ -379,7 +379,6 @@ Press esc, or click the close the button to close this dialog box.
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
-        <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-full h-screen "></div>
         <div id="main-nav">
             <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0 py-1 md:py-2">
                 <div class="row flex items-center sm:py-2 py-0 w-full">

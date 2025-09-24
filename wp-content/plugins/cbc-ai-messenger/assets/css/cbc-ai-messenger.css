@@ -1,29 +1,99 @@
-.cbc-ai-box{border:1px solid #ddd;padding:12px;border-radius:6px;max-width:680px;background:#fff}
-.cbc-ai-log{min-height:80px;margin-bottom:8px;max-height:320px;overflow:auto}
-.cbc-ai-msg{margin:6px 0;padding:8px;border-radius:6px;line-height:1.4}
+.cbc-ai-box{border-radius:3px;max-width:680px;background:transparent}
+.cbc-ai-log{min-height:80px;margin-bottom:8px;max-height:320px;overflow:auto; background: #f1f1f1}
+.cbc-ai-msg{margin:6px 0;;border-radius:6px;line-height:1.4}
 .cbc-ai-user{background:#f1f5ff}
 .cbc-ai-bot{background:#f7f7f7}
-.cbc-ai-form{display:flex;gap:8px;flex-wrap:wrap}
-.cbc-ai-input{flex:1;min-width:200px;padding:8px}
-.cbc-ai-input-name,.cbc-ai-input-email{flex:1;min-width:160px;padding:8px}
-.cbc-ai-send{padding:8px 14px}
+.cbc-ai-form{display:flex;gap:8px;flex-wrap:wrap; flex-direction: column}
+.cbc-ai-input{flex:1;min-width:200px; margin: 0; height: fit-content; overflow-y: scroll; min-height: 150px; padding: 15px}
+.cbc-ai-input-name, .cbc-ai-input-email{flex:1;min-width:160px; margin: 0; padding: 15px}
+.cbc-ai-send{
+    padding:8px 14px;
+    background: #1f5d2b;
+    color:#ffffff;
+}
 .cbc-ai-note{font-size:12px;color:#666;margin-top:6px}
 
 /* Floating widget layout */
-.cbc-ai-floating{position:fixed;right:20px;bottom:20px;width:340px;max-width:92vw;border:1px solid #cfd4dc;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:9999;background:#fff;overflow:hidden}
-.cbc-ai-floating .cbc-ai-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0b5cff;color:#fff}
-.cbc-ai-floating .cbc-ai-title{font-weight:600}
-.cbc-ai-floating .cbc-ai-toggle{background:#fff;color:#0b5cff;border:none;border-radius:14px;padding:4px 10px;cursor:pointer}
+.cbc-ai-floating{
+    position:fixed;
+    right:3px;
+    bottom:80px;
+    /* default desktop width (fixed card) but allow shrinking via max-width */
+    width:340px;
+    max-width:92vw;
+    border-radius:6px;
+    z-index:9999;
+    background:transparent;
+    overflow:hidden;
+    justify-content:flex-end;
+    box-sizing: border-box;
+}
+.cbc-ai-floating .cbc-ai-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 12px;
+    background: #a2b917;
+    color:#fff
+}
+.cbc-ai-floating .cbc-ai-title{font-weight:600;color:#ffffff;padding: 5px 0}
+.cbc-ai-floating .cbc-ai-toggle{color:#ffffff;border:none;border-radius:14px;padding:4px 10px;cursor:pointer}
 .cbc-ai-floating .cbc-ai-body{padding:12px}
 .cbc-ai-floating .cbc-ai-log{max-height:260px}
 
 /* Collapsed state hides the body */
 .cbc-ai-collapsed .cbc-ai-body{display:none}
+.cbc-ai-collapsed .cbc-ai-header{
+    width: auto;
+    min-width: 60px;
+    max-width: 60px !important;
+    border-radius: 30px;
+}
+
+/* Hide the title when collapsed to show icon-only button */
+.cbc-ai-collapsed .cbc-ai-title{display:none}
 
 /* Open state to ensure body visible */
-.cbc-ai-open .cbc-ai-body{display:block}
+.cbc-ai-open .cbc-ai-body{
+    display:block;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);
+    background: #ffffff;
+    border: 1px solid #aaaaaa;
+    width:340px; /* default open width */
+    max-width:92vw;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+/* Toggle icon visibility based on button state classes */
+.cbc-ai-toggle .cbc-ai-toggle-open-icon{display:none}
+.cbc-ai-toggle .cbc-ai-toggle-close-icon{display:none}
+.cbc-ai-toggle-open .cbc-ai-toggle-open-icon{display:inline-flex}
+.cbc-ai-toggle-open .cbc-ai-toggle-close-icon{display:none}
+.cbc-ai-toggle-close .cbc-ai-toggle-open-icon{display:none}
+.cbc-ai-toggle-close .cbc-ai-toggle-close-icon{display:inline-flex}
+
+/* Ensure SVG icons size consistently and inherit color */
+.cbc-ai-toggle svg{width:18px;height:18px;display:block}
 
 /* Responsive tweaks */
 @media (max-width: 600px){
-  .cbc-ai-floating{right:12px;bottom:12px;width:min(92vw, 420px)}
+  /* mobile phones: full-width-ish, but with safe margins */
+  .cbc-ai-floating{right:8px;bottom:70px;width:min(92vw,420px)}
+  .cbc-ai-open .cbc-ai-body{width:min(92vw,420px);padding:10px}
+  .cbc-ai-floating .cbc-ai-title{font-size:14px}
+  .cbc-ai-send{width:100%}
+}
+
+@media (min-width: 601px) and (max-width: 1024px){
+  /* tablets: wider but still constrained */
+  .cbc-ai-floating{right:12px;bottom:80px;width:min(46vw,520px)}
+  .cbc-ai-open .cbc-ai-body{width:min(46vw,640px);padding:12px}
+  .cbc-ai-floating .cbc-ai-title{font-size:15px}
+}
+
+/* fallback small tweak for very narrow screens */
+@media (max-width: 360px){
+  .cbc-ai-input{min-height:120px;padding:10px}
+  .cbc-ai-input-name, .cbc-ai-input-email{padding:8px}
 }

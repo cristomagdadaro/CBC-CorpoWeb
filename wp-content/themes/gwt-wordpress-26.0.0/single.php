@@ -13,7 +13,7 @@ include_once('inc/banner.php');
 
 <div id="main-content" class="container-main" role="document">
     <div class="row">
-        <div id="content" class="text-justify <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
+        <div id="content" class="<?php govph_displayoptions( 'govph_content_position' ); ?>columns"
             role="main">
             <!-- for Version 1 -->
              <div class="large-12 container-main">
