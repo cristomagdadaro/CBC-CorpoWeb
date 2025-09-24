@@ -67,6 +67,12 @@ add_action('admin_init', function(){
     add_settings_field('cbc_ai_max_tokens', 'Max Tokens', 'cbc_ai_field_max_tokens', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_max_tokens'));
     add_settings_field('cbc_ai_system_prompt', 'System Prompt', 'cbc_ai_field_system_prompt', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_system_prompt'));
     add_settings_field('cbc_ai_enforce_scope', 'Enforce Topic Scope', 'cbc_ai_field_enforce_scope', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_enforce_scope'));
+
+    // New settings for site context
+    add_settings_field('cbc_ai_include_site_context', 'Use Site Content (RAG)', 'cbc_ai_field_include_site_context', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_include_site_context'));
+    add_settings_field('cbc_ai_site_context_types', 'Content Types', 'cbc_ai_field_site_context_types', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_types'));
+    add_settings_field('cbc_ai_site_context_limit', 'Results Limit', 'cbc_ai_field_site_context_limit', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_limit'));
+    add_settings_field('cbc_ai_site_context_chars', 'Context Char Budget', 'cbc_ai_field_site_context_chars', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_chars'));
 });
 
 function cbc_ai_default_settings(){
@@ -82,6 +88,11 @@ function cbc_ai_default_settings(){
         'system_prompt' => "You are CBC AI Assistant. Your primary role is to answer questions about DA-Crop Biotechnology Center (DA-CBC), including its projects, research, and initiatives. You should also be knowledgeable about general topics in biotechnology, agriculture, genetic engineering, and biology. When asked a question outside of this scope, politely decline and state that your expertise is limited to these topics. Your responses should be informative, accurate, and easy to understand for a general audience.",
         'enforce_scope' => 1,
         'openai_org' => '',
+        // New defaults for site context
+        'include_site_context' => 1,
+        'site_context_types' => 'post,page',
+        'site_context_limit' => 5,
+        'site_context_chars' => 2000,
     );
 }
 
@@ -106,6 +117,11 @@ function cbc_ai_sanitize_settings($input){
     $out['max_tokens'] = is_numeric($input['max_tokens'] ?? null) ? max(1, min(4096, intval($input['max_tokens']))) : $out['max_tokens'];
     $out['system_prompt'] = wp_kses_post($input['system_prompt'] ?? $out['system_prompt']);
     $out['enforce_scope'] = !empty($input['enforce_scope']) ? 1 : 0;
+    // New sanitization for site context
+    $out['include_site_context'] = !empty($input['include_site_context']) ? 1 : 0;
+    $out['site_context_types'] = sanitize_text_field($input['site_context_types'] ?? $out['site_context_types']);
+    $out['site_context_limit'] = is_numeric($input['site_context_limit'] ?? null) ? max(1, min(10, intval($input['site_context_limit']))) : $out['site_context_limit'];
+    $out['site_context_chars'] = is_numeric($input['site_context_chars'] ?? null) ? max(500, min(8000, intval($input['site_context_chars']))) : $out['site_context_chars'];
     return $out;
 }
 
@@ -184,6 +200,28 @@ function cbc_ai_field_system_prompt($args){
 function cbc_ai_field_enforce_scope($args){
     $val = cbc_ai_get_settings()['enforce_scope'] ?? 0;
     echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[enforce_scope]' value='1' " . checked(1, $val, false) . " />";
+}
+
+function cbc_ai_field_include_site_context($args){
+    $val = cbc_ai_get_settings()['include_site_context'] ?? 1;
+    echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[include_site_context]' value='1' " . checked(1, $val, false) . " />";
+    echo "<p class='description'>Include top matching posts/pages as context so the model can answer questions about your site content.</p>";
+}
+
+function cbc_ai_field_site_context_types($args){
+    $val = cbc_ai_get_settings()['site_context_types'] ?? 'post,page';
+    echo "<input type='text' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_types]' value='" . esc_attr($val) . "' class='regular-text' />";
+    echo "<p class='description'>Comma-separated post types to search, e.g., post,page</p>";
+}
+
+function cbc_ai_field_site_context_limit($args){
+    $val = cbc_ai_get_settings()['site_context_limit'] ?? 5;
+    echo "<input type='number' min='1' max='10' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_limit]' value='" . esc_attr($val) . "' class='small-text' />";
+}
+
+function cbc_ai_field_site_context_chars($args){
+    $val = cbc_ai_get_settings()['site_context_chars'] ?? 2000;
+    echo "<input type='number' min='500' max='8000' step='100' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_chars]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
 // Shortcode to render the messenger UI
@@ -362,13 +400,75 @@ function cbc_ai_normalize_model($provider, $model){
     return $model;
 }
 
+function cbc_ai_build_site_context($query, $opts){
+    $query = trim((string)$query);
+    if ($query === '') return '';
+
+    $types_csv = (string)($opts['site_context_types'] ?? 'post,page');
+    $types = array_filter(array_map('trim', explode(',', $types_csv)), function($t){ return $t !== ''; });
+    if (empty($types)) { $types = array('post'); }
+
+    $limit = max(1, min(10, intval($opts['site_context_limit'] ?? 5)));
+    $budget = max(500, min(8000, intval($opts['site_context_chars'] ?? 2000)));
+
+    $q = new WP_Query(array(
+        's' => $query,
+        'post_type' => $types,
+        'post_status' => 'publish',
+        'posts_per_page' => $limit,
+        'ignore_sticky_posts' => true,
+    ));
+
+    if (!$q->have_posts()) { $GLOBALS['cbc_ai_last_site_items'] = array(); return ''; }
+
+    $ctx = array();
+    $items = array();
+    $total = 0;
+    $i = 1;
+    while ($q->have_posts()){
+        $q->the_post();
+        $title = get_the_title();
+        $url = get_permalink();
+        $date = get_the_date('Y-m-d');
+        $content = get_the_excerpt();
+        if (!$content) { $content = wp_trim_words(wp_strip_all_tags(get_post_field('post_content', get_the_ID())), 60, '...'); }
+        $entry = $i . ". " . $title . " (" . $date . ")\n" .
+                 "URL: " . $url . "\n" .
+                 "Excerpt: " . $content;
+        $len = strlen($entry) + 2;
+        if ($total + $len > $budget) { break; }
+        $ctx[] = $entry;
+        $items[] = array('title' => $title, 'url' => $url, 'date' => $date);
+        $total += $len;
+        $i++;
+    }
+    wp_reset_postdata();
+
+    $GLOBALS['cbc_ai_last_site_items'] = $items;
+
+    if (empty($ctx)) return '';
+    return "Site content snippets (use if relevant; cite URLs when helpful):\n" . implode("\n\n", $ctx);
+}
+
 function cbc_ai_call_provider($opts, $message, $api_key = ''){
     $system = (string)$opts['system_prompt'];
     $guard = "Always stay within DA-CBC, biotechnology, agriculture, genetic engineering, and biology. If asked outside scope, respond with a brief refusal and invite an in-scope question.";
+
     $provider = $opts['provider'] ?? 'openrouter';
     $model = cbc_ai_normalize_model($provider, $opts['model'] ?? '');
+
     $messages = array(array('role' => 'system', 'content' => $system));
     if (!empty($opts['enforce_scope'])) { $messages[] = array('role' => 'system', 'content' => $guard); }
+
+    $used_site_ctx = false;
+    if (!empty($opts['include_site_context'])) {
+        $ctx = cbc_ai_build_site_context($message, $opts);
+        if ($ctx !== '') {
+            $messages[] = array('role' => 'system', 'content' => $ctx);
+            $used_site_ctx = true;
+        }
+    }
+
     $messages[] = array('role' => 'user', 'content' => $message);
 
     $body = array(
@@ -405,6 +505,21 @@ function cbc_ai_call_provider($opts, $message, $api_key = ''){
     $reply = '';
     if (isset($data['choices'][0]['message']['content'])) { $reply = (string)$data['choices'][0]['message']['content']; }
     $usage = isset($data['usage']) ? $data['usage'] : array();
+
+    // Append related links if we used site context
+    if ($used_site_ctx && !empty($GLOBALS['cbc_ai_last_site_items']) && is_array($GLOBALS['cbc_ai_last_site_items'])) {
+        $items = $GLOBALS['cbc_ai_last_site_items'];
+        $links = '';
+        foreach ($items as $it) {
+            $url = esc_url($it['url']);
+            $title = esc_html($it['title']);
+            $links .= '<li><a href="' . $url . '" target="_blank" rel="noopener">' . $title . '</a></li>';
+        }
+        if ($links !== '') {
+            $reply .= "\n\n<p><strong>Related links:</strong></p><ul>" . $links . "</ul>";
+        }
+    }
+
     return array('reply' => $reply, 'usage' => $usage);
 }
 
@@ -454,4 +569,3 @@ function cbc_ai_get_effective_openai_org($opts){
     if (defined('CBC_AI_OPENAI_ORG')) return (string)constant('CBC_AI_OPENAI_ORG');
     return '';
 }
-
