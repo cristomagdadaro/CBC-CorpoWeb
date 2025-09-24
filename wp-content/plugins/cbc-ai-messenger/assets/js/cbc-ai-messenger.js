@@ -2,7 +2,7 @@
   function addMsg($box, who, text){
     var $log = $box.find('.cbc-ai-log');
     var $div = $('<div/>').addClass('cbc-ai-msg ' + (who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
-    $div.text(text);
+    $div.html(text); // Changed to html() to render HTML content
     $log.append($div);
     $log.scrollTop($log[0].scrollHeight);
   }
@@ -104,4 +104,13 @@
       $btn.prop('disabled', false).text(oldLabel);
     });
   });
+
+  // Allow submit with Enter key in textarea
+  $(document).on('keydown', '.cbc-ai-box .cbc-ai-input', function(e){
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      $(this).closest('.cbc-ai-form').trigger('submit');
+    }
+  });
+
 })(jQuery);
