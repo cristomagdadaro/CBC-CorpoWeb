@@ -1,4 +1,9 @@
-.cbc-ai-box{border-radius:3px;max-width:680px;width: fit-content;background:transparent}
+.cbc-ai-box{
+    border-radius:3px;
+    max-width:680px;
+    width: fit-content !important;
+    background:transparent;
+}
 .cbc-ai-log{min-height:80px;margin-bottom:8px;max-height:320px;overflow:auto; background: #f1f1f1}
 .cbc-ai-msg{margin:6px 0;;border-radius:6px;line-height:1.4}
 .cbc-ai-user{background:#f1f5ff}
@@ -19,7 +24,7 @@
     right:3px;
     bottom:80px;
     /* default desktop width (fixed card) but allow shrinking via max-width */
-    width:fit-content;
+    width:10rem;
     max-width:92vw;
     border-radius:6px;
     z-index:9999;
@@ -34,28 +39,33 @@
     justify-content:space-between;
     padding:10px 12px;
     background: #a2b917;
-    color:#fff
+    color:#fff;
 }
 .cbc-ai-floating .cbc-ai-title{font-weight:600;color:#ffffff;padding: 5px 0}
 .cbc-ai-floating .cbc-ai-toggle{color:#ffffff;border:none;border-radius:14px;padding:4px 10px;cursor:pointer}
 .cbc-ai-floating .cbc-ai-body{padding:12px}
 .cbc-ai-floating .cbc-ai-log{max-height:260px}
 
-/* Collapsed state hides the body */
-.cbc-ai-collapsed .cbc-ai-body{display:none}
-.cbc-ai-collapsed .cbc-ai-header{
-    width: auto;
-    min-width: 60px;
-    max-width: 60px !important;
-    border-radius: 30px;
+/* Collapsed state hides the body (animated) */
+.cbc-ai-collapsed .cbc-ai-body{
+    /* animate collapse instead of using display:none so transitions work */
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    pointer-events: none;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: max-height 280ms cubic-bezier(.22,.9,.37,1), opacity 200ms ease, transform 240ms ease;
 }
 
-/* Hide the title when collapsed to show icon-only button */
-.cbc-ai-collapsed .cbc-ai-title{display:none}
+.cbc-ai-collapsed .cbc-ai-header {
+    width: fit-content;
+}
 
-/* Open state to ensure body visible */
+/* Open state to ensure body visible (animated) */
 .cbc-ai-open .cbc-ai-body{
-    display:block;
+    display: block;
     box-shadow:0 8px 24px rgba(0,0,0,0.15);
     background: #ffffff;
     border: 1px solid #aaaaaa;
@@ -63,6 +73,13 @@
     max-width:92vw;
     padding: 10px 20px;
     box-sizing: border-box;
+
+    /* animation-friendly properties */
+    max-height: 1000px; /* large enough to hold content; mobile overrides with height:100% */
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition: max-height 320ms cubic-bezier(.22,.9,.37,1), opacity 220ms ease, transform 260ms ease;
 }
 
 /* Toggle icon visibility based on button state classes */
@@ -94,6 +111,12 @@
     background:#fff;
     z-index:10000;
     overflow:auto;
+
+    /* ensure visible when animating to fullscreen */
+    max-height: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
   /* Keep the header visible and usable when body is fullscreen */
   .cbc-ai-open .cbc-ai-header{

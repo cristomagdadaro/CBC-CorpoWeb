@@ -245,9 +245,11 @@ add_shortcode('cbc_ai_messenger', function($atts){
         'title' => 'DA-CBC Chatbot',
     ), $atts, 'cbc_ai_messenger');
 
-    // Enqueue chat assets
-    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.1.0');
-    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.2.1', true);
+    // Enqueue small fallback CSS to ensure mobile fullscreen + scroll-lock behaviors
+    wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.0.0');
+
+    // Enqueue messenger script
+    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.3.0', true);
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
         'nonce' => wp_create_nonce('wp_rest'),
@@ -256,28 +258,32 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div class="cbc-ai-box cbc-ai-floating cbc-ai-collapsed">
-        <div class="cbc-ai-header">
-            <div class="cbc-ai-title"><?php echo esc_html($atts['title']); ?></div>
-            <button type="button" class="cbc-ai-toggle cbc-ai-toggle-open flex items-center justify-center" aria-label="Open CBC Chatbot" aria-expanded="false">
-                <span class="cbc-ai-toggle-open-icon" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
+    <div class="cbc-ai-box cbc-ai-floating cbc-ai-collapsed fixed right-0 bottom-20 z-50 flex flex-col items-end backdrop-blur">
+        <div class="cbc-ai-header duration-500 flex items-center w-full justify-between bg-lime-600 text-white px-5 py-2 shadow-md rounded-md">
+            <div class="cbc-ai-title duration-500 font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
+            <button type="button" class="cbc-ai-toggle duration-500 cbc-ai-toggle-open flex items-center text-white" aria-label="Open CBC Chatbot" aria-expanded="false">
+                <span class="cbc-ai-toggle-open-icon inline-flex">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
                 </span>
-                <span class="cbc-ai-toggle-close-icon" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/></svg>
+                <span class="cbc-ai-toggle-close-icon hidden inline-flex">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16"><path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/></svg>
                 </span>
             </button>
         </div>
-        <div class="cbc-ai-body">
-            <span>Conversation:</span>
-            <div class="cbc-ai-log" aria-live="polite"></div>
-            <form class="cbc-ai-form">
-                <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name (optional)" aria-label="Your name" />
-                <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email (optional)" aria-label="Your email" />
-                <textarea name="message" class="cbc-ai-input" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
-                <button type="submit" class="cbc-ai-send">Ask</button>
+
+        <div class="cbc-ai-body mt-2 hidden transform transition-all duration-300 ease-out origin-top-right md:origin-top-right md:max-h-[1000px] md:overflow-visible md:w-[340px] md:rounded-md md:shadow-lg bg-white border border-gray-200 p-4 md:p-4">
+            <div class="cbc-ai-user-info w-full mb-2 hidden text-sm text-gray-700"></div>
+            <span class="text-sm text-gray-500">Conversation:</span>
+            <div class="cbc-ai-log bg-gray-100 rounded p-2 my-2 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
+             <form class="cbc-ai-form flex flex-col gap-2">
+                <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
+                    <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
+                    <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
+                </div>
+                <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-[140px]" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
+                <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
             </form>
-            <div class="cbc-ai-note">Answers are limited to DA-CBC and related science topics.</div>
+            <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>
         </div>
     </div>
     <?php
@@ -292,8 +298,8 @@ add_action('rest_api_init', function(){
         'permission_callback' => '__return_true',
         'args' => array(
             'message' => array('required' => true,'type' => 'string'),
-            'name'    => array('required' => false,'type' => 'string'),
-            'email'   => array('required' => false,'type' => 'string'),
+            'name'    => array('required' => true,'type' => 'string'),
+            'email'   => array('required' => true,'type' => 'string'),
         )
     ));
 });
@@ -316,8 +322,16 @@ function cbc_ai_is_contact_request($text, &$type){
 
 function cbc_ai_rest_ask( WP_REST_Request $req ){
     $message = trim((string)$req->get_param('message'));
-    $name = sanitize_text_field((string)$req->get_param('name'));
-    $email = sanitize_email((string)$req->get_param('email'));
+    $name = trim((string)$req->get_param('name'));
+    $email = trim((string)$req->get_param('email'));
+
+    // Server-side validation: require name and valid email
+    if ($name === '') { return new WP_REST_Response(array('error' => 'Name is required'), 400); }
+    $email_s = sanitize_email($email);
+    if ($email_s === '' || !is_email($email_s)) { return new WP_REST_Response(array('error' => 'A valid email is required'), 400); }
+    // normalize sanitized values
+    $name = sanitize_text_field($name);
+    $email = $email_s;
 
     if ($message === '') { return new WP_REST_Response(array('error' => 'Empty message'), 400); }
 
