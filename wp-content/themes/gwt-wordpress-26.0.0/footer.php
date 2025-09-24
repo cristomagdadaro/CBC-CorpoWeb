@@ -329,9 +329,40 @@
         transform: rotate(180deg);
     }
 
-    /* Small screens: hide floating sidebar to avoid covering content */
+    /* Small screens: show a compact, mobile-friendly floating sidebar (bottom-right) */
     @media (max-width: 768px) {
-        #floating-sidebar-container { display: none; }
+        /* Place the toggle fixed at bottom-right for easy reach */
+        #floating-sidebar-toggle {
+            position: fixed !important;
+            right: 0 !important;
+            bottom: 250px !important;
+            z-index: 2147483648 !important;
+            width: 48px;
+            height: 48px;
+            padding: 0.3rem;
+            font-size: 1.4rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        }
+
+        /* Panel behaves as a bottom sheet above the toggle when opened */
+        #floating-sidebar {
+            position: fixed !important;
+            right: 12px !important;
+            bottom: 72px !important; /* place above the toggle */
+            width: calc(100vw - 32px) !important;
+            max-width: 420px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Ensure the container is visible and doesn't block the toggle */
+        #floating-sidebar-container { display: block !important; position: fixed !important; right: 0 !important; bottom: 0 !important; left: auto !important; top: auto !important; transform: none !important; z-index: 2147483647 !important; }
+
+        /* When collapsed on mobile, hide the panel but keep the toggle visible */
+        #floating-sidebar-container.collapsed #floating-sidebar { display: none !important; opacity: 0 !important; pointer-events: none !important; }
     }
 
     /* Minimal styles for widgets inside floating sidebar */

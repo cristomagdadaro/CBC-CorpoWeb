@@ -208,20 +208,20 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div class="cbc-ai-box flex flex-col justify-end items-end <?php echo $floating ? ' cbc-ai-floating cbc-ai-collapsed' : ''; ?>">
+    <div class="cbc-ai-box flex flex-col justify-end items-end drop-shadow-md <?php echo $floating ? ' cbc-ai-floating cbc-ai-collapsed' : ''; ?>">
         <?php if ($floating): ?>
             <div class="cbc-ai-header flex justify-center w-full">
                 <div class="cbc-ai-title cbc-ai-open text-center drop-shadow"><?php echo esc_html($atts['title']); ?></div>
                 <button type="button" class="cbc-ai-toggle cbc-ai-toggle-open flex items-center" aria-label="Open CBC Chatbot" aria-expanded="false">
-                    <span class="cbc-ai-toggle-open-icon drop-shadow" aria-hidden="true">
+                    <span class="cbc-ai-toggle-open-icon drop-shadow-md" aria-hidden="true">
                         <!-- bubble / chat icon (used when collapsed - open action) -->
-                        <svg viewBox="0 0 16 16">
+                        <svg viewBox="0 0 16 16" fill="currentColor">
                           <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
                         </svg>
                     </span>
-                    <span class="cbc-ai-toggle-close-icon drop-shadow" aria-hidden="true">
+                    <span class="cbc-ai-toggle-close-icon drop-shadow-md" aria-hidden="true">
                         <!-- close (X) icon (used when open - close action) -->
-                        <svg viewBox="0 0 16 16">
+                        <svg viewBox="0 0 16 16" fill="currentColor">
                           <path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/>
                         </svg>
                     </span>

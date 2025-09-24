@@ -65,8 +65,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-5">
-                <!-- Card 1 -->
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png"
                              alt="Technology Development and Innovation"
@@ -81,9 +80,7 @@
                         </p>
                     </div>
                 </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg"
                              alt="R4D Biotechnology Capacity-Building Service"
@@ -98,9 +95,7 @@
                         </p>
                     </div>
                 </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/CBC04940-768x461.png"
                              alt="Partnership and Fund Generation"
@@ -115,9 +110,7 @@
                         </p>
                     </div>
                 </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col">
+                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/CBC06408-768x432.png"
                              alt="Technology Commercialization and Management"

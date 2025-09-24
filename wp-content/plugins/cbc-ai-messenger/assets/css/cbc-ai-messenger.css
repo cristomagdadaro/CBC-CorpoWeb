@@ -1,4 +1,4 @@
-.cbc-ai-box{border-radius:3px;max-width:680px;background:transparent}
+.cbc-ai-box{border-radius:3px;max-width:680px;width: fit-content;background:transparent}
 .cbc-ai-log{min-height:80px;margin-bottom:8px;max-height:320px;overflow:auto; background: #f1f1f1}
 .cbc-ai-msg{margin:6px 0;;border-radius:6px;line-height:1.4}
 .cbc-ai-user{background:#f1f5ff}
@@ -19,7 +19,7 @@
     right:3px;
     bottom:80px;
     /* default desktop width (fixed card) but allow shrinking via max-width */
-    width:340px;
+    width:fit-content;
     max-width:92vw;
     border-radius:6px;
     z-index:9999;
@@ -74,12 +74,12 @@
 .cbc-ai-toggle-close .cbc-ai-toggle-close-icon{display:inline-flex}
 
 /* Ensure SVG icons size consistently and inherit color */
-.cbc-ai-toggle svg{width:18px;height:18px;display:block}
+.cbc-ai-toggle svg{width:18px;height:18px;display:block; color: inherit;}
 
 /* Responsive tweaks */
 @media (max-width: 600px){
   /* mobile phones: full-width-ish, but with safe margins */
-  .cbc-ai-floating{right:8px;bottom:70px;width:min(92vw,420px)}
+  .cbc-ai-floating{right:8px;bottom:90px;width:min(92vw,420px)}
   .cbc-ai-open .cbc-ai-body{width:min(92vw,420px);padding:10px}
   .cbc-ai-floating .cbc-ai-title{font-size:14px}
   .cbc-ai-send{width:100%}
