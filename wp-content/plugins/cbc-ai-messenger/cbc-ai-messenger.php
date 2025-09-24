@@ -73,6 +73,8 @@ add_action('admin_init', function(){
     add_settings_field('cbc_ai_site_context_types', 'Content Types', 'cbc_ai_field_site_context_types', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_types'));
     add_settings_field('cbc_ai_site_context_limit', 'Results Limit', 'cbc_ai_field_site_context_limit', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_limit'));
     add_settings_field('cbc_ai_site_context_chars', 'Context Char Budget', 'cbc_ai_field_site_context_chars', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_site_context_chars'));
+    // New: Render in Footer toggle
+    add_settings_field('cbc_ai_render_in_footer', 'Render in Footer', 'cbc_ai_field_render_in_footer', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_render_in_footer'));
 });
 
 function cbc_ai_default_settings(){
@@ -93,6 +95,8 @@ function cbc_ai_default_settings(){
         'site_context_types' => 'post,page',
         'site_context_limit' => 5,
         'site_context_chars' => 2000,
+        // New
+        'render_in_footer' => 0,
     );
 }
 
@@ -122,6 +126,8 @@ function cbc_ai_sanitize_settings($input){
     $out['site_context_types'] = sanitize_text_field($input['site_context_types'] ?? $out['site_context_types']);
     $out['site_context_limit'] = is_numeric($input['site_context_limit'] ?? null) ? max(1, min(10, intval($input['site_context_limit']))) : $out['site_context_limit'];
     $out['site_context_chars'] = is_numeric($input['site_context_chars'] ?? null) ? max(500, min(8000, intval($input['site_context_chars']))) : $out['site_context_chars'];
+    // New: footer toggle
+    $out['render_in_footer'] = !empty($input['render_in_footer']) ? 1 : 0;
     return $out;
 }
 
@@ -224,6 +230,13 @@ function cbc_ai_field_site_context_chars($args){
     echo "<input type='number' min='500' max='8000' step='100' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_chars]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
+// New render in footer field
+function cbc_ai_field_render_in_footer($args){
+    $val = cbc_ai_get_settings()['render_in_footer'] ?? 0;
+    echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[render_in_footer]' value='1' " . checked(1, $val, false) . " />";
+    echo "<p class='description'>Outputs the floating chat in the site footer on pages that don’t already include the shortcode.</p>";
+}
+
 // Shortcode to render the messenger UI
 add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
@@ -232,58 +245,40 @@ add_shortcode('cbc_ai_messenger', function($atts){
         'title' => 'DA-CBC Chatbot',
     ), $atts, 'cbc_ai_messenger');
 
-    $floating = in_array(strtolower((string)$atts['floating']), array('1','true','yes','on'), true);
-
-    // Enqueue assets
-    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.1.0', true);
+    // Enqueue chat assets
+    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.1.0');
+    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.2.1', true);
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
         'nonce' => wp_create_nonce('wp_rest'),
         'placeholder' => (string)$atts['placeholder'],
     ));
-    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.1.0');
 
     ob_start();
     ?>
-    <div class="cbc-ai-box flex flex-col justify-end items-end drop-shadow-md <?php echo $floating ? ' cbc-ai-floating cbc-ai-collapsed' : ''; ?>">
-        <?php if ($floating): ?>
-            <div class="cbc-ai-header flex justify-center w-full">
-                <div class="cbc-ai-title cbc-ai-open text-center drop-shadow flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16">
-                        <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/>
-                        <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/>
-                    </svg>
-                   <span><?php echo esc_html($atts['title']); ?></span>
-                </div>
-                <button type="button" class="cbc-ai-toggle cbc-ai-toggle-open flex items-center" aria-label="Open CBC Chatbot" aria-expanded="false">
-                    <span class="cbc-ai-toggle-open-icon drop-shadow-md" aria-hidden="true">
-                        <!-- bubble / chat icon (used when collapsed - open action) -->
-                        <svg viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-                        </svg>
-                    </span>
-                    <span class="cbc-ai-toggle-close-icon drop-shadow-md" aria-hidden="true">
-                        <!-- close (X) icon (used when open - close action) -->
-                        <svg viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/>
-                        </svg>
-                    </span>
-                </button>
-            </div>
-            <div class="cbc-ai-body">
-        <?php endif; ?>
-        <span class="text-sm text-gray-500">Conversation:</span>
-        <div class="cbc-ai-log shadow mb-3" aria-live="polite"></div>
-        <form class="cbc-ai-form">
-            <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name (optional)" aria-label="Your name" />
-            <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email (optional)" aria-label="Your email" />
-            <textarea name="message" class="cbc-ai-input" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question" ></textarea>
-            <button type="submit" class="cbc-ai-send">Ask</button>
-        </form>
-        <div class="cbc-ai-note">Answers are limited to DA-CBC and related science topics.</div>
-        <?php if ($floating): ?>
-            </div>
-        <?php endif; ?>
+    <div class="cbc-ai-box cbc-ai-floating cbc-ai-collapsed">
+        <div class="cbc-ai-header">
+            <div class="cbc-ai-title"><?php echo esc_html($atts['title']); ?></div>
+            <button type="button" class="cbc-ai-toggle cbc-ai-toggle-open flex items-center justify-center" aria-label="Open CBC Chatbot" aria-expanded="false">
+                <span class="cbc-ai-toggle-open-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
+                </span>
+                <span class="cbc-ai-toggle-close-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/></svg>
+                </span>
+            </button>
+        </div>
+        <div class="cbc-ai-body">
+            <span>Conversation:</span>
+            <div class="cbc-ai-log" aria-live="polite"></div>
+            <form class="cbc-ai-form">
+                <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name (optional)" aria-label="Your name" />
+                <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email (optional)" aria-label="Your email" />
+                <textarea name="message" class="cbc-ai-input" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
+                <button type="submit" class="cbc-ai-send">Ask</button>
+            </form>
+            <div class="cbc-ai-note">Answers are limited to DA-CBC and related science topics.</div>
+        </div>
     </div>
     <?php
     return ob_get_clean();
@@ -553,6 +548,21 @@ function cbc_ai_render_metabox($post){
     </div>
     <?php
 }
+
+// Footer injection for inline chat (floating="0") if enabled
+add_action('wp_footer', function(){
+    if (is_admin()) return;
+    $opts = cbc_ai_get_settings();
+    if (empty($opts['render_in_footer'])) return;
+
+    global $post;
+    if ($post instanceof WP_Post) {
+        $content = (string)$post->post_content;
+        if (has_shortcode($content, 'cbc_ai_messenger')) return; // avoid duplicate
+    }
+
+    echo do_shortcode('[cbc_ai_messenger]');
+});
 
 function cbc_ai_get_effective_api_key($opts){
     $prov = $opts['provider'] ?? 'openrouter';

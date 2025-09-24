@@ -213,6 +213,8 @@
 
 <?php wp_footer(); ?>
 
+<?php echo do_shortcode('[cbc_ai_messenger]'); ?>
+
 <!-- Floating Sidebar (right side) -->
 <?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
     <div id="floating-sidebar-container" aria-hidden="false">
@@ -262,6 +264,7 @@
             <?php dynamic_sidebar( 'floating-sidebar' ); ?>
         </div>
     </div>
+
 <?php endif; ?>
 
 <style>

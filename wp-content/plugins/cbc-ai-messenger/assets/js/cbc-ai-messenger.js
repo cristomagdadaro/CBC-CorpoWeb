@@ -2,21 +2,17 @@
   function addMsg($box, who, text){
     var $log = $box.find('.cbc-ai-log');
     var $div = $('<div/>').addClass('cbc-ai-msg ' + (who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
-    $div.html(text); // Changed to html() to render HTML content
+    $div.html(text);
     $log.append($div);
     $log.scrollTop($log[0].scrollHeight);
   }
 
   function updateToggleAria($box, $btn, isOpen){
     var title = ($box.find('.cbc-ai-title').text() || 'CBC AI Assistant').trim();
-    if (isOpen) {
-      $btn.attr('aria-label', 'Close ' + title);
-    } else {
-      $btn.attr('aria-label', 'Open ' + title);
-    }
+    $btn.attr('aria-label', (isOpen ? 'Close ' : 'Open ') + title);
   }
 
-  // Toggle open/close for floating widget, using icon-only classes
+  // Toggle open/close for floating widget using CSS classes
   $(document).on('click', '.cbc-ai-box .cbc-ai-toggle', function(){
     var $btn = $(this);
     var $box = $btn.closest('.cbc-ai-box');
@@ -24,21 +20,19 @@
     if (isCollapsed) {
       $box.removeClass('cbc-ai-collapsed').addClass('cbc-ai-open');
       $btn.attr('aria-expanded', 'true');
-      // swap classes to show close icon
       $btn.removeClass('cbc-ai-toggle-open').addClass('cbc-ai-toggle-close');
       updateToggleAria($box, $btn, true);
       try { localStorage.setItem('cbc_ai_open', '1'); } catch(e) {}
     } else {
       $box.removeClass('cbc-ai-open').addClass('cbc-ai-collapsed');
       $btn.attr('aria-expanded', 'false');
-      // swap classes to show open icon
       $btn.removeClass('cbc-ai-toggle-close').addClass('cbc-ai-toggle-open');
       updateToggleAria($box, $btn, false);
       try { localStorage.setItem('cbc_ai_open', '0'); } catch(e) {}
     }
   });
 
-  // Restore open state if saved; ensure button classes reflect state
+  // Restore open state if saved; apply to floating widgets
   $(function(){
     try {
       var open = localStorage.getItem('cbc_ai_open');
