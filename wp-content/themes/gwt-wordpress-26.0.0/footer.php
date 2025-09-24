@@ -337,8 +337,8 @@
         /* Place the toggle fixed at bottom-right for easy reach */
         #floating-sidebar-toggle {
             position: fixed !important;
-            right: 12px !important;
-            bottom: 12px !important;
+            left: 0 !important;
+            bottom: 160px !important;
             z-index: 2147483648 !important;
             width: 48px;
             height: 48px;

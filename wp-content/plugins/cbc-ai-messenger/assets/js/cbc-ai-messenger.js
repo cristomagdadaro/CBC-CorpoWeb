@@ -2,7 +2,13 @@
   function addMsg($box, who, text){
     var $log = $box.find('.cbc-ai-log');
     var $div = $('<div/>').addClass('cbc-ai-msg ' + (who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
-    $div.html(text);
+    if (who === 'user') {
+      // render as text to avoid HTML injection from user input
+      $div.text(text);
+    } else {
+      // bot replies may contain basic HTML (related links), render as HTML
+      $div.html(text);
+    }
     $log.append($div);
     $log.scrollTop($log[0].scrollHeight);
   }
