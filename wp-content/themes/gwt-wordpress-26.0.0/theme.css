@@ -478,14 +478,11 @@ h1.logo img {
 
 /*breadcrumbs*/
 .breadcrumbs {
-  margin-top: 10px;
-  background: #fcfcfc none repeat scroll 0% 0%;
-  margin-bottom: 0.7rem;
-  padding: 0.5625rem 0.875rem;
+  margin: 10px 0;
+  padding: 0.5625rem 0;
   overflow: hidden;
-  border: 1px solid #f2f2f2;
   line-height: 0.6875rem;
-  border-radius: 3px;
+  border-radius: 0 0 3px 3px;
 }
 .breadcrumbs li {
   max-width: 200px;

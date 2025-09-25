@@ -46,7 +46,7 @@ function efs_get_slider(){
 		    <div class="absolute inset-0 flex justify-center">
 		        <div class="hidden absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#1f5d2b] via-transparent to-transparent opacity-25"></div>
 		        <div class="hidden absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#a2b917] via-transparent to-transparent opacity-25"></div>
-		        <figcaption class="orbit-caption absolute bottom-0 w-full text-center text-white bg-black bg-opacity-0 py-2 sm:text-2xl md:text-xl lg:text-3xl text-lg">' . $caption . '</figcaption>
+		        <figcaption class="orbit-caption absolute bottom-0 w-full text-center text-white bg-black bg-opacity-0 py-2 sm:text-xl md:text-2xl lg:text-3xl text-lg">' . $caption . '</figcaption>
 		    </div>
 		    </a>
 		    <div class="hidden orbit-slide-number absolute top-0 left-0 z-10 text-white p-2">

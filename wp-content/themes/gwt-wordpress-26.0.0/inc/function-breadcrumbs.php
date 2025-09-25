@@ -13,7 +13,7 @@ function gwt_wp_breadcrumb() {
 	$separator_block = '<span class="separator">'.$separator.'</span>';
 	
 	if (!is_home()) {
-		echo '<ul class="breadcrumbs bg-[#F6F6F6] shadow">';
+		echo '<ul class="breadcrumbs">';
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
 			echo '<li class="select-none">Navigate:</li>';
 			echo '<li><a class="pathway" href="';
@@ -27,7 +27,7 @@ function gwt_wp_breadcrumb() {
 		
 	} else {
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
-			echo '<ul class="breadcrumbs bg-[#F6F6F6] shadow">';
+			echo '<ul class="breadcrumbs">';
 			echo '<li class="select-none">Navigate:</li>';
 			echo '<li><a class="pathway" href="';
 			echo home_url();

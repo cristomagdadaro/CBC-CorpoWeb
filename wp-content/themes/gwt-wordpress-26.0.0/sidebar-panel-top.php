@@ -26,7 +26,7 @@
 
                     <!-- Text Section -->
                     <div class="order-2 md:order-1 flex flex-col justify-center">
-                        <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl font-bold text-center md:text-left leading-tight hidden sm:block">
+                        <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight hidden sm:block">
                             DA-CROP BIOTECHNOLOGY CENTER
                         </h3>
                         <p class="leading-relaxed mt-2 text-justify md:text-left leading-tight sm:leading-relaxed">
@@ -61,11 +61,11 @@
             <?php echo govph_section_header('Core Programs', ['id' => 'core_programs_header']); ?>
 
             <div class="widget widget_block">
-                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
+                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-5">
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
+            <div class="sm:flex sm:flex-col md:grid md:grid-cols-2 lg:grid-cols-4 ap-3 lg:gap-6 pb-5">
+                <div class="scale-[75%] md:scale-[85%] lg:scale-100 bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png"
                              alt="Technology Development and Innovation"
@@ -80,7 +80,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
+                <div class="scale-[75%] md:scale-[85%] lg:scale-100 bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg"
                              alt="R4D Biotechnology Capacity-Building Service"
@@ -95,7 +95,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
+                <div class="scale-[75%] md:scale-[85%] lg:scale-100 bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/CBC04940-768x461.png"
                              alt="Partnership and Fund Generation"
@@ -110,7 +110,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="bg-white rounded-md overflow-hidden shadow-lg flex flex-col md:scale-100 scale-[75%]">
+                <div class="scale-[75%] md:scale-[85%] lg:scale-100 bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-48">
                         <img src="/wp-content/uploads/2025/09/CBC06408-768x432.png"
                              alt="Technology Commercialization and Management"
@@ -134,7 +134,11 @@
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
 
-            <?php echo do_shortcode('[gwt_latest_posts posts="6" excerptLength="25" show_date="1" show_image="1" show_author="0"] '); ?>
+            <?php
+            $excerptLength = wp_is_mobile() ? "15" : "25";
+                echo do_shortcode('[gwt_latest_posts posts="6" excerptLength="' . $excerptLength . '" show_date="1" show_image="1" show_author="0"]');
+            ?>
+
 
             <!-- insert the latest post template here -->
             <!--Panel Top 1 End -->
