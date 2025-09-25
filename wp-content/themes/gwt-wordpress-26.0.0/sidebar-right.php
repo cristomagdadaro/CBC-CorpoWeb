@@ -43,6 +43,12 @@
             </div>
         </aside>
     <?php endif; ?>
+
+    <?php echo govph_section_header('Popular Posts', ['id' => 'popular_posts_header', 'swap'=>$swap]); ?>
+    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+        <?php echo  do_shortcode('[pm_popular_posts cache_minutes="0" titles_only="1"]'); ?>
+    </aside>
+
         <aside class="widget callout border-none secondary widget_block">
             <div class="flex flex-col items-center gap-2">
                 <div class="grid grid-cols-2 gap-4 items-center">

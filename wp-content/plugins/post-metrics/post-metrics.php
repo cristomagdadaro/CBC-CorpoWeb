@@ -262,7 +262,7 @@ class PM_Post_Metrics {
 				'views' => $views,
 				'likes' => intval( $meta['likes'] ?? 0 ),
 				'shares' => intval( $meta['shares'] ?? 0 ),
-				'engagements' => intval( $meta['engagements'] ?? 0 ),
+				'engagements' => intval( $meta['engagements' ] ?? 0 ),
 				'url' => get_edit_post_link( $p ),
 			);
 		}
@@ -382,6 +382,8 @@ class PM_Post_Metrics {
 
 	public static function register_shortcodes() {
 		add_shortcode( 'pm_buttons', array( __CLASS__, 'shortcode_buttons' ) );
+		// New shortcode: popular / high engagement posts list.
+		add_shortcode( 'pm_popular_posts', array( __CLASS__, 'shortcode_popular_posts' ) );
 	}
 
 	public static function shortcode_buttons( $atts ) {
@@ -391,7 +393,7 @@ class PM_Post_Metrics {
 		$likes = intval( $meta['likes'] ?? 0 );
 		$shares = intval( $meta['shares'] ?? 0 );
 
-		$like_btn = '<button class="pm-btn pm-like flex items-center gap-2" data-pm-event="like" hover:scale-105 data-pm-label="shortcode-like" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+		$like_btn = '<button class="pm-btn pm-like flex items-center gap-2 hover:scale-105" data-pm-event="like" data-pm-label="shortcode-like" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
   <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
 </svg><span class="pm-like-count">' . esc_html( $likes ) . '</span></button>';
 		$share_btn = '<div class="pm-btn pm-share flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-share-fill" viewBox="0 0 16 16">
@@ -413,6 +415,224 @@ class PM_Post_Metrics {
 		$script .= "})();</script>";
 
 		return '<div class="pm-button-wrap flex items-center gap-5">' . $like_btn . ' ' . $share_btn . '</div>' . $script;
+	}
+
+	/**
+	 * Shortcode: [pm_popular_posts]
+	 * Displays the most popular / highest engagement posts using a layout inspired by core/latest-posts block.
+	 * Engagement score = views + likes + shares (ignoring other metrics for now).
+	 *
+	 * Attributes:
+	 * - count (int)          Number of posts to show (default 6)
+	 * - show_excerpt (0|1)   Display excerpt (default 1)
+	 * - excerpt_length (int) Words in excerpt (default 20)
+	 * - show_date (0|1)      Display post date (default 1)
+	 * - show_author (0|1)    Display author name (default 0)
+	 * - layout (string)      'stack' (default) or 'grid'
+	 * - categories (string)  Comma separated category IDs to limit (optional)
+	 * - days (int)           Limit to posts published in last N days (optional)
+	 * - cache_minutes (int)  Cache results in a transient (default 5)
+	 */
+	public static function shortcode_popular_posts( $atts ) {
+		$atts = shortcode_atts( array(
+			'count'          => 6,
+			'show_excerpt'   => 1,
+			'excerpt_length' => 20,
+			'show_date'      => 1,
+			'show_author'    => 0,
+			'layout'         => 'stack',
+			'categories'     => '',
+			'days'           => 0,
+			'cache_minutes'  => 5,
+			'titles_only'    => 0, // NEW: if 1, output only a simple list of linked titles
+		), $atts, 'pm_popular_posts' );
+
+		$count          = max( 1, intval( $atts['count'] ) );
+		$show_excerpt   = intval( $atts['show_excerpt'] ) === 1;
+		$excerpt_length = max( 5, intval( $atts['excerpt_length'] ) );
+		$show_date      = intval( $atts['show_date'] ) === 1;
+		$show_author    = intval( $atts['show_author'] ) === 1;
+		$layout         = $atts['layout'] === 'grid' ? 'grid' : 'stack';
+		$days           = intval( $atts['days'] );
+		$cache_minutes  = max( 0, intval( $atts['cache_minutes'] ) );
+		$titles_only    = intval( $atts['titles_only'] ) === 1;
+
+		$cat_ids = array();
+		if ( ! empty( $atts['categories'] ) ) {
+			$cat_ids = array_filter( array_map( 'intval', explode( ',', $atts['categories'] ) ) );
+		}
+
+		$cache_key = 'pm_popular_' . md5( serialize( array( $count, $show_excerpt, $excerpt_length, $show_date, $show_author, $layout, $cat_ids, $days, $titles_only ) ) );
+		if ( $cache_minutes > 0 ) {
+			$cached = get_transient( $cache_key );
+			if ( $cached ) {
+				return $cached;
+			}
+		}
+
+		$query_args = array(
+			'post_type'      => 'post',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+			'fields'         => 'ids',
+			'meta_query'     => array( array( 'key' => 'pm_metrics' ) ),
+		);
+		if ( ! empty( $cat_ids ) ) {
+			$query_args['category__in'] = $cat_ids;
+		}
+		if ( $days > 0 ) {
+			$query_args['date_query'] = array( array( 'after' => $days . ' days ago' ) );
+		}
+
+		$post_ids = get_posts( $query_args );
+		if ( empty( $post_ids ) ) {
+			return '<div class="pm-popular-posts-empty">' . esc_html__( 'No popular posts found.', 'post-metrics' ) . '</div>';
+		}
+
+		$scored = array();
+		foreach ( $post_ids as $pid ) {
+			$meta = get_post_meta( $pid, 'pm_metrics', true );
+			if ( ! is_array( $meta ) ) continue;
+			$views = intval( $meta['views'] ?? 0 );
+			$likes = intval( $meta['likes'] ?? 0 );
+			$shares = intval( $meta['shares'] ?? 0 );
+			$score = $views + $likes + $shares; // Engagement score definition.
+			if ( $score <= 0 ) continue; // Skip zero engagement.
+			$scored[] = array( 'id' => $pid, 'score' => $score, 'views' => $views, 'likes' => $likes, 'shares' => $shares );
+		}
+
+		if ( empty( $scored ) ) {
+			return '<div class="pm-popular-posts-empty">' . esc_html__( 'No popular posts found.', 'post-metrics' ) . '</div>';
+		}
+
+		usort( $scored, function( $a, $b ) {
+			if ( $b['score'] === $a['score'] ) {
+				return get_post_time( 'U', true, $b['id'] ) <=> get_post_time( 'U', true, $a['id'] );
+			}
+			return $b['score'] <=> $a['score'];
+		} );
+
+		$top = array_slice( $scored, 0, $count );
+
+		// If only titles requested, return a simplified list early.
+		if ( $titles_only ) {
+			$list = '<ul class="pm-popular-posts-titles">';
+			foreach ( $top as $row ) {
+				$title = get_the_title( $row['id'] );
+				if ( ! $title ) { $title = __( '(no title)' ); }
+				$score = intval( $row['score'] );
+				// Accessible label includes score.
+				$list .= '<li class="pm-popular-posts-item"><span class="pm-popular-posts-score" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
+			}
+			$list .= '</ul>';
+			if ( $cache_minutes > 0 ) {
+				set_transient( $cache_key, $list, MINUTE_IN_SECONDS * $cache_minutes );
+			}
+			return $list;
+		}
+
+		// Preload thumbnails to match latest-posts optimization.
+		$thumb_ids = array();
+		foreach ( $top as $row ) {
+			$tid = get_post_thumbnail_id( $row['id'] );
+			if ( $tid ) $thumb_ids[] = $tid;
+		}
+		if ( ! empty( $thumb_ids ) ) {
+			_prime_post_caches( wp_list_pluck( $top, 'id' ), false, false );
+		}
+
+		// Build attributes mimic for layout classes.
+		$layout_attrs = array(
+			'postLayout'             => $layout === 'grid' ? 'grid' : 'list',
+			'displayFeaturedImage'   => false,
+			'addLinkToFeaturedImage' => false,
+			'displayPostDate'        => $show_date,
+			'displayAuthor'          => $show_author,
+			'displayPostContent'     => $show_excerpt,
+			'displayPostContentRadio'=> 'excerpt',
+			'excerptLength'          => $excerpt_length,
+			'featuredImageSizeSlug'  => 'medium_large',
+		);
+
+		// Rendering closure adapted from core/latest-posts.
+		$render_item = function( $post_id, $index ) use ( $layout_attrs, $excerpt_length, $show_excerpt, $show_date, $show_author ) {
+			$post = get_post( $post_id );
+			if ( ! $post ) return '';
+			$title = get_the_title( $post );
+			if ( ! $title ) $title = __( '(no title)' );
+			$link  = get_permalink( $post );
+
+			$container_classes = ($index < 3 || ( isset( $layout_attrs['postLayout'] ) && $layout_attrs['postLayout'] === 'grid' ))
+				? 'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6] rounded h-fit opacity-0 reveal-on-scroll-' . (200 + $index * 100)
+				: 'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border p-0 md:p-3 lg:border-none bg-[#F6F6F6] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . (200 + $index * 100);
+
+			$image_markup = '';
+			if ( has_post_thumbnail( $post ) ) {
+				$img_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
+				$thumb = get_the_post_thumbnail( $post, 'medium_large', array( 'class' => esc_attr( $img_classes ) ) );
+				$thumb = '<a href="' . esc_url( $link ) . '" aria-label="' . esc_attr( $title ) . '">' . $thumb . '</a>';
+				$wrapper_tpl = ($index < 3 || ( isset( $layout_attrs['postLayout'] ) && $layout_attrs['postLayout'] === 'grid' ))
+					? '<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2]">%s</div>'
+					: '<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2] lg:hidden md:block">%s</div>';
+				$image_markup = sprintf( $wrapper_tpl, $thumb );
+			}
+
+			$markup  = '<div class="' . esc_attr( $container_classes ) . '">';
+			$markup .= $image_markup;
+			$markup .= '<div class="flex flex-col h-full justify-center my-auto py-2 pr-4"><div class="flex flex-col leading-[1rem]">';
+			$markup .= '<a class="wp-block-latest-posts__post-title text-left font-normal md:text-lg text-sm leading-[0.9rem] md:leading-relaxed" href="' . esc_url( $link ) . '">' . esc_html( $title ) . '</a>';
+			$markup .= '<div class="flex justify-between">';
+			if ( $show_date ) {
+				$markup .= '<time datetime="' . esc_attr( get_the_date( 'c', $post ) ) . '" class="wp-block-latest-posts__post-date text-xs">' . esc_html( get_the_date( '', $post ) ) . '</time>';
+			}
+			if ( $show_author ) {
+				$author_display_name = get_the_author_meta( 'display_name', $post->post_author );
+				if ( $author_display_name ) {
+					$markup .= '<div class="wp-block-latest-posts__post-author text-xs">' . sprintf( esc_html__( 'by %s' ), esc_html( $author_display_name ) ) . '</div>';
+				}
+			}
+			$markup .= '</div></div>';
+			if ( $show_excerpt ) {
+				$raw_excerpt = get_the_excerpt( $post );
+				$trimmed = wp_trim_words( $raw_excerpt, $excerpt_length, '… <a href="' . esc_url( $link ) . '" rel="noopener noreferrer">' . esc_html__( 'Read more', 'post-metrics' ) . '<span class="screen-reader-text">: ' . esc_html( $title ) . '</span></a>' );
+				if ( post_password_required( $post ) ) {
+					$trimmed = esc_html__( 'This content is password protected.' );
+				}
+				$markup .= '<div class="wp-block-latest-posts__post-excerpt entry-content block md:leading-[1.1rem] leading-[0.9rem] md:text-sm text-xs block">' . $trimmed . '</div>';
+			}
+			$markup .= '</div></div>';
+			return $markup;
+		};
+
+		$list_items_markup = '<div class="flex flex-col justify-between gap-2 md:gap-5">';
+		$total = count( $top );
+		foreach ( $top as $i => $row ) {
+			if ( 3 === $i ) {
+				$list_items_markup .= '</div><div class="flex flex-col ' . ( $layout === 'grid' ? 'gap-2 md:gap-5' : 'gap-2 lg:gap-0 lg:border bg-transparent md:bg-[#F6F6F6]' ) . '">';
+			}
+			$list_items_markup .= $render_item( $row['id'], $i );
+			if ( $i >= 3 && $i < $total - 1 && $layout !== 'grid' ) {
+				$list_items_markup .= '<div class="border-b-4 border-[#a2b917] mx-1 md:mx-3 md:block hidden"></div>';
+			}
+		}
+		$list_items_markup .= '</div>';
+
+		$classes = array( 'wp-block-latest-posts__list', 'gap-5', 'flex', 'lg:flex-row', 'flex-col' );
+		if ( $layout === 'grid' ) {
+			$classes[] = 'is-grid';
+			$classes[] = 'gap-2';
+			$classes[] = 'md:gap-5';
+		}
+		if ( $show_date ) $classes[] = 'has-dates';
+		if ( $show_author ) $classes[] = 'has-author';
+
+		$outer = '<div class="pm-popular-posts ' . esc_attr( implode( ' ', $classes ) ) . '">' . $list_items_markup . '</div>';
+
+		if ( $cache_minutes > 0 ) {
+			set_transient( $cache_key, $outer, MINUTE_IN_SECONDS * $cache_minutes );
+		}
+		return $outer;
 	}
 
 	// Dashboard widget: register and render

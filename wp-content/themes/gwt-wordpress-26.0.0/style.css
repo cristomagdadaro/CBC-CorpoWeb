@@ -177,4 +177,35 @@
     }
 }
 
+.pm-popular-posts-titles { 
+	list-style: none; 
+	margin: 0; 
+	padding: 0; 
+} 
+
+.pm-popular-posts-item { 
+	display: flex;
+	align-items: center; 
+	gap: 0.5rem; 
+	padding: 4px 0; 
+	border-bottom: 1px solid #e2e2e2; 
+	line-height: 1;
+} 
+
+.pm-popular-posts-item:last-child { 
+	border-bottom: none; 
+} 
+
+.pm-popular-posts-score { 
+	font-weight: 600; 
+	font-size: 0.75rem; 
+	background: #1f5d2b; 
+	color: #fff; 
+	min-width: 2.2rem; 
+	text-align: center; 
+	padding: 2px 6px; 
+	border-radius: 3px; 
+	line-height: 1.2; 
+}
+
 
