@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom layer examples */
+@layer base {
+  :root {
+    --color-primary: #1f5d2b;
+  }
+}

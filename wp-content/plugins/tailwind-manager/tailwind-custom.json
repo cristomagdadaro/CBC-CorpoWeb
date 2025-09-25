@@ -1,0 +1,9 @@
+{
+    "colors": {
+        "primary": "#1f5d2b",
+        "secondary": "#1d3b53",
+        "accent": "#a2b917"
+    },
+    "darkMode": false,
+    "fontFamily": "Inter, system-ui, sans-serif"
+}

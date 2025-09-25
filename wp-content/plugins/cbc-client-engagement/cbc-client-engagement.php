@@ -198,8 +198,8 @@ class CBC_Client_Engagement {
     public function register_admin_menu() {
         $cap = 'edit_posts';
         add_menu_page(
-            __('Client Engagement', 'cbc'),
-            __('Client Engagement', 'cbc'),
+            __('Clients', 'cbc'),
+            __('Clients', 'cbc'),
             $cap,
             'cbc-client-engagement',
             [$this, 'render_dashboard_page'],
@@ -265,7 +265,7 @@ class CBC_Client_Engagement {
         $intern_count = wp_count_posts(self::INTERNSHIP_POST_TYPE);
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Client Engagement', 'cbc'); ?></h1>
+            <h1><?php echo esc_html__('Clients', 'cbc'); ?></h1>
             <p>Use the Appointments and Feedback submenus to manage entries. Below is a quick summary.</p>
             <div class="cbc-cards" style="display:flex; gap:20px; margin-top:20px;">
                 <div class="card" style="padding:16px; border:1px solid #ddd; background:#fff; width:280px;">
@@ -299,7 +299,7 @@ class CBC_Client_Engagement {
         $nonce = wp_create_nonce('cbc_enable_comments');
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Client Engagement Tools', 'cbc'); ?></h1>
+            <h1><?php echo esc_html__('Clients Tools', 'cbc'); ?></h1>
             <p>One-off administrative tools for the Client Engagement plugin.</p>
             <h2>Enable comments for Events</h2>
             <p>This action will update existing Event posts (<code>cbc_event</code>) to open their comments where they are not already open. The operation is run in batches to avoid timeouts.</p>
