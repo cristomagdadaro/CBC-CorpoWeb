@@ -17,13 +17,10 @@ include_once('inc/banner.php');
 <?php govph_displayoptions( 'govph_panel_top' ); ?>
 <div class="container-main relative overflow-hidden" role="document">
     <div id="main-content" class="row">
-
         <div id="content" class="text-justify overflow-hidden gap-4 <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
              style="display: flex; flex-direction: column; justify-content: space-between;"
             role="main">
-
             <?php
-
             // Build Announcements, Events, Holidays from plugin (fallback to theme via plugin)
             $cbc = apply_filters('cbc_calendar_options', []);
 
@@ -116,17 +113,36 @@ include_once('inc/banner.php');
 
             $announcements = array_merge($manualAnnouncements, $upcoming);
 
+            // Inject ticker CSS once
+            if (!defined('CBC_ANNOUNCEMENTS_TICKER_CSS')) {
+                define('CBC_ANNOUNCEMENTS_TICKER_CSS', true);
+                echo '<style id="cbc-announcements-ticker-css">
+                .scrolling-container{position:relative;overflow:hidden;width:100%;}
+                .scrolling-track{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:1rem;animation:cbc-marquee-linear 35s linear infinite;white-space:nowrap;will-change:transform;}
+                .scrolling-content{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-width:300px;padding:0.5rem 1rem;white-space:nowrap;}
+                .scrolling-container:hover .scrolling-track{animation-play-state:paused;}
+                @keyframes cbc-marquee-linear{0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
+                @media (max-width:640px){
+                    .scrolling-content{min-width:220px;padding:0.5rem 0.75rem;}
+                }
+                /* Reduce prefers-reduced-motion */
+                @media (prefers-reduced-motion:reduce){
+                    .scrolling-track{animation-duration:0s;animation-iteration-count:1;transform:none;}
+                }
+                </style>';
+            }
+
             // Render Announcements Ticker if any
             if (count($announcements) > 0) {
                 echo govph_section_header('Announcements', ['id' => 'announcements_header', 'text_alignment' => "left"]);
                 echo '<div class="scrolling-container"><div class="scrolling-track">';
-                // Duplicate once for continuous effect
+                // Duplicate once for continuous effect (animation shifts by 50%)
                 for ($i = 0; $i < 2; $i++) {
                     foreach ($announcements as $a) {
                         $text = esc_html($a['text'] ?? '');
                         $url  = !empty($a['url']) ? esc_url($a['url']) : '';
                         $img  = !empty($a['img']) ? esc_url($a['img']) : '';
-                        echo '<div class="scrolling-content" style="display:flex;align-items:center;gap:8px;min-width:300px;padding:0.5rem 1rem;">';
+                        echo '<div class="scrolling-content">';
                         if ($img) {
                             echo '<img src="' . $img . '" alt="" style="height:24px;width:auto;border-radius:3px;object-fit:cover;" loading="lazy" />';
                         }
@@ -139,6 +155,8 @@ include_once('inc/banner.php');
                     }
                 }
                 echo '</div></div>';
+                // Lightweight dynamic script: set animation duration based on total width; keep continuous scroll on all screen sizes
+                echo '<script>(function(){var header=document.getElementById("announcements_header");var c=header?header.nextElementSibling:null;if(!c||!c.classList.contains("scrolling-container")){c=document.querySelector("#content .scrolling-container");}if(!c)return;var t=c.querySelector(".scrolling-track");if(!t)return;if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){t.style.animation="none";return;}function setDuration(){var w=t.scrollWidth;var speed=(window.innerWidth<640?40:60);var dur=w/speed;t.style.animationDuration=dur.toFixed(2)+"s";}setDuration();window.addEventListener("resize",function(){clearTimeout(window._cbcTickerTO);window._cbcTickerTO=setTimeout(setDuration,150);});})();</script>';
             }
 
             // Calendar: use shortcode for reusable, override-capable rendering

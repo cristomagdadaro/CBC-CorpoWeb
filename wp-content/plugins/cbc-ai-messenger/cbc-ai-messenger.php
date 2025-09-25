@@ -246,44 +246,51 @@ add_shortcode('cbc_ai_messenger', function($atts){
     ), $atts, 'cbc_ai_messenger');
 
     // Enqueue small fallback CSS to ensure mobile fullscreen + scroll-lock behaviors
-    wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.0.0');
+    wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.2.0');
 
     // Enqueue messenger script
-    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.3.0', true);
+    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.4.0', true);
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
         'nonce' => wp_create_nonce('wp_rest'),
         'placeholder' => (string)$atts['placeholder'],
+        'title' => (string)$atts['title'],
     ));
 
     ob_start();
     ?>
-    <div class="cbc-ai-box cbc-ai-floating cbc-ai-collapsed fixed right-0 bottom-20 z-50 flex flex-col items-end backdrop-blur">
-        <div class="cbc-ai-header duration-500 flex items-center w-full justify-between bg-lime-600 text-white px-5 py-2 shadow-md rounded-md">
-            <div class="cbc-ai-title duration-500 font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
-            <button type="button" class="cbc-ai-toggle duration-500 cbc-ai-toggle-open flex items-center text-white" aria-label="Open CBC Chatbot" aria-expanded="false">
-                <span class="cbc-ai-toggle-open-icon inline-flex">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
-                </span>
-                <span class="cbc-ai-toggle-close-icon hidden inline-flex">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16"><path d="M3.404 2.596a.5.5 0 0 1 .707 0L8 6.485l3.889-3.89a.5.5 0 1 1 .707.707L8.707 7.192l3.889 3.889a.5.5 0 0 1-.707.707L8 7.899l-3.889 3.889a.5.5 0 0 1-.707-.707L7.293 7.192 3.404 3.303a.5.5 0 0 1 0-.707z"/></svg>
-                </span>
-            </button>
-        </div>
-
-        <div class="cbc-ai-body mt-2 hidden transform transition-all duration-300 ease-out origin-top-right md:origin-top-right md:max-h-[1000px] md:overflow-visible md:w-[340px] md:rounded-md md:shadow-lg bg-white border border-gray-200 p-4 md:p-4">
-            <div class="cbc-ai-user-info w-full mb-2 hidden text-sm text-gray-700"></div>
-            <span class="text-sm text-gray-500">Conversation:</span>
-            <div class="cbc-ai-log bg-gray-100 rounded p-2 my-2 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
-             <form class="cbc-ai-form flex flex-col gap-2">
-                <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
-                    <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
-                    <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
-                </div>
-                <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-[140px]" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
-                <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
-            </form>
-            <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>
+    <div id="cbc-ai-chat-container" class="cbc-ai-chat-container" aria-hidden="false">
+        <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
+            <span class="cbc-ai-icon-expanded" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </span>
+            <span class="cbc-ai-icon-collapsed hidden" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
+                  <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                </svg>
+            </span>
+            <span class="sr-only">Toggle AI Chat</span>
+        </button>
+        <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg border border-gray-200 bg-white rounded-l-md flex flex-col">
+            <div class="cbc-ai-header flex items-center justify-between bg-lime-600 text-white px-5 py-2 shadow-md">
+                <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
+            </div>
+            <div class="cbc-ai-body p-4 flex flex-col gap-2">
+                <div class="cbc-ai-user-info w-full mb-1 hidden text-sm text-gray-700"></div>
+                <span class="text-sm text-gray-500">Conversation:</span>
+                <div class="cbc-ai-log bg-gray-100 rounded p-2 my-1 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
+                <form class="cbc-ai-form flex flex-col gap-2 mt-1">
+                    <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
+                        <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
+                        <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
+                    </div>
+                    <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-[140px]" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
+                    <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
+                </form>
+                <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>
+            </div>
         </div>
     </div>
     <?php

@@ -95,7 +95,7 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
-		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto"><div class="flex flex-col leading-[1rem]">';
+		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto py-2 pr-4"><div class="flex flex-col leading-[1rem]">';
 		$item_markup .= sprintf(
 			'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md" href="%1$s">%2$s</a>',
 			esc_url( $post_link ),

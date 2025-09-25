@@ -14,15 +14,18 @@
         echo govph_section_header('Center Chief', ['id' => 'center_chief_header', 'swap'=>$swap]);
     ?>
        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
-            <div class="flex-col items-center gap-3 flex">
-                <a href="/about-us/organizational-structure/dr-roel-r-suralta/" class="w-full h-[25rem] rounded-md overflow-hidden relative drop-shadow-lg">
-                    <img decoding="async" id="tp-seal" src="/wp-content/uploads/2025/09/RRSuralta-500x749.jpg" alt="RRSuralta" title="RRSuralta" class="rounded-md">
-                    <span class="absolute bottom-0 left-0 text-center w-full text-white text-lg py-2 select-none">2010-present</span>
-                </a>
-                <div class="flex flex-col">
-                    <p class="sm:text-md text-sm text-justify"><strong>Dr. Roel R. Suralta</strong> is a distinguished Filipino agricultural scientist and NAST Academician, recognized for his pioneering research on root plasticity in rice. As <strong>Center Chief</strong> of the <a href="/">DA–Crop Biotechnology Center</a> at <a href="https://www.philrice.gov.ph/" target="_blank">PhilRice</a>, he leads innovations in climate-resilient crops and has received prestigious honors, including the Presidential Lingkod Bayan Award.</p>
-                </div>
-            </div>
+           <div class="grid grid-cols-2 gap-3 items-center">
+               <figure class="w-full h-full drop-shadow">
+                   <img src="http://192.168.36.77/wp-content/uploads/2025/09/RRSuralta-683x1024.png"
+                        alt="Dr. Roel R. Suralta"
+                        class="rounded-md w-full h-full object-cover object-center">
+               </figure>
+               <div class="w-full mt-4 md:mt-0">
+                   <p class="text-sm">
+                       <strong class="font-bold">Dr. Roel R. Suralta</strong> is a distinguished Filipino agricultural scientist and NAST Academician, recognized for his pioneering research on root plasticity in rice. As <strong class="font-bold">Center Chief</strong> of the <a href="http://192.168.36.77/" class="text-blue-600 hover:underline">DA–Crop Biotechnology Center</a> at <a href="https://www.philrice.gov.ph/" target="_blank" rel="noreferrer noopener" class="text-blue-600 hover:underline">PhilRice</a>, he leads innovations in climate-resilient crops and has received prestigious honors, including the Presidential Lingkod Bayan Award.
+                   </p>
+               </div>
+           </div>
         </aside>
     <?php endif; ?>
     <?php echo govph_section_header('Vision', ['id' => 'vision_header', 'swap'=>$swap]); ?>

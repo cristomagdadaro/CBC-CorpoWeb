@@ -940,7 +940,7 @@ class CBC_Client_Engagement {
     public function render_section_header_shortcode($atts = []) {
         $defaults = [
             'title'   => '',
-            'classes' => 'text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r lg:text-3xl text-center px-5',
+            'classes' => 'text-lg sm:text-xl font-extrabold drop-shadow text-white p-2 md:text-2xl bg-gradient-to-r lg:text-3xl text-center px-5',
             // gradient customization: hex colors (with or without #) and swap flag
             'from'    => '#1f5d2b',
             'to'      => '#a2b917',
@@ -971,7 +971,7 @@ class CBC_Client_Engagement {
      */
     public static function section_header_markup($title, $args = []) {
         $defaults = [
-            'classes' => 'text-lg sm:text-xl text-white p-2 md:text-2xl bg-gradient-to-r lg:text-3xl text-center px-5',
+            'classes' => 'text-lg sm:text-xl font-extrabold  drop-shadow text-white p-2 md:text-2xl bg-gradient-to-r lg:text-3xl text-center px-5',
             'tag'     => 'h2',
             'strong'  => true,
             'id'      => '',
