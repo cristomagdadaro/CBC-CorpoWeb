@@ -127,16 +127,19 @@
                 </div>
             </div>
 
-
-            <?php echo govph_section_header('Latest Stories', ['id' => 'latest_stories_header']); ?>
-
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
 
+            <?php echo govph_section_header('Latest Stories', ['id' => 'latest_stories_header']); ?>
+
+            <div class="widget widget_block">
+                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
+            </div>
+
             <?php
-            $excerptLength = wp_is_mobile() ? "15" : "25";
-                echo do_shortcode('[gwt_latest_posts posts="6" excerptLength="' . $excerptLength . '" show_date="1" show_image="1" show_author="0"]');
+            // Use dynamic device-aware excerpt length (phone/tablet/desktop) via 'auto'
+            echo do_shortcode('[gwt_latest_posts posts="6" excerpt_length="auto" show_date="1" show_image="1" show_author="0"]');
             ?>
 
 

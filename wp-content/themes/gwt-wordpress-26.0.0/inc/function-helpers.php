@@ -53,13 +53,38 @@ if ( ! function_exists( 'gwt_share_embed_shortcode' ) ) {
 //  category_ids: comma-separated category IDs
 //  author: author ID
 // -----------------------------------------------------------------------------
+if ( ! function_exists( 'cbc_get_device_type' ) ) {
+    /**
+     * Basic server-side device type detection using User-Agent.
+     * Returns: phone | tablet | desktop
+     * Can be filtered via 'cbc_device_type'.
+     */
+    function cbc_get_device_type(){
+        $ua = strtolower( $_SERVER['HTTP_USER_AGENT'] ?? '' );
+        $device = 'desktop';
+        if ( $ua ) {
+            // Tablet first (so iPad & known tablets are not classified as phone)
+            if ( preg_match( '/(ipad|tablet|kindle|silk|playbook|nexus 7|nexus 9|nexus 10|xoom|sm\-t|gt\-p|lenovo tab|mediapad|galaxy tab)/i', $ua ) ) {
+                $device = 'tablet';
+            } elseif ( preg_match( '/(mobi|iphone|ipod|android.*mobile|blackberry|opera mini|windows phone)/i', $ua ) ) {
+                $device = 'phone';
+            }
+        }
+        return apply_filters( 'cbc_device_type', $device, $ua );
+    }
+}
+
 if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
     function gwt_latest_posts_shortcode( $atts = array(), $content = '', $tag = '' ) {
+        // Support legacy attribute name 'excerptLength' if used incorrectly.
+        if ( isset( $atts['excerptLength'] ) && ! isset( $atts['excerpt_length'] ) ) {
+            $atts['excerpt_length'] = $atts['excerptLength'];
+        }
         $atts = shortcode_atts( array(
             'posts'           => 4,       // number of posts
             'order'           => 'desc',  // asc|desc
             'orderby'         => 'date',  // date|title|modified|rand
-            'excerpt_length'  => 26,      // words
+            'excerpt_length'  => 26,      // words OR 'auto'
             'show_image'      => '1',     // 1|0
             'image_size'      => 'large', // thumbnail|medium|large|full
             'link_image'      => '1',     // 1|0
@@ -71,6 +96,24 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
             'category_ids'    => '',      // comma-separated category IDs
             'author'          => '',      // author ID
         ), $atts, 'gwt_latest_posts' );
+
+        // Auto excerpt length logic (phone/tablet/desktop) if user passes 'auto' or 0.
+        if ( $atts['excerpt_length'] === 'auto' || $atts['excerpt_length'] === 0 || $atts['excerpt_length'] === '0' ) {
+            $device = cbc_get_device_type();
+            $length_map = apply_filters( 'gwt_latest_posts_device_excerpt_lengths', array(
+                'phone'   => 15,
+                'tablet'  => 22,
+                'desktop' => 30,
+            ), $device );
+            if ( is_array( $length_map ) && isset( $length_map[ $device ] ) ) {
+                $atts['excerpt_length'] = (int) $length_map[ $device ];
+            } else {
+                $atts['excerpt_length'] = 26; // fallback
+            }
+        }
+
+        // Ensure numeric after potential mapping
+        $atts['excerpt_length'] = is_numeric( $atts['excerpt_length'] ) ? (int) $atts['excerpt_length'] : 26;
 
         // Normalize attributes for core renderer
         $attributes = array(
