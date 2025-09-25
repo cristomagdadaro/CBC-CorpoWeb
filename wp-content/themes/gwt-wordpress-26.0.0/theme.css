@@ -277,9 +277,7 @@ h6 {
   z-index: 4;
   box-shadow: -3px 0px 4px rgba(0, 0, 0, 0.2);
 }
-.title-bar {
-  background: #f7f7f7;
-}
+
 
 .title-bar-right .name a,
 .title-bar-left .name a,
@@ -559,7 +557,6 @@ this is for mobile menus */
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #f7f7f7;
   overflow-x: hidden;
   transition: 0.4s;
   padding-top: 60px;
@@ -611,30 +608,23 @@ this is for mobile menus */
   object-fit: contain;
 }
 #textlogo-inner-wrapper {
-  /* Change size for Agency name | default is 35-40px to be set to 27px or 18pt*/
-  font-size: 27px;
-  /* End of Agency name  */
   vertical-align: middle;
 }
 
 #agency-heading {
   display: block;
   position: relative;
-  /*font-size: 0.7rem;*/
-  line-height: 0.8rem;
 }
+
 #agency-name {
   display: block;
   position: relative;
-    font-family: "League Spartan", "Times New Roman";
-    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.9));
-  line-height: 1;
+  filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.9));
 }
+
 #agency-tagline {
   display: block;
   position: relative;
-  line-height: 0.4rem;
-  /*font-size: 0.8rem;*/
 }
 
 /*banner*/

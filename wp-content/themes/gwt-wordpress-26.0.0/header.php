@@ -292,13 +292,13 @@ Press esc, or click the close the button to close this dialog box.
 	    if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
 		    $name_slogan_class   = 'large-6 ';
 		    $ear_content_class   = 'large-3 ';
-		    //$ear_content_2_class = 'large-3 ';
+		    $ear_content_2_class = 'large-3 ';
 	    } elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
 		    $name_slogan_class = 'large-9 ';
-		    //$ear_content_class = 'large-3 ';
+		    $ear_content_class = 'large-3 ';
 	    } elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
 		    $name_slogan_class   = 'large-9 ';
-		    //$ear_content_2_class = 'large-3 ';
+		    $ear_content_2_class = 'large-3 ';
 	    }
 	    ?>
 
@@ -350,7 +350,7 @@ Press esc, or click the close the button to close this dialog box.
             </ul>
         </nav>
 
-        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden z-[80] backdrop-blur-sm" id="closeBtnOverlay"></div>
+        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden backdrop-blur-sm" id="closeBtnOverlay"></div>
 
 
         <!-- off-canvas title bar for 'small' screen -->
@@ -379,7 +379,7 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0 py-1 md:py-2">
+            <div class="bg-gradient-to-r from-primary to-primary drop-shadow lg:flex md:flex hidden px-2 md:px-0">
                 <div class="row flex items-center md:p-3 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden w-full">
                         <!-- masthead -->
@@ -413,11 +413,11 @@ Press esc, or click the close the button to close this dialog box.
                             <div>Philippine Standard Time</div>
                             <div id="pst-time" class="whitespace-nowrap"></div>
                         </div>
-                        <ul class="border-none">
+                        <div class="border-none">
                             <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
-                                <li><?php get_search_form(); ?></li>
+                                <div><?php get_search_form(); ?></div>
                             <?php endif ?>
-                        </ul>
+                        </div>
                     </nav>
                 </div>
             </div>

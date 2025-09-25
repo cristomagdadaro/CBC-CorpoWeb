@@ -73,7 +73,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$item_markup  = '<div class="' . esc_attr( $container_classes ) . '">';
 
 		if ( ! empty( $attributes['displayFeaturedImage'] ) && has_post_thumbnail( $post ) ) {
-			$image_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
+			$image_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 h-full w-full';
 			if ( isset( $attributes['featuredImageAlign'] ) ) {
 				$image_classes .= ' align' . $attributes['featuredImageAlign'];
 			}
@@ -167,41 +167,52 @@ function render_block_core_latest_posts( $attributes ) {
 		return $item_markup;
 	};
 
-	$list_items_markup = '<div class="flex flex-col justify-between gap-2 md:gap-5">';
+	$list_items_markup = '<div id="left-posts-list" class="flex flex-col justify-between gap-2 md:gap-5">';
 
 	$total = count( $recent_posts );
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
 		if ( 3 === $count ) {
-			$list_items_markup .= '</div><div class="flex flex-col ';
-
-			if (isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'])
-				$list_items_markup .= 'gap-2 md:gap-5">';
-			else
-				$list_items_markup .= 'gap-2 lg:gap-0 lg:border bg-transparent md:bg-[#F6F6F6]">';
+			$list_items_markup .= '</div><div  id="right-posts-list" class="flex flex-col bg-red-600 ' . ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-2 md:gap-5 h-full' : 'gap-2 lg:gap-0 justify-between flex' ) . '">';
 		}
 
-		if ( $count < 3 || isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout']) {
+		// Base container classes (use grid; switch to single column at large when image hidden after 3rd)
+		$base_container = 'relative grid gap-2 md:gap-5 w-full h-full items-stretch rounded opacity-0 reveal-on-scroll-300 ';
+
+		$is_first_group = ( $count < 3 );
+		// For posts after the third, we will hide image at large screens and collapse to single column.
+		if ( ! $is_first_group ) {
+			$container_classes = $base_container . 'grid-cols-2 sm:grid-cols-1 md:flex md:items-center ';
+		} else {
+			$container_classes = $base_container . 'grid-cols-2 '; // keep two cols at large for first group
+		}
+
+		// Image wrapper templates
+		$img_wrapper_first = '<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2] h-full">%s</div>';
+		// After third: image visible on small/medium only; hidden on large for a text-only layout on desktop.
+		$img_wrapper_later = '<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2] h-full md:hidden block">%s</div>';
+
+		$wrapper_template = $is_first_group ? $img_wrapper_first : $img_wrapper_later;
+
+		// Card style differences (border/hover only for first 3 or grid layout emphasis)
+		if ( $is_first_group || ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) ) {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6] rounded h-fit opacity-0 reveal-on-scroll-' . (200 + $count * 100),
-				// Featured image wrapper: full width on mobile, fixed ratio; narrower (basis-48) on >=sm screens while keeping aspect ratio
-				'<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2]">%s</div>'
+				$container_classes . ' border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6]',
+				$wrapper_template
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border p-0 md:p-3 lg:border-none bg-[#F6F6F6] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . (200 + $count * 100),
-				// Hidden on large (as original), full width on mobile for consistency
-				'<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2] lg:hidden md:block">%s</div>'
+				$container_classes . ' p-0 md:p-3 md:border-0 border',
+				$wrapper_template
 			);
-			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
-				$list_items_markup .= '<div class="border-b-4 border-[#a2b917] mx-1 md:mx-3 md:block hidden"></div>';
+			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'list' === $attributes['postLayout'] ) {
+				$list_items_markup .= '<div class="border-indigo-600 border-b-2 mx-1 md:mx-3 md:block hidden"></div>';
 			}
 		}
-
 		$count++;
 	}
 
@@ -209,9 +220,10 @@ function render_block_core_latest_posts( $attributes ) {
 
 	remove_filter( 'excerpt_length', 'block_core_latest_posts_get_excerpt_length', 20 );
 
-	$classes = array( 'wp-block-latest-posts__list gap-5 flex lg:flex-row flex-col' . isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-2 md:gap-5' : 'gap-2 md:gap-5 flex md:flex-row flex-col' );
+	// Rebuild class list correctly (previous concatenation bug).
+	$classes = array( 'wp-block-latest-posts__list','gap-3','flex','flex-col','md:grid','md:grid-cols-2', 'md:gap-3');
 	if ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
-		$classes[] = 'is-grid';
+		$classes = array( 'wp-block-latest-posts__list','is-grid','gap-2','md:gap-5','flex','flex-col' );
 	}
 	if ( isset( $attributes['columns'] ) && 'grid' === $attributes['postLayout'] ) {
 		$classes[] = 'columns-' . $attributes['columns'];
@@ -228,11 +240,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 	$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( ' ', $classes ) ) );
 
-	return sprintf(
-		'<div %1$s>%2$s</div>',
-		$wrapper_attributes,
-		$list_items_markup
-	);
+	return sprintf( '<div id="posts-list-container" %1$s>%2$s</div>', $wrapper_attributes, $list_items_markup );
 }
 
 /**

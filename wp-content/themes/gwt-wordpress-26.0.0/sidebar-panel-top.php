@@ -139,7 +139,7 @@
 
             <?php
             // Use dynamic device-aware excerpt length (phone/tablet/desktop) via 'auto'
-            echo do_shortcode('[gwt_latest_posts posts="6" excerpt_length="auto" show_date="1" show_image="1" show_author="0"]');
+            echo do_shortcode('[gwt_latest_posts posts="6"  excerpt_length="auto" show_date="1" show_image="1" show_author="0"]');
             ?>
 
 

@@ -322,7 +322,6 @@ function eraseCookie(name) {
       event.preventDefault();
       document.getElementById("mySidenav").style.width = "60%";
       document.getElementById("mySidenav").style.minWidth = "50%";
-      //document.getElementById("main").style.marginLeft = "60%";
       const closeBtnOverlay = document.getElementById("closeBtnOverlay");
       if (closeBtnOverlay) {
         closeBtnOverlay.classList.remove('hidden');
@@ -333,7 +332,6 @@ function eraseCookie(name) {
       event.preventDefault();
       document.getElementById("mySidenav").style.minWidth = "0";
       document.getElementById("mySidenav").style.width = "0";
-      //document.getElementById("main").style.marginLeft = "0";
       const closeBtnOverlay = document.getElementById("closeBtnOverlay");
       if (closeBtnOverlay) {
         closeBtnOverlay.classList.add('hidden');

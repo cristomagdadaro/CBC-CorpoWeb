@@ -569,7 +569,7 @@ class PM_Post_Metrics {
 
 			$image_markup = '';
 			if ( has_post_thumbnail( $post ) ) {
-				$img_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 m-0 w-full h-full';
+				$img_classes = 'wp-block-latest-posts__featured-image object-cover object-center hover:brightness-75 hover:scale-105 duration-300 h-full m-0';
 				$thumb = get_the_post_thumbnail( $post, 'medium_large', array( 'class' => esc_attr( $img_classes ) ) );
 				$thumb = '<a href="' . esc_url( $link ) . '" aria-label="' . esc_attr( $title ) . '">' . $thumb . '</a>';
 				$wrapper_tpl = ($index < 3 || ( isset( $layout_attrs['postLayout'] ) && $layout_attrs['postLayout'] === 'grid' ))
