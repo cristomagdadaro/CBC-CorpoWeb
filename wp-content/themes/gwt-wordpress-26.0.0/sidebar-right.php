@@ -16,7 +16,7 @@
        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
            <div class="grid grid-cols-2 gap-3 items-center">
                <figure class="w-full h-full drop-shadow">
-                   <img src="http://192.168.36.77/wp-content/uploads/2025/09/RRSuralta-683x1024.png"
+                   <img src="/wp-content/uploads/2025/09/RRSuralta-683x1024.png"
                         alt="Dr. Roel R. Suralta"
                         class="rounded-md w-full h-full object-cover object-center">
                </figure>
