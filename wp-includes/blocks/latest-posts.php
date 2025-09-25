@@ -97,7 +97,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto py-2 pr-4"><div class="flex flex-col leading-[1rem]">';
 		$item_markup .= sprintf(
-			'<a class="wp-block-latest-posts__post-title text-left font-bold sm:text-lg text-md" href="%1$s">%2$s</a>',
+			'<a class="wp-block-latest-posts__post-title text-left font-normal sm:text-lg text-normal" href="%1$s">%2$s</a>',
 			esc_url( $post_link ),
 			$title
 		);
@@ -185,15 +185,17 @@ function render_block_core_latest_posts( $attributes ) {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6] rounded h-fit opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded-l min-h-full min-w-[12rem] aspect-[3/2]">%s</div>'
+				'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6] rounded h-fit opacity-0 reveal-on-scroll-' . (200 + $count * 100),
+				// Featured image wrapper: full width on mobile, fixed ratio; narrower (basis-48) on >=sm screens while keeping aspect ratio
+				'<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2]">%s</div>'
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				'relative xs:flex-col flex gap-2 md:gap-5 w-full items-stretch overflow-x-auto border p-0 md:p-3 lg:border-none bg-[#F6F6F6] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . 200 + $count * 100,
-				'<div class="overflow-hidden rounded-l min-h-full min-w-[12rem] aspect-[3/2]  lg:hidden md:block">%s</div>'
+				'relative grid-cols-2 grid sm:flex gap-2 md:gap-5 w-full items-stretch border p-0 md:p-3 lg:border-none bg-[#F6F6F6] rounded h-fit lg:h-full opacity-0 reveal-on-scroll-' . (200 + $count * 100),
+				// Hidden on large (as original), full width on mobile for consistency
+				'<div class="overflow-hidden rounded-t sm:rounded-l w-full sm:basis-48 sm:flex-shrink-0 aspect-[3/2] lg:hidden md:block">%s</div>'
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' !== $attributes['postLayout']) {
 				$list_items_markup .= '<div class="border-b-4 border-[#a2b917] mx-1 md:mx-3 md:block hidden"></div>';

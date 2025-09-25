@@ -27,8 +27,9 @@
                </div>
            </div>
         </aside>
-    <?php endif; ?>
-    <?php echo govph_section_header('Vision', ['id' => 'vision_header', 'swap'=>$swap]); ?>
+    <?php endif;
+
+    if ( is_front_page() ) : echo govph_section_header('Vision', ['id' => 'vision_header', 'swap'=>$swap]); ?>
         <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
             <div class="panel h-fit bg-transparent" style="max-height: 100vh;">
                 <figure class="text-center"><blockquote><p>A prosperous, secure, and sustainable food future - one crop at a time.</p></blockquote></figure>
@@ -41,7 +42,7 @@
                 <figure class="text-center"><blockquote><p>To improve the productivity and competitiveness of priority commodities through providing biotechnology capacity building services, fostering collaboration within the agricultural research community, and driving the development and utilization of modern and inclusive biotechnology for crop improvement, contributing to a resilient and prosperous agricultural landscape.</p></blockquote></figure>
             </div>
         </aside>
-
+    <?php endif; ?>
         <aside class="widget callout border-none secondary widget_block">
             <div class="flex flex-col items-center gap-2">
                 <div class="grid grid-cols-2 gap-4 items-center">
