@@ -23,8 +23,9 @@
 }
 
 :where(.wp-block-file__button){
-  border-radius:0.5em;
+  border-radius:2em;
   display:inline-block;
+  padding:.5em 1em;
 }
 :where(.wp-block-file__button):is(a):active,:where(.wp-block-file__button):is(a):focus,:where(.wp-block-file__button):is(a):hover,:where(.wp-block-file__button):is(a):visited{
   box-shadow:none;

@@ -3,10 +3,13 @@
   display:flex;
   flex-wrap:wrap;
   justify-content:space-between;
-    margin: 3px;
+  margin-bottom:0;
 }
 .wp-block[data-align=left]>.wp-block-file,.wp-block[data-align=right]>.wp-block-file{
   height:auto;
+}
+.wp-block[data-align=center]>.wp-block-file{
+  text-align:center;
 }
 .wp-block-file .components-resizable-box__container{
   margin-bottom:1em;
