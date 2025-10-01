@@ -355,7 +355,7 @@ Press esc, or click the close the button to close this dialog box.
 
         <!-- off-canvas title bar for 'small' screen -->
         <div class="py-5 md:hidden lg:hidden"></div>
-        <div id="off-canvas-container" class="title-bar fixed top-0 columns sm:hidden block py-1 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]">
+        <div id="off-canvas-container" class="title-bar fixed top-0 columns md:hidden block py-1 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]">
             <div class="flex justify-between w-full drop-shadow">
                 <div class="title-bar-left flex flex-row items-center w-full">
                     <!-- masthead -->

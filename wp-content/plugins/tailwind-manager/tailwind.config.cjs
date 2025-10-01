@@ -26,6 +26,15 @@ module.exports = {
     '../../themes/**/*.html',
     './src/**/*.{js,ts,jsx,tsx,php,html}'
   ],
+  safelist: [
+    // Ensure gradient utilities and arbitrary color orders are preserved
+    'bg-gradient-to-r',
+    'bg-gradient-to-l',
+    'from-[#1f5d2b]',
+    'to-[#a2b917]',
+    'from-[#a2b917]',
+    'to-[#1f5d2b]'
+  ],
   theme: {
     extend: {
       colors: custom.colors || {},

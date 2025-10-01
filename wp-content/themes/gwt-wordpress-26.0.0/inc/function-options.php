@@ -1078,7 +1078,7 @@ if (!function_exists('govph_displayoptions')) {
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
 					'<div id="textlogo-wrapper" class="flex items-center">
-                        <div class="flex flex-wrap gap-1 w-fit hidden md:block">
+                        <div class="gap-1 w-fit hidden md:block">
                             <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
                                 <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
@@ -1089,7 +1089,7 @@ if (!function_exists('govph_displayoptions')) {
                                 <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
                         </div>
-                         <div class="flex gap-1 relative sm:hidden block drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
+                         <div class="flex gap-1 relative md:hidden drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
                             <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                             <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[20%] min-w-[2rem] mmx-0 md:mx-auto" /> 
                             <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
