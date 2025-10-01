@@ -1077,7 +1077,7 @@ if (!function_exists('govph_displayoptions')) {
 			case 'govph_logo':
 				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
-					'<div id="textlogo-wrapper" class="flex items-center">
+					'<a rel="home" href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center">
                         <div class="gap-1 w-fit hidden md:block">
                             <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
                                 <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[50%] mx-auto" />
@@ -1099,7 +1099,7 @@ if (!function_exists('govph_displayoptions')) {
                             <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] font-league font-extrabold">' . $option['govph_agency_name'] . '</span>
                             <span id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize font-light">' . $option['govph_agency_tagline'] . '</span>
                         </div>
-                    </div>';
+                    </a>';
 
 				echo $addLogo;
 				break;

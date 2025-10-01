@@ -362,10 +362,11 @@ Press esc, or click the close the button to close this dialog box.
                     <header class="container-masthead border-none text-black w-full">
                         <div class="row p-0 mx-auto border-none w-full">
                             <h1 class="<?php echo $name_slogan_class ?> select-none w-full" draggable="false">
-                                <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                <a id="368" href="<?php echo esc_url( home_url( '/' ) ); ?>"
                                    draggable="false"
                                    title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                   rel="home" class="w-full flex"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                                   rel="home" class="w-full flex"></a>
+                                <?php govph_displayoptions( 'govph_logo' ); ?>
                             </h1>
                         </div>
                     </header>
@@ -386,9 +387,7 @@ Press esc, or click the close the button to close this dialog box.
                         <header class="container-masthead">
                             <div class="row sm:py-0 py-2 mx-auto">
                                 <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
-                                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                       title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                       rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
+                                    <?php govph_displayoptions( 'govph_logo' ); ?>
                                 </h1>
 
 				                <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
