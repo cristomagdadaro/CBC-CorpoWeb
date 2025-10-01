@@ -173,18 +173,18 @@ function render_block_core_latest_posts( $attributes ) {
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
 		if ( 3 === $count ) {
-			$list_items_markup .= '</div><div  id="right-posts-list" class="flex flex-col bg-red-600 ' . ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-2 md:gap-5 h-full' : 'gap-2 lg:gap-0 justify-between flex' ) . '">';
+			$list_items_markup .= '</div><div  id="right-posts-list" class="flex flex-col bg-red-600 border rounded ' . ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ? 'gap-2 md:gap-5 h-full' : 'gap-2 lg:gap-0 justify-between flex' ) . '">';
 		}
 
 		// Base container classes (use grid; switch to single column at large when image hidden after 3rd)
-		$base_container = 'relative grid gap-2 md:gap-5 w-full h-full items-stretch rounded opacity-0 reveal-on-scroll-300 ';
+		$base_container = 'relative grid gap-2 md:gap-5 w-full h-full items-stretch rounded bg-white opacity-0 reveal-on-scroll-300 ';
 
 		$is_first_group = ( $count < 3 );
 		// For posts after the third, we will hide image at large screens and collapse to single column.
 		if ( ! $is_first_group ) {
 			$container_classes = $base_container . 'grid-cols-2 sm:grid-cols-1 md:flex md:items-center ';
 		} else {
-			$container_classes = $base_container . 'grid-cols-2 '; // keep two cols at large for first group
+			$container_classes = $base_container . 'grid-cols-2 border hover:border-[#1f5d2b] '; // keep two cols at large for first group
 		}
 
 		// Image wrapper templates
@@ -199,18 +199,18 @@ function render_block_core_latest_posts( $attributes ) {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				$container_classes . ' border hover:border-[#1f5d2b] hover:shadow-lg bg-[#F6F6F6]',
+				$container_classes . 'hover:shadow-lg',
 				$wrapper_template
 			);
 		} else {
 			$list_items_markup .= $render_item(
 				$post,
 				$attributes,
-				$container_classes . ' p-0 md:p-3 md:border-0 border',
+				$container_classes . ' p-0 md:p-3',
 				$wrapper_template
 			);
 			if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'list' === $attributes['postLayout'] ) {
-				$list_items_markup .= '<div class="border-indigo-600 border-b-2 mx-1 md:mx-3 md:block hidden"></div>';
+				$list_items_markup .= '<div class="border-b-2 mx-4 md:block hidden"></div>';
 			}
 		}
 		$count++;

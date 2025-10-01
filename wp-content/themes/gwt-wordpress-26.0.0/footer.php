@@ -65,7 +65,7 @@
                     </div>
                     <div class="grid sm:grid-cols-2 grid-cols-1 text-white text-sm">
                         <div>
-                            <h1 class="text-center border-b font-bold m-5 p-1">Quick Links</h1>
+                            <h4 class="text-center border-b font-semibold m-5 p-1">Quick Links</h4>
                             <ul class="list-none m-5 grid md:grid-cols-3 md:grid-cols-2 grid-cols-1">
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/about-us/organizational-structure/">Directory</a></li>
@@ -78,14 +78,12 @@
                             </ul>
                         </div>
                         <div>
-                            <h1 class="text-center border-b font-bold m-5 p-1">Contact Us</h1>
+                            <h4 class="text-center border-b font-semibold m-5 p-1">Contact Us</h4>
                             <ul class="list-none m-5">
-                                <li>Telephone: <a href="tel:+639088897135">(+63) 908 889 7135</a></li>
-                                <li>Email:
-                                    <a href="mailto:cropbiotechcenter@gmail.com">cropbiotechcenter@gmail.com</a>
-                                </li>
+                                <li>Telephone: <span class="text-[#2ba6cb]">(+63) 908 889 7135</span></li>
+                                <li>Email: <span class="text-[#2ba6cb]">cropbiotechcenter@gmail.com</span></spna></li>
                                 <li>Facebook: <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center </a></li>
-                                <li>Headquarter: PhilRice Compound, Brgy. Maligaya, Science City of Muñoz, Nueva Ecija 3119, Philippines</li>
+                                <li>Headquarter: <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a></li>
                             </ul>
                         </div>
                     </div>
@@ -303,6 +301,7 @@
         border: none;
         padding: 0.5rem 0.6rem;
         border-radius: 4px 0 0 4px;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.18);
         cursor: pointer;
         font-size: 2rem;
         line-height: 1;

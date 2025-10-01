@@ -4,6 +4,6 @@
         "secondary": "#1d3b53",
         "accent": "#a2b917"
     },
-    "darkMode": false,
+    "darkMode": true,
     "fontFamily": "Inter, system-ui, sans-serif"
 }

@@ -379,7 +379,7 @@ Press esc, or click the close the button to close this dialog box.
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
         <div id="main-nav">
-            <div class="bg-gradient-to-r from-primary to-primary drop-shadow lg:flex md:flex hidden px-2 md:px-0">
+            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0">
                 <div class="row flex items-center md:p-3 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden w-full">
                         <!-- masthead -->

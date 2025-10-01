@@ -83,7 +83,7 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.18);
   transition: transform .28s ease, background .2s ease;
 }
 #cbc-ai-chat-toggle:hover { background:#04824a; }

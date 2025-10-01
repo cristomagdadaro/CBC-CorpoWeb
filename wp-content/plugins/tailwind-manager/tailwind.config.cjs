@@ -2,12 +2,16 @@ const fs = require('fs');
 const path = require('path');
 const cfgPath = path.resolve(__dirname, 'tailwind-custom.json');
 let custom = {
-    color: [
-        { 'primary':'#1F5D2B' },
-        { 'secondary': '#A2B917' },
-    ]
-}
+    colors: {
+        primary: '#1F5D2B',
+        secondary: '#A2B917'
+    }
+};
 try { custom = JSON.parse(fs.readFileSync(cfgPath, 'utf8')); } catch (e) {}
+// Backwards compatibility: if legacy `color` array form is used, normalize it into colors object
+if (!custom.colors && Array.isArray(custom.color)) {
+    custom.colors = Object.assign({}, ...custom.color);
+}
 const darkMode = custom.darkMode ? 'class' : 'media';
 module.exports = {
   darkMode,
