@@ -273,8 +273,8 @@ add_shortcode('cbc_ai_messenger', function($atts){
             </span>
             <span class="sr-only">Toggle AI Chat</span>
         </button>
-        <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg border border-gray-200 bg-white rounded-l-md flex flex-col">
-            <div class="cbc-ai-header flex items-center justify-between bg-lime-600 text-white px-5 py-2">
+        <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-l-md flex flex-col">
+            <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
                 <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
             </div>
             <div class="cbc-ai-body p-4 flex flex-col gap-2">

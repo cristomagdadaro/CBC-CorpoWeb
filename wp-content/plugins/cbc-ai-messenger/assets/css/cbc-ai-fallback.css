@@ -99,7 +99,6 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 /* rotation removed; icon swap now handles state */
 #cbc-ai-chat-panel {
   background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.08);
   box-shadow: 0 6px 18px rgba(0,0,0,0.14);
   max-width: var(--panel-width);
   width: var(--panel-width);
