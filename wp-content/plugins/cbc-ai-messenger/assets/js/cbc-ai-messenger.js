@@ -5,9 +5,13 @@
   // Message append logic (unchanged core)
   function addMsg($panel, who, text){
     var $log = $panel.find('.cbc-ai-log');
+    var $convoLabel = $panel.find('.cbc-ai-convo-label');
     var $div = $('<div/>').addClass('cbc-ai-msg ' + (who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
     if (who === 'user') { $div.text(text); } else { $div.html(text); }
     $log.append($div); $log.scrollTop($log[0].scrollHeight);
+      $log.removeClass('hidden').addClass('block flex');
+      $convoLabel.removeClass('hidden').addClass('block');
+
   }
 
   function escapeHtml(str){ return String(str).replace(/[&<>"']/g, function(s){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]); }); }

@@ -2495,7 +2495,6 @@ html {
 .callout {
   margin: 0 0 1rem 0;
   padding: 1rem;
-  border: 1px solid hsla(0, 0%, 4%, 0.25);
   border-radius: 3px;
   position: relative;
   color: #0a0a0a;
@@ -2511,7 +2510,7 @@ html {
   background-color: #def2f8;
 }
 .callout.secondary {
-  background-color: #fcfcfc;
+  background-color: #f9f9f9;
 }
 .callout.alert {
   background-color: #fcd6d6;

@@ -5,7 +5,7 @@
  * @package gwt_wp
  */
 ?>
-<aside id="sidebar-right" class="relative mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
+<aside id="sidebar-right" class="[&>aside:last-child]:hidden mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
     role="complementary">
     <?php
     $swap = false;

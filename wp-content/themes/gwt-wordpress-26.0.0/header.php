@@ -420,7 +420,7 @@ Press esc, or click the close the button to close this dialog box.
                     </nav>
                 </div>
             </div>
-            <div class="row sm:pt-0.5 pt-0 hidden lg:block md:block">
+            <div class="row hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
                     <ul class="dropdown menu flex w-full flex-row justify-between" data-dropdown-menu>
                        <!-- <li class=" nav-item">

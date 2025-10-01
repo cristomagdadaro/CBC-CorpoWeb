@@ -274,19 +274,19 @@ add_shortcode('cbc_ai_messenger', function($atts){
             <span class="sr-only">Toggle AI Chat</span>
         </button>
         <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg border border-gray-200 bg-white rounded-l-md flex flex-col">
-            <div class="cbc-ai-header flex items-center justify-between bg-lime-600 text-white px-5 py-2 shadow-md">
+            <div class="cbc-ai-header flex items-center justify-between bg-lime-600 text-white px-5 py-2">
                 <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
             </div>
             <div class="cbc-ai-body p-4 flex flex-col gap-2">
                 <div class="cbc-ai-user-info w-full mb-1 hidden text-sm text-gray-700"></div>
-                <span class="text-sm text-gray-500">Conversation:</span>
-                <div class="cbc-ai-log bg-gray-100 rounded p-2 my-1 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
+                <span class="cbc-ai-convo-label hidden text-xs text-gray-400">Conversation:</span>
+                <div class="cbc-ai-log hidden bg-gray-300 rounded p-2 my-1 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
                 <form class="cbc-ai-form flex flex-col gap-2 mt-1">
                     <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
                         <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
                         <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
                     </div>
-                    <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-[140px]" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
+                    <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-fit" style="height: 100px;" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
                     <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
                 </form>
                 <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>

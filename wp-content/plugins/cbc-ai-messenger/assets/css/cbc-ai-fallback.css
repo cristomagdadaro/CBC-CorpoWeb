@@ -7,9 +7,15 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 
 /* Message layout: vertical column, messages either align left (bot) or right (user) */
 .cbc-ai-log{
-  display:flex;
   flex-direction:column;
   gap:0.5rem; /* spacing between messages */
+    max-height: 15rem;
+    overflow-y: auto;
+}
+
+.cbc-ai-header {
+    background: #1F5D2B;
+    padding: 0.75rem 1rem;
 }
 
 .cbc-ai-msg{
@@ -22,11 +28,11 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 }
 
 /* AI responses on the left */
-.cbc-ai-bot{
-  align-self:flex-start;
-  background: #f3f4f6; /* light gray */
-  color: #111827; /* dark */
-  border-bottom-left-radius: 0.25rem;
+.cbc-ai-bot {
+    align-self: flex-start;
+    background: rgba(162, 185, 23, 0.2); /* #A2B917 with 50% opacity */
+    color: #111827;
+    border-bottom-left-radius: 0.25rem;
 }
 
 /* User queries on the right */
@@ -57,7 +63,7 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 
 /* Sliding chat container (mirrors floating-sidebar-container logic) */
 #cbc-ai-chat-container {
-  --panel-width: 320px;
+  --panel-width: 500px;
   --toggle-width: 44px;
   position: fixed;
   right: 0;
@@ -70,6 +76,9 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
   overflow: visible;
   transition: transform .28s ease;
   pointer-events: auto;
+}
+.cbc-ai-send {
+    background: #facc15;
 }
 #cbc-ai-chat-toggle {
   background: #006837;
@@ -148,7 +157,8 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 #cbc-ai-chat-container.cbc-ai-mobile-open .cbc-ai-body { flex:1 1 auto; overflow:auto; }
 
 /* Ensure log area scroll feel consistent */
-.cbc-ai-log { scrollbar-width: thin; }
+.cbc-ai-log { scrollbar-width: thin;
+    background: #f9f9f9;}
 .cbc-ai-log::-webkit-scrollbar { width: 8px; }
 .cbc-ai-log::-webkit-scrollbar-track { background: transparent; }
 .cbc-ai-log::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius:4px; }
