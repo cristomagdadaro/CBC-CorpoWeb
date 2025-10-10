@@ -373,7 +373,7 @@ class PM_Post_Metrics {
 					}
 					break;
 			}
-			$out .= '<span class="pm-' . esc_attr( $p ) . '">' . esc_html( ucfirst( $p ) ) . ': <strong>' . esc_html( $val ) . '</strong></span> ';
+			$out .= '<span class="text-xs text-gray-400 pm-' . esc_attr( $p ) . '">' . esc_html( ucfirst( $p ) ) . ': <strong>' . esc_html( $val ) . '</strong></span> ';
 		}
 		$out .= '</div>';
 		return $out;
@@ -392,10 +392,10 @@ class PM_Post_Metrics {
 		$likes = intval( $meta['likes'] ?? 0 );
 		$shares = intval( $meta['shares'] ?? 0 );
 
-		$like_btn = '<button class="pm-btn pm-like flex items-center gap-2 hover:scale-105" data-pm-event="like" data-pm-label="shortcode-like" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+		$like_btn = '<button class="pm-btn pm-like flex items-center gap-2 hover:scale-105 active:scale-100 duration-200 text-blue-600" data-pm-event="like" data-pm-label="shortcode-like" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
   <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
 </svg><span class="pm-like-count">' . esc_html( $likes ) . '</span></button>';
-		$share_btn = '<div class="pm-btn pm-share flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-share-fill" viewBox="0 0 16 16">
+		$share_btn = '<div class="pm-btn pm-share flex items-center gap-2 hover:scale-105 active:scale-100 duration-200 text-green-600"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-share-fill" viewBox="0 0 16 16">
   <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
 </svg><span class="pm-share-count">' . esc_html( $shares ) . '</span></div>';
 
@@ -413,7 +413,7 @@ class PM_Post_Metrics {
 		$script .= " if (evt==='share'){ var c2 = el.querySelector('.pm-share-count') || document.querySelector('.pm-share-count'); if (c2) c2.textContent = (parseInt(c2.textContent||'0',10)+1); } break;} el = el.parentNode; } }, false);\n";
 		$script .= "})();</script>";
 
-		return '<div class="pm-button-wrap flex items-center gap-5">' . $like_btn . ' ' . $share_btn . '</div>' . $script;
+		return '<div class="pm-button-wrap flex items-center gap-3">' . $like_btn . ' ' . $share_btn . '</div>' . $script;
 	}
 
 	/**
