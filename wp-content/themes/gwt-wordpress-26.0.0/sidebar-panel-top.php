@@ -13,7 +13,7 @@
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
             role="complementary">
             <?php do_action( 'before_sidebar' );
-            $spacer_height = '40px';
+            $spacer_height = '25px';
             ?>
 
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->

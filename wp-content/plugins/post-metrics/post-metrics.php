@@ -13,13 +13,12 @@ class PM_Post_Metrics {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_shortcode( 'post_metrics', array( __CLASS__, 'shortcode_metrics' ) );
-		// register pm_buttons shortcode
 		add_action( 'init', array( __CLASS__, 'register_shortcodes' ) );
-		// Admin UI
 		add_action( 'add_meta_boxes', array( __CLASS__, 'register_meta_box' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
-		// dashboard widget
 		add_action( 'init', array( __CLASS__, 'register_dashboard_widgets' ) );
+		// Re-add ONLY metrics caching toggle (full page cache moved to separate plugin)
+		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 	}
 
 	public static function register_routes() {
@@ -444,9 +443,10 @@ class PM_Post_Metrics {
 			'categories'     => '',
 			'days'           => 0,
 			'cache_minutes'  => 5,
-			'titles_only'    => 0, // NEW: if 1, output only a simple list of linked titles
+			'titles_only'    => 0,
 		), $atts, 'pm_popular_posts' );
 
+		$global_cache_enabled = (bool) get_option( 'pm_metrics_enable_cache', 1 );
 		$count          = max( 1, intval( $atts['count'] ) );
 		$show_excerpt   = intval( $atts['show_excerpt'] ) === 1;
 		$excerpt_length = max( 5, intval( $atts['excerpt_length'] ) );
@@ -463,11 +463,10 @@ class PM_Post_Metrics {
 		}
 
 		$cache_key = 'pm_popular_' . md5( serialize( array( $count, $show_excerpt, $excerpt_length, $show_date, $show_author, $layout, $cat_ids, $days, $titles_only ) ) );
-		if ( $cache_minutes > 0 ) {
+		$do_cache = $global_cache_enabled && $cache_minutes > 0;
+		if ( $do_cache ) {
 			$cached = get_transient( $cache_key );
-			if ( $cached ) {
-				return $cached;
-			}
+			if ( $cached ) return $cached;
 		}
 
 		$query_args = array(
@@ -526,9 +525,7 @@ class PM_Post_Metrics {
 				$list .= '<li class="pm-popular-posts-item"><span class="pm-popular-posts-score" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
 			}
 			$list .= '</ul>';
-			if ( $cache_minutes > 0 ) {
-				set_transient( $cache_key, $list, MINUTE_IN_SECONDS * $cache_minutes );
-			}
+			if ( $do_cache ) set_transient( $cache_key, $list, MINUTE_IN_SECONDS * $cache_minutes );
 			return $list;
 		}
 
@@ -629,9 +626,7 @@ class PM_Post_Metrics {
 
 		$outer = '<div class="pm-popular-posts ' . esc_attr( implode( ' ', $classes ) ) . '">' . $list_items_markup . '</div>';
 
-		if ( $cache_minutes > 0 ) {
-			set_transient( $cache_key, $outer, MINUTE_IN_SECONDS * $cache_minutes );
-		}
+		if ( $do_cache ) set_transient( $cache_key, $outer, MINUTE_IN_SECONDS * $cache_minutes );
 		return $outer;
 	}
 
@@ -684,6 +679,27 @@ class PM_Post_Metrics {
 		echo '</ol>';
 		echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=pm-post-metrics' ) ) . '">' . esc_html__( 'View full report', 'post-metrics' ) . '</a></p>';
 		echo '</div>';
+	}
+
+	public static function register_settings() {
+		register_setting( 'general', 'pm_metrics_enable_cache', array(
+			'type' => 'boolean',
+			'sanitize_callback' => 'absint',
+			'default' => 1,
+		) );
+		add_settings_field(
+			'pm_metrics_enable_cache',
+			__( 'Post Metrics Shortcode Cache', 'post-metrics' ),
+			array( __CLASS__, 'settings_field_metrics_cache' ),
+			'general'
+		);
+	}
+	public static function settings_field_metrics_cache() {
+		$val = get_option( 'pm_metrics_enable_cache', 1 );
+		echo '<label for="pm_metrics_enable_cache">';
+		echo '<input type="checkbox" id="pm_metrics_enable_cache" name="pm_metrics_enable_cache" value="1" ' . checked( 1, $val, false ) . ' /> ';
+		echo esc_html__( 'Enable transient caching for [pm_popular_posts] output', 'post-metrics' );
+		echo '</label><p class="description">' . esc_html__( 'Uncheck during development to disable the popular posts shortcode cache (full-page cache now managed by separate plugin).', 'post-metrics' ) . '</p>';
 	}
 }
 
