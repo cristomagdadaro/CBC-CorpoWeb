@@ -34,6 +34,7 @@ module.exports = {
         'bg-gradient-to-r',
         'bg-gradient-to-l',
         'pr-4',
+        'font-bold',
         'leading-none',
         'from-[#1f5d2b]',
         'to-[#a2b917]',

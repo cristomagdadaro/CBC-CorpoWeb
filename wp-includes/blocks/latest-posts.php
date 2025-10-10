@@ -100,20 +100,11 @@ function render_block_core_latest_posts( $attributes ) {
 
 		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto p-2"><div class="flex flex-col leading-[1rem]">';
 
-		if ($is_grid_layout) {
-			$item_markup .= sprintf(
-				'<a class="wp-block-latest-posts__post-title text-left font-normal md:text-lg text-sm leading-[0.9rem] md:leading-relaxed" href="%1$s">%2$s</a>',
-				esc_url( $post_link ),
-				$title
-			);
-		} else {
-			$item_markup .= sprintf(
-				'<a class="wp-block-latest-posts__post-title text-left font-bolder md:text-xl text-sm leading-[0.9rem] md:leading-relaxed" href="%1$s">%2$s</a>',
-				esc_url( $post_link ),
-				$title
-			);
-		}
-
+		$item_markup .= sprintf(
+			'<a class="wp-block-latest-posts__post-title text-left font-semibold md:text-lg text-sm leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
+			esc_url( $post_link ),
+			$title
+		);
 
 		$item_markup .= '<div class="flex justify-between">';
 
@@ -184,9 +175,10 @@ function render_block_core_latest_posts( $attributes ) {
 	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-5">';
 
 	$total = count( $recent_posts );
+	$maxCount = 3;
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
-		if ( 3 === $count ) {
+		if ( $maxCount === $count ) {
 			// Open right column container after the first three posts.
 			$list_items_markup .= '</div><div id="right-posts-list" class="flex flex-col gap-2 md:gap-5">';
 		}
@@ -194,7 +186,7 @@ function render_block_core_latest_posts( $attributes ) {
 		// Base container classes
 		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded bg-white my-auto opacity-0 reveal-on-scroll-300 ';
 
-		$is_first_group = ( $count < 3 );
+		$is_first_group = ( $count < $maxCount );
 
 		// Image wrapper templates with fixed responsive sizes
 		$img_wrapper_first = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';

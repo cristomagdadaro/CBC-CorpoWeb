@@ -82,33 +82,33 @@
                 <h3 class="font-bold my-1">Apps</h3>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="https://pin.philrice.gov.ph/projects/breedersmap-db">
-                        <p class="block text-justify sm:text-md text-sm">Plant Breeders' Map Database</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">Plant Breeders' Map Database</p>
                     </a>
                 </div>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="https://pin.philrice.gov.ph/projects/twg-db">
-                        <p class="block text-justify sm:text-md text-sm">Biotech TWG Database</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">Biotech TWG Database</p>
                     </a>
                 </div>
                 <h3 class="font-bold my-1">Services</h3>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="/">
-                        <p class="block text-justify sm:text-md text-sm">Use Request Form</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">Use Request Form</p>
                     </a>
                 </div>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="/">
-                        <p class="block text-justify sm:text-md text-sm">Events Booking Form</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">Events Booking Form</p>
                     </a>
                 </div>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="http://192.168.36.71:5000/">
-                        <p class="block text-justify sm:text-md text-sm">Synology BioNAS</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">Synology BioNAS</p>
                     </a>
                 </div>
                 <div class="ml-2 flex items-center gap-2">
                     <a href="http://192.168.36.10/">
-                        <p class="block text-justify sm:text-md text-sm">CrAPPs Center</p>
+                        <p class="block text-justify sm:text-md text-sm m-0">CrAPPs Center</p>
                     </a>
                 </div>
             </div>
