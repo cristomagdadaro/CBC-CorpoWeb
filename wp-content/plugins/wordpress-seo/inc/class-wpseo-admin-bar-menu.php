@@ -5,6 +5,7 @@
  * @package WPSEO
  */
 
+use Yoast\WP\SEO\Conditionals\WooCommerce_Conditional;
 use Yoast\WP\SEO\Helpers\Product_Helper;
 use Yoast\WP\SEO\Helpers\Score_Icon_Helper;
 use Yoast\WP\SEO\Integrations\Support_Integration;
@@ -91,21 +92,21 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	/**
 	 * Whether SEO Score is enabled.
 	 *
-	 * @var bool
+	 * @var bool|null
 	 */
 	protected $is_seo_enabled = null;
 
 	/**
 	 * Whether readability is enabled.
 	 *
-	 * @var bool
+	 * @var bool|null
 	 */
 	protected $is_readability_enabled = null;
 
 	/**
 	 * The indexable for the current WordPress page, if found.
 	 *
-	 * @var bool|Indexable
+	 * @var Indexable|bool|null
 	 */
 	protected $current_indexable = null;
 
@@ -154,7 +155,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	 * @return bool True if SEO score is enabled, false otherwise.
 	 */
 	protected function get_is_seo_enabled() {
-		if ( is_null( $this->is_seo_enabled ) ) {
+		if ( $this->is_seo_enabled === null ) {
 			$this->is_seo_enabled = ( new WPSEO_Metabox_Analysis_SEO() )->is_enabled();
 		}
 
@@ -167,7 +168,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	 * @return bool True if readability is enabled, false otherwise.
 	 */
 	protected function get_is_readability_enabled() {
-		if ( is_null( $this->is_readability_enabled ) ) {
+		if ( $this->is_readability_enabled === null ) {
 			$this->is_readability_enabled = ( new WPSEO_Metabox_Analysis_Readability() )->is_enabled();
 		}
 
@@ -180,7 +181,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	 * @return bool|Indexable The indexable, false if none could be found.
 	 */
 	protected function get_current_indexable() {
-		if ( is_null( $this->current_indexable ) ) {
+		if ( $this->current_indexable === null ) {
 			$this->current_indexable = $this->indexable_repository->for_current_page();
 		}
 
@@ -227,7 +228,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 				$indexable = $this->get_current_indexable();
 
 				if ( $is_seo_enabled ) {
-					$focus_keyword = ( ! is_a( $indexable, 'Yoast\WP\SEO\Models\Indexable' ) || is_null( $indexable->primary_focus_keyword ) ) ? __( 'not set', 'wordpress-seo' ) : $indexable->primary_focus_keyword;
+					$focus_keyword = ( ! is_a( $indexable, 'Yoast\WP\SEO\Models\Indexable' ) || $indexable->primary_focus_keyword === null ) ? __( 'not set', 'wordpress-seo' ) : $indexable->primary_focus_keyword;
 
 					$wp_admin_bar->add_menu(
 						[
@@ -288,9 +289,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 			$this->add_network_settings_submenu( $wp_admin_bar );
 		}
 
-		if ( ! $this->product_helper->is_premium() ) {
-			$this->add_premium_link( $wp_admin_bar );
-		}
+		$this->add_premium_link( $wp_admin_bar );
 	}
 
 	/**
@@ -359,6 +358,7 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 		$settings_url       = '';
 		$counter            = '';
 		$notification_popup = '';
+		$notification_count = 0;
 
 		$post = $this->get_singular_post();
 		if ( $post ) {
@@ -377,7 +377,10 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 		}
 
 		if ( empty( $score ) && ! is_network_admin() && $can_manage_options ) {
-			$counter            = $this->get_notification_counter();
+			$notification_center = Yoast_Notification_Center::get();
+			$notification_count  = $notification_center->get_notification_count();
+
+			$counter            = $this->get_notification_counter( $notification_count );
 			$notification_popup = $this->get_notification_popup();
 		}
 
@@ -389,12 +392,12 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 		];
 		$wp_admin_bar->add_menu( $admin_bar_menu_args );
 
-		if ( ! empty( $counter ) ) {
+		if ( $notification_count > 0 ) {
 			$admin_bar_menu_args = [
 				'parent' => self::MENU_IDENTIFIER,
 				'id'     => 'wpseo-notifications',
 				'title'  => __( 'Notifications', 'wordpress-seo' ) . $counter,
-				'href'   => $settings_url,
+				'href'   => empty( $settings_url ) ? '' : $settings_url . '#/alert-center',
 				'meta'   => [ 'tabindex' => ! empty( $settings_url ) ? false : '0' ],
 			];
 			$wp_admin_bar->add_menu( $admin_bar_menu_args );
@@ -586,12 +589,24 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	 * @return void
 	 */
 	protected function add_premium_link( WP_Admin_Bar $wp_admin_bar ) {
-		$sale_percentage = '';
-		if ( YoastSEO()->classes->get( Promotion_Manager::class )->is( 'black-friday-2023-promotion' ) ) {
-			$sale_percentage = sprintf(
-				'<span class="admin-bar-premium-promotion">%1$s</span>',
-				esc_html__( '-30%', 'wordpress-seo' )
-			);
+		$link            = $this->shortlinker->build_shortlink( 'https://yoa.st/admin-bar-get-premium' );
+		$has_woocommerce = ( new Woocommerce_Conditional() )->is_met();
+
+		if ( $this->product_helper->is_premium() ) {
+			$link = $this->shortlinker->build_shortlink( 'https://yoa.st/admin-bar-get-ai-insights' );
+		}
+		elseif ( $has_woocommerce ) {
+			$link = $this->shortlinker->build_shortlink( 'https://yoa.st/admin-bar-get-premium-woocommerce' );
+		}
+
+		$button_label = esc_html__( 'Upgrade', 'wordpress-seo' );
+		$badge        = '';
+		if ( $this->product_helper->is_premium() ) {
+			$badge = '<div id="wpseo-new-badge-upgrade">' . __( 'New', 'wordpress-seo' ) . '</div>';
+		}
+
+		if ( YoastSEO()->classes->get( Promotion_Manager::class )->is( 'black-friday-promotion' ) ) {
+			$button_label = esc_html__( '30% off - BF Sale', 'wordpress-seo' );
 		}
 		$wp_admin_bar->add_menu(
 			[
@@ -599,10 +614,10 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 				'id'     => 'wpseo-get-premium',
 				// Circumvent an issue in the WP admin bar API in order to pass `data` attributes. See https://core.trac.wordpress.org/ticket/38636.
 				'title'  => sprintf(
-					'<a href="%1$s" target="_blank" data-action="load-nfd-ctb" data-ctb-id="f6a84663-465f-4cb5-8ba5-f7a6d72224b2" style="padding:0;">%2$s &raquo; %3$s</a>',
-					esc_url( $this->shortlinker->build_shortlink( 'https://yoa.st/admin-bar-get-premium' ) ),
-					esc_html__( 'Get Yoast SEO Premium', 'wordpress-seo' ),
-					$sale_percentage
+					'<a href="%1$s" target="_blank" data-action="load-nfd-ctb" data-ctb-id="f6a84663-465f-4cb5-8ba5-f7a6d72224b2">%2$s</a>%3$s',
+					esc_url( $link ),
+					$button_label,
+					$badge,
 				),
 				'meta'   => [
 					'tabindex' => '0',
@@ -849,20 +864,20 @@ class WPSEO_Admin_Bar_Menu implements WPSEO_WordPress_Integration {
 	/**
 	 * Gets the notification counter if in a valid context.
 	 *
+	 * @param int $notification_count Number of notifications.
+	 *
 	 * @return string Notification counter markup, or empty string if not available.
 	 */
-	protected function get_notification_counter() {
-		$notification_center = Yoast_Notification_Center::get();
-		$notification_count  = $notification_center->get_notification_count();
-
-		if ( ! $notification_count ) {
-			return '';
-		}
-
+	protected function get_notification_counter( $notification_count ) {
 		/* translators: Hidden accessibility text; %s: number of notifications. */
 		$counter_screen_reader_text = sprintf( _n( '%s notification', '%s notifications', $notification_count, 'wordpress-seo' ), number_format_i18n( $notification_count ) );
 
-		return sprintf( ' <div class="wp-core-ui wp-ui-notification yoast-issue-counter"><span class="yoast-issues-count" aria-hidden="true">%d</span><span class="screen-reader-text">%s</span></div>', $notification_count, $counter_screen_reader_text );
+		return sprintf(
+			' <div class="wp-core-ui wp-ui-notification yoast-issue-counter%s"><span class="yoast-issues-count" aria-hidden="true">%d</span><span class="screen-reader-text">%s</span></div>',
+			( $notification_count ) ? '' : ' wpseo-no-adminbar-notifications',
+			$notification_count,
+			$counter_screen_reader_text
+		);
 	}
 
 	/**
