@@ -1010,8 +1010,8 @@ class CBC_Client_Engagement {
             // normalize hex (allow with or without #)
             $from_hex = ltrim(strtolower($from), '#');
             $to_hex = ltrim(strtolower($to), '#');
-            // Remove tokens like bg-gradient-to-*, from[...], to[...] to avoid duplicates
-            $classes = preg_replace('/\b(bg-gradient-to-(?:r|l|t|b|tr|tl|br|bl)|from\[[^]]+]|to\[[^]]+])\b/', '', $classes);
+            // Remove tokens like bg-gradient-to-*, from-[...], to-[...] to avoid duplicates
+            $classes = preg_replace('/\b(?:bg-gradient-to-(?:r|l|t|b|tr|tl|br|bl)|from-\[[^\]]+\]|to-\[[^\]]+\])\b/', '', $classes);
             // Collapse multiple spaces
             $classes = preg_replace('/\s+/', ' ', trim($classes));
             // Determine gradient direction based on swap flag
