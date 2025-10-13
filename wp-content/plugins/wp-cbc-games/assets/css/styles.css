@@ -1,0 +1,191 @@
+/* Shared CBC Games styles */
+:root {
+    --cbc-green: #4CAF50;
+    --cbc-green-2: #86EFAC;
+    --cbc-green-3: #22C55E;
+    --cbc-red: #EF4444;
+    /* Default card size fallback when not computed in fullscreen */
+    --cbc-card-size: 96px;
+}
+
+/* Minimal utility fallback */
+.hidden {
+    display: none !important;
+}
+
+.quiz-container, .game-container {
+    width: 100%;
+    height: 100%;
+    max-width: 64rem;
+    box-sizing: border-box;
+}
+
+/* Fullscreen sizing for each game root */
+#cbc-memory-app:fullscreen,
+#cbc-quiz-app:fullscreen,
+#cbc-scramble-app:fullscreen {
+    width: 100vw;
+    height: 100dvh; /* use dynamic viewport for mobile */
+    max-width: none;
+    padding: 1rem; /* reduce padding in fullscreen to maximize space */
+    overflow: auto; /* allow scrolling if content exceeds viewport */
+    background: #ffffff;
+}
+
+/* WebKit prefix */
+#cbc-memory-app:-webkit-full-screen,
+#cbc-quiz-app:-webkit-full-screen,
+#cbc-scramble-app:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    padding: 1rem;
+    overflow: auto;
+    background: #ffffff;
+}
+
+/* Memory game layout (independent of Tailwind) */
+#cbc-memory-app #game-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+}
+
+/* Ensure grid content starts at the top (avoid stretching) */
+#cbc-memory-app #game-grid { align-content: start; }
+
+/* In fullscreen, use a computed card size so all rows fit vertically */
+#cbc-memory-app:fullscreen #game-grid { grid-auto-rows: var(--cbc-card-size, 96px); }
+#cbc-memory-app:fullscreen .card { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
+#cbc-memory-app:-webkit-full-screen #game-grid { grid-auto-rows: var(--cbc-card-size, 96px); }
+#cbc-memory-app:-webkit-full-screen .card { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
+
+/* Memory game cards */
+#cbc-memory-app .card {
+    width: 100%;
+    /* Make each card a responsive square within the grid cell */
+    aspect-ratio: 1 / 1;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+#cbc-memory-app .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+#cbc-memory-app .card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+#cbc-memory-app .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#cbc-memory-app .card-back {
+    background-color: var(--cbc-green);
+    transform: rotateY(180deg);
+}
+
+#cbc-memory-app .card-back img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+#cbc-memory-app .card-front {
+    background-color: #86EFAC;
+    border: 2px solid var(--cbc-green);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1A4D2E;
+}
+
+#cbc-memory-app .card.matched .card-inner {
+    transform: none;
+    opacity: 0.5;
+    cursor: default;
+}
+
+#cbc-memory-app .card.matched .card-front {
+    color: #14532d;
+}
+
+/* Quiz options responsive grid (fallback without Tailwind) */
+#cbc-quiz-app #options-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    #cbc-quiz-app #options-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Ensure scramble input spans container width if Tailwind not present */
+#cbc-scramble-app input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Simple loading text style */
+.cbc-loading {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--cbc-green);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+}
+
+.btn-secondary {
+    background-color: #E5E7EB;
+    color: #4B5563;
+}
+
+.btn-secondary:hover {
+    background-color: #D1D5DB;
+}
+
+.btn-option {
+    background-color: #DCFCE7;
+    border-color: #86EFAC;
+}
+
+.btn-option:hover {
+    background-color: #BBF7D0;
+}
+
+.btn-option.correct {
+    background-color: var(--cbc-green-3);
+    color: #fff;
+    border-color: #16A34A;
+}
+
+.btn-option.incorrect {
+    background-color: var(--cbc-red);
+    color: #fff;
+    border-color: #DC2626;
+}
+
+.btn-option:disabled {
+    cursor: not-allowed;
+}

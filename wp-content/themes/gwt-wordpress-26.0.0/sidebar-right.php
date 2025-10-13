@@ -81,12 +81,12 @@
             <div class="flex flex-col gap-1">
                 <h3 class="font-bold my-1">Apps</h3>
                 <div class="ml-2 flex items-center gap-2">
-                    <a href="https://pin.philrice.gov.ph/projects/breedersmap-db">
+                    <a href="/projects/breedersmap-db">
                         <p class="block text-justify sm:text-md text-sm m-0">Plant Breeders' Map Database</p>
                     </a>
                 </div>
                 <div class="ml-2 flex items-center gap-2">
-                    <a href="https://pin.philrice.gov.ph/projects/twg-db">
+                    <a href="/projects/twg-db">
                         <p class="block text-justify sm:text-md text-sm m-0">Biotech TWG Database</p>
                     </a>
                 </div>
@@ -109,6 +109,22 @@
                 <div class="ml-2 flex items-center gap-2">
                     <a href="http://192.168.36.10/">
                         <p class="block text-justify sm:text-md text-sm m-0">CrAPPs Center</p>
+                    </a>
+                </div>
+                <h3 class="font-bold my-1">Games</h3>
+                <div class="ml-2 flex items-center gap-2">
+                    <a href="/games/biotech-quiz-bee/">
+                        <p class="block text-justify sm:text-md text-sm m-0">Biotech Quiz Bee</p>
+                    </a>
+                </div>
+                <div class="ml-2 flex items-center gap-2">
+                    <a href="/games/scramble-game/">
+                        <p class="block text-justify sm:text-md text-sm m-0">Scramble Game</p>
+                    </a>
+                </div>
+                <div class="ml-2 flex items-center gap-2">
+                    <a href="/games/crop-memory-game/">
+                        <p class="block text-justify sm:text-md text-sm m-0">Crop Memory Game</p>
                     </a>
                 </div>
             </div>

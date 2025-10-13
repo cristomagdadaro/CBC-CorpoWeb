@@ -33,7 +33,11 @@ module.exports = {
         // Ensure gradient utilities and arbitrary color orders are preserved (explicit + patterns)
         'bg-gradient-to-r',
         'bg-gradient-to-l',
+        'p-3',
+        'p-6',
+        'p-10',
         'pr-4',
+        'mx-auto',
         'font-bold',
         'leading-none',
         'from-[#1f5d2b]',
