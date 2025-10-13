@@ -15,21 +15,17 @@ class RegisterShortcodes
     private function enqueueCommon()
     {
         wp_enqueue_style('cbc-games-styles');
-        wp_enqueue_script('cbc-tailwind');
-        // Localize base API URL and plugin URL
-        wp_register_script('cbc-games-bootstrap', '', [], '1.0.0', true);
-        wp_enqueue_script('cbc-games-bootstrap');
-        wp_add_inline_script('cbc-games-bootstrap', sprintf(
-            'window.cbcGames = { apiBase: %s, pluginUrl: %s };',
-            json_encode(esc_url_raw(get_rest_url(null, 'cbc-games/v1/'))),
-            json_encode(esc_url_raw(CBC_GAMES_URL))
-        ));
+        // Tailwind is optional; keep if theme provides it via this handle.
+        if (wp_script_is('cbc-tailwind', 'registered')) {
+            wp_enqueue_script('cbc-tailwind');
+        }
+        // cbc-games-bootstrap is registered globally in plugin bootstrap and enqueued there.
     }
 
     public function renderQuiz($atts = [], $content = '')
     {
         $this->enqueueCommon();
-        wp_enqueue_script('cbc-quiz-js', CBC_GAMES_URL . 'assets/js/quiz.js', ['cbc-games-bootstrap'], '1.0.0', true);
+        wp_enqueue_script('cbc-quiz-js', CBC_GAMES_URL . 'assets/js/quiz.js', [], '1.0.0', true);
         ob_start();
         include CBC_GAMES_PATH . 'views/quiz.php';
         return ob_get_clean();
@@ -38,7 +34,7 @@ class RegisterShortcodes
     public function renderMemory($atts = [], $content = '')
     {
         $this->enqueueCommon();
-        wp_enqueue_script('cbc-memory-js', CBC_GAMES_URL . 'assets/js/memory.js', ['cbc-games-bootstrap'], '1.0.0', true);
+        wp_enqueue_script('cbc-memory-js', CBC_GAMES_URL . 'assets/js/memory.js', [], '1.0.0', true);
         ob_start();
         include CBC_GAMES_PATH . 'views/memory.php';
         return ob_get_clean();
@@ -47,7 +43,7 @@ class RegisterShortcodes
     public function renderScramble($atts = [], $content = '')
     {
         $this->enqueueCommon();
-        wp_enqueue_script('cbc-scramble-js', CBC_GAMES_URL . 'assets/js/scramble.js', ['cbc-games-bootstrap'], '1.0.0', true);
+        wp_enqueue_script('cbc-scramble-js', CBC_GAMES_URL . 'assets/js/scramble.js', [], '1.0.0', true);
         ob_start();
         include CBC_GAMES_PATH . 'views/scramble.php';
         return ob_get_clean();

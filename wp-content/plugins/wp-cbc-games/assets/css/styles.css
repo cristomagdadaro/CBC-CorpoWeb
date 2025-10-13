@@ -1,7 +1,7 @@
 /* Shared CBC Games styles */
 :root {
-    --cbc-green: #4CAF50;
-    --cbc-green-2: #86EFAC;
+    --cbc-green: #1f5d2b;
+    --cbc-green-2: #a2b917;
     --cbc-green-3: #22C55E;
     --cbc-red: #EF4444;
     /* Default card size fallback when not computed in fullscreen */
@@ -202,3 +202,6 @@
 .cbc-leaderboard th, .cbc-leaderboard td { border-bottom: 1px solid #e5e7eb; padding: 0.5rem; text-align: left; font-size: 0.95rem; }
 .cbc-leaderboard th { color: #065f46; }
 .cbc-leaderboard .empty { color: #6b7280; font-style: italic; padding: 0.5rem 0; }
+
+/* Honeypot field */
+.cbc-hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }

@@ -31,6 +31,7 @@
 <div id="cbc-memory-leaderboard" class="cbc-leaderboard">
   <h3>Memory Leaderboard (Top 10)</h3>
   <form id="memory-leaderboard-form">
+    <input type="text" id="memory-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <div>
       <label for="memory-name">Name (required)</label>
       <input id="memory-name" name="name" type="text" required />
@@ -54,9 +55,9 @@
   <div class="leaderboard-list">
     <table aria-label="Memory leaderboard">
       <thead>
-        <tr><th>#</th><th>Name</th><th>Agency/School</th><th>Age</th><th>Score</th><th>Date</th></tr>
+        <tr><th>#</th><th>Name</th><th>Agency/School</th><th>Age</th><th>Score</th><th>Time</th><th>Date</th></tr>
       </thead>
-      <tbody id="memory-leaderboard-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+      <tbody id="memory-leaderboard-body"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
     </table>
   </div>
 </div>
