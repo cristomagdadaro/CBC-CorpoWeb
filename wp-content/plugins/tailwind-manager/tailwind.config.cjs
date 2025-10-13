@@ -38,6 +38,7 @@ module.exports = {
         'p-10',
         'pr-4',
         'mx-auto',
+        'gap-5',
         'font-bold',
         'leading-none',
         'from-[#1f5d2b]',

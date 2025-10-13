@@ -1,5 +1,5 @@
 <?php if (!defined('ABSPATH')) { exit; } ?>
-<div id="cbc-quiz-app" class="quiz-container w-full mx-auto rounded-xl shadow-lg p-10 md:p-8 text-center relative">
+<div id="cbc-quiz-app" class="quiz-container w-full mx-auto rounded-xl shadow-lg p-10 md:p-8 text-center relative flex flex-col justify-center">
     <button id="quiz-fullscreen-btn" type="button" aria-label="Toggle fullscreen" class="btn-secondary absolute top-0 right-0 px-3 py-1 rounded">
         <span>
             Fullscreen
@@ -7,8 +7,7 @@
     </button>
 
     <div id="start-screen">
-        <h1 class="text-3xl md:text-4xl font-bold text-green-800 mb-2">DA-Crop Biotechnology Center</h1>
-        <h2 class="text-2xl md:text-3xl font-bold text-green-700 mb-4">Quiz Bee!</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-green-700 mb-4">Crop Biotech Quiz Bee!</h2>
         <p class="text-green-600 mb-6">Test your knowledge about modern agriculture and the science behind our food. You'll face 10 questions.</p>
         <button id="start-btn" class="btn-primary font-bold p-3 rounded-lg text-lg transition-transform transform hover:scale-105">Start Quiz</button>
     </div>
