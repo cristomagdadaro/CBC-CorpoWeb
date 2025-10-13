@@ -524,7 +524,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                         $startDayNum = intval($range['start']->format('j'));
                         $endDayNum = intval($range['end']->format('j'));
-                        $dateRange = $startDayNum . ' - ' . $endDayNum;
+                        $dateRange = $startDayNum . '-' . $endDayNum;
 
                         echo '<tr>';
 
@@ -536,7 +536,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         // Event cell
                         echo '<td colspan="' . $rangeColspan . '" style="padding:2px;border:none;">';
                         echo '<div class="gwt-week-band">';
-                        $displayTitle = '[' . $dateRange . '] ' . $range['title'];
+                        $displayTitle = $dateRange . ': ' . $range['title'];
                         if ( ! empty($range['url']) ){
                             echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
                         } else {
