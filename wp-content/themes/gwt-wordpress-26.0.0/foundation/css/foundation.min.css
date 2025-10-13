@@ -2986,7 +2986,6 @@ table.hover tr:nth-of-type(even):hover {
 .orbit-next,
 .orbit-previous {
   position: absolute;
-  padding: 1rem;
   color: #fefefe;
 }
 .orbit-next,

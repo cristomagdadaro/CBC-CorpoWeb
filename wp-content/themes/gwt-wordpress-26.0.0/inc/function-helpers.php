@@ -334,9 +334,9 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     echo '<div style="flex:1;">';
                     $label = $it['title'];
                     if ( ! empty( $it['url'] ) ) {
-                        echo '<a href="' . esc_url( $it['url'] ) . '" target="_blank" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $label ) . '</a>';
+                        echo '<a href="' . esc_url( $it['url'] ) . '" target="_blank" rel="noopener" style="color:#00391a;">' . esc_html( $label ) . '</a>';
                     } else {
-                        echo '<div style="font-weight:600;color:#00391a;">' . esc_html( $label ) . '</div>';
+                        echo '<div style="color:#00391a;">' . esc_html( $label ) . '</div>';
                     }
                     echo '</div>';
                     echo '</div>';
@@ -406,7 +406,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             }
 
             // Render as HTML table with colspan in day cells
-            echo '<table class="calendar-grid" style="width:100%;border-collapse:separate;border-spacing:6px;padding:8px;">';
+            echo '<table class="calendar-grid reveal-on-scroll-300" style="width:100%;border-collapse:separate;border-spacing:6px;margin-bottom: 0">';
 
             // Header row
             echo '<thead><tr>';
@@ -696,7 +696,7 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
         // Optional header
         if ( $atts['header'] !== '' ) {
             if ( function_exists('govph_section_header') ) {
-                echo govph_section_header( $atts['header'], array( 'id' => 'gwt_announcements_header', 'text_alignment' => 'left' ) );
+                echo govph_section_header( $atts['header'], array( 'id' => 'gwt_announcements_header', 'text_alignment' => 'center' , 'classes' => 'drop-shadow font-semibold md:font-bold text-white p-2 bg-gradient-to-r text-center px-5') );
             } else {
                 echo '<h2 class="gwt-announcements-header">' . esc_html( $atts['header'] ) . '</h2>';
             }
@@ -718,9 +718,9 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
                 }
                 echo '<div class="card-content" style="padding:12px;">';
                 if ( $link_title && ! empty($it['url']) ) {
-                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
+                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
                 } else {
-                    echo '<div style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
+                    echo '<div style="color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
                 }
                 echo '</div>';
                 echo '</div>';
@@ -744,18 +744,18 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
             }
 
             // Ticker markup: duplicate items for seamless loop
-            echo '<div class="scrolling-container" id="cbc-announcements-ticker">';
+            echo '<div class="scrolling-container reveal-on-scroll-300 opacity-0" id="cbc-announcements-ticker">';
             echo '<div class="scrolling-track" data-basehtml="">';
-            for ( $dup = 0; $dup < 2; $dup++ ) {
+            for ( $dup = 0; $dup < 1; $dup++ ) {
                 foreach ( $items as $it ) {
                     echo '<div class="scrolling-content">';
                     if ( $show_image && ! empty($it['image']) ) {
                         echo '<span class="thumb"><img src="' . esc_url($it['image']) . '" alt="" loading="lazy" /></span>';
                     }
                     if ( $link_title && ! empty($it['url']) ) {
-                        echo '<a href="' . esc_url($it['url']) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html($it['message']) . '</a>';
+                        echo '<a href="' . esc_url($it['url']) . '" target="' . esc_attr($target) . '" rel="noopener" style="color:#00391a;">' . esc_html($it['message']) . '</a>';
                     } else {
-                        echo '<span style="font-weight:600;color:#00391a;">' . esc_html($it['message']) . '</span>';
+                        echo '<span style="color:#00391a;">' . esc_html($it['message']) . '</span>';
                     }
                     echo '</div>';
                 }
@@ -777,9 +777,9 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
                 }
                 echo '<div class="body" style="min-width:0;">';
                 if ( $link_title && ! empty($it['url']) ) {
-                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
+                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
                 } else {
-                    echo '<div style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
+                    echo '<div style="color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
                 }
                 echo '</div>';
                 echo '</li>';

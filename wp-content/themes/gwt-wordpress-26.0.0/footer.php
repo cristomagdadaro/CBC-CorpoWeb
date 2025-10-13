@@ -51,15 +51,15 @@
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"
-                                     alt="logo" class="w-48 h-auto">
+                                     alt="logo" class="w-32 h-auto">
                             </a>
                             <a draggable="false" href="https://livestockbiotech.ph/" target="_blank" class="hover:scale-105 duration-200">
                                 <img src="/wp-content/uploads/2024/06/LBC-white-Logo.png"
-                                     alt="logo" class="w-48 h-auto">
+                                     alt="logo" class="w-32 h-auto">
                             </a>
                             <a draggable="false" href="https://fbc.nfrdi.da.gov.ph/" target="_blank" class="hover:scale-105 duration-200">
                                 <img src="/wp-content/uploads/2024/06/FBC-white-Logo.png"
-                                     alt="logo" class="w-48 h-auto">
+                                     alt="logo" class="w-32 h-auto">
                             </a>
                         </div>
                     </div>

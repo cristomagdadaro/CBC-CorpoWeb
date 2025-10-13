@@ -13,9 +13,7 @@
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
             role="complementary">
             <?php do_action( 'before_sidebar' );
-            $spacer_height = '25px';
-            ?>
-
+            $spacer_height = '25px'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
@@ -29,7 +27,7 @@
                         <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight hidden sm:block">
                             DA-CROP BIOTECHNOLOGY CENTER
                         </h3>
-                        <p class="leading-relaxed mt-2 text-justify md:text-left leading-tight sm:leading-relaxed">
+                        <p class="mt-2 text-justify md:text-left sm:leading-relaxed">
                             DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
                             Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
                             biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
@@ -124,6 +122,28 @@
                             We promote the commercialization and transfer of developed technologies. We also foster a culture of knowledge-sharing to ensure our network and stakeholders have easy access to a wealth of information.
                         </p>
                     </div>
+                </div>
+            </div>
+
+            <div class="widget widget_block">
+                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
+            </div>
+            <div class="grid grid-cols-2 grid-rows-1 gap-3 relative box-border">
+                <div>
+                    <?php echo govph_section_header('Vision', ['id' => 'vision_header']); ?>
+                    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+                        <div class="panel h-fit bg-transparent" style="max-height: 100vh;">
+                            <figure class="text-center"><blockquote><p>A prosperous, secure, and sustainable food future - one crop at a time.</p></blockquote></figure>
+                        </div>
+                    </aside>
+                </div>
+                <div>
+                    <?php echo govph_section_header('Mission', ['id' => 'mission_header']); ?>
+                    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+                        <div class="panel h-fit bg-transparent" style="max-height: 100vh;">
+                            <figure class="text-center"><blockquote><p>To improve the productivity and competitiveness of priority commodities through providing biotechnology capacity building services, fostering collaboration within the agricultural research community, and driving the development and utilization of modern and inclusive biotechnology for crop improvement, contributing to a resilient and prosperous agricultural landscape.</p></blockquote></figure>
+                        </div>
+                    </aside>
                 </div>
             </div>
 

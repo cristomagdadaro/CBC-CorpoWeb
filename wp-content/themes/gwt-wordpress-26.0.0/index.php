@@ -22,11 +22,15 @@ include_once( 'inc/banner.php' );
                  class="text-justify overflow-hidden gap-4 <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
                  style="display: flex; flex-direction: column; justify-content: space-between;"
                  role="main">
-                <?php
-                echo do_shortcode( '[gwt_announcements header="Announcements" limit="5" layout="ticker" show_image="1" link_title="1" target="_blank"]' );
-
-                echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' );
-                ?>
+                <div>
+                    <?php echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header' ] ); ?>
+                    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+                        <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
+                    </aside>
+                </div>
+                <div>
+                    <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
+                </div>
             </div>
             <!-- end content -->
             <?php

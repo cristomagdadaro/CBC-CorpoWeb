@@ -42,6 +42,8 @@ module.exports = {
         'font-bold',
         '!leading-none',
         '!leading-tight',
+        'font-semibold',
+        'font-bold',
         'text-red-500',
         'from-[#1f5d2b]',
         'to-[#a2b917]',
