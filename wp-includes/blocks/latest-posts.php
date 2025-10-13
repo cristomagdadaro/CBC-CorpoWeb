@@ -101,7 +101,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto p-2"><div class="flex flex-col leading-[1rem]">';
 
 		$item_markup .= sprintf(
-			'<a class="wp-block-latest-posts__post-title text-left font-semibold md:text-lg text-sm leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
+			'<a class="wp-block-latest-posts__post-title text-left font-semibold !leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
 			esc_url( $post_link ),
 			$title
 		);
@@ -149,7 +149,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
 			$item_markup .= sprintf(
-				'<div class="wp-block-latest-posts__post-excerpt entry-content md:leading-[1.1rem] leading-[0.9rem] md:text-sm text-xs block">%1$s</div>',
+				'<div class="wp-block-latest-posts__post-excerpt entry-content !leading-tight block">%1$s</div>',
 				$trimmed_excerpt
 			);
 		}
