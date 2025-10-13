@@ -502,7 +502,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     }
 
                     // Render cluster cell with colspan containing nested table for stacked events
-                    echo '<td colspan="' . $colspan . '" style="padding:0;min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
+                    echo '<td colspan="' . $colspan . '" style="padding:0;min-height:80px;vertical-align:center;width:'. (14.28 * $colspan) .'%;">';
 
                     // Nested table with colspan columns to match the outer colspan
                     echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none; margin:0; padding:0;">';
@@ -527,7 +527,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         $endDayNum = intval($range['end']->format('j'));
                         $dateRange = $startDayNum . '-' . $endDayNum;
 
-                        echo '<tr style="border:none;">';
+                        echo '<tr style="border:none; background-color:#fff;">';
 
                         // Empty cells before the event
                         if ($offsetCols > 0) {
@@ -539,9 +539,9 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         echo '<div class="gwt-week-band">';
                         $displayTitle = $dateRange . ': ' . $range['title'];
                         if ( ! empty($range['url']) ){
-                            echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
+                            echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:100;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
                         } else {
-                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($displayTitle) .'</span>';
+                            echo '<span style="font-weight:100;color:#20603d;">'. esc_html($displayTitle) .'</span>';
                         }
                         echo '</div>';
                         echo '</td>';
@@ -566,7 +566,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                             foreach ($byDate[$dateStr] as $item) {
                                 $dayNum = intval($cur->format('j'));
-                                echo '<tr style="border:none;">';
+                                echo '<tr style="border:none; background-color:#fff;">';
 
                                 // Empty cells before this day
                                 if ($dayOffset > 0) {
@@ -578,9 +578,9 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                                 echo '<div class="gwt-week-band">';
                                 $label = $dayNum . ': ' . $item['title'];
                                 if ( ! empty( $item['url'] ) ) {
-                                    echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
+                                    echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:100;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
                                 } else {
-                                    echo '<span style="font-weight:600;color:#20603d;">' . esc_html( $label ) . '</span>';
+                                    echo '<span style="font-weight:100;color:#20603d;">' . esc_html( $label ) . '</span>';
                                 }
                                 echo '</div>';
                                 echo '</td>';
