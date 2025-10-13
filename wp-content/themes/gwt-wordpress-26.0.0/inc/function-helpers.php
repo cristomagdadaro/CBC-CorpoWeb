@@ -416,67 +416,115 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             echo '</tr></thead>';
 
             // Inline styles
-            echo '<style>.gwt-week-band{background:#e6f4ea;border:1px solid #c8e6d3;border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}</style>';
+            echo '<style>.gwt-week-band{background:#e6f4ea;border:1px solid #c8e6d3;border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}</style>';
 
             echo '<tbody>';
-            // Iterate weeks: single row of day cells, some with colspan for ranges
+            // Iterate weeks: may need multiple rows per week if ranges overlap
             foreach ($weeks as $wi => $wk){
+                // Build tracks/layers for this week to handle overlapping ranges
+                $tracks = array(); // Each track is a row that can hold non-overlapping ranges
+
+                // Assign each range to a track where it doesn't overlap with existing ranges
+                foreach ($rangesByWeek[$wi] as $range) {
+                    $rangeStartDay = (int)$range['start']->format('N') - 1; // 0-based
+                    $rangeEndDay = (int)$range['end']->format('N') - 1;
+
+                    $assigned = false;
+                    foreach ($tracks as $tIdx => &$track) {
+                        $canFit = true;
+                        for ($d = $rangeStartDay; $d <= $rangeEndDay; $d++) {
+                            if (isset($track['occupied'][$d])) {
+                                $canFit = false;
+                                break;
+                            }
+                        }
+                        if ($canFit) {
+                            $track['ranges'][] = $range;
+                            for ($d = $rangeStartDay; $d <= $rangeEndDay; $d++) {
+                                $track['occupied'][$d] = true;
+                            }
+                            $assigned = true;
+                            break;
+                        }
+                    }
+                    unset($track);
+
+                    if (!$assigned) {
+                        // Create new track
+                        $newTrack = array('ranges' => array($range), 'occupied' => array());
+                        for ($d = $rangeStartDay; $d <= $rangeEndDay; $d++) {
+                            $newTrack['occupied'][$d] = true;
+                        }
+                        $tracks[] = $newTrack;
+                    }
+                }
+
+                // Render each track as a row
+                foreach ($tracks as $track) {
+                    echo '<tr>';
+                    $dayRendered = array_fill(0, 7, false);
+
+                    foreach ($track['ranges'] as $range) {
+                        $rangeStartDay = (int)$range['start']->format('N') - 1;
+                        $rangeEndDay = (int)$range['end']->format('N') - 1;
+                        $colspan = $rangeEndDay - $rangeStartDay + 1;
+
+                        // Render empty cells before this range
+                        for ($d = 0; $d < $rangeStartDay; $d++) {
+                            if (!$dayRendered[$d]) {
+                                echo '<td style="padding:8px;border:1px solid #e5e5e5;background:#fafafa;"></td>';
+                                $dayRendered[$d] = true;
+                            }
+                        }
+
+                        // Render range cell with colspan
+                        $startDay = intval($range['start']->format('j'));
+                        $endDay = intval($range['end']->format('j'));
+                        $inMonth = ($range['start']->format('Y-m') === $current->format('Y-m'));
+
+                        echo '<td colspan="' . $colspan . '" style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
+                        echo '<div style="font-weight:bold;color:#006837;margin-bottom:2px;">' . $startDay . ' - ' . $endDay . '</div>';
+                        echo '<div class="gwt-week-band">';
+                        if ( ! empty($range['url']) ){
+                            echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($range['title']) .'</a>';
+                        } else {
+                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($range['title']) .'</span>';
+                        }
+                        echo '</div>';
+                        echo '</td>';
+
+                        // Mark days as rendered
+                        for ($d = $rangeStartDay; $d <= $rangeEndDay; $d++) {
+                            $dayRendered[$d] = true;
+                        }
+                    }
+
+                    // Fill remaining empty cells
+                    for ($d = 0; $d < 7; $d++) {
+                        if (!$dayRendered[$d]) {
+                            echo '<td style="padding:8px;border:1px solid #e5e5e5;background:#fafafa;"></td>';
+                        }
+                    }
+
+                    echo '</tr>';
+                }
+
+                // Render the regular day cells row
                 echo '<tr>';
-
-                // Track which day positions have been consumed by colspan
-                $skipUntilDay = -1;
-
                 for ($d=0; $d<7; $d++){
-                    if ($d <= $skipUntilDay) continue; // This day was consumed by a previous colspan
-
                     $cur = clone $wk['start']; $cur->modify('+'.$d.' days');
                     $inMonth = ($cur->format('Y-m') === $current->format('Y-m'));
                     $dateStr = $cur->format('Y-m-d');
 
-                    // Check if this day starts a range event
-                    $rangeEvent = null;
-                    $colspan = 1;
-
-                    foreach ($rangesByWeek[$wi] as $range) {
-                        if ($range['start']->format('Y-m-d') === $dateStr) {
-                            // This day starts a range
-                            $rangeEvent = $range;
-                            // Calculate colspan: how many days from start to end
-                            $dayOfWeekStart = (int)$range['start']->format('N'); // 1..7
-                            $dayOfWeekEnd = (int)$range['end']->format('N');
-                            $colspan = $dayOfWeekEnd - $dayOfWeekStart + 1;
-                            $skipUntilDay = $d + $colspan - 1;
-                            break;
-                        }
-                    }
-
-                    // Render cell with colspan if needed
-                    $colspanAttr = $colspan > 1 ? ' colspan="' . $colspan . '"' : '';
-                    echo '<td' . $colspanAttr . ' style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
-
-                    if ($rangeEvent) {
-                        // Render range event with date span
-                        $startDay = intval($rangeEvent['start']->format('j'));
-                        $endDay = intval($rangeEvent['end']->format('j'));
-                        echo '<div style="font-weight:bold;color:#006837;">' . $startDay . ' - ' . $endDay . '</div>';
-                        echo '<div class="gwt-week-band" style="margin-top:4px;">';
-                        if ( ! empty($rangeEvent['url']) ){
-                            echo '<a href="'. esc_url($rangeEvent['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($rangeEvent['title']) .'</a>';
-                        } else {
-                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($rangeEvent['title']) .'</span>';
-                        }
-                        echo '</div>';
-                    } else {
-                        // Regular day cell
-                        echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
-                        if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
-                            foreach ( $byDate[$dateStr] as $item ) {
-                                $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
-                                if ( ! empty( $item['url'] ) ) {
-                                    echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
-                                } else {
-                                    echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
-                                }
+                    echo '<td style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;vertical-align:top;width:14.28%;">';
+                    echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
+                    if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
+                        foreach ( $byDate[$dateStr] as $item ) {
+                            $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
+                            if ( ! empty( $item['url'] ) ) {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
+                            } else {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
                             }
                         }
                     }
