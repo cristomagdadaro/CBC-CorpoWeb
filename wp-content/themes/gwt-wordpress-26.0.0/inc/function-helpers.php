@@ -218,21 +218,27 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
         // Read from plugin (falls back to theme inside plugin)
         $cbc = apply_filters('cbc_calendar_options', []);
 
-        // --- Parse events & holidays from plugin data so variables are available below ---
+        // Parse events & holidays
         $events = array();
         if ( ! empty( $cbc['events'] ) ) {
             $lines = preg_split( "/(\r\n|\n|\r)/", (string)$cbc['events'] );
             foreach ( $lines as $line ) {
                 $line = trim( (string)$line ); if ( $line === '' ) continue;
                 $parts = array_map( 'trim', explode( '|', $line ) );
-                $date  = $parts[0] ?? '';
-                $title = $parts[1] ?? '';
-                if ( $date === '' || $title === '' ) continue;
-                // preserve any extra parts (we previously used announce parsing in index.php)
-                $events[] = array( 'date'=>$date, 'title'=>$title, 'url'=>$parts[2] ?? '', 'type'=>$parts[3] ?? '', 'loc'=>$parts[4] ?? '', 'raw_parts'=>$parts );
+                $date0  = $parts[0] ?? '';
+                if ( $date0 === '' ) continue;
+                // Optional date_to as second token if it matches YYYY-MM-DD
+                $maybe_dt = $parts[1] ?? '';
+                $has_dt = ( $maybe_dt !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $maybe_dt) );
+                $date1 = $has_dt ? $maybe_dt : '';
+                $title = $parts[ $has_dt ? 2 : 1 ] ?? '';
+                if ( $title === '' ) continue;
+                $url   = $parts[ $has_dt ? 3 : 2 ] ?? '';
+                $type  = $parts[ $has_dt ? 4 : 3 ] ?? '';
+                $loc   = $parts[ $has_dt ? 5 : 4 ] ?? '';
+                $events[] = array( 'date_from'=>$date0, 'date_to'=>$date1, 'title'=>$title, 'url'=>$url, 'type'=>$type, 'loc'=>$loc, 'raw_parts'=>$parts );
             }
         }
-
         $holidays = array();
         if ( ! empty( $cbc['holidays'] ) ) {
             $lines = preg_split( "/(\r\n|\n|\r)/", (string)$cbc['holidays'] );
@@ -242,45 +248,23 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                 $date = $parts[0] ?? '';
                 $name = $parts[1] ?? '';
                 if ( $date === '' || $name === '' ) continue;
-                $holidays[] = array( 'date'=>$date, 'name'=>$name, 'scope'=>$parts[2] ?? '', 'raw_parts'=>$parts );
+                // Third token may be URL or a flag like 'announce'. Only treat as URL if it looks like one.
+                $p2 = $parts[2] ?? '';
+                $url = ( $p2 && preg_match('#^(https?://|/)#i', $p2) ) ? $p2 : '';
+                $holidays[] = array( 'date'=>$date, 'name'=>$name, 'url'=>$url, 'raw_parts'=>$parts );
             }
         }
-        // --- end parsing ---
 
-        // Admin-controlled permissions for user toggles
-        $allow_view = isset($cbc['allow_toggle_view']) && $cbc['allow_toggle_view'] === '1';
-        $allow_show = isset($cbc['allow_toggle_show']) && $cbc['allow_toggle_show'] === '1';
-        $allow_range = isset($cbc['allow_toggle_range']) && $cbc['allow_toggle_range'] === '1';
-        // Fallback to theme options (govph_options) if plugin didn't set them
-        $theme_opts = get_option('govph_options');
-        if ( ! $allow_view && is_array($theme_opts) && isset($theme_opts['allow_toggle_view']) ) {
-            $allow_view = $theme_opts['allow_toggle_view'] == '1' || $theme_opts['allow_toggle_view'] === true;
-        }
-        if ( ! $allow_show && is_array($theme_opts) && isset($theme_opts['allow_toggle_show']) ) {
-            $allow_show = $theme_opts['allow_toggle_show'] == '1' || $theme_opts['allow_toggle_show'] === true;
-        }
-        if ( ! $allow_range && is_array($theme_opts) && isset($theme_opts['allow_toggle_range']) ) {
-            $allow_range = $theme_opts['allow_toggle_range'] == '1' || $theme_opts['allow_toggle_range'] === true;
-        }
-
-        // Allow URL params to override for interactive toggling (but only if admin allowed)
-        $q_mode  = $allow_view  && isset($_GET['cal_mode'])  ? strtolower(sanitize_text_field($_GET['cal_mode']))  : '';
-        $q_show  = $allow_show  && isset($_GET['cal_show'])  ? strtolower(sanitize_text_field($_GET['cal_show']))  : '';
-        $q_range = $allow_range && isset($_GET['cal_range']) ? strtolower(sanitize_text_field($_GET['cal_range'])) : '';
-
-        // Determine display mode: plugin -> shortcode attr -> querystring
+        // Determine display mode: plugin default or shortcode attr only; ignore query overrides
         $mode = strtolower($atts['mode']);
         if ($mode !== 'grid' && $mode !== 'list') {
             $stored = isset( $cbc['calendar_display'] ) ? (string)$cbc['calendar_display'] : 'grid';
             $mode   = ( $stored === 'list' ) ? 'list' : 'grid';
         }
-        if ($q_mode === 'grid' || $q_mode === 'list') { $mode = $q_mode; }
 
-        // Determine filter: show and range
+        // Determine filter: show and range strictly from shortcode attrs
         $show  = in_array($atts['show'], array('both','events','holidays'), true) ? $atts['show'] : 'both';
-        if (in_array($q_show, array('both','events','holidays'), true)) { $show = $q_show; }
         $range = in_array($atts['range'], array('month','all'), true) ? $atts['range'] : 'month';
-        if (in_array($q_range, array('month','all'), true)) { $range = $q_range; }
         $include_past = $atts['include_past'] === '1';
 
         // Month context
@@ -292,14 +276,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
         $startDow     = (int)$current->format('N');
         $daysInMonth  = (int)$current->format('t');
         $monthLabel   = $current->format('F Y');
-        $today        = new DateTime( date('Y-m-d', $now) );
-
-        // Toolbar (simple links)
-        $base = esc_url( strtok( ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], '?' ) );
-        $mk = function($params) use ($base) {
-            $q = array(); foreach ($params as $k=>$v) { $q[] = rawurlencode($k) . '=' . rawurlencode($v); }
-            return $base . (empty($q) ? '' : '?' . implode('&', $q));
-        };
+        $today        = new DateTime( date('Y-m-d', $now ) );
 
         ob_start();
         if ( $atts['header'] === '1' ) {
@@ -307,30 +284,6 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                 echo govph_section_header( 'Calendar ' . esc_html( $monthLabel ), array( 'id' => 'gwt_calendar_header', 'text_alignment' => 'left' ) );
             } else {
                 echo '<h2 class="gwt-calendar-header">' . esc_html( 'Calendar ' . $monthLabel ) . '</h2>';
-            }
-            // Controls (only render controls that admin allows)
-            if ( $allow_view || $allow_show || ($allow_range && $mode === 'list') ) {
-                echo '<div class="gwt-cal-toolbar" style="display:flex;gap:8px;align-items:center;margin:6px 8px 12px 8px;">';
-                if ( $allow_view ) {
-                    echo '<div><strong>View:</strong> ';
-                    echo '<a href="' . $mk(array('cal_mode'=>'grid','cal_show'=>$show,'cal_range'=>'month')) . '"' . ($mode==='grid'?' style="font-weight:bold;"':'') . '>Grid (Month)</a> | ';
-                    echo '<a href="' . $mk(array('cal_mode'=>'list','cal_show'=>$show,'cal_range'=>$range)) . '"' . ($mode==='list'?' style="font-weight:bold;"':'') . '>List</a>';
-                    echo '</div>';
-                }
-                if ( $allow_show ) {
-                    echo '<div><strong>Show:</strong> ';
-                    echo '<a href="' . $mk(array('cal_mode'=>$mode,'cal_show'=>'both','cal_range'=>$range)) . '"' . ($show==='both'?' style="font-weight:bold;"':'') . '>All</a> | ';
-                    echo '<a href="' . $mk(array('cal_mode'=>$mode,'cal_show'=>'events','cal_range'=>$range)) . '"' . ($show==='events'?' style="font-weight:bold;"':'') . '>Events</a> | ';
-                    echo '<a href="' . $mk(array('cal_mode'=>$mode,'cal_show'=>'holidays','cal_range'=>$range)) . '"' . ($show==='holidays'?' style="font-weight:bold;"':'') . '>Holidays</a>';
-                    echo '</div>';
-                }
-                if ( $allow_range && $mode === 'list' ) {
-                    echo '<div><strong>Range:</strong> ';
-                    echo '<a href="' . $mk(array('cal_mode'=>'list','cal_show'=>$show,'cal_range'=>'month')) . '"' . ($range==='month'?' style="font-weight:bold;"':'') . '>This Month</a> | ';
-                    echo '<a href="' . $mk(array('cal_mode'=>'list','cal_show'=>$show,'cal_range'=>'all')) . '"' . ($range==='all'?' style="font-weight:bold;"':'') . '>All</a>';
-                    echo '</div>';
-                }
-                echo '</div>';
             }
         }
 
@@ -342,10 +295,14 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
             if ($show === 'both' || $show === 'events') {
                 foreach ( $events as $e ) {
-                    $d = DateTime::createFromFormat('Y-m-d', $e['date']); if ( ! $d ) continue;
-                    if ($range === 'month' && ($d < $monthStart || $d > $monthEnd)) continue;
-                    if ($range === 'all' && !$include_past && $d < $today) continue;
-                    $items[] = array( 'date'=>$d, 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] );
+                    $df = DateTime::createFromFormat('Y-m-d', $e['date_from']); if ( ! $df ) continue;
+                    $dt = ($e['date_to'] && preg_match('/^\d{4}-\d{2}-\d{2}$/', $e['date_to'])) ? DateTime::createFromFormat('Y-m-d', $e['date_to']) : null;
+                    if ($dt && $dt <= $df) { $dt = null; } // treat equal/earlier as single-day
+                    $inMonth = ($df <= $monthEnd) && ( ($dt?$dt:$df) >= $monthStart );
+                    if (! $inMonth) continue;
+                    if ($range === 'month' && ($df > $monthEnd || ($dt?$dt:$df) < $monthStart)) continue;
+                    if ($range === 'all' && !$include_past && ($dt?$dt:$df) < $today) continue;
+                    $items[] = array( 'date'=>$df, 'date_to'=>$dt, 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] );
                 }
             }
             if ($show === 'both' || $show === 'holidays') {
@@ -353,7 +310,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     $d = DateTime::createFromFormat('Y-m-d', $h['date']); if ( ! $d ) continue;
                     if ($range === 'month' && ($d < $monthStart || $d > $monthEnd)) continue;
                     if ($range === 'all' && !$include_past && $d < $today) continue;
-                    $items[] = array( 'date'=>$d, 'type'=>'holiday', 'title'=>$h['name'], 'url'=>'' );
+                    $items[] = array( 'date'=>$d, 'date_to'=>null, 'type'=>'holiday', 'title'=>$h['name'], 'url'=> ($h['url'] ?? '') );
                 }
             }
 
@@ -365,9 +322,15 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                 echo '<div style="color:#666;">' . esc_html__( 'No items found.', 'gwt_wp' ) . '</div>';
             } else {
                 foreach ( $items as $it ) {
-                    $dlabel = $it['date']->format('M d, Y');
+                    $labelDate = $it['date']->format('M d, Y');
+                    if ($it['date_to'] instanceof DateTime) {
+                        $sameMonth = ($it['date']->format('Y-m') === $it['date_to']->format('Y-m'));
+                        $labelDate = $sameMonth
+                            ? $it['date']->format('M d') . '–' . $it['date_to']->format('d, Y')
+                            : $it['date']->format('M d, Y') . ' – ' . $it['date_to']->format('M d, Y');
+                    }
                     echo '<div class="card" style="border:1px solid #e5e5e5;padding:12px;border-radius:6px;background:#fff;display:flex;flex-direction:row;gap:12px;align-items:center;">';
-                    echo '<div style="min-width:120px;font-weight:bold;color:#006837;">' . esc_html( $dlabel ) . '</div>';
+                    echo '<div style="min-width:160px;font-weight:bold;color:#006837;">' . esc_html( $labelDate ) . '</div>';
                     echo '<div style="flex:1;">';
                     $label = ( $it['type'] === 'holiday' ? 'Holiday: ' : '' ) . $it['title'];
                     if ( ! empty( $it['url'] ) ) {
@@ -381,38 +344,111 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             }
             echo '</div>';
         } else {
-            // Grid mode: map by date and filter types
+            // Grid mode with week-level bands for multi-day events
+            // Build per-day map for single-day items only
             $byDate = array();
             if ($show === 'both' || $show === 'events') {
-                foreach ( $events as $e ) { $byDate[$e['date']][] = array( 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] ); }
+                foreach ( $events as $e ) {
+                    $hasDt = ($e['date_to'] && preg_match('/^\d{4}-\d{2}-\d{2}$/', $e['date_to']));
+                    $isRange = false;
+                    if ($hasDt) {
+                        $dfTmp = DateTime::createFromFormat('Y-m-d', $e['date_from']);
+                        $dtTmp = DateTime::createFromFormat('Y-m-d', $e['date_to']);
+                        $isRange = ($dfTmp && $dtTmp && $dtTmp > $dfTmp);
+                    }
+                    if ($isRange) continue; // will render as band
+                    $byDate[$e['date_from']][] = array( 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] );
+                }
             }
             if ($show === 'both' || $show === 'holidays') {
-                foreach ( $holidays as $h ) { $byDate[$h['date']][] = array( 'type'=>'holiday', 'title'=>$h['name'], 'url'=>'' ); }
+                foreach ( $holidays as $h ) { $byDate[$h['date']][] = array( 'type'=>'holiday', 'title'=>$h['name'], 'url'=> ($h['url'] ?? '') ); }
             }
 
+            // Compute weeks covering the month
+            $firstOfMonth = DateTime::createFromFormat('Y-m-d', $current->format('Y-m-01'));
+            $firstDow = (int)$firstOfMonth->format('N'); // 1..7 (Mon..Sun)
+            $weekStart = clone $firstOfMonth; $weekStart->modify('-' . ($firstDow - 1) . ' days');
+            $weeks = array();
+            $totalCells = ($firstDow - 1) + $daysInMonth; $weekCount = (int)ceil($totalCells / 7);
+            for ($w=0; $w < $weekCount; $w++){
+                $ws = clone $weekStart; $ws->modify('+' . ($w*7) . ' days');
+                $we = clone $ws; $we->modify('+6 days');
+                $weeks[] = array('start'=>$ws,'end'=>$we);
+            }
+
+            // Precompute week-band segments from multi-day events intersecting this month
+            $bandsByWeek = array_fill(0, count($weeks), array());
+            if ($show === 'both' || $show === 'events') {
+                foreach ($events as $e){
+                    $df = DateTime::createFromFormat('Y-m-d', $e['date_from']);
+                    $dt = ($e['date_to'] && preg_match('/^\d{4}-\d{2}-\d{2}$/', $e['date_to'])) ? DateTime::createFromFormat('Y-m-d', $e['date_to']) : null;
+                    if (!($df && $dt && $dt > $df)) continue; // require strict range
+                    foreach ($weeks as $idx => $wk){
+                        $segStart = max($df, $wk['start']);
+                        $segEnd   = min($dt, $wk['end']);
+                        if ($segStart > $segEnd) continue; // no overlap this week
+                        // Compute 1..7 columns for this segment
+                        $colStart = (int)$segStart->format('N');
+                        $colEnd   = (int)$segEnd->format('N');
+                        // Push band
+                        $bandsByWeek[$idx][] = array(
+                            'colStart' => $colStart,
+                            'colEnd'   => $colEnd,
+                            'title'    => $e['title'],
+                            'url'      => $e['url'],
+                        );
+                    }
+                }
+            }
+
+            // Render grid
             echo '<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;">';
             foreach ( array('Mon','Tue','Wed','Thu','Fri','Sat','Sun') as $w ) {
                 echo '<div style="font-weight:bold;text-align:center;background:#f0f4f0;padding:6px;">' . esc_html( $w ) . '</div>';
             }
-            for ( $i = 1; $i < $startDow; $i++ ) {
-                echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fafafa;"></div>';
-            }
+
+            // Inline styles for bands
+            echo '<style>.gwt-week-band{background:#e6f4ea;border:1px solid #c8e6d3;border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}</style>';
+
+            // Iterate weeks: bands row then day cells row
             $ym = $current->format('Y-m-');
-            for ( $day = 1; $day <= $daysInMonth; $day++ ) {
-                $dateStr = $ym . str_pad( (string)$day, 2, '0', STR_PAD_LEFT );
-                echo '<div style="padding:8px;border:1px solid #e5e5e5;background:#fff;min-height:80px;">';
-                echo '<div style="font-weight:bold;color:#006837;">' . intval($day) . '</div>';
-                if ( ! empty( $byDate[$dateStr] ) ) {
-                    foreach ( $byDate[$dateStr] as $item ) {
-                        $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
-                        if ( ! empty( $item['url'] ) ) {
-                            echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
+            foreach ($weeks as $wi => $wk){
+                // Bands row: output one element per band with grid-column spanning
+                if ( ! empty($bandsByWeek[$wi]) ){
+                    foreach ($bandsByWeek[$wi] as $band){
+                        $start = max(1, min(7, (int)$band['colStart']));
+                        $end   = max($start, min(7, (int)$band['colEnd'])) + 1; // grid end is exclusive
+                        echo '<div class="gwt-week-band" style="grid-column: '.$start.' / '.$end.';">';
+                        if ( ! empty($band['url']) ){
+                            echo '<a href="'. esc_url($band['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($band['title']) .'</a>';
                         } else {
-                            echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
+                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($band['title']) .'</span>';
                         }
+                        echo '</div>';
                     }
                 }
-                echo '</div>';
+                // Always add a row separator so day cells start on a fresh row
+                echo '<div style="grid-column: 1 / -1;height:2px;"></div>';
+
+                // Day cells row: 7 days for this week
+                for ($d=0; $d<7; $d++){
+                    $cur = clone $wk['start']; $cur->modify('+'.$d.' days');
+                    $inMonth = ($cur->format('Y-m') === $current->format('Y-m'));
+                    $dateStr = $cur->format('Y-m-d');
+                    echo '<div style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;">';
+                    echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
+                    if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
+                        foreach ( $byDate[$dateStr] as $item ) {
+                            $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
+                            if ( ! empty( $item['url'] ) ) {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
+                            } else {
+                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
+                            }
+                        }
+                    }
+                    echo '</div>';
+                }
             }
             echo '</div>';
         }
@@ -421,3 +457,154 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
     }
     add_action( 'init', function(){ add_shortcode( 'gwt_calendar', 'gwt_calendar_shortcode' ); } );
 }
+
+// -----------------------------------------------------------------------------
+// Shortcode: [gwt_announcements]
+// Renders announcements managed by the CBC Calendar & Announcements plugin/theme.
+// Attributes:
+//  - limit: max number of items (default 5; 0 = all)
+//  - layout: list|cards (default list)
+//  - show_image: 1|0 (default 1)
+//  - link_title: 1|0 (default 1)
+//  - header: text to display above the list (default empty)
+//  - target: _self|_blank (default _blank)
+// -----------------------------------------------------------------------------
+if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
+    function gwt_announcements_shortcode( $atts = array(), $content = '', $tag = '' ) {
+        $atts = shortcode_atts( array(
+            'limit'      => 5,
+            'layout'     => 'list',    // list|cards|ticker
+            'show_image' => '1',       // 1|0
+            'link_title' => '1',       // 1|0
+            'header'     => '',        // optional heading text
+            'target'     => '_blank',  // _self|_blank
+        ), $atts, 'gwt_announcements' );
+
+        // Always fetch via the same source as gwt_calendar
+        $cbc = apply_filters('cbc_calendar_options', []);
+        $text = isset($cbc['announcements']) ? (string)$cbc['announcements'] : '';
+
+        // Parse lines: message|url|image
+        $items = array();
+        if ( $text !== '' ) {
+            $lines = preg_split('/\r\n|\r|\n/', $text);
+            foreach ( $lines as $line ) {
+                $line = trim( (string)$line ); if ( $line === '' ) continue;
+                $parts = array_map('trim', explode('|', $line));
+                $msg = $parts[0] ?? '';
+                if ( $msg === '' ) continue;
+                $url = $parts[1] ?? '';
+                $img = $parts[2] ?? '';
+                $items[] = array('message'=>$msg, 'url'=>$url, 'image'=>$img);
+            }
+        }
+
+        if ( $atts['limit'] > 0 ) {
+            $items = array_slice( $items, 0, intval($atts['limit']) );
+        }
+
+        $layout = ($atts['layout'] === 'cards' || $atts['layout'] === 'ticker') ? $atts['layout'] : 'list';
+        $show_image = ($atts['show_image'] === '1');
+        $link_title = ($atts['link_title'] === '1');
+        $target = ($atts['target'] === '_self') ? '_self' : '_blank';
+
+        ob_start();
+        // Optional header
+        if ( $atts['header'] !== '' ) {
+            if ( function_exists('govph_section_header') ) {
+                echo govph_section_header( $atts['header'], array( 'id' => 'gwt_announcements_header', 'text_alignment' => 'left' ) );
+            } else {
+                echo '<h2 class="gwt-announcements-header">' . esc_html( $atts['header'] ) . '</h2>';
+            }
+        }
+
+        if ( empty($items) ) {
+            echo '<div class="gwt-announcements-empty" style="color:#666;">' . esc_html__( 'No announcements at the moment.', 'gwt_wp' ) . '</div>';
+            return ob_get_clean();
+        }
+
+        if ( $layout === 'cards' ) {
+            echo '<div class="gwt-announcements-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">';
+            foreach ( $items as $it ) {
+                echo '<div class="card" style="border:1px solid #e5e5e5;border-radius:6px;overflow:hidden;background:#fff;display:flex;flex-direction:column;">';
+                if ( $show_image && ! empty($it['image']) ) {
+                    echo '<div class="card-image" style="aspect-ratio:16/9;overflow:hidden;background:#f5f5f5;">'
+                       . '<img src="' . esc_url( $it['image'] ) . '" alt="" style="width:100%;height:100%;object-fit:cover;" />'
+                       . '</div>';
+                }
+                echo '<div class="card-content" style="padding:12px;">';
+                if ( $link_title && ! empty($it['url']) ) {
+                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
+                } else {
+                    echo '<div style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
+                }
+                echo '</div>';
+                echo '</div>';
+            }
+            echo '</div>';
+        } elseif ( $layout === 'ticker' ) {
+            // Inject CSS once per page using constant guard
+            if ( ! defined('CBC_ANNOUNCEMENTS_TICKER_CSS') ) {
+                define('CBC_ANNOUNCEMENTS_TICKER_CSS', true);
+                echo '<style id="cbc-announcements-ticker-css">'
+                . '.scrolling-container{position:relative;overflow:hidden;width:100%;}'
+                . '.scrolling-track{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:1rem;animation:cbc-marquee-linear 35s linear infinite;white-space:nowrap;will-change:transform;}'
+                . '.scrolling-content{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-width:300px;padding:0.5rem 1rem;white-space:nowrap;}'
+                . '.scrolling-content .thumb{width:28px;height:28px;flex:0 0 28px;border-radius:4px;overflow:hidden;background:#f2f2f2;}'
+                . '.scrolling-content .thumb img{width:100%;height:100%;object-fit:cover;display:block;}'
+                . '.scrolling-container:hover .scrolling-track{animation-play-state:paused;}'
+                . '@keyframes cbc-marquee-linear{0%{transform:translateX(0);}100%{transform:translateX(-50%);} }'
+                . '@media (max-width:640px){.scrolling-content{min-width:220px;padding:0.5rem 0.75rem;}}'
+                . '@media (prefers-reduced-motion:reduce){.scrolling-track{animation-duration:0s;animation-iteration-count:1;transform:none;}}'
+                . '</style>';
+            }
+
+            // Ticker markup: duplicate items for seamless loop
+            echo '<div class="scrolling-container" id="cbc-announcements-ticker">';
+            echo '<div class="scrolling-track" data-basehtml="">';
+            for ( $dup = 0; $dup < 2; $dup++ ) {
+                foreach ( $items as $it ) {
+                    echo '<div class="scrolling-content">';
+                    if ( $show_image && ! empty($it['image']) ) {
+                        echo '<span class="thumb"><img src="' . esc_url($it['image']) . '" alt="" loading="lazy" /></span>';
+                    }
+                    if ( $link_title && ! empty($it['url']) ) {
+                        echo '<a href="' . esc_url($it['url']) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html($it['message']) . '</a>';
+                    } else {
+                        echo '<span style="font-weight:600;color:#00391a;">' . esc_html($it['message']) . '</span>';
+                    }
+                    echo '</div>';
+                }
+            }
+            echo '</div>';
+            echo '</div>';
+
+            // Lightweight dynamic script: set animation duration based on total width; ensure enough clones
+            echo '<script>(function(){try{var c=document.getElementById("cbc-announcements-ticker");if(!c){c=document.querySelector(".scrolling-container");}if(!c)return;var t=c.querySelector(".scrolling-track");if(!t)return;if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){t.style.animation="none";return;}function ensureClones(){var base=t.getAttribute("data-basehtml");if(!base){base=t.innerHTML;t.setAttribute("data-basehtml",base);}var maxExtra=4;var clones=0;t.innerHTML=base+base;while(t.scrollWidth < c.clientWidth*2 && clones < maxExtra){t.innerHTML+=base;clones++;}}function setDuration(){ensureClones();var w=t.scrollWidth;var speed=(window.innerWidth<640?40:60);var dur=w/speed;t.style.animationDuration=dur.toFixed(2)+"s";}setDuration();window.addEventListener("resize",function(){clearTimeout(window._cbcTickerTO);window._cbcTickerTO=setTimeout(setDuration,150);});}catch(e){/* noop */}})();</script>';
+        } else {
+            // list layout
+            echo '<ul class="gwt-announcements-list" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;">';
+            foreach ( $items as $it ) {
+                echo '<li class="gwt-announcement" style="display:flex;gap:10px;align-items:flex-start;">';
+                if ( $show_image && ! empty($it['image']) ) {
+                    echo '<div class="thumb" style="width:64px;height:64px;flex:0 0 64px;border-radius:4px;overflow:hidden;background:#f5f5f5;">'
+                       . '<img src="' . esc_url( $it['image'] ) . '" alt="" style="width:100%;height:100%;object-fit:cover;" />'
+                       . '</div>';
+                }
+                echo '<div class="body" style="min-width:0;">';
+                if ( $link_title && ! empty($it['url']) ) {
+                    echo '<a href="' . esc_url( $it['url'] ) . '" target="' . esc_attr($target) . '" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</a>';
+                } else {
+                    echo '<div style="font-weight:600;color:#00391a;">' . esc_html( $it['message'] ) . '</div>';
+                }
+                echo '</div>';
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+
+        return ob_get_clean();
+    }
+    add_action( 'init', function(){ add_shortcode( 'gwt_announcements', 'gwt_announcements_shortcode' ); } );
+}
+
