@@ -305,7 +305,7 @@ Press esc, or click the close the button to close this dialog box.
 <div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <!-- off-canvas right menu -->
-        <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]">
+        <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]" style="z-index: 1001;">
             <div class="flex flex-row justify-between items-center px-1 w-full absolute top-0">
             <?php
                 if (function_exists('the_custom_logo')) {
@@ -350,7 +350,7 @@ Press esc, or click the close the button to close this dialog box.
             </ul>
         </nav>
 
-        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden backdrop-blur-sm" id="closeBtnOverlay"></div>
+        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden backdrop-blur-sm z-10" id="closeBtnOverlay" style="z-index: 1000;"></div>
 
 
         <!-- off-canvas title bar for 'small' screen -->
@@ -392,8 +392,8 @@ Press esc, or click the close the button to close this dialog box.
 
 				                <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
                                     <div class="<?php echo $ear_content_class ?> columns">
-						                <?php do_action( 'before_sidebar' ); ?>
-						                <?php dynamic_sidebar( 'ear-content-1' ) ?>
+					                <?php do_action( 'before_sidebar' ); ?>
+					                <?php dynamic_sidebar( 'ear-content-1' ) ?>
                                     </div>
 				                <?php endif; ?>
                             </div>
@@ -402,12 +402,12 @@ Press esc, or click the close the button to close this dialog box.
                     </nav>
                     <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1 my-auto">
                         <!-- Philippine Standard Timeewe -->
-		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
+			                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
                             <div class="<?php echo $ear_content_2_class ?> m-0">
 				                <?php do_action( 'before_sidebar' ); ?>
 				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
                             </div>
-		                <?php endif; ?>
+			                <?php endif; ?>
                         <div id="pst-container" style="color: white !important; font-size: 0.7rem !important;">
                             <div>Philippine Standard Time</div>
                             <div id="pst-time" class="whitespace-nowrap"></div>
@@ -459,11 +459,11 @@ Press esc, or click the close the button to close this dialog box.
 						    <?php
 						    wp_nav_menu(
 							    array(
-								    'theme_location'  => 'aux_nav',
-								    'items_wrap' => '%3$s',
-								    'container' => false,
-								    'fallback_cb' => false,
-								    'walker' => new Topbar_Nav_Menu()
+							    	'theme_location'  => 'aux_nav',
+							    	'items_wrap' => '%3$s',
+							    	'container' => false,
+							    	'fallback_cb' => false,
+							    	'walker' => new Topbar_Nav_Menu()
 							    )
 						    );
 						    ?>

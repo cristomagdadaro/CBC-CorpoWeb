@@ -44,6 +44,8 @@ module.exports = {
         '!leading-tight',
         'font-semibold',
         'font-bold',
+        'backdrop-blur-sm',
+        'z-[999]',
         'text-red-500',
         'from-[#1f5d2b]',
         'to-[#a2b917]',

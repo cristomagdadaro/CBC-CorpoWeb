@@ -128,7 +128,7 @@
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
-            <div class="grid grid-cols-2 grid-rows-1 gap-3 relative box-border">
+            <div class="grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-3 relative box-border">
                 <div>
                     <?php echo govph_section_header('Vision', ['id' => 'vision_header']); ?>
                     <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
