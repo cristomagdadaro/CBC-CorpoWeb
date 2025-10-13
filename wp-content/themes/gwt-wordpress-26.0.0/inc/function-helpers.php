@@ -505,7 +505,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     echo '<td colspan="' . $colspan . '" style="padding:4px;border:1px solid #e5e5e5;background:#fff;min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
 
                     // Nested table with colspan columns to match the outer colspan
-                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none !important; margin: 0">';
+                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none !important; margin: 0;">';
                     echo '<colgroup>';
                     for ($c = 0; $c < $colspan; $c++) {
                         echo '<col style="width:' . (100 / $colspan) . '%;" />';
@@ -526,15 +526,15 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         $endDayNum = intval($range['end']->format('j'));
                         $dateRange = $startDayNum . ' - ' . $endDayNum;
 
-                        echo '<tr style="border:none !important;">';
+                        echo '<tr style="border:none;">';
 
                         // Empty cells before the event
                         if ($offsetCols > 0) {
-                            echo '<td colspan="' . $offsetCols . '" style="padding:0;border:none !important;background:white;"></td>';
+                            echo '<td colspan="' . $offsetCols . '" style="padding:0;border:none;background:transparent;"></td>';
                         }
 
                         // Event cell
-                        echo '<td colspan="' . $rangeColspan . '" style="border:none !important;background:white;padding:0;">';
+                        echo '<td colspan="' . $rangeColspan . '" style="padding:2px;border:none;background:transparent;">';
                         echo '<div class="gwt-week-band">';
                         $displayTitle = '[' . $dateRange . '] ' . $range['title'];
                         if ( ! empty($range['url']) ){
@@ -552,6 +552,49 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                         echo '</tr>';
                     }
+
+                    // Add single-day events that fall within this cluster
+                    for ($d = $startDay; $d <= $endDay; $d++) {
+                        $cur = clone $wk['start']; $cur->modify('+'.$d.' days');
+                        $dateStr = $cur->format('Y-m-d');
+                        $inMonth = ($cur->format('Y-m') === $current->format('Y-m'));
+
+                        if ($inMonth && !empty($byDate[$dateStr])) {
+                            // Calculate offset for this day within the cluster
+                            $dayOffset = $d - $startDay;
+
+                            foreach ($byDate[$dateStr] as $item) {
+                                $dayNum = intval($cur->format('j'));
+                                echo '<tr style="border:none;">';
+
+                                // Empty cells before this day
+                                if ($dayOffset > 0) {
+                                    echo '<td colspan="' . $dayOffset . '" style="padding:0;border:none;background:transparent;"></td>';
+                                }
+
+                                // Single-day event cell
+                                echo '<td style="padding:2px;border:none;background:transparent;">';
+                                echo '<div class="gwt-week-band">';
+                                $label = '[' . $dayNum . '] ' . (($item['type'] === 'holiday' ? 'Holiday: ' : '') . $item['title']);
+                                if ( ! empty( $item['url'] ) ) {
+                                    echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
+                                } else {
+                                    echo '<span style="font-weight:600;color:#20603d;">' . esc_html( $label ) . '</span>';
+                                }
+                                echo '</div>';
+                                echo '</td>';
+
+                                // Empty cells after this day
+                                $remainingCols = $colspan - $dayOffset - 1;
+                                if ($remainingCols > 0) {
+                                    echo '<td colspan="' . $remainingCols . '" style="padding:0;border:none;background:transparent;"></td>';
+                                }
+
+                                echo '</tr>';
+                            }
+                        }
+                    }
+
                     echo '</table>';
 
                     echo '</td>';
