@@ -344,9 +344,11 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             }
             echo '</div>';
         } else {
-            // Grid mode with week-level bands for multi-day events
-            // Build per-day map for single-day items only
+            // Grid mode: render date ranges within day cells using colspan
+            // Build per-day map for single-day items AND track which days are covered by ranges
             $byDate = array();
+            $rangesByWeek = array(); // Track range events per week
+
             if ($show === 'both' || $show === 'events') {
                 foreach ( $events as $e ) {
                     $hasDt = ($e['date_to'] && preg_match('/^\d{4}-\d{2}-\d{2}$/', $e['date_to']));
@@ -356,12 +358,16 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         $dtTmp = DateTime::createFromFormat('Y-m-d', $e['date_to']);
                         $isRange = ($dfTmp && $dtTmp && $dtTmp > $dfTmp);
                     }
-                    if ($isRange) continue; // will render as band
-                    $byDate[$e['date_from']][] = array( 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] );
+                    if (!$isRange) {
+                        // Single day event
+                        $byDate[$e['date_from']][] = array( 'type'=>'event', 'title'=>$e['title'], 'url'=>$e['url'] );
+                    }
                 }
             }
             if ($show === 'both' || $show === 'holidays') {
-                foreach ( $holidays as $h ) { $byDate[$h['date']][] = array( 'type'=>'holiday', 'title'=>$h['name'], 'url'=> ($h['url'] ?? '') ); }
+                foreach ( $holidays as $h ) {
+                    $byDate[$h['date']][] = array( 'type'=>'holiday', 'title'=>$h['name'], 'url'=> ($h['url'] ?? '') );
+                }
             }
 
             // Compute weeks covering the month
@@ -376,81 +382,110 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                 $weeks[] = array('start'=>$ws,'end'=>$we);
             }
 
-            // Precompute week-band segments from multi-day events intersecting this month
-            $bandsByWeek = array_fill(0, count($weeks), array());
+            // Precompute range events per week with their date spans
+            $rangesByWeek = array_fill(0, count($weeks), array());
             if ($show === 'both' || $show === 'events') {
                 foreach ($events as $e){
                     $df = DateTime::createFromFormat('Y-m-d', $e['date_from']);
                     $dt = ($e['date_to'] && preg_match('/^\d{4}-\d{2}-\d{2}$/', $e['date_to'])) ? DateTime::createFromFormat('Y-m-d', $e['date_to']) : null;
                     if (!($df && $dt && $dt > $df)) continue; // require strict range
+
                     foreach ($weeks as $idx => $wk){
                         $segStart = max($df, $wk['start']);
                         $segEnd   = min($dt, $wk['end']);
                         if ($segStart > $segEnd) continue; // no overlap this week
-                        // Compute 1..7 columns for this segment
-                        $colStart = (int)$segStart->format('N');
-                        $colEnd   = (int)$segEnd->format('N');
-                        // Push band
-                        $bandsByWeek[$idx][] = array(
-                            'colStart' => $colStart,
-                            'colEnd'   => $colEnd,
-                            'title'    => $e['title'],
-                            'url'      => $e['url'],
+
+                        $rangesByWeek[$idx][] = array(
+                            'start' => $segStart,
+                            'end'   => $segEnd,
+                            'title' => $e['title'],
+                            'url'   => $e['url'],
                         );
                     }
                 }
             }
 
-            // Render grid
-            echo '<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;">';
-            foreach ( array('Mon','Tue','Wed','Thu','Fri','Sat','Sun') as $w ) {
-                echo '<div style="font-weight:bold;text-align:center;background:#f0f4f0;padding:6px;">' . esc_html( $w ) . '</div>';
-            }
+            // Render as HTML table with colspan in day cells
+            echo '<table class="calendar-grid" style="width:100%;border-collapse:separate;border-spacing:6px;padding:8px;">';
 
-            // Inline styles for bands
+            // Header row
+            echo '<thead><tr>';
+            foreach ( array('Mon','Tue','Wed','Thu','Fri','Sat','Sun') as $w ) {
+                echo '<th style="font-weight:bold;text-align:center;background:#f0f4f0;padding:6px;">' . esc_html( $w ) . '</th>';
+            }
+            echo '</tr></thead>';
+
+            // Inline styles
             echo '<style>.gwt-week-band{background:#e6f4ea;border:1px solid #c8e6d3;border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}</style>';
 
-            // Iterate weeks: bands row then day cells row
-            $ym = $current->format('Y-m-');
+            echo '<tbody>';
+            // Iterate weeks: single row of day cells, some with colspan for ranges
             foreach ($weeks as $wi => $wk){
-                // Bands row: output one element per band with grid-column spanning
-                if ( ! empty($bandsByWeek[$wi]) ){
-                    foreach ($bandsByWeek[$wi] as $band){
-                        $start = max(1, min(7, (int)$band['colStart']));
-                        $end   = max($start, min(7, (int)$band['colEnd'])) + 1; // grid end is exclusive
-                        echo '<div class="gwt-week-band" style="grid-column: '.$start.' / '.$end.';">';
-                        if ( ! empty($band['url']) ){
-                            echo '<a href="'. esc_url($band['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($band['title']) .'</a>';
-                        } else {
-                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($band['title']) .'</span>';
-                        }
-                        echo '</div>';
-                    }
-                }
-                // Always add a row separator so day cells start on a fresh row
-                echo '<div style="grid-column: 1 / -1;height:2px;"></div>';
+                echo '<tr>';
 
-                // Day cells row: 7 days for this week
+                // Track which day positions have been consumed by colspan
+                $skipUntilDay = -1;
+
                 for ($d=0; $d<7; $d++){
+                    if ($d <= $skipUntilDay) continue; // This day was consumed by a previous colspan
+
                     $cur = clone $wk['start']; $cur->modify('+'.$d.' days');
                     $inMonth = ($cur->format('Y-m') === $current->format('Y-m'));
                     $dateStr = $cur->format('Y-m-d');
-                    echo '<div style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;">';
-                    echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
-                    if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
-                        foreach ( $byDate[$dateStr] as $item ) {
-                            $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
-                            if ( ! empty( $item['url'] ) ) {
-                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
-                            } else {
-                                echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
+
+                    // Check if this day starts a range event
+                    $rangeEvent = null;
+                    $colspan = 1;
+
+                    foreach ($rangesByWeek[$wi] as $range) {
+                        if ($range['start']->format('Y-m-d') === $dateStr) {
+                            // This day starts a range
+                            $rangeEvent = $range;
+                            // Calculate colspan: how many days from start to end
+                            $dayOfWeekStart = (int)$range['start']->format('N'); // 1..7
+                            $dayOfWeekEnd = (int)$range['end']->format('N');
+                            $colspan = $dayOfWeekEnd - $dayOfWeekStart + 1;
+                            $skipUntilDay = $d + $colspan - 1;
+                            break;
+                        }
+                    }
+
+                    // Render cell with colspan if needed
+                    $colspanAttr = $colspan > 1 ? ' colspan="' . $colspan . '"' : '';
+                    echo '<td' . $colspanAttr . ' style="padding:8px;border:1px solid #e5e5e5;background:'. ($inMonth?'#fff':'#fafafa') .';min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
+
+                    if ($rangeEvent) {
+                        // Render range event with date span
+                        $startDay = intval($rangeEvent['start']->format('j'));
+                        $endDay = intval($rangeEvent['end']->format('j'));
+                        echo '<div style="font-weight:bold;color:#006837;">' . $startDay . ' - ' . $endDay . '</div>';
+                        echo '<div class="gwt-week-band" style="margin-top:4px;">';
+                        if ( ! empty($rangeEvent['url']) ){
+                            echo '<a href="'. esc_url($rangeEvent['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($rangeEvent['title']) .'</a>';
+                        } else {
+                            echo '<span style="font-weight:600;color:#20603d;">'. esc_html($rangeEvent['title']) .'</span>';
+                        }
+                        echo '</div>';
+                    } else {
+                        // Regular day cell
+                        echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
+                        if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
+                            foreach ( $byDate[$dateStr] as $item ) {
+                                $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
+                                if ( ! empty( $item['url'] ) ) {
+                                    echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
+                                } else {
+                                    echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;">' . esc_html( $label ) . '</div>';
+                                }
                             }
                         }
                     }
-                    echo '</div>';
+                    echo '</td>';
                 }
+                echo '</tr>';
             }
-            echo '</div>';
+            echo '</tbody>';
+            echo '</table>';
         }
 
         return ob_get_clean();
