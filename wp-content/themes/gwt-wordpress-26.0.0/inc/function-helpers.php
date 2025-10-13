@@ -502,15 +502,16 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     }
 
                     // Render cluster cell with colspan containing nested table for stacked events
-                    echo '<td colspan="' . $colspan . '" style="padding:4px;border:1px solid #e5e5e5;background:#fff;min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
+                    echo '<td colspan="' . $colspan . '" style="padding:0;min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
 
                     // Nested table with colspan columns to match the outer colspan
-                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none !important; margin: 0;">';
+                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none; margin:0; padding:0;">';
                     echo '<colgroup>';
                     for ($c = 0; $c < $colspan; $c++) {
                         echo '<col style="width:' . (100 / $colspan) . '%;" />';
                     }
                     echo '</colgroup>';
+                    echo '<tbody style="border:none;">';
 
                     // Render each event as a row spanning the appropriate columns
                     foreach ($cluster['ranges'] as $range) {
@@ -524,7 +525,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                         $startDayNum = intval($range['start']->format('j'));
                         $endDayNum = intval($range['end']->format('j'));
-                        $dateRange = $startDayNum . ' - ' . $endDayNum;
+                        $dateRange = $startDayNum . '-' . $endDayNum;
 
                         echo '<tr style="border:none;">';
 
@@ -536,7 +537,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         // Event cell
                         echo '<td colspan="' . $rangeColspan . '" style="padding:2px;border:none;background:transparent;">';
                         echo '<div class="gwt-week-band">';
-                        $displayTitle = '[' . $dateRange . '] ' . $range['title'];
+                        $displayTitle = $dateRange . ': ' . $range['title'];
                         if ( ! empty($range['url']) ){
                             echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
                         } else {
@@ -575,7 +576,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                                 // Single-day event cell
                                 echo '<td style="padding:2px;border:none;background:transparent;">';
                                 echo '<div class="gwt-week-band">';
-                                $label = '[' . $dayNum . '] ' . (($item['type'] === 'holiday' ? 'Holiday: ' : '') . $item['title']);
+                                $label = $dayNum . ': ' . $item['title'];
                                 if ( ! empty( $item['url'] ) ) {
                                     echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
                                 } else {
@@ -595,6 +596,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         }
                     }
 
+                    echo '</tbody>';
                     echo '</table>';
 
                     echo '</td>';
