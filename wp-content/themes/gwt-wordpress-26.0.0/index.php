@@ -24,7 +24,7 @@ include_once( 'inc/banner.php' );
                  role="main">
                 <div>
                     <?php echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header' ] ); ?>
-                    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+                    <aside class="widget callout border-none secondary widget_block">
                         <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
                     </aside>
                 </div>

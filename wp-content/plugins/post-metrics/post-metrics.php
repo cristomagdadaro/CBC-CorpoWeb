@@ -517,12 +517,14 @@ class PM_Post_Metrics {
 		// If only titles requested, return a simplified list early.
 		if ( $titles_only ) {
 			$list = '<ul class="pm-popular-posts-titles">';
+			$count = 5;
 			foreach ( $top as $row ) {
 				$title = get_the_title( $row['id'] );
 				if ( ! $title ) { $title = __( '(no title)' ); }
 				$score = intval( $row['score'] );
 				// Accessible label includes score.
-				$list .= '<li class="pm-popular-posts-item"><span class="pm-popular-posts-score" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
+				$list .= '<li class="pm-popular-posts-item opacity-0 reveal-on-scroll-'.$count.'00"><span class="pm-popular-posts-score" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
+				$count++;
 			}
 			$list .= '</ul>';
 			if ( $do_cache ) set_transient( $cache_key, $list, MINUTE_IN_SECONDS * $cache_minutes );

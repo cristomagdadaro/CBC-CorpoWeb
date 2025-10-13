@@ -14,7 +14,7 @@
         $swap = is_front_page();
         echo govph_section_header( 'Center Chief', [ 'id' => 'center_chief_header', 'swap' => $swap ] );
         ?>
-        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
             <div class="grid grid-cols-2 gap-3 items-center">
                 <figure class="w-full h-full drop-shadow">
                     <img src="/wp-content/uploads/2025/09/RRSuralta-683x1024.png"
@@ -39,7 +39,7 @@
     <?php
     else:
     echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header', 'swap' => $swap ] ); ?>
-    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500">
+    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
         <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
     </aside>
     <?php endif; ?>
