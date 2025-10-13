@@ -94,7 +94,7 @@
 }
 
 #cbc-memory-app .card-back {
-    background-color: var(--cbc-green);
+    background-color: var(--cbc-green-2);
     transform: rotateY(180deg);
 }
 
@@ -102,6 +102,7 @@
     width: 90%;
     height: 90%;
     object-fit: contain;
+    filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
 }
 
 #cbc-memory-app .card-front {
