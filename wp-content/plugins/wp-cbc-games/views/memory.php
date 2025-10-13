@@ -27,3 +27,36 @@
         <button id="restart-btn" class="btn-primary text-white font-bold p-3 rounded-lg text-lg">Play Again</button>
     </div>
 </div>
+
+<div id="cbc-memory-leaderboard" class="cbc-leaderboard">
+  <h3>Memory Leaderboard (Top 10)</h3>
+  <form id="memory-leaderboard-form">
+    <div>
+      <label for="memory-name">Name (required)</label>
+      <input id="memory-name" name="name" type="text" required />
+    </div>
+    <div>
+      <label for="memory-agency">Agency/School (required)</label>
+      <input id="memory-agency" name="agency" type="text" required />
+    </div>
+    <div>
+      <label for="memory-age">Age</label>
+      <input id="memory-age" name="age" type="number" min="1" max="120" />
+    </div>
+    <div>
+      <label for="memory-played-at">Date</label>
+      <input id="memory-played-at" name="played_at" type="date" />
+    </div>
+    <div>
+      <button type="submit" class="btn-primary">Submit Score</button>
+    </div>
+  </form>
+  <div class="leaderboard-list">
+    <table aria-label="Memory leaderboard">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Agency/School</th><th>Age</th><th>Score</th><th>Date</th></tr>
+      </thead>
+      <tbody id="memory-leaderboard-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</div>

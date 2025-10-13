@@ -32,3 +32,36 @@
         <button id="restart-btn" class="btn-primary font-bold p-3 rounded-lg text-lg transition-transform transform hover:scale-105">Play Again</button>
     </div>
 </div>
+
+<div id="cbc-quiz-leaderboard" class="cbc-leaderboard">
+  <h3>Quiz Leaderboard (Top 10)</h3>
+  <form id="quiz-leaderboard-form">
+    <div>
+      <label for="quiz-name">Name (required)</label>
+      <input id="quiz-name" name="name" type="text" required />
+    </div>
+    <div>
+      <label for="quiz-agency">Agency/School (required)</label>
+      <input id="quiz-agency" name="agency" type="text" required />
+    </div>
+    <div>
+      <label for="quiz-age">Age</label>
+      <input id="quiz-age" name="age" type="number" min="1" max="120" />
+    </div>
+    <div>
+      <label for="quiz-played-at">Date</label>
+      <input id="quiz-played-at" name="played_at" type="date" />
+    </div>
+    <div>
+      <button type="submit" class="btn-primary">Submit Score</button>
+    </div>
+  </form>
+  <div class="leaderboard-list">
+    <table aria-label="Quiz leaderboard">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Agency/School</th><th>Age</th><th>Score</th><th>Date</th></tr>
+      </thead>
+      <tbody id="quiz-leaderboard-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</div>

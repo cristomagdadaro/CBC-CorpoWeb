@@ -14,6 +14,8 @@
     const gameMessage = root.querySelector('#game-message');
     const endMessage = root.querySelector('#end-message');
     const finalStats = root.querySelector('#final-stats');
+    const leaderboardForm = document.getElementById('memory-leaderboard-form');
+    const leaderboardBody = document.getElementById('memory-leaderboard-body');
 
     // Fullscreen toggle
     const fsBtn = root.querySelector('#memory-fullscreen-btn');
@@ -199,6 +201,58 @@
         finalStats.textContent = `Time ran out. You found ${matchedPairs} out of 8 matches.`;
       }
     }
+
+    const today = () => {
+      const d = new Date();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${m}-${day}`;
+    };
+
+    function renderLeaderboard(rows){
+      if(!leaderboardBody) return;
+      leaderboardBody.innerHTML = '';
+      if(!Array.isArray(rows) || rows.length===0){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td'); td.colSpan = 6; td.className='empty'; td.textContent='No scores yet.'; tr.appendChild(td);
+        leaderboardBody.appendChild(tr); return;
+      }
+      rows.slice(0,10).forEach((r, i)=>{
+        const tr = document.createElement('tr');
+        const cells = [String(i+1), r.name||'', r.agency||'', (r.age??'')+'', String(r.score??0), r.played_at||''];
+        cells.forEach(txt=>{ const td = document.createElement('td'); td.textContent = txt; tr.appendChild(td); });
+        leaderboardBody.appendChild(tr);
+      });
+    }
+
+    function loadLeaderboard(){
+      fetch((window.cbcGames.apiBase||'') + 'leaderboard/memory?limit=10')
+        .then(r=>r.json()).then(data=> renderLeaderboard(data.leaderboard||[]))
+        .catch(()=>{ /* keep */ });
+    }
+
+    function submitLeaderboard(evt){
+      evt.preventDefault(); if(!leaderboardForm) return;
+      const name = (document.getElementById('memory-name')?.value||'').trim();
+      const agency = (document.getElementById('memory-agency')?.value||'').trim();
+      const ageVal = document.getElementById('memory-age')?.value; const age = ageVal? parseInt(ageVal,10) : null;
+      let playedAt = (document.getElementById('memory-played-at')?.value||'').trim(); if(!playedAt) playedAt = today();
+      if(!name || !agency){ alert('Please enter your Name and Agency/School.'); return; }
+      // Use matchedPairs as score at time of submission
+      const scoreToSubmit = matchedPairs;
+      fetch((window.cbcGames.apiBase||'') + 'leaderboard/memory', {
+        method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ name, agency, age, score: scoreToSubmit, played_at: playedAt })
+      })
+        .then(async r=>{ const data = await r.json(); if(!r.ok) throw new Error(data?.message||'Failed to submit'); return data; })
+        .then(data=>{ renderLeaderboard(data.leaderboard||[]); leaderboardForm.reset(); document.getElementById('memory-played-at').value = today(); })
+        .catch(err=>{ alert(err.message||'Failed to submit score'); });
+    }
+
+    // Initialize leaderboard
+    document.getElementById('memory-played-at')?.setAttribute('value', today());
+    loadLeaderboard();
+    leaderboardForm?.addEventListener('submit', submitLeaderboard);
 
     startBtn?.addEventListener('click', startGame);
     restartBtn?.addEventListener('click', startGame);

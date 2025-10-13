@@ -33,3 +33,36 @@
         <button id="restart-btn" class="btn-primary font-bold p-3 rounded-lg text-lg">Play Again</button>
     </div>
 </div>
+
+<div id="cbc-scramble-leaderboard" class="cbc-leaderboard">
+  <h3>Scramble Leaderboard (Top 10)</h3>
+  <form id="scramble-leaderboard-form">
+    <div>
+      <label for="scramble-name">Name (required)</label>
+      <input id="scramble-name" name="name" type="text" required />
+    </div>
+    <div>
+      <label for="scramble-agency">Agency/School (required)</label>
+      <input id="scramble-agency" name="agency" type="text" required />
+    </div>
+    <div>
+      <label for="scramble-age">Age</label>
+      <input id="scramble-age" name="age" type="number" min="1" max="120" />
+    </div>
+    <div>
+      <label for="scramble-played-at">Date</label>
+      <input id="scramble-played-at" name="played_at" type="date" />
+    </div>
+    <div>
+      <button type="submit" class="btn-primary">Submit Score</button>
+    </div>
+  </form>
+  <div class="leaderboard-list">
+    <table aria-label="Scramble leaderboard">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Agency/School</th><th>Age</th><th>Score</th><th>Date</th></tr>
+      </thead>
+      <tbody id="scramble-leaderboard-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</div>

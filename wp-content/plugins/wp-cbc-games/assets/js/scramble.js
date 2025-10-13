@@ -17,6 +17,8 @@
     const feedbackMessage = root.querySelector('#feedback-message');
     const endMessage = root.querySelector('#end-message');
     const finalScoreDisplay = root.querySelector('#final-score');
+    const leaderboardForm = document.getElementById('scramble-leaderboard-form');
+    const leaderboardBody = document.getElementById('scramble-leaderboard-body');
 
     // Fullscreen toggle
     const fsBtn = root.querySelector('#scramble-fullscreen-btn');
@@ -38,6 +40,8 @@
 
     let currentWords = [];
     let wordIndex = 0; let score = 0; let currentCorrectWord=''; let countdownTimer;
+
+    function today(){ const d=new Date(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${d.getFullYear()}-${m}-${day}`; }
 
     function shuffleArray(array){
       for(let i=array.length-1;i>0;i--){
@@ -140,6 +144,49 @@
       gameScreen.classList.add('hidden'); endScreen.classList.remove('hidden');
       endMessage.textContent = 'Game Over!'; finalScoreDisplay.textContent = `Your final score: ${score} / ${currentWords.length}`;
     }
+
+    function renderLeaderboard(rows){
+      if(!leaderboardBody) return;
+      leaderboardBody.innerHTML = '';
+      if(!Array.isArray(rows) || rows.length===0){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td'); td.colSpan = 6; td.className='empty'; td.textContent='No scores yet.'; tr.appendChild(td);
+        leaderboardBody.appendChild(tr); return;
+      }
+      rows.slice(0,10).forEach((r, i)=>{
+        const tr = document.createElement('tr');
+        const cells = [String(i+1), r.name||'', r.agency||'', (r.age??'')+'', String(r.score??0), r.played_at||''];
+        cells.forEach(txt=>{ const td = document.createElement('td'); td.textContent = txt; tr.appendChild(td); });
+        leaderboardBody.appendChild(tr);
+      });
+    }
+
+    function loadLeaderboard(){
+      fetch((window.cbcGames.apiBase||'') + 'leaderboard/scramble?limit=10')
+        .then(r=>r.json()).then(data=> renderLeaderboard(data.leaderboard||[]))
+        .catch(()=>{ /* keep */ });
+    }
+
+    function submitLeaderboard(evt){
+      evt.preventDefault(); if(!leaderboardForm) return;
+      const name = (document.getElementById('scramble-name')?.value||'').trim();
+      const agency = (document.getElementById('scramble-agency')?.value||'').trim();
+      const ageVal = document.getElementById('scramble-age')?.value; const age = ageVal? parseInt(ageVal,10) : null;
+      let playedAt = (document.getElementById('scramble-played-at')?.value||'').trim(); if(!playedAt) playedAt = today();
+      if(!name || !agency){ alert('Please enter your Name and Agency/School.'); return; }
+      fetch((window.cbcGames.apiBase||'') + 'leaderboard/scramble', {
+        method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ name, agency, age, score, played_at: playedAt })
+      })
+        .then(async r=>{ const data = await r.json(); if(!r.ok) throw new Error(data?.message||'Failed to submit'); return data; })
+        .then(data=>{ renderLeaderboard(data.leaderboard||[]); leaderboardForm.reset(); document.getElementById('scramble-played-at').value = today(); })
+        .catch(err=>{ alert(err.message||'Failed to submit score'); });
+    }
+
+    // Prefill date and load leaderboard on ready
+    document.getElementById('scramble-played-at')?.setAttribute('value', today());
+    loadLeaderboard();
+    leaderboardForm?.addEventListener('submit', submitLeaderboard);
 
     startBtn?.addEventListener('click', startGame);
     restartBtn?.addEventListener('click', startGame);
