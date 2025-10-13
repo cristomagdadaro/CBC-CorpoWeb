@@ -34,15 +34,15 @@
 </div>
 
 <div id="cbc-quiz-leaderboard" class="cbc-leaderboard">
-  <h3>Quiz Leaderboard (Top 10)</h3>
+  <h3>Leaderboard (Top 10)</h3>
   <form id="quiz-leaderboard-form">
     <input type="text" id="quiz-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <div>
-      <label for="quiz-name">Name (required)</label>
+      <label for="quiz-name">Name <span class="text-red-500">*</span></label>
       <input id="quiz-name" name="name" type="text" required />
     </div>
     <div>
-      <label for="quiz-agency">Agency/School (required)</label>
+      <label for="quiz-agency">Agency/School <span class="text-red-500">*</span></label>
       <input id="quiz-agency" name="agency" type="text" required />
     </div>
     <div>

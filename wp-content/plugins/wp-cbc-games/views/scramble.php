@@ -35,15 +35,15 @@
 </div>
 
 <div id="cbc-scramble-leaderboard" class="cbc-leaderboard">
-  <h3>Scramble Leaderboard (Top 10)</h3>
+  <h3>Leaderboard (Top 10)</h3>
   <form id="scramble-leaderboard-form">
     <input type="text" id="scramble-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <div>
-      <label for="scramble-name">Name (required)</label>
+      <label for="scramble-name">Name <span class="text-red-500">*</span></label>
       <input id="scramble-name" name="name" type="text" required />
     </div>
     <div>
-      <label for="scramble-agency">Agency/School (required)</label>
+      <label for="scramble-agency">Agency/School <span class="text-red-500">*</span></label>
       <input id="scramble-agency" name="agency" type="text" required />
     </div>
     <div>

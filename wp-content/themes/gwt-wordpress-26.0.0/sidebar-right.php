@@ -113,7 +113,7 @@
                 </div>
                 <h3 class="font-bold my-1">Games</h3>
                 <div class="ml-2 flex items-center gap-2">
-                    <a href="/games/biotech-quiz-bee/">
+                    <a href="/games/biotech-quiz-bee-game/">
                         <p class="block text-justify sm:text-md text-sm m-0">Biotech Quiz Bee</p>
                     </a>
                 </div>

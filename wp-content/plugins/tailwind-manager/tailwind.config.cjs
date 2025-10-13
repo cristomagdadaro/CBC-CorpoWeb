@@ -41,6 +41,7 @@ module.exports = {
         'gap-5',
         'font-bold',
         'leading-none',
+        'text-red-500',
         'from-[#1f5d2b]',
         'to-[#a2b917]',
         'from-[#a2b917]',
