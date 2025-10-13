@@ -388,9 +388,25 @@ add_action('admin_menu', function(){
 // Early handler (legacy GET fallback): process DELETE action before any output to avoid headers already sent
 add_action('admin_init', function(){
     if ( ! current_user_can('manage_options') ) return;
+
+    // Handle GET-based delete with action=delete
     if ( isset($_GET['page']) && $_GET['page'] === 'cbc-calendar-items' && isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['_wpnonce']) ){
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if ( $id > 0 && wp_verify_nonce( $_GET['_wpnonce'], 'cbc_ca_delete_item_'.$id ) ){
+            global $wpdb; $table = cbc_ca_table_name();
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $wpdb->delete( $table, array('id'=>$id), array('%d') );
+            // Keep theme option text in sync
+            if ( function_exists('cbc_ca_sync_theme_options_from_db') ) { cbc_ca_sync_theme_options_from_db(); }
+            wp_safe_redirect( add_query_arg(array('page'=>'cbc-calendar-items','deleted'=>1), admin_url('options-general.php')) );
+            exit;
+        }
+    }
+
+    // Handle malformed GET request with action=cbc_ca_delete_item (should be action=delete or POST request)
+    if ( isset($_GET['page']) && $_GET['page'] === 'cbc-calendar-items' && isset($_GET['action']) && $_GET['action'] === 'cbc_ca_delete_item' && isset($_GET['_wpnonce']) && isset($_GET['id']) ){
+        $id = (int) $_GET['id'];
+        if ( $id > 0 && wp_verify_nonce( $_GET['_wpnonce'], 'cbc_ca_delete_item' ) ){
             global $wpdb; $table = cbc_ca_table_name();
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $wpdb->delete( $table, array('id'=>$id), array('%d') );
@@ -431,6 +447,7 @@ if ( is_admin() && ! class_exists('CBC_CA_List_Table') ){
     class CBC_CA_List_Table extends WP_List_Table {
         public function __construct(){ parent::__construct( array('singular' => 'item','plural' => 'items','ajax' => false) ); }
         public function get_columns(){ return array(
+            'cb'            => '<input type="checkbox" />',
             'item_type'     => 'Type',
             'date_from'     => 'Date From',
             'date_to'       => 'Date To',
@@ -441,6 +458,7 @@ if ( is_admin() && ! class_exists('CBC_CA_List_Table') ){
             'image'         => 'Image',
             'created_at'    => 'Created',
         ); }
+        protected function column_cb($item){ return sprintf('<input type="checkbox" name="items[]" value="%d" />', (int)$item['id']); }
         protected function get_sortable_columns(){ return array(
             'item_type'     => array('item_type', false),
             'date_from'     => array('date_from', true),
@@ -458,7 +476,9 @@ if ( is_admin() && ! class_exists('CBC_CA_List_Table') ){
             return $views;
         }
         private function get_type_counts(){ global $wpdb; $table = cbc_ca_table_name(); $counts = array('all'=>0,'announcement'=>0,'event'=>0,'training'=>0,'holiday'=>0,'custom'=>0); if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) return $counts; $rows = $wpdb->get_results("SELECT item_type, COUNT(*) AS c FROM {$table} GROUP BY item_type", ARRAY_A); $total=0; foreach ($rows as $r){ $type=$r['item_type']??''; $c=(int)($r['c']??0); if(isset($counts[$type])) $counts[$type]=$c; $total+=$c; } $counts['all']=$total; return $counts; }
-        public function prepare_items(){ global $wpdb; $table = cbc_ca_table_name(); $columns=$this->get_columns(); $this->_column_headers = array($columns, array(), $this->get_sortable_columns()); $per_page=$this->get_items_per_page('cbc_ca_items_per_page',20); $current_page=$this->get_pagenum(); $offset=($current_page-1)*$per_page; $type = isset($_GET['type'])?sanitize_key($_GET['type']):'all'; $allowed_types=array('announcement','event','training','holiday','custom'); $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'date_from'; $order = isset($_GET['order']) ? strtoupper(sanitize_text_field($_GET['order'])) : 'ASC'; if(!in_array($order,array('ASC','DESC'),true)) $order='ASC'; $orderby_map = array('item_type'=>'item_type','date_from'=>'date_from','date_to'=>'date_to','title_message'=>'title_message','announce'=>'announce','created_at'=>'created_at'); $orderby_sql = isset($orderby_map[$orderby]) ? $orderby_map[$orderby] : 'date_from'; $where='WHERE 1=1'; $params=array(); if(in_array($type,$allowed_types,true)){ $where.=' AND item_type = %s'; $params[]=$type; } $search = isset($_REQUEST['s'])?trim((string)$_REQUEST['s']):''; if($search!==''){ $like = '%' . $wpdb->esc_like($search) . '%'; $where .= ' AND (title_message LIKE %s OR location LIKE %s)'; array_push($params,$like,$like); } if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ){ $this->items=array(); $this->set_pagination_args(array('total_items'=>0,'per_page'=>$per_page,'total_pages'=>0)); return; } $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where} ORDER BY {$orderby_sql} {$order} LIMIT %d OFFSET %d"; $params[]=(int)$per_page; $params[]=(int)$offset; $items = $wpdb->get_results( $wpdb->prepare($sql, $params), ARRAY_A ); $total = (int) $wpdb->get_var('SELECT FOUND_ROWS()'); $this->items = is_array($items)?$items:array(); $this->set_pagination_args(array('total_items'=>$total,'per_page'=>$per_page,'total_pages'=>$per_page?ceil($total/$per_page):0)); }
+        public function prepare_items(){
+            $this->process_bulk_action();
+            global $wpdb; $table = cbc_ca_table_name(); $columns=$this->get_columns(); $this->_column_headers = array($columns, array(), $this->get_sortable_columns()); $per_page=$this->get_items_per_page('cbc_ca_items_per_page',20); $current_page=$this->get_pagenum(); $offset=($current_page-1)*$per_page; $type = isset($_GET['type'])?sanitize_key($_GET['type']):'all'; $allowed_types=array('announcement','event','training','holiday','custom'); $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'date_from'; $order = isset($_GET['order']) ? strtoupper(sanitize_text_field($_GET['order'])) : 'ASC'; if(!in_array($order,array('ASC','DESC'),true)) $order='ASC'; $orderby_map = array('item_type'=>'item_type','date_from'=>'date_from','date_to'=>'date_to','title_message'=>'title_message','announce'=>'announce','created_at'=>'created_at'); $orderby_sql = isset($orderby_map[$orderby]) ? $orderby_map[$orderby] : 'date_from'; $where='WHERE 1=1'; $params=array(); if(in_array($type,$allowed_types,true)){ $where.=' AND item_type = %s'; $params[]=$type; } $search = isset($_REQUEST['s'])?trim((string)$_REQUEST['s']):''; if($search!==''){ $like = '%' . $wpdb->esc_like($search) . '%'; $where .= ' AND (title_message LIKE %s OR location LIKE %s)'; array_push($params,$like,$like); } if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ){ $this->items=array(); $this->set_pagination_args(array('total_items'=>0,'per_page'=>$per_page,'total_pages'=>0)); return; } $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where} ORDER BY {$orderby_sql} {$order} LIMIT %d OFFSET %d"; $params[]=(int)$per_page; $params[]=(int)$offset; $items = $wpdb->get_results( $wpdb->prepare($sql, $params), ARRAY_A ); $total = (int) $wpdb->get_var('SELECT FOUND_ROWS()'); $this->items = is_array($items)?$items:array(); $this->set_pagination_args(array('total_items'=>$total,'per_page'=>$per_page,'total_pages'=>$per_page?ceil($total/$per_page):0)); }
         protected function column_default($item, $column_name){
             switch($column_name){
                 case 'item_type': return esc_html( ucfirst($item['item_type']) );
@@ -489,6 +509,25 @@ if ( is_admin() && ! class_exists('CBC_CA_List_Table') ){
             return '';
         }
         protected function get_bulk_actions(){ return array('delete' => 'Delete'); }
+        public function process_bulk_action(){
+            if ( 'delete' === $this->current_action() ){
+                if ( ! current_user_can('manage_options') ) wp_die('Unauthorized');
+                $items = isset($_REQUEST['items']) ? array_map('intval', (array)$_REQUEST['items']) : array();
+                if ( ! empty($items) ){
+                    check_admin_referer('bulk-items');
+                    global $wpdb; $table = cbc_ca_table_name();
+                    foreach ($items as $id){
+                        if ($id > 0){
+                            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                            $wpdb->delete( $table, array('id'=>$id), array('%d') );
+                        }
+                    }
+                    if ( function_exists('cbc_ca_sync_theme_options_from_db') ) { cbc_ca_sync_theme_options_from_db(); }
+                    wp_safe_redirect( add_query_arg(array('page'=>'cbc-calendar-items','deleted'=>count($items)), admin_url('options-general.php')) );
+                    exit;
+                }
+            }
+        }
     }
 }
 
@@ -602,7 +641,7 @@ function cbc_ca_render_items_page(){
     $list_table = new CBC_CA_List_Table();
     $list_table->prepare_items();
 
-    echo '<form method="get">';
+    echo '<form method="post">';
     echo '<input type="hidden" name="page" value="cbc-calendar-items" />';
     if ( isset($_GET['type']) ){
         echo '<input type="hidden" name="type" value="' . esc_attr( sanitize_key($_GET['type']) ) . '" />';
@@ -675,6 +714,9 @@ function cbc_ca_render_item_form($item){
 
 // Keep theme options (used by existing calendar grid) in sync with DB
 function cbc_ca_sync_theme_options_from_db(){
+    global $cbc_ca_syncing_from_db;
+    $cbc_ca_syncing_from_db = true; // Signal to prevent merge filters
+
     $ann = cbc_ca_get_text_from_db('announcement');
     $ev  = cbc_ca_get_text_from_db('event');
     $hol = cbc_ca_get_text_from_db('holiday');
@@ -691,6 +733,8 @@ function cbc_ca_sync_theme_options_from_db(){
     $opts = get_option(CBC_CA_OPT); if (!is_array($opts)) $opts = array();
     $opts['announcements'] = $ann; $opts['events'] = $ev; $opts['holidays'] = $hol;
     update_option(CBC_CA_OPT, $opts, false);
+
+    $cbc_ca_syncing_from_db = false; // Reset flag
 }
 
 // Expose data and settings to theme via filter used by shortcodes

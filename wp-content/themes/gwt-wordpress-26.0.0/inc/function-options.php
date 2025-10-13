@@ -301,6 +301,12 @@ jQuery(document).ready(function($) {
 
   // Merge posted textarea values into existing stored lists for selected fields
   public function merge_list_fields($new_value, $old_value) {
+    global $cbc_ca_syncing_from_db;
+    // Skip merge if syncing from database to prevent interference
+    if ($cbc_ca_syncing_from_db === true) {
+      return $new_value;
+    }
+
     if (!is_array($new_value)) { return $new_value; }
   $list_fields = ['govph_announcements','govph_events','govph_holidays'];
     foreach ($list_fields as $field) {

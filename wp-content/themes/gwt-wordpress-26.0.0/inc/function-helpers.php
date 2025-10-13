@@ -332,7 +332,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     echo '<div class="card" style="border:1px solid #e5e5e5;padding:12px;border-radius:6px;background:#fff;display:flex;flex-direction:row;gap:12px;align-items:center;">';
                     echo '<div style="min-width:160px;font-weight:bold;color:#006837;">' . esc_html( $labelDate ) . '</div>';
                     echo '<div style="flex:1;">';
-                    $label = ( $it['type'] === 'holiday' ? 'Holiday: ' : '' ) . $it['title'];
+                    $label = $it['title'];
                     if ( ! empty( $it['url'] ) ) {
                         echo '<a href="' . esc_url( $it['url'] ) . '" target="_blank" rel="noopener" style="font-weight:600;color:#00391a;">' . esc_html( $label ) . '</a>';
                     } else {
@@ -488,7 +488,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                             echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
                             if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
                                 foreach ( $byDate[$dateStr] as $item ) {
-                                    $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
+                                    $label = $item['title'];
                                     if ( ! empty( $item['url'] ) ) {
                                         echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
                                     } else {
@@ -619,7 +619,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         echo '<div style="font-weight:bold;color:#006837;opacity:'. ($inMonth? '1':'0.5') .';">' . intval($cur->format('j')) . '</div>';
                         if ( $inMonth && ! empty( $byDate[$dateStr] ) ) {
                             foreach ( $byDate[$dateStr] as $item ) {
-                                $label = ( $item['type'] === 'holiday' ? 'Holiday: ' : '' ) . $item['title'];
+                                $label = $item['title'];
                                 if ( ! empty( $item['url'] ) ) {
                                     echo '<div style="font-size:12px;line-height:1.2;margin-top:4px;"><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '</a></div>';
                                 } else {
