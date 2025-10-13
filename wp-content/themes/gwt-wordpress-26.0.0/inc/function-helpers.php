@@ -416,9 +416,9 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             echo '</tr></thead>';
 
             // Inline styles
-            echo '<style>.gwt-week-band{background:#e6f4ea;border:1px solid #c8e6d3;border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}</style>';
+            echo '<style>.gwt-week-band{background:#e6f4ea;border: 1px solid #00a32a; margin-bottom: 3px; border-radius:6px;padding:4px 8px;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}</style>';
 
-            echo '<tbody>';
+            echo '<tbody id="calendar-tbody">';
             // Iterate weeks: one row per week with grouped overlapping events in single cells
             foreach ($weeks as $wi => $wk){
                 echo '<tr>';
@@ -505,7 +505,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                     echo '<td colspan="' . $colspan . '" style="padding:4px;border:1px solid #e5e5e5;background:#fff;min-height:80px;vertical-align:top;width:'. (14.28 * $colspan) .'%;">';
 
                     // Nested table with colspan columns to match the outer colspan
-                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;">';
+                    echo '<table style="width:100%;border-collapse:collapse;table-layout:fixed;border:none !important; margin: 0">';
                     echo '<colgroup>';
                     for ($c = 0; $c < $colspan; $c++) {
                         echo '<col style="width:' . (100 / $colspan) . '%;" />';
@@ -524,19 +524,19 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                         $startDayNum = intval($range['start']->format('j'));
                         $endDayNum = intval($range['end']->format('j'));
-                        $dateRange = $startDayNum . '-' . $endDayNum;
+                        $dateRange = $startDayNum . ' - ' . $endDayNum;
 
-                        echo '<tr>';
+                        echo '<tr style="border:none !important;">';
 
                         // Empty cells before the event
                         if ($offsetCols > 0) {
-                            echo '<td colspan="' . $offsetCols . '" style="padding:2px;border:none;"></td>';
+                            echo '<td colspan="' . $offsetCols . '" style="padding:0;border:none !important;background:white;"></td>';
                         }
 
                         // Event cell
-                        echo '<td colspan="' . $rangeColspan . '" style="padding:2px;border:none;">';
+                        echo '<td colspan="' . $rangeColspan . '" style="border:none !important;background:white;padding:0;">';
                         echo '<div class="gwt-week-band">';
-                        $displayTitle = $dateRange . ': ' . $range['title'];
+                        $displayTitle = '[' . $dateRange . '] ' . $range['title'];
                         if ( ! empty($range['url']) ){
                             echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:600;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
                         } else {
@@ -547,7 +547,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
 
                         // Empty cells after the event
                         if ($remainingCols > 0) {
-                            echo '<td colspan="' . $remainingCols . '" style="padding:2px;border:none;"></td>';
+                            echo '<td colspan="' . $remainingCols . '" style="padding:0;border:none;background:transparent;"></td>';
                         }
 
                         echo '</tr>';
