@@ -66,6 +66,7 @@ module.exports = {
         'font-bold',
         'backdrop-blur-sm',
         'z-[999]',
+        'text-[0.7rem]',
         'md:!leading-6',
         'text-red-500',
         'bg-red-500',

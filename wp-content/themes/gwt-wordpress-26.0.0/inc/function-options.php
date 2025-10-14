@@ -1103,7 +1103,7 @@ if (!function_exists('govph_displayoptions')) {
                         <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white">
                             <span id="agency-heading" class="sm:text-sm text-[0.5rem] uppercase !font-lato font-light !leading-tight">Department of Agriculture</span>
                             <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] !font-spartan font-extrabold !leading-none">' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . '</span>
-                            <span id="agency-tagline" class="text-sm md:text-lg  capitalize !font-lato font-light !leading-none">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
+                            <span id="agency-tagline" class="text-[0.7rem] md:text-sm lg:text-lg  capitalize !font-lato font-light !leading-none">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
                         </div>
                     </a>';
 
