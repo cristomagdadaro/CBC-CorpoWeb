@@ -539,7 +539,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                         echo '<div class="gwt-week-band">';
                         $displayTitle = $dateRange . ': ' . $range['title'];
                         if ( ! empty($range['url']) ){
-                            echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:100;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
+                            echo '<a href="'. esc_url($range['url']) .'" target="_blank" rel="noopener" style="font-weight:300;color:#20603d;text-decoration:none;">'. esc_html($displayTitle) .'</a>';
                         } else {
                             echo '<span style="font-weight:100;color:#20603d;">'. esc_html($displayTitle) .'</span>';
                         }
@@ -578,7 +578,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
                                 echo '<div class="gwt-week-band">';
                                 $label = $dayNum . ': ' . $item['title'];
                                 if ( ! empty( $item['url'] ) ) {
-                                    echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:100;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
+                                    echo '<a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener" style="font-weight:300;color:#20603d;text-decoration:none;">' . esc_html( $label ) . '</a>';
                                 } else {
                                     echo '<span style="font-weight:100;color:#20603d;">' . esc_html( $label ) . '</span>';
                                 }

@@ -50,6 +50,8 @@ module.exports = {
         'md:h-[16rem]',
         '!text-sm',
         'md:!text-lg',
+        'mt-3',
+        'sm:mt-0',
         'font-bold',
         '!whitespace-nowrap',
         '!leading-none',
