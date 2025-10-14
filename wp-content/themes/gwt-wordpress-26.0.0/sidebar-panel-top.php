@@ -71,7 +71,7 @@
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
             <?php echo govph_section_header('Priority Commodities', ['id' => 'priority_commodity_header']); ?>
-            <?php echo do_shortcode('[priority_commodities_carousel max_display="5" center_scale="1.30" auto_advance="false auto_interval="2500" show_arrows="true" enable_blur="true"]'); ?>
+            <?php echo do_shortcode('[priority_commodities_carousel max_display="5" center_scale="1.30" auto_advance="true" auto_interval="2500" show_arrows="true" enable_blur="true"]'); ?>
 
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
