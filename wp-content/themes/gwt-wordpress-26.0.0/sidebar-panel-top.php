@@ -30,7 +30,7 @@
 
                         <!-- Text Section -->
                         <div class="order-2 md:order-1 flex flex-col justify-center relative z-20 bg-white/80 p-2 md:p-0 rounded-md">
-                            <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight mt-3 sm:mt-0">
+                            <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight !font-spartan mt-3 sm:mt-0">
                                 DA-CROP BIOTECHNOLOGY CENTER
                             </h3>
                             <p class="mt-2 text-justify md:text-left sm:leading-relaxed">

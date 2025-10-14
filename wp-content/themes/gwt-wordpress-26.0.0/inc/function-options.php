@@ -1101,9 +1101,9 @@ if (!function_exists('govph_displayoptions')) {
                             <img draggable="false" alt="' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                         </div>
                         <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white">
-                            <span id="agency-heading" class="sm:text-sm text-[0.5rem] uppercase font-light opacity-75">Department of Agriculture</span>
-                            <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] font-league font-extrabold">' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . '</span>
-                            <span id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize font-light">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
+                            <span id="agency-heading" class="sm:text-sm text-[0.5rem] uppercase !font-lato font-light !leading-tight">Department of Agriculture</span>
+                            <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] !font-spartan font-extrabold !leading-none">' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . '</span>
+                            <span id="agency-tagline" class="text-sm md:text-lg  capitalize !font-lato font-light !leading-none">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
                         </div>
                     </a>';
 

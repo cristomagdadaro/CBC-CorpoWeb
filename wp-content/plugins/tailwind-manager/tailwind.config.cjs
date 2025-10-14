@@ -56,14 +56,25 @@ module.exports = {
         '!whitespace-nowrap',
         '!leading-none',
         '!leading-tight',
+        'mb-1',
+        'text-sm',
+        'md:text-lg',
+        'text-normarl',
+        'font-thin',
         'font-semibold',
         'font-bold',
         'backdrop-blur-sm',
         'z-[999]',
+        'md:!leading-6',
         'text-red-500',
         'bg-red-500',
         'from-[#1f5d2b]',
         'to-[#a2b917]',
+        '!font-spartan',
+        '!font-dancing',
+        '!font-lato',
+        '!font-montserrat',
+        '!font-sans',
         'from-[#a2b917]',
         'to-[#1f5d2b]',
         'hover:border-[#1f5d2b]',
@@ -78,6 +89,10 @@ module.exports = {
         extend: {
             colors: custom.colors || {},
             fontFamily: {
+                dancing: ['"Dancing Script"', 'cursive'],
+                lato: ['Lato', 'sans-serif'],
+                spartan: ['"League Spartan"', 'sans-serif'],
+                montserrat: ['Montserrat', 'sans-serif'],
                 sans: custom.fontFamily ? custom.fontFamily.split(',').map(s => s.trim()) : ['Inter', 'system-ui', 'sans-serif']
             }
         }

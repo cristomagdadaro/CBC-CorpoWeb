@@ -47,7 +47,7 @@
             <div class="bg-[#006837] w-full sm:py-0 py-2">
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 sm:my-5 my-2">
-                        <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border font-bold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
+                        <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border !font-lato font-extrabold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"

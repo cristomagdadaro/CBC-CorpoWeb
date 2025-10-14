@@ -4,7 +4,11 @@
 
 /* Custom layer examples */
 @layer base {
-  :root {
-    --color-primary: #1f5d2b;
-  }
+    :root {
+        --color-primary: #1f5d2b;
+    }
+
+    html {
+        @apply font-lato;
+    }
 }

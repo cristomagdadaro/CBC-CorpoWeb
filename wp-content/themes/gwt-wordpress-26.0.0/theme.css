@@ -119,14 +119,14 @@ Custom Header Styles
  * 3.0 - Typography
  */
 
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900);
+@import url(https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=League+Spartan:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap);
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: "League Spartan", Helvetica, Arial, sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 1;
@@ -189,7 +189,7 @@ h6 {
 }
 #main-nav .name a {
   font-size: 1.19rem !important;
-  font-family: "Arial", sans-serif !important;
+  font-family: "Lato", sans-serif !important;
 }
 #auxiliary {
   background-color: #f7f7f7;
@@ -284,7 +284,7 @@ h6 {
 .title-bar-title {
   color: #000;
   font-size: 1rem;
-  font-family: "Roboto Condensed", sans-serif;
+  font-family: "Lato", sans-serif;
 }
 .title-bar-right button::after {
   background: #000;
@@ -293,7 +293,7 @@ h6 {
 /*off-canvass right menu*/
 #offCanvasRight {
   background-color: #fefefe;
-  font-family: "Roboto Condensed", sans-serif;
+  font-family: "Lato", sans-serif;
   height: 100%;
 }
 #offCanvasRight .is-drilldown {
@@ -425,7 +425,7 @@ h6 {
 }
 #pst-container {
   color: #000;
-  font-family: "Roboto", sans-serif;
+  font-family: "Lato", sans-serif;
   font-size: 0.8rem;
   line-height: 1.2;
   text-align: right;

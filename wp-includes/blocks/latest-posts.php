@@ -98,10 +98,10 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
-		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto p-2"><div class="flex flex-col leading-[1rem]">';
+		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
 
 		$item_markup .= sprintf(
-			'<a class="wp-block-latest-posts__post-title text-left font-semibold !leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
+			'<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
 			esc_url( $post_link ),
 			$title
 		);
@@ -149,7 +149,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
 			$item_markup .= sprintf(
-				'<div class="wp-block-latest-posts__post-excerpt entry-content block">%1$s</div>',
+				'<div class="wp-block-latest-posts__post-excerpt !m-0 !leading-none md:!leading-6 entry-content block">%1$s</div>',
 				$trimmed_excerpt
 			);
 		}
