@@ -76,7 +76,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
         .cbc-carousel-container {
             position: relative;
             width: 100%;
-            overflow: hidden;
+            overflow: visible;
             padding: 2rem 0;
         }
         .cbc-carousel {
@@ -245,12 +245,12 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
 
                 <div class="cbc-carousel-track">
                     <?php foreach ($commodities as $index => $commodity): ?>
-                        <div class="cbc-carousel-item <?php echo $index === 0 ? 'active' : ''; ?>"
+                        <div class="cbc-carousel-item w-[12rem] h-[14rem] md:w-[22rem] md:h-[16rem] <?php echo $index === 0 ? 'active' : ''; ?>"
                              data-index="<?php echo $index; ?>"
                              data-name="<?php echo esc_attr($commodity['name']); ?>"
                              role="option"
                              aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-                             style="width: 22rem; height: 14rem;">
+                        >
 
                             <img src="<?php echo esc_url($commodity['image']); ?>"
                                  alt="<?php echo esc_attr($commodity['name']); ?>"

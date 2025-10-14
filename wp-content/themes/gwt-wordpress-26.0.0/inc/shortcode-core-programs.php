@@ -66,7 +66,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
         .core-programs-carousel-wrapper {
             position: relative;
             width: 100%;
-            overflow: hidden;
+            overflow: visible;
             padding: 1rem 0;
         }
         .core-programs-carousel {
