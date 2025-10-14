@@ -77,7 +77,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             perspective: 1300px;
             min-height: 450px;
             user-select: none;
-            overflow: hidden;
+            overflow: visible;
         }
         .core-programs-track {
             display: flex;
@@ -87,6 +87,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             position: relative;
             width: 100%;
             height: 100%;
+            overflow: visible;
         }
         .core-programs-card {
             position: absolute;
@@ -106,9 +107,11 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             transform-origin: center center;
             width: 85vw;
             max-width: 20rem;
+            pointer-events: none;
         }
         .core-programs-card.active {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
         }
         .core-programs-card-image {
             position: relative;

@@ -77,7 +77,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             position: relative;
             width: 100%;
             overflow: hidden;
-            padding: 1rem 0;
+            padding: 2rem 0;
         }
         .cbc-carousel {
             position: relative;
@@ -87,7 +87,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             perspective: 1300px;
             min-height: 400px;
             user-select: none;
-            overflow: hidden;
+            overflow: visible;
         }
         .cbc-carousel-track {
             display: flex;
@@ -97,6 +97,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             position: relative;
             width: 100%;
             height: 100%;
+            overflow: visible;
         }
         .cbc-carousel-item {
             position: absolute;
@@ -114,9 +115,11 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             background: #1a1a1a;
             color: white;
             transform-origin: center center;
+            pointer-events: none;
         }
         .cbc-carousel-item.active {
             box-shadow: 0 6px 28px -6px rgba(0, 0, 0, 0.65);
+            pointer-events: auto;
         }
         .cbc-carousel-item::after {
             content: '';

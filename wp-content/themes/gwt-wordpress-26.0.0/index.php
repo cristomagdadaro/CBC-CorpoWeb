@@ -25,7 +25,64 @@ include_once( 'inc/banner.php' );
                 <div>
                     <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
                 </div>
-
+                <div class="widget callout border-none secondary widget_block">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
+                        <div>
+                            <h3 class="font-bold my-1">Apps</h3>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="/projects/breedersmap-db">
+                                    <p class="block text-justify sm:text-md text-sm m-0">Plant Breeders' Map Database</p>
+                                </a>
+                            </div>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="/projects/twg-db">
+                                    <p class="block text-justify sm:text-md text-sm m-0">Biotech TWG Database</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold my-1">Services</h3>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="/">
+                                    <p class="block text-justify sm:text-md text-sm m-0">Use Request Form</p>
+                                </a>
+                            </div>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="/">
+                                    <p class="block text-justify sm:text-md text-sm m-0">Events Booking Form</p>
+                                </a>
+                            </div>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="http://192.168.36.71:5000/">
+                                    <p class="block text-justify sm:text-md text-sm m-0">Synology BioNAS</p>
+                                </a>
+                            </div>
+                            <div class="ml-2 flex items-center gap-2">
+                                <a href="http://192.168.36.10/">
+                                    <p class="block text-justify sm:text-md text-sm m-0">CrAPPs Center</p>
+                                </a>
+                            </div>
+                        </div>
+                       <div>
+                           <h3 class="font-bold my-1">Games</h3>
+                           <div class="ml-2 flex items-center gap-2">
+                               <a href="/games/biotech-quiz-bee-game/">
+                                   <p class="block text-justify sm:text-md text-sm m-0">Biotech Quiz Bee</p>
+                               </a>
+                           </div>
+                           <div class="ml-2 flex items-center gap-2">
+                               <a href="/games/scramble-game/">
+                                   <p class="block text-justify sm:text-md text-sm m-0">Scramble Game</p>
+                               </a>
+                           </div>
+                           <div class="ml-2 flex items-center gap-2">
+                               <a href="/games/crop-memory-game/">
+                                   <p class="block text-justify sm:text-md text-sm m-0">Crop Memory Game</p>
+                               </a>
+                           </div>
+                       </div>
+                    </div>
+                </div>
                 <div class="hidden grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-3 relative box-border">
                     <div>
                         <?php echo govph_section_header('Vision', ['id' => 'vision_header']); ?>

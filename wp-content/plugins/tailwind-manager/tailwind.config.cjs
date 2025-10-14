@@ -42,6 +42,7 @@ module.exports = {
         'w-[600px]',
         'items-end',
         'col-span-2',
+        'grid-cols-3',
         'gap-5',
         'font-bold',
         '!whitespace-nowrap',
