@@ -97,8 +97,8 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
             'author'          => '',      // author ID
         ), $atts, 'gwt_latest_posts' );
 
-        // Auto excerpt length logic (phone/tablet/desktop) if user passes 'auto' or 0.
-        if ( $atts['excerpt_length'] === 'auto' || $atts['excerpt_length'] === 0 || $atts['excerpt_length'] === '0' ) {
+        // Auto excerpt length logic (phone/tablet/desktop) if user passes 'auto'.
+        if ( $atts['excerpt_length'] === 'auto' ) {
             $device = cbc_get_device_type();
             $length_map = apply_filters( 'gwt_latest_posts_device_excerpt_lengths', array(
                 'phone'   => 10,
@@ -110,6 +110,9 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
             } else {
                 $atts['excerpt_length'] = 26; // fallback
             }
+        }else if ($atts['excerpt_length'] === 0 || $atts['excerpt_length'] === '0'){
+			// Special case: 0 means no excerpt (same as content=full)
+			$atts['content'] = 'none';
         }
 
         // Ensure numeric after potential mapping

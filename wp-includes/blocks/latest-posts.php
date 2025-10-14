@@ -175,7 +175,7 @@ function render_block_core_latest_posts( $attributes ) {
 	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-5">';
 
 	$total = count( $recent_posts );
-	$maxCount = 3;
+	$maxCount = 2;
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
 		if ( $maxCount === $count ) {
@@ -183,17 +183,23 @@ function render_block_core_latest_posts( $attributes ) {
 			$list_items_markup .= '</div><div id="right-posts-list" class="flex flex-col gap-2 md:gap-5">';
 		}
 
-		// Base container classes
-		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded bg-white my-auto opacity-0 reveal-on-scroll-300 ';
-
-		$is_first_group = ( $count < $maxCount );
-
 		// Image wrapper templates with fixed responsive sizes
 		$img_wrapper_first = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 		// For later items in grid layout: show on small screens, hide on md+
 		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
 		// For later items in list layout: always visible
 		$img_wrapper_later_list = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+
+		$is_first_group = ( $count < $maxCount );
+
+		// Base container classes
+		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded bg-white my-auto opacity-0 reveal-on-scroll-300 ';
+
+		if ( $count < $maxCount && $is_grid_layout) {
+			// Open right column container after the first three posts.
+			$base_container .= 'flex flex-row md:flex-col h-full ';
+		}
+
 
 
 		if ( $is_grid_layout ) {
@@ -215,7 +221,7 @@ function render_block_core_latest_posts( $attributes ) {
 					$post,
 					$attributes,
 					$container_classes,
-					$img_wrapper_later_grid,
+					($attributes['displayFeaturedImage'] ? $img_wrapper_first : $img_wrapper_later_grid), // only wrap if image is shown
 					true // include image for small screens
 				);
 

@@ -63,6 +63,8 @@ module.exports = {
         'font-thin',
         'md:text-base',
         'font-semibold',
+        'pt-5',
+        'md:flex-col',
         'font-bold',
         'backdrop-blur-sm',
         'z-[999]',

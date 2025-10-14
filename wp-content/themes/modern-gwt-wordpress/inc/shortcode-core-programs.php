@@ -19,23 +19,23 @@ if (!function_exists('cbc_core_programs_shortcode')) {
         $programs = array(
             array(
                 'title' => 'Technology Development and Innovation',
-                'image' => '/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png',
-                'description' => 'We conduct and host cutting-edge crop biotechnology research and development (R&D) activities, including joint research projects, forming dedicated research teams, and implementing impactful research programs.',
+                'image' => get_template_directory_uri() . '/assets/svgs/flask.svg',
+                'description' => 'Conduct cutting-edge research ',
             ),
             array(
                 'title' => 'R4D Biotechnology Capacity-Building Service',
-                'image' => '/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg',
-                'description' => 'We provide essential R&D-related services and training to DA agencies and our network. Our goal is to equip stakeholders with the skills to effectively apply modern crop biotechnology tools.',
+                'image' => get_template_directory_uri() . '/assets/svgs/mortarboard.svg',
+                'description' => 'Nationwide training and workshops',
             ),
             array(
                 'title' => 'Partnership and Fund Generation',
-                'image' => '/wp-content/uploads/2025/09/CBC04940-768x461.png',
-                'description' => 'We actively build and strengthen our connections within the R&D network. We also secure funding for projects from both local and international institutions, as well as public and private donors.',
+                'image' => get_template_directory_uri() . '/assets/svgs/peace.svg',
+                'description' => 'Collaborators for growth and impact',
             ),
             array(
                 'title' => 'Technology Commercialization and Management',
-                'image' => '/wp-content/uploads/2025/09/CBC06408-768x432.png',
-                'description' => 'We promote the commercialization and transfer of developed technologies. We also foster a culture of knowledge-sharing to ensure our network and stakeholders have easy access to a wealth of information.',
+                'image' => get_template_directory_uri() . '/assets/svgs/buildings.svg',
+                'description' => 'Bringing innovations to the Filipino people',
             ),
         );
 
@@ -204,13 +204,13 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             <!-- Grid layout for desktop (md and above) -->
             <div class="core-programs-grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 pb-5">
                 <?php foreach ($programs as $program): ?>
-                <div class="bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
-                    <div class="relative w-full h-48">
+                <div class="pt-5 items-center bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
+                    <div class="relative w-full h-32">
                         <img src="<?php echo esc_url($program['image']); ?>"
                              alt="<?php echo esc_attr($program['title']); ?>"
-                             class="absolute inset-0 w-full h-full object-cover" />
+                             class="absolute inset-0 w-full h-full object-fill text-[#1f5d2b]" />
                     </div>
-                    <div class="flex-1 -mt-10 mx-4 bg-white rounded-md p-4 relative">
+                    <div class="flex-1 bg-white p-4 relative">
                         <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
                             <?php echo esc_html(strtoupper($program['title'])); ?>
                         </h3>
