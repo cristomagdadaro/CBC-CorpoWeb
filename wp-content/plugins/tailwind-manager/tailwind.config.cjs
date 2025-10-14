@@ -48,6 +48,8 @@ module.exports = {
         'h-[12rem]',
         'md:w-[22rem]',
         'md:h-[16rem]',
+        '!text-sm',
+        'md:!text-lg',
         'font-bold',
         '!whitespace-nowrap',
         '!leading-none',

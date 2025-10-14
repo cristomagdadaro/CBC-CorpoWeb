@@ -696,7 +696,7 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
         // Optional header
         if ( $atts['header'] !== '' ) {
             if ( function_exists('govph_section_header') ) {
-                echo govph_section_header( $atts['header'], array( 'id' => 'gwt_announcements_header', 'text_alignment' => 'center' , 'classes' => 'drop-shadow font-semibold md:font-bold text-white p-2 bg-gradient-to-r text-center px-5') );
+                echo govph_section_header( $atts['header'], array( 'id' => 'gwt_announcements_header', 'text_alignment' => 'center' , 'classes' => 'drop-shadow font-semibold md:font-bold text-white p-2 bg-gradient-to-r text-center px-5 !text-sm md:!text-lg') );
             } else {
                 echo '<h2 class="gwt-announcements-header">' . esc_html( $atts['header'] ) . '</h2>';
             }
