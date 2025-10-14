@@ -332,11 +332,22 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             function next() {
                 currentIndex = (currentIndex + 1) % itemCount;
                 updateCarousel();
+                triggerHapticFeedback();
             }
 
             function prev() {
                 currentIndex = (currentIndex - 1 + itemCount) % itemCount;
                 updateCarousel();
+                triggerHapticFeedback();
+            }
+
+            function triggerHapticFeedback() {
+                // Check if the Vibration API is supported
+                if ('vibrate' in navigator) {
+                    // Medium-strong vibration pattern: vibrate for 40ms
+                    // This provides a noticeable tactile response without being too aggressive
+                    navigator.vibrate(40);
+                }
             }
 
             function startAuto() {
