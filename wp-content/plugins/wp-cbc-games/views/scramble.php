@@ -54,7 +54,7 @@
         <div class="mt-4">
             <h3>Submit your Score!</h3>
             <form id="scramble-leaderboard-form" class="flex gap-3 items-center">
-                <input type="text" id="scramble-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <label for="scramble-hp"></label><input type="text" id="scramble-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
                 <div>
                     <label for="scramble-name">Name <span class="text-red-500">*</span></label>
                     <input id="scramble-name" name="name" type="text" required />

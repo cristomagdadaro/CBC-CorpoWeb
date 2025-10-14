@@ -9,7 +9,6 @@
 <div class="relative overflow-hidden">
     <?php if (is_front_page()): ?>
     <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
-    <div id="particles-js-helix" class="absolute hidden top-0 left-0 w-full min-h-[600vh] h-screen" data-helix-position="left"></div>
     <?php endif; ?>
 <div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
     <div class="row z-[99]">
@@ -24,33 +23,43 @@
             </div>
 
             <div class="widget widget_block">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 items-start">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
+                    <div class="flex flex-col col-span-2">
+                        <!-- Text Section -->
+                        <div class="order-2 md:order-1 flex flex-col justify-center">
+                            <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight hidden sm:block">
+                                DA-CROP BIOTECHNOLOGY CENTER
+                            </h3>
+                            <p class="mt-2 text-justify md:text-left sm:leading-relaxed backdrop-blur-sm">
+                                DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
+                                Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
+                                biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
+                                and foster a collaborative culture of knowledge-sharing to ensure a more food-secure and resilient Philippines.
+                            </p>
+                        </div>
 
-                    <!-- Text Section -->
-                    <div class="order-2 md:order-1 flex flex-col justify-center">
-                        <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight hidden sm:block">
-                            DA-CROP BIOTECHNOLOGY CENTER
-                        </h3>
-                        <p class="mt-2 text-justify md:text-left sm:leading-relaxed backdrop-blur-sm">
-                            DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
-                            Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
-                            biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
-                            and foster a collaborative culture of knowledge-sharing to ensure a more food-secure and resilient Philippines.
-                        </p>
+                        <!-- Video Wrapper -->
+                        <div class="order-1 md:order-2 relative w-full aspect-video h-full">
+                            <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl font-bold text-center md:text-left my-2 leading-tight  sm:hidden block">
+                                DA-CROP BIOTECHNOLOGY CENTER
+                            </h3>
+                            <iframe
+                                    title="Featured video"
+                                    class="w-full h-full border-none rounded-lg"
+                                    src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4"
+                                    allowfullscreen
+                                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                            </iframe>
+                        </div>
                     </div>
-
-                    <!-- Video Wrapper -->
-                    <div class="order-1 md:order-2 relative w-full aspect-video md:w-full md:h-full">
-                        <h3 class="text-[#205F26] text-xl sm:text-2xl md:text-3xl font-bold text-center md:text-left my-2 leading-tight  sm:hidden block">
-                            DA-CROP BIOTECHNOLOGY CENTER
-                        </h3>
-                        <iframe
-                                title="Featured video"
-                                class="w-full h-full border-none rounded-lg"
-                                src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4"
-                                allowfullscreen
-                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                        </iframe>
+                    <div class="flex flex-col h-full relative overflow-hidden">
+                        <div id="particles-js-helix" class="absolute hidden md:block top-0 left-0 w-full min-h-[600vh] h-screen" data-helix-position="left"></div>
+                        <div class="w-full">
+                            <?php echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header' ] ); ?>
+                            <aside class="widget callout border-none secondary widget_block">
+                                <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
+                            </aside>
+                        </div>
                     </div>
                 </div>
             </div>

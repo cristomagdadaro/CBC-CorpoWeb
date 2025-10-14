@@ -149,7 +149,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
 			$item_markup .= sprintf(
-				'<div class="wp-block-latest-posts__post-excerpt entry-content !leading-tight block">%1$s</div>',
+				'<div class="wp-block-latest-posts__post-excerpt entry-content block">%1$s</div>',
 				$trimmed_excerpt
 			);
 		}

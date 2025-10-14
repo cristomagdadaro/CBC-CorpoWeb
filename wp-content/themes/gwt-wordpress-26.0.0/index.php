@@ -23,12 +23,6 @@ include_once( 'inc/banner.php' );
                  style="display: flex; flex-direction: column; justify-content: space-between;"
                  role="main">
                 <div>
-                    <?php echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header' ] ); ?>
-                    <aside class="widget callout border-none secondary widget_block">
-                        <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
-                    </aside>
-                </div>
-                <div>
                     <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
                 </div>
             </div>

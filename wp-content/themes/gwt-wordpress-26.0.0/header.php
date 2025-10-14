@@ -320,7 +320,7 @@ Press esc, or click the close the button to close this dialog box.
                 <a href="javascript:void(0)" class="closebtn" id="closeNav">&times;</a>
             </div>
             <div style="padding:10px;" class="list-item"><?php get_search_form(); ?></div>
-            <ul style="list-style: none; padding:10px;">
+            <ul class="!whitespace-nowrap overflow-hidden overflow-ellipsis" style="list-style: none; padding:10px;">
 				<?php wp_nav_menu( array(
 					'theme_location' => 'topbar_left',
 					'items_wrap'     => '%3$s',

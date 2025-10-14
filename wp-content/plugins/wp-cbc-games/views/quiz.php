@@ -56,7 +56,7 @@
         <div class="mt-4">
             <h3>Submit your Score!</h3>
             <form id="quiz-leaderboard-form" class="flex gap-3 items-center">
-                <input type="text" id="quiz-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <label for="quiz-hp"></label><input type="text" id="quiz-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
                 <div>
                     <label for="quiz-name">Name <span class="text-red-500">*</span></label>
                     <input id="quiz-name" name="name" type="text" required />
