@@ -81,11 +81,6 @@
   float: right;
   margin-left: 5px;
 }
-
-.active:after {
-  content: "\2212";
-}
-
 .panel {
   background-color: transparent;
   max-height: 0;

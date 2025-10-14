@@ -25,6 +25,25 @@ include_once( 'inc/banner.php' );
                 <div>
                     <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
                 </div>
+
+                <div class="hidden grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-3 relative box-border">
+                    <div>
+                        <?php echo govph_section_header('Vision', ['id' => 'vision_header']); ?>
+                        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
+                            <div class="panel h-fit bg-transparent" style="max-height: 100vh;">
+                                <figure class="text-center"><blockquote><p>A prosperous, secure, and sustainable food future - one crop at a time.</p></blockquote></figure>
+                            </div>
+                        </aside>
+                    </div>
+                    <div>
+                        <?php echo govph_section_header('Mission', ['id' => 'mission_header']); ?>
+                        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
+                            <div class="panel h-fit bg-transparent" style="max-height: 100vh;">
+                                <figure class="text-center"><blockquote><p>To improve the productivity and competitiveness of priority commodities through providing biotechnology capacity building services, fostering collaboration within the agricultural research community, and driving the development and utilization of modern and inclusive biotechnology for crop improvement, contributing to a resilient and prosperous agricultural landscape.</p></blockquote></figure>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
             </div>
             <!-- end content -->
             <?php

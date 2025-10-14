@@ -76,6 +76,16 @@ require get_template_directory() . '/inc/function-options.php';
 require get_template_directory() . '/inc/function-helpers.php';
 
 /**
+ * Priority Commodities Carousel Shortcode
+ */
+require get_template_directory() . '/inc/shortcode-priority-commodities-carousel.php';
+
+/**
+ * Core Programs Shortcode
+ */
+require get_template_directory() . '/inc/shortcode-core-programs.php';
+
+/**
  * Custom Post Types
  */
 // require get_template_directory() . '/inc/custom-post-types.php';
