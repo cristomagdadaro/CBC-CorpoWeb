@@ -61,6 +61,7 @@ module.exports = {
         'md:text-lg',
         'text-normarl',
         'font-thin',
+        'md:text-base',
         'font-semibold',
         'font-bold',
         'backdrop-blur-sm',
