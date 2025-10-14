@@ -230,7 +230,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
         }
         </style>
 
-        <div class="cbc-carousel-container
+        <div class="cbc-carousel-container"
              data-max-display="<?php echo esc_attr($atts['max_display']); ?>"
              data-auto-advance="<?php echo esc_attr($atts['auto_advance']); ?>"
              data-auto-interval="<?php echo esc_attr($atts['auto_interval']); ?>"
@@ -238,11 +238,11 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
              data-enable-blur="<?php echo esc_attr($atts['enable_blur']); ?>"
              data-center-scale="<?php echo esc_attr($atts['center_scale']); ?>">
 
-            <div class="cbc-carousel"
+            <div class="cbc-carousel relative overflow-hidden "
                  role="listbox"
                  aria-label="Priority Commodities Carousel"
                  tabindex="0">
-
+                <div id="particles-js-network" class="absolute top-0 left-0 w-full h-full"></div>
                 <div class="cbc-carousel-track">
                     <?php foreach ($commodities as $index => $commodity): ?>
                         <div class="cbc-carousel-item w-[12rem] h-[14rem] md:w-[22rem] md:h-[16rem] <?php echo $index === 0 ? 'active' : ''; ?>"

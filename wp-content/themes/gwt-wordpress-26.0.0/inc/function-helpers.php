@@ -101,9 +101,9 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
         if ( $atts['excerpt_length'] === 'auto' || $atts['excerpt_length'] === 0 || $atts['excerpt_length'] === '0' ) {
             $device = cbc_get_device_type();
             $length_map = apply_filters( 'gwt_latest_posts_device_excerpt_lengths', array(
-                'phone'   => 15,
-                'tablet'  => 22,
-                'desktop' => 30,
+                'phone'   => 10,
+                'tablet'  => 16,
+                'desktop' => 23,
             ), $device );
             if ( is_array( $length_map ) && isset( $length_map[ $device ] ) ) {
                 $atts['excerpt_length'] = (int) $length_map[ $device ];

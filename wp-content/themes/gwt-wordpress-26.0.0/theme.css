@@ -182,7 +182,7 @@ h6 {
 
 /*top bar & auxiliary*/
 #main-nav {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   z-index: 4;
   width: 100%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -192,8 +192,8 @@ h6 {
   font-family: "Lato", sans-serif !important;
 }
 #auxiliary {
-  background-color: #f7f7f7;
-  border-bottom: 1px solid #f7f7f7;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ffffff;
 }
 #main-nav li:not(.has-form) a:not(.button),
 #main-nav li.active:not(.has-form) a:not(.button),
@@ -232,7 +232,7 @@ h6 {
   right: 0;
 }
 #main-nav ul .name a:hover {
-  background: #f7f7f7 !important;
+  background: #ffffff !important;
 }
 #main-nav ul li:hover:not(.has-form) > a,
 	#main-nav .dropdown li:not(.has-form) a:not(.button):hover,
@@ -301,7 +301,7 @@ h6 {
   height: 95%;
 }
 #offCanvasRight .list-item {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   padding: 0.7rem 1rem;
 }
 #offCanvasRight .list-item:first-child {
@@ -315,7 +315,7 @@ h6 {
   border-bottom: 1px solid #e9e9e9;
 }
 #offCanvasRight li a {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   color: #000;
   font-size: 18px;
   line-height: 1.5;

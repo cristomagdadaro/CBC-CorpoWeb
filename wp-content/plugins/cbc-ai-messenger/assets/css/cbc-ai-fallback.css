@@ -157,7 +157,7 @@ body.cbc-ai-scroll-locked { overflow: hidden !important; }
 
 /* Ensure log area scroll feel consistent */
 .cbc-ai-log { scrollbar-width: thin;
-    background: #f9f9f9;}
+    background: #f6f6f6;}
 .cbc-ai-log::-webkit-scrollbar { width: 8px; }
 .cbc-ai-log::-webkit-scrollbar-track { background: transparent; }
 .cbc-ai-log::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius:4px; }

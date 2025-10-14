@@ -4,17 +4,25 @@
     // Device/adaptive helpers
     const isMobile = (() => {
         try {
-            if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) return true;
-            const ua = (navigator.userAgent || '').toLowerCase();
-            return /mobile|android|iphone|ipad|ipod|iemobile|wpdesktop/.test(ua);
-        } catch (_) { return false; }
+            // Modern preferred check
+            const mq = window.matchMedia?.('(pointer: coarse) and (max-width: 1024px)');
+            if (mq?.matches) return true;
+
+            // UA fallback (legacy support)
+            const ua = navigator.userAgent?.toLowerCase() || '';
+
+            return /mobile|android|iphone|ipad|ipod|tablet|touch/i.test(ua)
+        } catch {
+            return false;
+        }
     })();
+
 
     function initNetwork(containerId, overrides) {
         if (typeof particlesJS !== "function") return null;
         const cfg = {
             particles: {
-                number: { value: isMobile ? 40 : 80, density: { enable: true, value_area: 800 } },
+                number: { value: isMobile ? 80 : 200, density: { enable: true, value_area: 800 } },
                 color: { value: "#235F2A" },
                 shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
                 opacity: { value: 0.5, random: false },
@@ -29,7 +37,7 @@
                     grab: { distance: 400, line_linked: { opacity: 1 } },
                     bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
                     repulse: { distance: 200, duration: 0.4 },
-                    push: { particles_nb: 4 },
+                    push: { particles_nb: 1 },
                     remove: { particles_nb: 2 }
                 }
             },
@@ -48,11 +56,11 @@
         if (typeof particlesJS !== "function") return null;
         particlesJS(containerId, {
             particles: {
-                number: { value: isMobile ? 120 : 160, density: { enable: true, value_area: 800 } },
+                number: { value: isMobile ? 160 : 160, density: { enable: true, value_area: 800 } },
                 color: { value: ["#006837", "#acc638"] },
                 shape: { type: "circle" },
-                opacity: { value: 0.9, random: false },
-                size: { value: isMobile ? 1.9 : 2.2, random: false },
+                opacity: { value: 0.9, random: true },
+                size: { value: isMobile ? 2.2 : 2.2, random: false },
                 line_linked: { enable: false },
                 move: { enable: false }
             },
@@ -80,7 +88,7 @@
             let rafId = 0;
             let running = true;
             let lastDrawMs = 0;
-            const targetFPS = isMobile ? 30 : 60;
+            const targetFPS = isMobile ? 23 : 30;
             const minFrameInterval = 1000 / targetFPS;
 
             const rungColor = "#7fb343";

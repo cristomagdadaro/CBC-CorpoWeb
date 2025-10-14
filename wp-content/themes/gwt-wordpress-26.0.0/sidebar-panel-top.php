@@ -8,7 +8,7 @@
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
 <div class="relative overflow-hidden">
     <?php if (is_front_page()): ?>
-    <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
+        <!--<div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>-->
     <?php endif; ?>
 <div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
     <div class="row z-[99]">
@@ -97,7 +97,7 @@
 
             <?php
             // Use dynamic device-aware excerpt length (phone/tablet/desktop) via 'auto'
-            echo do_shortcode('[gwt_latest_posts posts="7"  excerpt_length="auto" show_date="0" show_image="1" show_author="0" post_layout="grid"]');
+            echo do_shortcode('[gwt_latest_posts posts="7"  excerpt_length="auto" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
             ?>
 
 

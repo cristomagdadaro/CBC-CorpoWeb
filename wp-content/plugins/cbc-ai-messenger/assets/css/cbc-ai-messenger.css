@@ -7,7 +7,7 @@
 .cbc-ai-log{min-height:80px;margin-bottom:8px;max-height:320px;overflow:auto; background: #f1f1f1}
 .cbc-ai-msg{margin:6px 0;;border-radius:6px;line-height:1.4}
 .cbc-ai-user{background:#f1f5ff}
-.cbc-ai-bot{background:#f7f7f7}
+.cbc-ai-bot{background:#ffffff}
 .cbc-ai-form{display:flex;gap:8px;flex-wrap:wrap; flex-direction: column}
 .cbc-ai-input{flex:1;min-width:200px; margin: 0; height: fit-content; overflow-y: scroll; min-height: 150px; padding: 15px}
 .cbc-ai-input-name, .cbc-ai-input-email{flex:1;min-width:160px; margin: 0; padding: 15px}

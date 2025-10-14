@@ -2516,7 +2516,7 @@ html {
   background-color: #def2f8;
 }
 .callout.secondary {
-  background-color: #f9f9f9;
+  background-color: #f6f6f6;
 }
 .callout.alert {
   background-color: #fcd6d6;
@@ -2746,7 +2746,7 @@ table.scroll {
   overflow-x: auto;
 }
 table.hover tr:hover {
-  background-color: #f9f9f9;
+  background-color: #f6f6f6;
 }
 table.hover tr:nth-of-type(even):hover {
   background-color: #ececec;

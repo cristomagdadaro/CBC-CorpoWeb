@@ -199,7 +199,7 @@ function render_block_core_latest_posts( $attributes ) {
 		if ( $is_grid_layout ) {
 			if ( $is_first_group ) {
 				// First 3 posts: two-column card with image
-				$container_classes = $base_container . 'flex items-center border hover:border-[#1f5d2b] hover:shadow-lg';
+				$container_classes = $base_container . 'flex items-center hover:border-[#1f5d2b] hover:shadow-lg ';
 				$list_items_markup .= $render_item(
 					$post,
 					$attributes,
@@ -210,7 +210,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 			} else {
 				// Remaining posts: single-column card, include image but hide it on md+
-				$container_classes = $base_container . 'flex items-center p-0';
+				$container_classes = $base_container . 'flex items-center p-0 ';
 				$list_items_markup .= $render_item(
 					$post,
 					$attributes,
@@ -256,7 +256,7 @@ function render_block_core_latest_posts( $attributes ) {
 	// List wrapper classes
 	if ( $is_grid_layout ) {
 		// Force a 2-column grid wrapper for grid layout
-		$classes = array( 'wp-block-latest-posts__list','grid','grid-cols-1','md:grid-cols-2','gap-2','md:gap-5' );
+		$classes = array( 'wp-block-latest-posts__list','grid','grid-cols-1','md:grid-cols-2','gap-2','md:gap-6' );
 	} else {
 		// Previous default for non-grid
 		$classes = array( 'wp-block-latest-posts__list','gap-3','flex','flex-col','grid','grid-cols-1', 'md:gap-3');
