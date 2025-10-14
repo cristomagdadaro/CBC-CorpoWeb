@@ -356,13 +356,11 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                 function next() {
                     currentIndex = (currentIndex + 1) % itemCount;
                     updateCarousel();
-                    triggerHapticFeedback();
                 }
 
                 function prev() {
                     currentIndex = (currentIndex - 1 + itemCount) % itemCount;
                     updateCarousel();
-                    triggerHapticFeedback();
                 }
 
                 function triggerHapticFeedback() {
@@ -370,7 +368,12 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                     if ('vibrate' in navigator) {
                         // Medium-strong vibration pattern: vibrate for 40ms
                         // This provides a noticeable tactile response without being too aggressive
-                        navigator.vibrate(40);
+                        // Note: Only works after user interaction (touch, click, keyboard)
+                        try {
+                            navigator.vibrate(40);
+                        } catch (e) {
+                            // Silently fail if vibration is blocked
+                        }
                     }
                 }
 
@@ -399,8 +402,8 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                 }
 
                 // Event listeners
-                if (prevBtn) prevBtn.addEventListener('click', () => { pause(); prev(); });
-                if (nextBtn) nextBtn.addEventListener('click', () => { pause(); next(); });
+                if (prevBtn) prevBtn.addEventListener('click', () => { pause(); prev(); triggerHapticFeedback(); });
+                if (nextBtn) nextBtn.addEventListener('click', () => { pause(); next(); triggerHapticFeedback(); });
 
                 carousel.addEventListener('mouseenter', pause);
                 carousel.addEventListener('mouseleave', resume);
@@ -411,10 +414,12 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                         e.preventDefault();
                         pause();
                         prev();
+                        triggerHapticFeedback();
                     } else if (e.key === 'ArrowRight') {
                         e.preventDefault();
                         pause();
                         next();
+                        triggerHapticFeedback();
                     }
                 });
 
@@ -434,8 +439,10 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                     if (Math.abs(diff) > 50) {
                         if (diff > 0) {
                             next();
+                            triggerHapticFeedback();
                         } else {
                             prev();
+                            triggerHapticFeedback();
                         }
                     }
                 }, { passive: true });
@@ -446,8 +453,10 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                     pause();
                     if (e.deltaY < 0) {
                         next();
+                        triggerHapticFeedback();
                     } else {
                         prev();
+                        triggerHapticFeedback();
                     }
                 }, { passive: false });
 

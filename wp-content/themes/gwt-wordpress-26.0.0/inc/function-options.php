@@ -1092,18 +1092,18 @@ if (!function_exists('govph_displayoptions')) {
                                 <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
                             <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
-                                <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" />
+                                <img draggable="false" alt="' . ( $option['govph_agency_name'] ?? 'Company Name' ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
                         </div>
                          <div class="flex gap-1 relative md:hidden drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
                             <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                             <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[20%] min-w-[2rem] mmx-0 md:mx-auto" /> 
-                            <img draggable="false" alt="' . $option['govph_agency_name'] . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
+                            <img draggable="false" alt="' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                         </div>
                         <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white">
                             <span id="agency-heading" class="sm:text-sm text-[0.5rem] uppercase font-light opacity-75">Department of Agriculture</span>
-                            <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] font-league font-extrabold">' . $option['govph_agency_name'] . '</span>
-                            <span id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize font-light">' . $option['govph_agency_tagline'] . '</span>
+                            <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] font-league font-extrabold">' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . '</span>
+                            <span id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize font-light">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
                         </div>
                     </a>';
 
@@ -1278,35 +1278,35 @@ if (!function_exists('govph_displayoptions')) {
 				echo $val;
 				break;
 			case 'govph_slider_full':
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ( ( $option['govph_slider_fullwidth'] ?? 'true') ) {
 					$val = 'active';
 
 					return $val;
 				}
 				break;
 			case 'govph_slider_start':
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ( ( $option['govph_slider_fullwidth'] ?? 'true') ) {
 					echo '';
 				} elseif ( $option['govph_slider_fullwidth'] != 'true' || is_active_sidebar( 'banner-section-1' ) || is_active_sidebar( 'banner-section-2' ) ) {
 					echo '<div class="row">';
 				}
 				break;
 			case 'govph_slider_end':
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ( ( $option['govph_slider_fullwidth'] ?? 'true') ) {
 					echo '';
 				} elseif ( $option['govph_slider_fullwidth'] != 'true' || is_active_sidebar( 'banner-section-1' ) || is_active_sidebar( 'banner-section-2' ) ) {
 					echo '</div>';
 				}
 				break;
 			case 'govph_banner_title_start':
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ( ( $option['govph_slider_fullwidth'] ?? 'true') ) {
 					echo '<div class="row">';
 				} elseif ( $option['govph_slider_fullwidth'] != 'true' ) {
 					echo '';
 				}
 				break;
 			case 'govph_banner_title_end':
-				if ( $option['govph_slider_fullwidth'] == 'true' ) {
+				if ( ( $option['govph_slider_fullwidth'] ?? 'true') ) {
 					echo '</div>';
 				} elseif ( $option['govph_slider_fullwidth'] != 'true' ) {
 					echo '';
