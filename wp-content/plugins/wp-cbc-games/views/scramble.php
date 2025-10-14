@@ -30,7 +30,7 @@
         <button id="start-btn" class="btn-primary font-bold p-3 rounded-lg text-lg">Start Game</button>
     </div>
 
-    <div id="game-screen" class="flex flex-col gap-5">
+    <div id="game-screen" class="hidden flex flex-col gap-5">
         <div class="flex justify-between items-center mb-4 text-green-700">
             <div id="word-info" class="text-lg font-semibold">Word 1/5</div>
             <div id="timer" class="text-xl font-bold">10s</div>

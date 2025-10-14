@@ -57,9 +57,18 @@
 
 /* In fullscreen, use a computed card size so all rows fit vertically */
 #cbc-memory-app:fullscreen #game-grid { grid-auto-rows: var(--cbc-card-size, 96px); }
-#cbc-memory-app:fullscreen .card { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
+#cbc-memory-app:fullscreen .btn-option { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
 #cbc-memory-app:-webkit-full-screen #game-grid { grid-auto-rows: var(--cbc-card-size, 96px); }
 #cbc-memory-app:-webkit-full-screen .card { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
+
+#cbc-quiz-app:fullscreen #progress, #cbc-quiz-app:fullscreen #score { font-size: 3rem; }
+#cbc-quiz-app:fullscreen #question-text { font-size: 3rem; }
+#cbc-quiz-app:-webkit-full-screen #question-text { font-size: 3rem; }
+#cbc-quiz-app:fullscreen #options-container { grid-auto-rows: var(--cbc-card-size, 96px); }
+#cbc-quiz-app:fullscreen .btn-option { height: var(--cbc-card-size, 96px); aspect-ratio: auto; font-size: 2.25rem; }
+#cbc-quiz-app:-webkit-full-screen #options-container { grid-auto-rows: var(--cbc-card-size, 96px); }
+#cbc-quiz-app:-webkit-full-screen .btn-option { height: var(--cbc-card-size, 96px); aspect-ratio: auto; }
+
 
 /* Memory game cards */
 #cbc-memory-app .card {

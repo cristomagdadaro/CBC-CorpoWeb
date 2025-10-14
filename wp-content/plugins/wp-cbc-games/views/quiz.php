@@ -34,12 +34,12 @@
         </button>
     </div>
 
-    <div id="quiz-screen" class="hidden">
-        <div class="flex justify-between items-center mb-4">
+    <div id="quiz-screen" class="hidden flex flex-col gap-5">
+        <div class="quiz-game-header flex justify-between items-center mb-4">
             <div id="progress" class="text-sm font-semibold text-green-700">Question 1/10</div>
             <div id="score" class="text-sm font-semibold text-green-700">Score: 0</div>
         </div>
-        <div id="question-container" class="mb-6">
+        <div id="question-container" class="mb-6 h-fit">
             <p id="question-text" class="text-xl md:text-2xl font-semibold text-gray-800"></p>
         </div>
         <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
