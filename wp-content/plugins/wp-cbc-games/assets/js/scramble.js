@@ -20,6 +20,13 @@
         const leaderboardForm = document.getElementById('scramble-leaderboard-form');
         const leaderboardBody = document.getElementById('scramble-leaderboard-body');
 
+        // Sounds
+        const bgMusic = document.getElementById('cbc-scramble-bg-music');
+        const correctSound = document.getElementById('cbc-scramble-correct-sound');
+        const wrongSound = document.getElementById('cbc-scramble-wrong-sound');
+        const winSound = document.getElementById('cbc-scramble-win-sound');
+        const loseSound = document.getElementById('cbc-scramble-lose-sound');
+
         // Fullscreen toggle
         const fsBtn = root.querySelector('#scramble-fullscreen-btn');
         const d = document;
@@ -82,6 +89,7 @@
         }
 
         function startGame() {
+            bgMusic?.play();
             wordIndex = 0;
             score = 0;
             currentWords = [];
@@ -149,6 +157,7 @@
                     clearInterval(countdownTimer);
                     feedbackMessage.textContent = `Time's up! The word was: ${currentCorrectWord}`;
                     feedbackMessage.style.color = '#DC2626';
+                    wrongSound?.play();
                     wordIndex++;
                     setTimeout(loadNextWord, 1000);
                 }
@@ -164,12 +173,14 @@
                 score++;
                 feedbackMessage.textContent = 'Correct!';
                 feedbackMessage.style.color = '#16A34A';
+                correctSound?.play();
                 guessInput.disabled = true;
                 wordIndex++;
                 setTimeout(loadNextWord, 800);
             } else {
                 feedbackMessage.textContent = 'Incorrect, try again!';
                 feedbackMessage.style.color = '#DC2626';
+                wrongSound?.play();
             }
         }
 
@@ -183,12 +194,22 @@
         }
 
         function endGame() {
+            bgMusic?.pause();
+            if (bgMusic) {
+                bgMusic.currentTime = 0;
+            }
             clearInterval(countdownTimer);
             gameScreen.classList.add('hidden');
             endScreen.classList.remove('hidden');
             endMessage.textContent = 'Game Over!';
             finalScoreDisplay.textContent = `Your final score: ${score} / ${currentWords.length}`;
             scrambleEndMs = Math.round(performance.now() - (scrambleStartAt || performance.now()));
+
+            if (score === 5) {
+                winSound?.play();
+            } else {
+                loseSound?.play();
+            }
         }
 
         function renderLeaderboard(rows) {

@@ -18,6 +18,38 @@
         const leaderboardForm = document.getElementById('quiz-leaderboard-form');
         const leaderboardBody = document.getElementById('quiz-leaderboard-body');
 
+        // Audio controls
+        const masterVolume = document.getElementById('cbc-quiz-master-volume');
+        const muteMusic = document.getElementById('cbc-quiz-mute-bg-music');
+        const muteSfx = document.getElementById('cbc-quiz-mute-sfx');
+
+        // Sounds
+        const bgMusic = document.getElementById('cbc-quiz-bg-music');
+        const correctSound = document.getElementById('cbc-quiz-correct-sound');
+        const wrongSound = document.getElementById('cbc-quiz-wrong-sound');
+        const winSound = document.getElementById('cbc-quiz-win-sound');
+        const loseSound = document.getElementById('cbc-quiz-lose-sound');
+
+        const sfx = [correctSound, wrongSound, winSound, loseSound];
+
+        function applyVolume() {
+            const master = parseFloat(masterVolume.value) || 0.5;
+            if (bgMusic) {
+                bgMusic.volume = master;
+                bgMusic.muted = muteMusic.checked;
+            }
+            sfx.forEach(s => {
+                if (s) {
+                    s.volume = master;
+                    s.muted = muteSfx.checked;
+                }
+            });
+        }
+
+        masterVolume.addEventListener('input', applyVolume);
+        muteMusic.addEventListener('change', applyVolume);
+        muteSfx.addEventListener('change', applyVolume);
+
         // Fullscreen toggle
         const fsBtn = root.querySelector('#quiz-fullscreen-btn');
         const d = document;
@@ -153,6 +185,8 @@
             optionsContainer.innerHTML = '';
             progressText.textContent = '';
 
+            bgMusic?.play();
+
             // Show quiz screen first so loading state is visible
             startScreen.classList.add('hidden');
             endScreen.classList.add('hidden');
@@ -212,43 +246,48 @@
                 button.classList.add('correct');
                 feedbackText.textContent = 'Correct!';
                 feedbackText.style.color = '#16A34A';
+                correctSound?.play();
             } else {
                 button.classList.add('incorrect');
                 feedbackText.textContent = `Wrong! The answer is ${correct}`;
                 feedbackText.style.color = '#DC2626';
+                wrongSound?.play();
                 buttons.forEach(b => {
-                    if (b.textContent === correct) {
-                        b.classList.add('correct');
-                    }
+                    if (b.textContent === correct) b.classList.add('correct');
                 });
             }
 
-            setTimeout(() => {
-                questionIndex++;
-                showQuestion();
-            }, 1200);
+            questionIndex++;
+            setTimeout(showQuestion, 1500);
         }
 
         function endGame() {
+            bgMusic?.pause();
+            if (bgMusic) {
+                bgMusic.currentTime = 0;
+            }
             quizScreen.classList.add('hidden');
             endScreen.classList.remove('hidden');
             finalScoreText.textContent = `${score} / ${currentQuestions.length}`;
             quizEndMs = Math.round(performance.now() - (quizStartAt || performance.now()));
-            if (score >= 8) {
+            if (score > 7) {
                 resultMessage.textContent = 'Congratulations! You win a prize! Your knowledge is outstanding!';
                 resultMessage.style.color = '#16A34A';
+                winSound?.play();
             } else {
                 resultMessage.textContent = 'Great effort! Keep learning and try again to win the prize.';
                 resultMessage.style.color = '#525252';
+                loseSound?.play();
             }
         }
 
         // Prefill date and load leaderboard on ready
-        document.getElementById('quiz-played-at')?.setAttribute('value', today());
+        document.getElementById('quiz-played-at').value = today();
         loadLeaderboard();
-        leaderboardForm?.addEventListener('submit', submitLeaderboard);
+        applyVolume();
 
-        startBtn?.addEventListener('click', startGame);
-        restartBtn?.addEventListener('click', startGame);
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        leaderboardForm.addEventListener('submit', submitLeaderboard);
     });
 })();

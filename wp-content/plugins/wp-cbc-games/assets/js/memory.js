@@ -17,6 +17,38 @@
         const leaderboardForm = document.getElementById('memory-leaderboard-form');
         const leaderboardBody = document.getElementById('memory-leaderboard-body');
 
+        // Audio controls
+        const masterVolume = document.getElementById('cbc-memory-master-volume');
+        const muteMusic = document.getElementById('cbc-memory-mute-bg-music');
+        const muteSfx = document.getElementById('cbc-memory-mute-sfx');
+
+        // Sounds
+        const bgMusic = document.getElementById('cbc-memory-bg-music');
+        const correctSound = document.getElementById('cbc-memory-correct-sound');
+        const winSound = document.getElementById('cbc-memory-win-sound');
+        const loseSound = document.getElementById('cbc-memory-lose-sound');
+        const flipSound = document.getElementById('cbc-memory-flip-sound');
+
+        const sfx = [correctSound, winSound, loseSound, flipSound];
+
+        function applyVolume() {
+            const master = parseFloat(masterVolume.value) || 0.5;
+            if (bgMusic) {
+                bgMusic.volume = master;
+                bgMusic.muted = muteMusic.checked;
+            }
+            sfx.forEach(s => {
+                if (s) {
+                    s.volume = master;
+                    s.muted = muteSfx.checked;
+                }
+            });
+        }
+
+        masterVolume.addEventListener('input', applyVolume);
+        muteMusic.addEventListener('change', applyVolume);
+        muteSfx.addEventListener('change', applyVolume);
+
         // Fullscreen toggle
         const fsBtn = root.querySelector('#memory-fullscreen-btn');
         const d = document;
@@ -166,6 +198,7 @@
             if (isProcessing || flippedCards.length >= 2 || this.classList.contains('flipped') || this.classList.contains('matched')) return;
             this.classList.add('flipped');
             flippedCards.push(this);
+            flipSound?.play();
             if (flippedCards.length === 2) {
                 isProcessing = true;
                 setTimeout(checkMatch, 600);
@@ -191,6 +224,7 @@
                 c2.classList.add('matched');
                 matchedPairs++;
                 matchesDisplay.textContent = `Matches: ${matchedPairs} / 8`;
+                correctSound?.play();
                 if (matchedPairs === 8) {
                     endGame('win');
                 }
@@ -204,6 +238,7 @@
         }
 
         function startGame() {
+            bgMusic?.play();
             matchedPairs = 0;
             flippedCards = [];
             isProcessing = false;
@@ -235,6 +270,10 @@
         }
 
         function endGame(result) {
+            bgMusic?.pause();
+            if (bgMusic) {
+                bgMusic.currentTime = 0;
+            }
             clearInterval(countdown);
             memoryEndMs = Math.round(performance.now() - (memoryStartAt || performance.now()));
             // Clear fullscreen card sizing when leaving game screen
@@ -245,10 +284,12 @@
                 endMessage.textContent = 'You Win!';
                 endMessage.style.color = '#16A34A';
                 finalStats.textContent = 'You matched all pairs in time!';
+                winSound?.play();
             } else {
                 endMessage.textContent = 'Game Over';
                 endMessage.style.color = '#DC2626';
                 finalStats.textContent = `Time ran out. You found ${matchedPairs} out of 8 matches.`;
+                loseSound?.play();
             }
         }
 
@@ -332,6 +373,7 @@
         document.getElementById('memory-played-at')?.setAttribute('value', today());
         loadLeaderboard();
         leaderboardForm?.addEventListener('submit', submitLeaderboard);
+        applyVolume();
 
         startBtn?.addEventListener('click', startGame);
         restartBtn?.addEventListener('click', startGame);
