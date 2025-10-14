@@ -6,8 +6,12 @@
  */
 ?>
 <?php if(is_active_sidebar('panel-top-1') || is_active_sidebar('panel-top-2') || is_active_sidebar('panel-top-3') || is_active_sidebar('panel-top-4')): ?>
-<div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
+<div class="relative overflow-hidden">
+    <?php if (is_front_page()): ?>
     <div id="particles-js-network" class="absolute top-0 left-0 w-full min-h-[600vh] h-screen "></div>
+    <div id="particles-js-helix" class="absolute hidden top-0 left-0 w-full min-h-[600vh] h-screen" data-helix-position="left"></div>
+    <?php endif; ?>
+<div id="panel-top" class="anchor relative overflow-hidden" role="complementary">
     <div class="row z-[99]">
         <?php if(is_active_sidebar('panel-top-1') && is_front_page()): ?>
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
@@ -27,7 +31,7 @@
                         <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight hidden sm:block">
                             DA-CROP BIOTECHNOLOGY CENTER
                         </h3>
-                        <p class="mt-2 text-justify md:text-left sm:leading-relaxed">
+                        <p class="mt-2 text-justify md:text-left sm:leading-relaxed backdrop-blur-sm">
                             DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
                             Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
                             biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,

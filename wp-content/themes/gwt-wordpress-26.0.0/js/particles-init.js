@@ -33,7 +33,7 @@
                     remove: { particles_nb: 2 }
                 }
             },
-            retina_detect: isMobile ? false : true
+            retina_detect: !isMobile
         };
         // Apply shallow overrides if provided
         if (overrides && typeof overrides === "object") {
@@ -48,16 +48,16 @@
         if (typeof particlesJS !== "function") return null;
         particlesJS(containerId, {
             particles: {
-                number: { value: isMobile ? 100 : 160, density: { enable: true, value_area: 800 } },
+                number: { value: isMobile ? 120 : 160, density: { enable: true, value_area: 800 } },
                 color: { value: ["#006837", "#acc638"] },
                 shape: { type: "circle" },
                 opacity: { value: 0.9, random: false },
-                size: { value: isMobile ? 1.8 : 2.2, random: false },
+                size: { value: isMobile ? 1.9 : 2.2, random: false },
                 line_linked: { enable: false },
                 move: { enable: false }
             },
             interactivity: { detect_on: "canvas", events: { onhover: { enable: false }, onclick: { enable: false }, resize: true } },
-            retina_detect: isMobile ? false : true
+            retina_detect: !isMobile
         });
 
         function startWhenReady() {
@@ -95,11 +95,13 @@
             function getParams() {
                 const w = canvas.width;
                 const h = canvas.height;
-                const amplitude = Math.max(40, Math.min(0.22 * w, 110));
+                const amplitude = isMobile
+                    ? Math.max(22, Math.min(0.12 * w, 80))
+                    : Math.max(40, Math.min(0.22 * w, 110));
                 // Choose center X based on requested position
                 let centerX;
-                const sideTarget = Math.max(amplitude + 20, Math.round(w * 0.25));
-                const rightTarget = Math.min(w - amplitude - 20, Math.round(w * 0.75));
+                const sideTarget = Math.max(amplitude + 100, Math.round(w * 0.20));
+                const rightTarget = Math.min(w - amplitude - 100, Math.round(w * 0.80));
                 switch (position) {
                     case 'left':
                         centerX = sideTarget;
@@ -112,7 +114,7 @@
                         break;
                 }
                 const verticalStep = isMobile
-                    ? Math.max(22, Math.min(36, Math.round(h / 20)))
+                    ? Math.max(16, Math.min(24, Math.round(h / 26)))
                     : Math.max(16, Math.min(26, Math.round(h / 24)));
                 return { w, h, centerX, amplitude, verticalStep };
             }
@@ -153,23 +155,24 @@
                 const maxPairs = Math.floor(particles.length / 2);
                 pairs = Math.min(pairs, maxPairs);
 
-                // Keep visual tweaks from previous tasks
-                const backFade = 0.15;
+                // Keep visual tweaks from previous tasks (tuned for mobile coherence)
+                const backFade = isMobile ? 0.3 : 0.15;
                 const sizeBase = isMobile ? 2.6 : 4.2;
-                const sizeAmp = isMobile ? 2.0 : 3.8;
+                const sizeAmp = isMobile ? 1.6 : 3.8;
                 const twistSpeed = 0.01; // 50% slower already applied previously
                 const omegaY = 0.012;
-                const scrollSpeed = 10; // scroll slower already applied
+                const scrollSpeed = isMobile ? 8 : 10; // slower on mobile for stability
                 const phaseT = time * twistSpeed;
                 const yOffset = (time * scrollSpeed) % verticalStep;
 
                 // Compute snake-like bend parameters once per frame
-                const desiredBend = Math.min(50 * w, 100);
+                const desiredBend = isMobile ? Math.min(0.06 * w, 26) : Math.min(0.18 * w, 100);
                 const margin = 12;
                 const maxSafeBend = Math.max(0, (w / 2) - amplitude - margin);
                 const bendAmp = Math.min(desiredBend, maxSafeBend);
                 const bendFreq1 = 0.004; // low-frequency lateral drift
                 const bendFreq2 = 0.0073; // second incommensurate freq for pseudo-randomness
+                const bend2Factor = isMobile ? 0.45 : 0.6;
                 const bendPhase = time * 0.25; // slow global phase for wandering
 
                 for (let i = 0; i < pairs; i++) {
@@ -177,10 +180,10 @@
                     const s = Math.sin(omegaY * y + phaseT);
                     const c = Math.cos(omegaY * y + phaseT);
 
-                    // Centerline wanders like a snake across the canvas
+                    // Centerline wanders like a snake across the canvas (reduced on mobile)
                     const centerline = centerX
                         + bendAmp * Math.sin(bendFreq1 * y + bendPhase)
-                        + bendAmp * 0.6 * Math.sin(bendFreq2 * y - bendPhase * 0.7);
+                        + bendAmp * bend2Factor * Math.sin(bendFreq2 * y - bendPhase * 0.7);
 
                     const offset = amplitude * s;
                     const leftX = centerline - offset;
@@ -217,9 +220,9 @@
 
                 ctx.save();
                 ctx.globalAlpha = 0.55;
-                ctx.lineWidth = isMobile ? 1.0 : 1.2;
+                ctx.lineWidth = isMobile ? 0.9 : 1.2;
                 ctx.strokeStyle = rungColor;
-                const rungStep = isMobile ? 2 : 1; // draw fewer rungs on mobile
+                const rungStep = 1; // draw every rung for tighter look on mobile
                 for (let i = 0; i < pairs; i += rungStep) {
                     const a = p.particles.array[i * 2];
                     const b = p.particles.array[i * 2 + 1];
@@ -239,11 +242,10 @@
 
             rafId = requestAnimationFrame(animate);
 
-            const dispose = () => {
+            return () => {
                 running = false;
                 if (rafId) cancelAnimationFrame(rafId);
             };
-            return dispose;
         }
         return startWhenReady();
     }
@@ -280,4 +282,3 @@
         boot();
     }
 })();
-

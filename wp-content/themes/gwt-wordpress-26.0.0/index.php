@@ -44,7 +44,7 @@ include_once( 'inc/banner.php' );
 
         </div>
     </div>
-
+</div>
 
 <?php add_shortcode( 'custom_post_loop', 'custom_post_layout' );
 govph_displayoptions( 'govph_panel_bottom' ); ?>

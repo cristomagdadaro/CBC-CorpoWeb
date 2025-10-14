@@ -124,8 +124,6 @@
             </div>
         </div>
     </aside>
-
-
     <?php do_action( 'before_sidebar' ); ?>
     <?php if ( is_active_sidebar( 'right-sidebar' ) ) {
         dynamic_sidebar( 'right-sidebar' );
