@@ -1,0 +1,205 @@
+/*
+ * Theme Name:		Modern-GWT-Wordpress
+ * Theme URI:		https://i.gov.ph
+ * Description:		Custom WordPress theme based on the draft Unified Web Content Policy 
+ *					prepared by the PCDSPO, DOST-ASTI, and DOST-ICTO. Theme is built on 
+ *					HTML5 responsive WordPress framework based on ZURB's Foundation.
+ *                  Updated by NGP and GOSD-GWHS
+ * Version:			26.0.0
+ * Author:			iGovPhil | Cristo Rey C. Magdadaro
+ * Author URI:		https://i.gov.ph
+ * License:			MIT License
+ * License URI:		https://www.opensource.org/licenses/mit-license.php
+ * Tags: 			theme-options, rtl-language-support, featured-images, editor-style, custom-menu, 
+ *					responsive-layout, right-sidebar, left-sidebar, one-column, two-columns, three-columns
+ */
+
+/** Your style here **/
+.text-shadow-white {
+  text-shadow: 2px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+#post-container {
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+#post-container::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, and Opera */
+}
+
+.show-bullet {
+	list-style-type: disc; 
+	margin: 0; 
+	padding: 0 0 0 20px;
+}
+.show-bullet > li {
+	display: list-item; 
+	list-style-position: inside;
+	cursor: default;
+}
+
+
+.accordion {
+  background-color: #1A4D2E;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+  margin: 1px;
+}
+
+.panel > ul > li > .accordion {
+  background-color: #E8DFCA;
+  color: #1A4D2E;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+  margin: 1px;
+}
+
+.active, .accordion:hover {
+  background-color: #4F6F52;
+}
+
+.accordion:after {
+  content: '\002B';
+  color: #fff;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+.panel {
+  background-color: transparent;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+/* Ensure banner widget areas are visible on small screens even if framework utilities hide them */
+@media screen and (max-width: 39.9375em) {
+  .container-banner .banner-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: fit !important;
+  }
+}
+
+/* -----------------------------
+   Slide animation utilities (gwt)
+   Usage: add attribute data-slide="left|right|top|bottom" to element
+   Optional customization via CSS variables on the element:
+     --gwt-slide-duration: 400ms
+     --gwt-slide-easing: cubic-bezier(.22,.9,.36,1)
+     --gwt-slide-distance: 100% (use px or %)
+   The JS helper will add the .gwt-slide-init class on load and .gwt-slide-in-* when in view.
+   ----------------------------- */
+:root{ --gwt-slide-duration: 400ms; --gwt-slide-easing: cubic-bezier(.22,.9,.36,1); --gwt-slide-distance: 100%; }
+
+/* base marker for data-slide elements */
+
+/* Initial state: offscreen and invisible */
+[data-slide].gwt-slide-init{
+  --gwt-slide-duration: var(--gwt-slide-duration);
+  --gwt-slide-easing: var(--gwt-slide-easing);
+  transition: transform var(--gwt-slide-duration) var(--gwt-slide-easing), opacity var(--gwt-slide-duration) var(--gwt-slide-easing);
+  opacity: 0;
+}
+
+[data-slide="left"].gwt-slide-init{ transform: translateX(calc(-1 * var(--gwt-slide-distance))); }
+[data-slide="right"].gwt-slide-init{ transform: translateX(var(--gwt-slide-distance)); }
+[data-slide="top"].gwt-slide-init{ transform: translateY(calc(-1 * var(--gwt-slide-distance))); }
+[data-slide="bottom"].gwt-slide-init{ transform: translateY(var(--gwt-slide-distance)); }
+
+/* When JS marks element as 'in' add the direction-specific class */
+[data-slide="left"].gwt-slide-init.gwt-slide-in{ transform: translateX(0); opacity:1; }
+[data-slide="right"].gwt-slide-init.gwt-slide-in{ transform: translateX(0); opacity:1; }
+[data-slide="top"].gwt-slide-init.gwt-slide-in{ transform: translateY(0); opacity:1; }
+[data-slide="bottom"].gwt-slide-init.gwt-slide-in{ transform: translateY(0); opacity:1; }
+
+/* Convenience immediate classes */
+.gwt-slide-in{ transform: none !important; opacity:1 !important; transition: none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  [data-slide].gwt-slide-init,
+  [data-slide].gwt-slide-init.gwt-slide-in,
+  .gwt-slide-in{ transition: none !important; transform: none !important; opacity:1 !important; }
+}
+
+
+/* Container setup */
+.scrolling-container {
+    width: 100%;                 /* Full width */
+    overflow: hidden;            /* Hide overflowing content */
+    position: relative;
+    background: #fff;            /* Optional background */
+}
+
+/* Track that moves */
+.scrolling-track {
+    display: flex;
+    width: max-content;          /* Ensure content takes full width */
+    animation: scroll-left 40s linear infinite;
+}
+
+/* Each content block */
+.scrolling-content {
+    flex: 0 0 auto;              /* Prevent shrinking */
+    margin-right: 20px;          /* Spacing between iframes */
+}
+
+/* Animation */
+@keyframes scroll-left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%); /* Move left by half of its width */
+    }
+}
+
+.pm-popular-posts-titles { 
+	list-style: none; 
+	margin: 0; 
+	padding: 0; 
+} 
+
+.pm-popular-posts-item { 
+	display: flex;
+	align-items: center; 
+	gap: 0.5rem; 
+	padding: 4px 0; 
+	border-bottom: 1px solid #e2e2e2; 
+	line-height: 1;
+} 
+
+.pm-popular-posts-item:last-child { 
+	border-bottom: none; 
+} 
+
+.pm-popular-posts-score { 
+	font-weight: 600; 
+	font-size: 0.75rem; 
+	background: #1f5d2b; 
+	color: #fff; 
+	min-width: 2.2rem; 
+	text-align: center; 
+	padding: 2px 6px; 
+	border-radius: 3px; 
+	line-height: 1.2; 
+}
+
+
