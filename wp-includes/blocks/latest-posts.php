@@ -98,7 +98,7 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
-		$item_markup .= '<div class="flex flex-col h-full justify-center my-auto p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
+		$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
 
 		$item_markup .= sprintf(
 			'<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
@@ -180,11 +180,11 @@ function render_block_core_latest_posts( $attributes ) {
 	foreach ( $recent_posts as $post ) {
 		if ( $maxCount === $count ) {
 			// Open right column container after the first three posts.
-			$list_items_markup .= '</div><div id="right-posts-list" class="flex flex-col gap-2 md:gap-5">';
+			$list_items_markup .= '</div><div id="right-posts-list" class="flex flex-col gap-3 md:gap-5">';
 		}
 
 		// Image wrapper templates with fixed responsive sizes
-		$img_wrapper_first = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+		$img_wrapper_first = '<div class="dsdsdsd overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 		// For later items in grid layout: show on small screens, hide on md+
 		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
 		// For later items in list layout: always visible
@@ -204,6 +204,8 @@ function render_block_core_latest_posts( $attributes ) {
 
 		if ( $is_grid_layout ) {
 			if ( $is_first_group ) {
+				// Image wrapper templates with responsive sizes
+				$img_wrapper_first = '<div class="overflow-hidden w-[9rem] shrink-0 md:shrink-0 md:w-full h-full md:h-[9rem] lg:h-[12rem]">%s</div>';
 				// First 3 posts: two-column card with image
 				$container_classes = $base_container . 'flex items-center hover:border-[#1f5d2b] hover:shadow-lg ';
 				$list_items_markup .= $render_item(
@@ -226,7 +228,7 @@ function render_block_core_latest_posts( $attributes ) {
 				);
 
 				if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
-					$list_items_markup .= '<div class="border-b-2 mx-4 md:block hidden"></div>';
+					$list_items_markup .= '<div class="border-b-2 mx-4 md:block hidden border-[#a2b917]"></div>';
 				}
 			}
 		} else {
