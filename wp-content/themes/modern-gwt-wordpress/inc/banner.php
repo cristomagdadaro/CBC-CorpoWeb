@@ -98,7 +98,6 @@ if ( ! ( is_home() || is_front_page() ) ) {
 <div class="banner-loading-overlay" id="bannerLoadingOverlay">
     <div class="banner-loading-spinner">
         <div class="banner-spinner"></div>
-        <p style="text-align: center; margin-top: 1rem; color: #1f5d2b; font-weight: 600;">Loading banner...</p>
     </div>
 
     <div class="container-banner p-0 banner-content-wrapper <?php echo $container_class; ?>" id="bannerContentWrapper">

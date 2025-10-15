@@ -9,7 +9,7 @@
 
 function govph_default_widget() {
 
-	$templatedir = get_template_directory_uri();
+	/*$templatedir = get_template_directory_uri();
 	$new_active_widgets = array (
 		'left-sidebar' => array (
 			'text-1',
@@ -19,7 +19,7 @@ function govph_default_widget() {
 			'text-3',
 		),
 	);
-	update_option('widget_text',array( 
+	update_option('widget_text',array(
 		1 => array(
 			'title' => 'Philippines Transparency Seal',
 			'text' => '<a href=""><img id="tp-seal" src="'. $templatedir . '/images/transparency-seal-160x160.png" alt="transparency seal logo" title="Transparency Seal"></a>',
@@ -35,6 +35,6 @@ function govph_default_widget() {
 					   </div>',
 		),
 	));
-	update_option('sidebars_widgets', $new_active_widgets);
+	update_option('sidebars_widgets', $new_active_widgets);*/
 }
 add_action('after_switch_theme', 'govph_default_widget', 10, 2);
