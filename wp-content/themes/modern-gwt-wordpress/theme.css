@@ -679,7 +679,7 @@ this is for mobile menus */
 #agency-name {
     display: block;
     position: relative;
-    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.9));
+    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.7));
 }
 
 #agency-tagline {

@@ -8,11 +8,6 @@
     --cbc-card-size: 96px;
 }
 
-/* Minimal utility fallback */
-.hidden {
-    display: none !important;
-}
-
 .quiz-container, .game-container {
     width: 100%;
     height: 100%;
