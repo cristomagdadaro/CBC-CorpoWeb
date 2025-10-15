@@ -81,6 +81,7 @@ module.exports = {
         '!font-spartan',
         '!font-dancing',
         '!font-lato',
+        'gap-6',
         '!font-montserrat',
         '!font-sans',
         'from-[#a2b917]',
