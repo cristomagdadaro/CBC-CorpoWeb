@@ -184,7 +184,7 @@ function render_block_core_latest_posts( $attributes ) {
 		}
 
 		// Image wrapper templates with fixed responsive sizes
-		$img_wrapper_first = '<div class="dsdsdsd overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+		$img_wrapper_first = '<div class="left-images overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 		// For later items in grid layout: show on small screens, hide on md+
 		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
 		// For later items in list layout: always visible
@@ -205,7 +205,7 @@ function render_block_core_latest_posts( $attributes ) {
 		if ( $is_grid_layout ) {
 			if ( $is_first_group ) {
 				// Image wrapper templates with responsive sizes
-				$img_wrapper_first = '<div class="overflow-hidden w-[9rem] shrink-0 md:shrink-0 md:w-full h-full md:h-[9rem] lg:h-[12rem]">%s</div>';
+				$img_wrapper_first = '<div class="overflow-hidden rounded-md w-[9rem] shrink-0 md:shrink-0 md:w-full h-full md:h-[9rem] lg:h-[12rem]">%s</div>';
 				// First 3 posts: two-column card with image
 				$container_classes = $base_container . 'flex items-center hover:border-[#1f5d2b] hover:shadow-lg ';
 				$list_items_markup .= $render_item(

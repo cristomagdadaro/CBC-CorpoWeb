@@ -118,7 +118,7 @@
                                     <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center</a>
                                 </li>
                                 <li>
-                                    <span class="text-white opacity-50">Headquarter:</span>
+                                    <span class="text-white opacity-50">Headquarters:</span>
                                     <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a>
                                 </li>
                             </ul>

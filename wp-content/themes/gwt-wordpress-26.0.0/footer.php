@@ -83,7 +83,7 @@
                                 <li>Telephone: <span class="text-[#2ba6cb]">(+63) 908 889 7135</span></li>
                                 <li>Email: <span class="text-[#2ba6cb]">cropbiotechcenter@gmail.com</span></spna></li>
                                 <li>Facebook: <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center </a></li>
-                                <li>Headquarter: <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a></li>
+                                <li>Headquarters: <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a></li>
                             </ul>
                         </div>
                     </div>

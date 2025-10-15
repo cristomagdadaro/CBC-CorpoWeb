@@ -104,7 +104,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             left: 50%;
             top: 50%;
             overflow: hidden;
-            border-radius: 0.75rem;
+            border-radius: 0.375rem;
             box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.45);
             will-change: transform, opacity, filter;
             min-width: 9rem;

@@ -104,6 +104,8 @@ module.exports = {
         'md:text-2xl',
         'px-5',
         'md:py-2',
+        'rounded-sm',
+        'rounded-md',
         'bg-[#1f5d2b]',
         '[&>li]:whitespace-nowrap',
         '[&>li>span]:mr-1',
