@@ -24,7 +24,7 @@
             <!-- Left Content (Text + Video) -->
             <div class="grid grid-cols-1 md:grid-cols-2 relative gap-6">
                 <!-- Video Wrapper -->
-                <div class="relative w-full aspect-video h-full z-0 mt-4 md:mt-0">
+                <div class="relative w-full aspect-video h-full mt-4 md:mt-0">
                     <iframe
                             title="Featured video"
                             class="w-full h-full border-none rounded-lg"
@@ -34,7 +34,7 @@
                     </iframe>
                 </div>
                 <!-- Text Section -->
-                <div class="flex flex-col justify-center relative z-20 bg-white/80 p-2 md:p-0 rounded-md">
+                <div class="flex flex-col justify-center relative bg-white/80 p-2 md:p-0 rounded-md">
                     <h3 class="text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center md:text-left leading-tight !font-spartan mt-3 sm:mt-0">
                         DA-CROP BIOTECHNOLOGY CENTER
                     </h3>
@@ -52,10 +52,6 @@
             </div>
 
             <?php echo govph_section_header('Core Programs', ['id' => 'core_programs_header']); ?>
-
-            <div class="widget widget_block">
-                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
 
             <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
 

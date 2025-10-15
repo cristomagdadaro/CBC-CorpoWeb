@@ -23,13 +23,13 @@
 define( 'DB_NAME', 'da-cbc' );
 
 /** Database username */
-define( 'DB_USER', 'CBC-CRISNB' );
+define( 'DB_USER', 'root' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'AO26@2021' );
+define( 'DB_PASSWORD', '' );
 
 /** Database hostname */
-define( 'DB_HOST', '192.168.36.10' );
+define( 'DB_HOST', 'localhost' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );

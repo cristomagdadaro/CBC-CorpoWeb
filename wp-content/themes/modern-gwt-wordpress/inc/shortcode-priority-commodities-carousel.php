@@ -85,7 +85,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             justify-content: center;
             align-items: center;
             perspective: 1300px;
-            min-height: 400px;
+            min-height: 380px;
             user-select: none;
             overflow: visible;
         }
@@ -197,36 +197,12 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             outline: 2px solid white;
             outline-offset: 2px;
         }
-        @media (max-width: 640px) {
-            .cbc-carousel {
-                min-height: 300px;
-            }
-            .cbc-carousel-item-title {
-                font-size: 0.875rem;
-            }
-        }
         @media (prefers-reduced-motion: reduce) {
             .cbc-carousel-item,
             .cbc-carousel-track {
                 transition: none !important;
                 animation: none !important;
             }
-        }
-        .cbc-carousel-loading {
-            text-align: center;
-            padding: 2rem;
-        }
-        .cbc-carousel-spinner {
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 3px solid rgba(255, 255, 255, 0.35);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: cbc-spin 0.9s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes cbc-spin {
-            to { transform: rotate(360deg); }
         }
         </style>
 
