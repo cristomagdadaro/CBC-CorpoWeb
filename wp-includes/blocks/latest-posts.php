@@ -141,7 +141,7 @@ function render_block_core_latest_posts( $attributes ) {
 			// - Left-column items ($is_right === false): hide on small, show on md+ => 'hidden md:block'
 			// - Right-column items ($is_right === true): always hidden => 'hidden'
 			$excerpt_base = 'wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-6 entry-content';
-			if ( $is_right ) {
+			if ($is_grid_layout && $is_right ) {
 				$excerpt_visibility = 'hidden';
 			} else {
 				$excerpt_visibility = 'hidden md:block';
