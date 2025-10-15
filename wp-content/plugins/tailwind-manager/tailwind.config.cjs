@@ -157,6 +157,7 @@ module.exports = {
         'shadow-md',
         'shadow-lg',
         'shadow-[#1f5d2b]/40',
+        'no-underline',
         // Transforms & Transitions
         'scale-75',
         'md:scale-100',

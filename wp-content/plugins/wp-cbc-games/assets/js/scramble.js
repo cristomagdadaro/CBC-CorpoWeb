@@ -20,12 +20,38 @@
         const leaderboardForm = document.getElementById('scramble-leaderboard-form');
         const leaderboardBody = document.getElementById('scramble-leaderboard-body');
 
+        // Audio controls
+        const masterVolume = document.getElementById('cbc-scramble-master-volume');
+        const muteMusic = document.getElementById('cbc-scramble-mute-bg-music');
+        const muteSfx = document.getElementById('cbc-scramble-mute-sfx');
+
         // Sounds
         const bgMusic = document.getElementById('cbc-scramble-bg-music');
         const correctSound = document.getElementById('cbc-scramble-correct-sound');
         const wrongSound = document.getElementById('cbc-scramble-wrong-sound');
         const winSound = document.getElementById('cbc-scramble-win-sound');
         const loseSound = document.getElementById('cbc-scramble-lose-sound');
+
+        const sfx = [correctSound, wrongSound, winSound, loseSound];
+
+        function applyVolume() {
+            console.log('dsds');
+            const master = parseFloat(masterVolume.value) || 0.1;
+            if (bgMusic) {
+                bgMusic.volume = master;
+                bgMusic.muted = muteMusic.checked;
+            }
+            sfx.forEach(s => {
+                if (s) {
+                    s.volume = master;
+                    s.muted = muteSfx.checked;
+                }
+            });
+        }
+
+        masterVolume.addEventListener('input', applyVolume);
+        muteMusic.addEventListener('change', applyVolume);
+        muteSfx.addEventListener('change', applyVolume);
 
         // Fullscreen toggle
         const fsBtn = root.querySelector('#scramble-fullscreen-btn');

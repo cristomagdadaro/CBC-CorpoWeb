@@ -671,7 +671,7 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
         // Parse lines: message|url|image
         $items = array();
 
-		if ($items)
+		if ($items || empty($items))
 			return '';
 
         if ( $text !== '' ) {

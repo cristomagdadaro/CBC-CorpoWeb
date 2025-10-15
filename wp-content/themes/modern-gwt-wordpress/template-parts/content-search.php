@@ -14,19 +14,19 @@
 			$content_class = 'large-12';
 			if(has_post_thumbnail()) : 
 				$content_class = 'large-9';
-				the_post_thumbnail( 'thumbnail', array( 'class' => 'thumbnail min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full hidden md:block') );
+				the_post_thumbnail( 'thumbnail', array( 'class' => 'thumbnail object-cover object-center min-w-[10rem] md:min-w-[10rem] lg:min-w-[11rem] min-h-full hidden md:block') );
 			endif;
 			if (has_post_thumbnail() && is_active_sidebar('left-sidebar') && is_active_sidebar('right-sidebar')) :
 				$content_class = 'large-12';
 			endif;
 		?>
 
-        <div class="entry-wrapper <?php echo $content_class; ?> medium-12 small-12 w-full">
+        <div class="entry-wrapper <?php echo $content_class; ?> medium-12 small-12 w-full flex flex-col gap-3">
             <!-- entry-header -->
-            <header class="entry-header">
+            <header class="entry-header w-full">
                 <h2 class="entry-title font-bold sm:text-lg text-md"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
                 </h2>
-                <div class="entry-meta">
+                <div class="entry-meta flex w-full justify-between">
                     <?php gwt_wp_posted_on(); ?>
                 </div>
             </header>
@@ -50,7 +50,7 @@
             <?php endif; ?>
 
             <!-- footer entry-meta -->
-            <footer class="entry-meta">
+            <footer class="entry-meta flex w-full justify-between">
                 <?php if ( 'post' == get_post_type() ) : // Hide category and tag text for pages on Search ?>
                 <?php endif; ?>
             </footer>

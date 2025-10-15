@@ -249,67 +249,69 @@
 <?php wp_footer(); ?>
 
 <!-- Floating Sidebar (right side) -->
-<?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
-    <div id="floating-sidebar-container" aria-hidden="false">
-        <button id="floating-sidebar-toggle" aria-expanded="true" aria-controls="floating-sidebar" class="h-full" title="Toggle sidebar">
-           <span class="floating-sidebar-icon-expanded" aria-hidden="true">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                </svg>
-           </span>
-            <span class="floating-sidebar-icon-collapsed hidden" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14"/>
-                </svg>
-            </span>
-        </button>
-        <div id="floating-sidebar" role="complementary" class="items-center gap-2 grid grid-cols-1">
-            <div class="flex flex-col gap-1 items-start">
-                <div class="flex gap-3 items-center justify-evenly w-full border-b-2 border-[#1f5d2b] pb-2 mb-2">
-                    <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank" class="flex justify-center gap-2 items-center">
-                        <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
-                        </svg>
-                        <span class="hidden sr-only">FB Page</span>
-                    </a>
-                    <a href="tel:09088897135" target="_blank" class="flex justify-center gap-2 items-center">
-                        <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
-                        </svg>
-                        <span class="hidden sr-only">(+63) 908 889 7135</span>
-                    </a>
-                    <a href="mailto:cropbiotechcenter@gmail.com" target="_blank" class="flex justify-center gap-2 items-center">
-                        <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
-                        </svg>
-                        <span class="hidden sr-only">Email</span>
-                    </a>
-                </div>
-                <a href="/appointment-booking/" class="flex justify-center gap-2 items-center">
+
+<div id="floating-sidebar-container" aria-hidden="false">
+    <button id="floating-sidebar-toggle" aria-expanded="true" aria-controls="floating-sidebar" class="h-full" title="Toggle sidebar">
+       <span class="floating-sidebar-icon-expanded" aria-hidden="true">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+       </span>
+        <span class="floating-sidebar-icon-collapsed hidden" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14"/>
+            </svg>
+        </span>
+    </button>
+    <div id="floating-sidebar" role="complementary" class="items-center gap-2 grid grid-cols-1">
+        <div class="flex flex-col gap-1 items-start">
+            <div class="flex gap-3 items-center justify-evenly w-full border-b-2 border-[#1f5d2b] pb-2 mb-2">
+                <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank" class="flex justify-center gap-2 items-center">
                     <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2m-5.146-5.146-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
                     </svg>
-                    <span>Appointment</span>
+                    <span class="hidden sr-only">FB Page</span>
                 </a>
-                <a href="/feedback-form/" class="flex justify-center gap-2 items-center">
+                <a href="tel:09088897135" target="_blank" class="flex justify-center gap-2 items-center">
                     <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"/>
+                        <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
                     </svg>
-                    <span>Feedback Form</span>
+                    <span class="hidden sr-only">(+63) 908 889 7135</span>
                 </a>
-                <a href="/internship-application/" class="flex justify-center gap-2 items-center">
+                <a href="mailto:cropbiotechcenter@gmail.com" target="_blank" class="flex justify-center gap-2 items-center">
                     <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/>
-                        <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/>
+                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
                     </svg>
-                    <span>Internship</span>
+                    <span class="hidden sr-only">Email</span>
                 </a>
             </div>
-            <?php dynamic_sidebar( 'floating-sidebar' ); ?>
+            <a href="/appointment-booking/" class="flex justify-center gap-2 items-center">
+                <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2m-5.146-5.146-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                </svg>
+                <span>Appointment</span>
+            </a>
+            <a href="/feedback-form/" class="flex justify-center gap-2 items-center">
+                <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"/>
+                </svg>
+                <span>Feedback Form</span>
+            </a>
+            <a href="/internship-application/" class="flex justify-center gap-2 items-center">
+                <svg class="text-[#a2b917] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/>
+                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/>
+                </svg>
+                <span>Internship</span>
+            </a>
         </div>
+        <?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
+            <?php dynamic_sidebar( 'floating-sidebar' ); ?>
+        <?php endif; ?>
     </div>
+</div>
 
-<?php endif; ?>
+
 
 <style>
     /* Floating sidebar styles - slide animation */

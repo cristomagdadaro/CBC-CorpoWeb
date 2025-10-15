@@ -235,7 +235,7 @@ if ( ! ( is_home() || is_front_page() ) ) {
 				<?php govph_displayoptions( 'govph_banner_title_start' ); ?>
                 <div class="large-9 columns container-main">
                     <header>
-                        <h1 class="page-title"><?php _e( 'Oops! That page can&rsquo;t be found.', 'gwt_wp' ); ?></h1>
+                        <h4 class="page-title"><?php _e( 'Oops! That page can&rsquo;t be found.', 'gwt_wp' ); ?></h4>
                     </header>
                 </div>
 				<?php govph_displayoptions( 'govph_banner_title_end' ); ?>
@@ -243,9 +243,9 @@ if ( ! ( is_home() || is_front_page() ) ) {
 				<?php govph_displayoptions( 'govph_banner_title_start' ); ?>
                 <div class="large-9 columns container-main">
                     <header>
-                        <h1 class="page-title">
+                        <h4 class="page-title py-2">
 							<?php printf( __( 'Search Results for: %s', 'gwt_wp' ), '<span>' . get_search_query() . '</span>' ); ?>
-                        </h1>
+                        </h4>
                     </header>
                 </div>
 				<?php govph_displayoptions( 'govph_banner_title_end' ); ?>
@@ -273,8 +273,9 @@ if ( ! ( is_home() || is_front_page() ) ) {
     $tempHeader = '';
     if ( is_front_page() ) :
         $tempHeader = 'Announcement';
+        echo do_shortcode( '[gwt_announcements header="'.$tempHeader.'" limit="5" layout="ticker" show_image="1" link_title="1" target="_blank"]' );
     endif;
-    echo do_shortcode( '[gwt_announcements header="'.$tempHeader.'" limit="5" layout="ticker" show_image="1" link_title="1" target="_blank"]' );
+
     ?>
 		<!-- show breadcrumbs when not in home or front page -->
 		<?php if ( ! ( is_home() || is_front_page() ) ):

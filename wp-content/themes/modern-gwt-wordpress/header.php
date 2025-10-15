@@ -410,7 +410,7 @@ Press esc, or click the close the button to close this dialog box.
 				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
                             </div>
 			                <?php endif; ?>
-                        <div id="pst-container" style="color: white !important; font-size: 0.7rem !important;">
+                      <div id="pst-container" style="display: none; color: white !important; font-size: 0.7rem !important;">
                             <div>Philippine Standard Time</div>
                             <div id="pst-time" class="whitespace-nowrap"></div>
                         </div>

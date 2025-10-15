@@ -52,7 +52,7 @@
                 <?php endif; ?>
 
                 <!-- footer entry-meta -->
-                <footer class="entry-meta">
+                <footer class="entry-meta flex w-full justify-between">
                     <?php if ( 'post' == get_post_type() ) : // Hide category and tag text for pages on Search ?>
                     <?php endif; ?>
                 </footer>

@@ -167,11 +167,11 @@ function render_block_core_latest_posts( $attributes ) {
 	};
 
 	// Column wrappers: start with left column container
-	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-5">';
+	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-3">';
 
 	// Prepare right column class and optional id. We keep the right column visible, but the renderer will hide excerpts
 	// on md+ for right-column items (see $is_right handling in the renderer).
-	$right_list_class = 'flex flex-col gap-3 md:gap-5';
+	$right_list_class = 'flex flex-col gap-2 md:gap-3';
 	$right_list_id = 'right-posts-list';
 	if ( isset( $block['attrs'] ) && ! empty( $block['attrs']['uniqueID'] ) ) {
 		$right_list_id .= $block['attrs']['uniqueID'];
@@ -191,7 +191,7 @@ function render_block_core_latest_posts( $attributes ) {
 		// For later items in grid layout: show on small screens, hide on md+
 		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
 		// For later items in list layout: always visible
-		$img_wrapper_later_list = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+		$img_wrapper_later_list = '<div class="overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 
 		$is_first_group = ( $count < $maxCount );
 
@@ -272,7 +272,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$classes = array( 'wp-block-latest-posts__list','grid','grid-cols-1','md:grid-cols-2','gap-2','md:gap-6' );
 	} else {
 		// Previous default for non-grid
-		$classes = array( 'wp-block-latest-posts__list','gap-3','flex','flex-col','grid','grid-cols-1', 'md:gap-3');
+		$classes = array( 'wp-block-latest-posts__list','flex','flex-col','grid','grid-cols-1','gap-2','md:gap-3');
 	}
 
 	if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {

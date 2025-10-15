@@ -6,10 +6,12 @@
     <div class="game-controls flex gap-4 items-center absolute top-0 left-0 p-2">
         <div class="control-group flex items-center gap-2">
             <label for="cbc-scramble-master-volume">Volume</label>
-            <input type="range" id="cbc-scramble-master-volume" min="0" max="1" step="0.1" value="0.5" title="Master Volume">
+            <input type="range" id="cbc-scramble-master-volume" min="0" max="1" step="0.1" value="0.5"
+                   title="Master Volume">
         </div>
         <div class="control-group flex items-center">
-            <input type="checkbox" id="cbc-scramble-mute-bg-music" class="form-checkbox !m-0" title="Mute background music">
+            <input type="checkbox" id="cbc-scramble-mute-bg-music" class="form-checkbox !m-0"
+                   title="Mute background music">
             <label for="cbc-scramble-mute-bg-music">Mute Music</label>
         </div>
         <div class="control-group flex items-center">
@@ -54,22 +56,23 @@
         <div class="mt-4">
             <h3>Submit your Score!</h3>
             <form id="scramble-leaderboard-form" class="flex gap-3 items-center">
-                <label for="scramble-hp"></label><input type="text" id="scramble-hp" name="hp" class="cbc-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <label for="scramble-hp"></label><input type="text" id="scramble-hp" name="hp" class="cbc-hp"
+                                                        tabindex="-1" autocomplete="off" aria-hidden="true"/>
                 <div>
                     <label for="scramble-name">Name <span class="text-red-500">*</span></label>
-                    <input id="scramble-name" name="name" type="text" required />
+                    <input id="scramble-name" name="name" type="text" required/>
                 </div>
                 <div>
                     <label for="scramble-agency">Agency/School <span class="text-red-500">*</span></label>
-                    <input id="scramble-agency" name="agency" type="text" required />
+                    <input id="scramble-agency" name="agency" type="text" required/>
                 </div>
                 <div>
                     <label for="scramble-age">Age</label>
-                    <input id="scramble-age" name="age" type="number" min="1" max="120" />
+                    <input id="scramble-age" name="age" type="number" min="1" max="120"/>
                 </div>
                 <div>
                     <label for="scramble-played-at">Date</label>
-                    <input id="scramble-played-at" name="played_at" type="date" />
+                    <input id="scramble-played-at" name="played_at" type="date"/>
                 </div>
                 <div>
                     <button type="submit" class="btn-primary p-3 rounded-md">Submit</button>
@@ -79,11 +82,16 @@
     </div>
 </div>
 
-<audio id="cbc-scramble-bg-music" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/bg-music.ogg' ); ?>" loop preload="auto"></audio>
-<audio id="cbc-scramble-correct-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/correct.wav' ); ?>" preload="auto"></audio>
-<audio id="cbc-scramble-wrong-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/wrong.wav' ); ?>" preload="auto"></audio>
-<audio id="cbc-scramble-win-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/won.wav' ); ?>" preload="auto"></audio>
-<audio id="cbc-scramble-lose-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/lose.wav' ); ?>" preload="auto"></audio>
+<audio id="cbc-scramble-bg-music" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/bg-music.ogg' ); ?>" loop
+       preload="auto"></audio>
+<audio id="cbc-scramble-correct-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/correct.wav' ); ?>"
+       preload="auto"></audio>
+<audio id="cbc-scramble-wrong-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/wrong.wav' ); ?>"
+       preload="auto"></audio>
+<audio id="cbc-scramble-win-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/won.wav' ); ?>"
+       preload="auto"></audio>
+<audio id="cbc-scramble-lose-sound" src="<?php echo esc_url( CBC_GAMES_URL . 'assets/sounds/lose.wav' ); ?>"
+       preload="auto"></audio>
 
 <div id="cbc-scramble-leaderboard" class="cbc-leaderboard">
     <h3>Leaderboard (Top 10)</h3>

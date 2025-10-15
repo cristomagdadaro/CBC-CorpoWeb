@@ -6,7 +6,7 @@
  */
 ?>
 <aside id="sidebar-right"
-       class="[&>aside:last-child]:hidden mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
+       class="mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
        role="complementary">
     <?php
     $swap = false;
@@ -108,22 +108,22 @@
             <div class="grid grid-cols-2 gap-4 items-center">
                 <a href="https://privacy.gov.ph/transparency-seal/" class="flex justify-center">
                     <img
-                            decoding="async"
-                            id="tp-seal"
-                            src="/wp-content/themes/gwt-wordpress-26.0.0/images/transparency-seal-160x160.png"
-                            alt="transparency seal logo"
-                            title="Transparency Seal"
-                            class="w-32 h-32 object-contain md:w-40 md:h-40"
+                        decoding="async"
+                        id="tp-seal"
+                        src="/wp-content/themes/gwt-wordpress-26.0.0/images/transparency-seal-160x160.png"
+                        alt="transparency seal logo"
+                        title="Transparency Seal"
+                        class="w-32 h-32 object-contain md:w-40 md:h-40"
                     >
                 </a>
                 <a href="https://www.foi.gov.ph/" class="flex justify-center">
                     <img
-                            decoding="async"
-                            id="foi-logo"
-                            src="/wp-content/themes/gwt-wordpress-26.0.0/images/foi-logo-160x160.png"
-                            alt="freedom of information logo"
-                            title="Freedom of Information"
-                            class="w-32 h-32 object-contain md:w-40 md:h-40"
+                        decoding="async"
+                        id="foi-logo"
+                        src="/wp-content/themes/gwt-wordpress-26.0.0/images/foi-logo-160x160.png"
+                        alt="freedom of information logo"
+                        title="Freedom of Information"
+                        class="w-32 h-32 object-contain md:w-40 md:h-40"
                     >
                 </a>
             </div>

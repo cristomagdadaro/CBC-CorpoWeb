@@ -6,41 +6,17 @@
  */
 ?>
 <aside id="sidebar-right"
-       class="[&>aside:last-child]:hidden mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
+       class="mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
        role="complementary">
     <?php
     $swap = false;
-    // hidden center chief on front page
     if ( is_front_page()) :
-        $swap = is_front_page();
-        /*echo govph_section_header( 'Center Chief', [ 'id' => 'center_chief_header', 'swap' => $swap ] );
-        */?><!--
-        <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
-            <div class="grid grid-cols-2 gap-3 items-center">
-                <figure class="w-full h-full drop-shadow">
-                    <img src="/wp-content/uploads/2025/09/RRSuralta-683x1024.png"
-                         alt="Dr. Roel R. Suralta"
-                         class="rounded-md w-full h-full object-cover object-center">
-                </figure>
-                <div class="w-full mt-4 md:mt-0">
-                    <p class="text-sm">
-                        <strong class="font-bold">Dr. Roel R. Suralta</strong> is a distinguished Filipino agricultural
-                        scientist and NAST Academician, recognized for his pioneering research on root plasticity in
-                        rice. As <strong class="font-bold">Center Chief</strong> of the <a href="http://192.168.36.77/"
-                                                                                           class="text-blue-600 hover:underline">DA–Crop
-                            Biotechnology Center</a> at <a href="https://www.philrice.gov.ph/" target="_blank"
-                                                           rel="noreferrer noopener"
-                                                           class="text-blue-600 hover:underline">PhilRice</a>, he leads
-                        innovations in climate-resilient crops and has received prestigious honors, including the
-                        Presidential Lingkod Bayan Award.
-                    </p>
-                </div>
-            </div>
-        </aside>-->
+        $swap = is_front_page(); ?>
+
 
     <?php  echo govph_section_header( 'News and Updates', [ 'id' => 'news_posts_header', 'swap' => $swap ] ); ?>
     <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
-        <?php echo do_shortcode('[gwt_latest_posts posts="3"  excerpt_length="0" show_date="1" show_image="0" show_author="0" post_layout="list"]'); ?>
+        <?php echo do_shortcode('[gwt_latest_posts posts="4"  excerpt_length="0" show_date="1" show_image="0" show_author="0" post_layout="list"]'); ?>
     </aside>
 
     <?php else:

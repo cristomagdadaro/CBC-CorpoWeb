@@ -285,7 +285,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
         if ( $atts['header'] === '1' ) {
             if ( function_exists( 'govph_section_header' ) ) {
 				echo '<h1 class="text-white font-extrabold py-1 md:py-2 bg-[#1f5d2b] text-left px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
-                Calendar ' . esc_html( $monthLabel ) . ' </h1>';
+                ' . esc_html( $monthLabel ) . ' </h1>';
             } else {
                 echo '<h2 class="gwt-calendar-header">' . esc_html( 'Calendar ' . $monthLabel ) . '</h2>';
             }
@@ -675,7 +675,7 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
         // Parse lines: message|url|image
         $items = array();
 
-	    if ($items)
+	    if ($items || empty($items))
 		    return '';
 
         if ( $text !== '' ) {

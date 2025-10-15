@@ -32,7 +32,7 @@
         const sfx = [correctSound, winSound, loseSound, flipSound];
 
         function applyVolume() {
-            const master = parseFloat(masterVolume.value) || 0.5;
+            const master = parseFloat(masterVolume.value) || 0.1;
             if (bgMusic) {
                 bgMusic.volume = master;
                 bgMusic.muted = muteMusic.checked;

@@ -51,7 +51,7 @@
                     </h2>
 
                     <?php if ( 'post' == get_post_type() ) : ?>
-                    <div class="entry-meta">
+                    <div class="entry-meta flex w-full justify-between">
                         <?php gwt_wp_posted_on(); ?>
                     </div>
                     <?php endif; ?>
@@ -76,7 +76,7 @@
                 <?php endif; ?>
 
                 <!-- footer entry-meta -->
-                <footer class="entry-meta">
+                <footer class="entry-meta flex w-full justify-between">
                     <?php if ( 'post' == get_post_type() ) : // Hide category and tag text for pages on Search ?>
                     <?php endif; ?>
                 </footer>

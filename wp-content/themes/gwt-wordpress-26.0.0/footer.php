@@ -212,7 +212,6 @@
 <?php wp_footer(); ?>
 
 <!-- Floating Sidebar (right side) -->
-<?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
     <div id="floating-sidebar-container" aria-hidden="false">
         <button id="floating-sidebar-toggle" aria-expanded="true" aria-controls="floating-sidebar" class="h-full" title="Toggle sidebar">
            <span class="floating-sidebar-icon-expanded" aria-hidden="true">
@@ -268,12 +267,11 @@
                     <span>Internship</span>
                 </a>
             </div>
-            <?php dynamic_sidebar( 'floating-sidebar' ); ?>
+            <?php if ( is_active_sidebar( 'floating-sidebar' ) ): ?>
+                <?php dynamic_sidebar( 'floating-sidebar' ); ?>
+            <?php endif; ?>
         </div>
     </div>
-
-<?php endif; ?>
-
 <style>
     /* Floating sidebar styles - slide animation */
     #floating-sidebar-container {
