@@ -10,10 +10,11 @@
        role="complementary">
     <?php
     $swap = false;
-    if ( is_front_page() ) :
+    // hidden center chief on front page
+    if ( is_front_page()) :
         $swap = is_front_page();
-        echo govph_section_header( 'Center Chief', [ 'id' => 'center_chief_header', 'swap' => $swap ] );
-        ?>
+        /*echo govph_section_header( 'Center Chief', [ 'id' => 'center_chief_header', 'swap' => $swap ] );
+        */?><!--
         <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
             <div class="grid grid-cols-2 gap-3 items-center">
                 <figure class="w-full h-full drop-shadow">
@@ -35,71 +36,17 @@
                     </p>
                 </div>
             </div>
-        </aside>
-    <?php
-    else:
+        </aside>-->
+
+    <?php  echo govph_section_header( 'News and Updates', [ 'id' => 'news_posts_header', 'swap' => $swap ] ); ?>
+    <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
+        <?php echo do_shortcode('[gwt_latest_posts posts="3"  excerpt_length="0" show_date="1" show_image="0" show_author="0" post_layout="list"]'); ?>
+    </aside>
+
+    <?php else:
     echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header', 'swap' => $swap ] ); ?>
     <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
         <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
-    </aside>
-
-    <aside class="widget callout border-none secondary widget_block">
-        <div class="grid grid-cols-1 gap-1">
-            <div>
-                <h3 class="font-bold my-1">Apps</h3>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/projects/breedersmap-db">
-                        <p class="block text-justify sm:text-md text-sm m-0">Plant Breeders' Map Database</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/projects/twg-db">
-                        <p class="block text-justify sm:text-md text-sm m-0">Biotech TWG Database</p>
-                    </a>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-bold my-1">Services</h3>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Use Request Form</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Events Booking Form</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="http://192.168.36.71:5000/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Synology BioNAS</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="http://192.168.36.10/">
-                        <p class="block text-justify sm:text-md text-sm m-0">CrAPPs Center</p>
-                    </a>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-bold my-1">Games</h3>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/games/biotech-quiz-bee-game/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Biotech Quiz Bee</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/games/scramble-game/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Scramble Game</p>
-                    </a>
-                </div>
-                <div class="ml-2 flex items-center gap-2">
-                    <a href="/games/crop-memory-game/">
-                        <p class="block text-justify sm:text-md text-sm m-0">Crop Memory Game</p>
-                    </a>
-                </div>
-            </div>
-        </div>
     </aside>
     <?php endif; ?>
 

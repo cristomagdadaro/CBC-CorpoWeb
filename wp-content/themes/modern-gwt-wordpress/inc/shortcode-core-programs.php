@@ -210,10 +210,10 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                              class="absolute inset-0 w-full h-full object-cover object-center text-[#1f5d2b]" />
                     </div>
                     <div class="flex-1 bg-white p-4 relative">
-                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
+                        <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
                             <?php echo esc_html(strtoupper($program['title'])); ?>
                         </h3>
-                        <p class="text-gray-800 text-center leading-tight md:leading-relaxed">
+                        <p class="hidden text-gray-800 text-center leading-tight md:leading-relaxed">
                             <?php echo esc_html($program['description']); ?>
                         </p>
                     </div>
@@ -249,7 +249,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                                 <h3 class="core-programs-card-title">
                                     <?php echo esc_html(strtoupper($program['title'])); ?>
                                 </h3>
-                                <p class="core-programs-card-description">
+                                <p class="hidden core-programs-card-description">
                                     <?php echo esc_html($program['description']); ?>
                                 </p>
                             </div>

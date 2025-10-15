@@ -670,6 +670,10 @@ if ( ! function_exists( 'gwt_announcements_shortcode' ) ) {
 
         // Parse lines: message|url|image
         $items = array();
+
+		if ($items)
+			return '';
+
         if ( $text !== '' ) {
             $lines = preg_split('/\r\n|\r|\n/', $text);
             foreach ( $lines as $line ) {
