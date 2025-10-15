@@ -66,7 +66,7 @@ function render_block_core_latest_posts( $attributes ) {
 	$is_grid_layout = ( isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] );
 
 	// Reusable renderer to avoid duplicating logic for each post card.
-	$render_item = function( $post, $attributes, $container_classes, $image_wrapper_template, $show_image = true ) use ( $is_grid_layout, &$block_core_latest_posts_excerpt_length ) {
+	$render_item = function( $post, $attributes, $container_classes, $image_wrapper_template, $show_image = true, $is_right = false ) use ( $is_grid_layout, &$block_core_latest_posts_excerpt_length ) {
 		$post_link = esc_url( get_permalink( $post ) );
 		$title     = get_the_title( $post );
 		if ( ! $title ) {
@@ -88,23 +88,14 @@ function render_block_core_latest_posts( $attributes ) {
 				)
 			);
 			if ( ! empty( $attributes['addLinkToFeaturedImage'] ) ) {
-				$featured_image = sprintf(
-					'<a href="%1$s" aria-label="%2$s">%3$s</a>',
-					esc_url( $post_link ),
-					esc_attr( $title ),
-					$featured_image
-				);
+				$featured_image = '<a href="' . esc_url( $post_link ) . '" aria-label="' . esc_attr( $title ) . '">' . $featured_image . '</a>';
 			}
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
 		$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
 
-		$item_markup .= sprintf(
-			'<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed" href="%1$s">%2$s</a>',
-			esc_url( $post_link ),
-			$title
-		);
+		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
 
 		$item_markup .= '<div class="flex justify-between">';
 
@@ -138,20 +129,24 @@ function render_block_core_latest_posts( $attributes ) {
 				$excerpt_length = (int) apply_filters( 'excerpt_length', $block_core_latest_posts_excerpt_length );
 				if ( $excerpt_length <= $block_core_latest_posts_excerpt_length ) {
 					$trimmed_excerpt  = substr( $trimmed_excerpt, 0, -11 );
-					$trimmed_excerpt .= sprintf(
-						__( '… <a href="%1$s" rel="noopener noreferrer">Read more<span class="screen-reader-text">: %2$s</span></a>' ),
-						esc_url( $post_link ),
-						esc_html( $title )
-					);
+					$read_more = '<a href="' . esc_url( $post_link ) . '" rel="noopener noreferrer">' . esc_html__( 'Read more' ) . '<span class="screen-reader-text">: ' . esc_html( $title ) . '</span></a>';
+					$trimmed_excerpt .= '… ' . $read_more;
 				}
 			}
 			if ( post_password_required( $post ) ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
-			$item_markup .= sprintf(
-				'<div class="wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-6 entry-content block">%1$s</div>',
-				$trimmed_excerpt
-			);
+			// If this is a right-column item, hide the excerpt on md+ but show on mobile.
+			// Build excerpt classes based on column:
+			// - Left-column items ($is_right === false): hide on small, show on md+ => 'hidden md:block'
+			// - Right-column items ($is_right === true): always hidden => 'hidden'
+			$excerpt_base = 'wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-6 entry-content';
+			if ( $is_right ) {
+				$excerpt_visibility = 'hidden';
+			} else {
+				$excerpt_visibility = 'hidden md:block';
+			}
+			$item_markup .= '<div class="' . esc_attr( $excerpt_base . ' ' . $excerpt_visibility ) . '">' . $trimmed_excerpt . '</div>';
 		}
 
 		if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
@@ -174,13 +169,21 @@ function render_block_core_latest_posts( $attributes ) {
 	// Column wrappers: start with left column container
 	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-5">';
 
+	// Prepare right column class and optional id. We keep the right column visible, but the renderer will hide excerpts
+	// on md+ for right-column items (see $is_right handling in the renderer).
+	$right_list_class = 'flex flex-col gap-3 md:gap-5';
+	$right_list_id = 'right-posts-list';
+	if ( isset( $block['attrs'] ) && ! empty( $block['attrs']['uniqueID'] ) ) {
+		$right_list_id .= $block['attrs']['uniqueID'];
+	}
+
 	$total = count( $recent_posts );
 	$maxCount = 2;
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
 		if ( $maxCount === $count ) {
 			// Open right column container after the first three posts.
-			$list_items_markup .= '</div><div id="right-posts-list" class="flex flex-col gap-3 md:gap-5">';
+			$list_items_markup .= '</div><div id="' . esc_attr( $right_list_id ) . '" class="' . esc_attr( $right_list_class ) . '">';
 		}
 
 		// Image wrapper templates with fixed responsive sizes
@@ -224,7 +227,8 @@ function render_block_core_latest_posts( $attributes ) {
 					$attributes,
 					$container_classes,
 					($attributes['displayFeaturedImage'] ? $img_wrapper_first : $img_wrapper_later_grid), // only wrap if image is shown
-					true // include image for small screens
+					true, // include image for small screens
+					true // mark as right-column so excerpts are hidden on md+
 				);
 
 				if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
@@ -240,6 +244,7 @@ function render_block_core_latest_posts( $attributes ) {
 					$attributes,
 					$container_classes . 'hover:shadow-lg p-0',
 					$img_wrapper_later_list,
+					true,
 					true
 				);
 			} else {
@@ -282,7 +287,7 @@ function render_block_core_latest_posts( $attributes ) {
 
 	$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( ' ', $classes ) ) );
 
-	return sprintf( '<div id="posts-list-container" %1$s>%2$s</div>', $wrapper_attributes, $list_items_markup );
+	return '<div id="posts-list-container" ' . $wrapper_attributes . '>' . $list_items_markup . '</div>';
 }
 
 /**

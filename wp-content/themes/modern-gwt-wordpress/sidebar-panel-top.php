@@ -33,7 +33,7 @@
 
             <?php
             // Use dynamic device-aware excerpt length (phone/tablet/desktop) via 'auto'
-            echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="0" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
+            echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="20" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
             ?>
 
             <div class="widget widget_block">
