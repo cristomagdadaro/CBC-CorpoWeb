@@ -16,19 +16,16 @@
         <aside id="panel-top-1 z-0" class="<?php govph_displayoptions( 'govph_position_panel_top' ); ?>"
             role="complementary">
             <?php do_action( 'before_sidebar' );
-            $spacer_height = '25px'; ?>
+            $spacer_height = '5rem'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
-            <div class="widget widget_block hidden md:block">
-                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
-
-            <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
-
             <div class="widget widget_block">
-                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
+                <div style="height: 15px" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
 
-            <?php echo govph_section_header('News & Updates', ['id' => 'news_updates_header']); ?>
+            <?php /*echo govph_section_header('News & Updates', ['id' => 'news_updates_header']); */?>
+            <h1 class="text-[#1f5d2b] font-extrabold p-1 md:p-2 bg-gradient-to-r text-center px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                News & Updates
+            </h1>
 
             <div class="widget widget_block">
                 <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -38,6 +35,32 @@
             // Use dynamic device-aware excerpt length (phone/tablet/desktop) via 'auto'
             echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="0" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
             ?>
+
+            <div class="widget widget_block">
+                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
+            </div>
+
+           <!-- --><?php /*echo govph_section_header('Core Programs', ['id' => 'core_programs_header']); */?>
+            <h1 class="text-[#1f5d2b] font-extrabold p-1 md:p-2 bg-gradient-to-r text-center px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                Core Programs
+            </h1>
+
+            <div class="widget widget_block">
+                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
+            </div>
+
+            <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
+
+            <div class="widget widget_block">
+                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
+            </div>
+
+            <?php /*echo govph_section_header('Priority Commodities', ['id' => 'priority_commodity_header']); */?>
+            <h1 class="text-[#1f5d2b] font-extrabold p-1 md:p-2 bg-gradient-to-r text-center px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                Priority Commodities
+            </h1>
+
+            <?php echo do_shortcode('[priority_commodities_carousel max_display="5" center_scale="1.30" auto_advance="true" auto_interval="2500" show_arrows="true" enable_blur="true"]'); ?>
 
             <div class="widget widget_block">
                 <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>

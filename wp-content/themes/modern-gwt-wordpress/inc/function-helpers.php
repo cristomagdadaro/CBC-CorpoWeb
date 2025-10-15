@@ -284,7 +284,8 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
         ob_start();
         if ( $atts['header'] === '1' ) {
             if ( function_exists( 'govph_section_header' ) ) {
-                echo govph_section_header( 'Calendar ' . esc_html( $monthLabel ), array( 'id' => 'gwt_calendar_header', 'text_alignment' => 'left' ) );
+				echo '<h1 class="text-white font-extrabold py-1 md:py-2 bg-[#1f5d2b] text-left px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                Calendar ' . esc_html( $monthLabel ) . ' </h1>';
             } else {
                 echo '<h2 class="gwt-calendar-header">' . esc_html( 'Calendar ' . $monthLabel ) . '</h2>';
             }

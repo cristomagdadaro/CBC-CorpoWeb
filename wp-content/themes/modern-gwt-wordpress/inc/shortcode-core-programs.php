@@ -19,22 +19,22 @@ if (!function_exists('cbc_core_programs_shortcode')) {
         $programs = array(
             array(
                 'title' => 'Technology Development and Innovation',
-                'image' => get_template_directory_uri() . '/assets/svgs/flask.svg',
+                'image' => '/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png',
                 'description' => 'Conduct cutting-edge research ',
             ),
             array(
                 'title' => 'R4D Biotechnology Capacity-Building Service',
-                'image' => get_template_directory_uri() . '/assets/svgs/mortarboard.svg',
+                'image' => '/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg',
                 'description' => 'Nationwide training and workshops',
             ),
             array(
                 'title' => 'Partnership and Fund Generation',
-                'image' => get_template_directory_uri() . '/assets/svgs/peace.svg',
+                'image' => '/wp-content/uploads/2025/09/CBC04940-768x461.png',
                 'description' => 'Collaborators for growth and impact',
             ),
             array(
                 'title' => 'Technology Commercialization and Management',
-                'image' => get_template_directory_uri() . '/assets/svgs/buildings.svg',
+                'image' => '/wp-content/uploads/2025/09/CBC06408-768x432.png',
                 'description' => 'Bringing innovations to the Filipino people',
             ),
         );
@@ -204,11 +204,11 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             <!-- Grid layout for desktop (md and above) -->
             <div class="core-programs-grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 pb-5">
                 <?php foreach ($programs as $program): ?>
-                <div class="pt-5 items-center bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
+                <div class="items-center bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-32">
                         <img src="<?php echo esc_url($program['image']); ?>"
                              alt="<?php echo esc_attr($program['title']); ?>"
-                             class="absolute inset-0 w-full h-full object-fill text-[#1f5d2b]" />
+                             class="absolute inset-0 w-full h-full object-cover object-center text-[#1f5d2b]" />
                     </div>
                     <div class="flex-1 bg-white p-4 relative">
                         <h3 class="text-[#1f5d2b] font-extrabold text-lg text-center mb-4 leading-[1.1rem] overflow-hidden text-ellipsis line-clamp-2 md:line-clamp-3 h-[3.3rem]">
