@@ -64,6 +64,7 @@ module.exports = {
         'md:h-[9rem]',
         'lg:w-[15rem]',
         'lg:h-[12rem]',
+        'h-[100vh]',
         'w-[14rem]',
         'h-[12rem]',
         'md:w-[22rem]',
