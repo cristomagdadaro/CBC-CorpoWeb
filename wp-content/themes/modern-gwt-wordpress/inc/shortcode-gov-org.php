@@ -13,46 +13,75 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 		$structure = cbc_org_chart_default_structure();
 
 		ob_start();
-		echo "<div class='cbc-org-chart-container space-y-10'>";
-		foreach ($structure as $section) {
-			if (!empty($section['heading'])) {
-				echo "<h2 class='text-xl font-bold text-[#1f5d2b] text-center'>" . esc_html($section['heading']) . "</h2>";
-			}
+		?>
+		<div class="cbc-org-chart-container space-y-12">
+			<?php foreach ($structure as $section): ?>
+				<?php if (!empty($section['heading'])): ?>
+					<h2 class="text-2xl font-bold text-[#1f5d2b] text-center mb-6">
+						<?php echo esc_html($section['heading']); ?>
+					</h2>
+				<?php endif; ?>
 
-			if (!empty($section['items']) && is_array($section['items'])) {
-				echo "<div class='flex flex-wrap gap-6 justify-center'>";
-				foreach ($section['items'] as $person) {
-					echo cbc_org_chart_render_person($person);
-				}
-				echo "</div>";
-			}
-		}
-		echo "</div>";
+				<!-- CASE 1: Direct items -->
+				<?php if (!empty($section['items']) && is_array($section['items'])): ?>
+					<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+						<?php foreach ($section['items'] as $person): ?>
+							<?php echo cbc_org_chart_render_person($person); ?>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 
+				<!-- CASE 2: Section has grouped subcategories -->
+				<?php if (!empty($section['groups']) && is_array($section['groups'])): ?>
+					<div class="space-y-10">
+						<?php foreach ($section['groups'] as $group): ?>
+							<?php if (!empty($group['label'])): ?>
+								<h3 class="text-lg font-semibold text-[#1f5d2b] text-center mb-4">
+									<?php echo esc_html($group['label']); ?>
+								</h3>
+							<?php endif; ?>
+
+							<?php if (!empty($group['items']) && is_array($group['items'])): ?>
+								<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+									<?php foreach ($group['items'] as $person): ?>
+										<?php echo cbc_org_chart_render_person($person); ?>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</div>
+		<?php
 		return ob_get_clean();
-
 	}
 
-	function cbc_org_chart_render_person($person) {
-		$name = esc_html($person['name'] ?? '');
-		$title = esc_html($person['title'] ?? '');
-		$img = esc_url($person['img'] ?? '');
-		$alt = esc_attr($person['alt'] ?? $name);
-		$link = esc_url($person['link'] ?? '');
 
-		$card = "<div class='relative flex flex-col gap-2 w-48 h-64 rounded drop-shadow overflow-hidden transition-transform duration-200 hover:scale-105'>";
+	function cbc_org_chart_render_person($person) {
+		$name  = esc_html($person['name'] ?? '');
+		$title = esc_html($person['title'] ?? '');
+		$img   = esc_url($person['img'] ?? '');
+		$alt   = esc_attr($person['alt'] ?? $name);
+		$link  = esc_url($person['link'] ?? '');
+
+		$hover_class = $link ? 'hover:scale-105 transition-transform duration-200' : '';
+
+		$card  = "<div class='relative flex flex-col gap-2 w-32 md:w-48 h-48 md:h-64 rounded drop-shadow-md overflow-hidden $hover_class'>";
 		$card .= "<img src='$img' alt='$alt' class='w-full h-full object-cover object-top rounded'>";
-		$card .= "<div class='absolute bottom-0 w-full bg-gradient-to-t from-[#1f5d2b] to-transparent text-white p-2 text-xs'>";
-		$card .= "<p class='font-semibold text-center m-0'>$name</p>";
-		$card .= "<p class='text-center italic text-[11px] m-0'>$title</p>";
+		$card .= "<div class='absolute bottom-0 w-full bg-gradient-to-t from-[#1f5d2b] to-transparent text-white p-2 text-xs line-clamp-2 whitespace-normal'>";
+		$card .= "<p class='font-semibold text-center m-0 !leading-tight'>$name</p>";
+		$card .= "<p class='text-center italic m-0 text-[9px] !leading-tight min-h-[2.5em] max-h-[2.5em]'>$title</p>";
+
 		$card .= "</div></div>";
 
 		if ($link) {
-			return "<a href='$link' class='cbc-org-card'>$card</a>";
+			return "<a href='$link' class='cbc-org-card block'>$card</a>";
 		}
 
 		return $card;
 	}
+
 
 	function cbc_org_chart_default_structure() {
 		return array(
@@ -68,24 +97,24 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 					array(
 						'name' => 'Francisco Tiu Laurel Jr.',
 						'title' => 'Secretary of Agriculture',
-						'img' => '/wp-content/uploads/2024/06/Francisco-Tiu-Laurel-Jr.jpg',
+						'img' => '/wp-content/uploads/2025/10/Sec.-Laurel.png',
 						'alt' => 'Francisco Tiu Laurel Jr.',
 					),
 					array(
 						'name' => 'Atty. Adonis P. Sulit, CESO II',
 						'title' => 'Undersecretary for Policy and Plans Group',
-						'img' => '/wp-content/uploads/2024/06/Atty.-Adonis-P.-Sulit.jpg',
+						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
 						'alt' => 'Atty. Adonis P. Sulit, CESO II',
 					),
 					array(
 						'name' => 'Paul C. Limson, DVM',
 						'title' => 'Biotechnology Program Director',
-						'img' => '/wp-content/uploads/2024/06/DA-BPO.jpg',
+						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
 						'alt' => 'Paul C. Limson, DVM',
 					),
 					array(
 						'name' => 'Roel R. Suralta, PhD',
-						'title' => 'Center Chief',
+						'title' => 'Center Chief, DA-CBC',
 						'img' => '/wp-content/uploads/2024/06/RRSuralta-scaled-e1717643185253.jpg',
 						'alt' => 'Roel R. Suralta, PhD',
 						'link' => '/about-us/organizational-structure/dr-roel-r-suralta/',
@@ -124,12 +153,6 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 					array(
 						'label' => 'Technology Development and Innovation Group',
 						'items' => array(
-							array(
-								'name' => 'To Hire',
-								'title' => 'Science Research Specialist II',
-								'img' => '/wp-content/uploads/2025/09/Erlyn-500x500.png',
-								'alt' => 'To Hire',
-							),
 							array(
 								'name' => 'Jayvee Garcia',
 								'title' => 'Science Research Specialist I',
@@ -177,6 +200,30 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 								'alt' => 'Cristo Rey C. Magdadaro',
 							),
 						),
+					),
+				),
+			),
+			array(
+				'heading' => 'Roots',
+				'items' => array(
+					array(
+						'name' => 'Nonawin L. Agustin, PhD',
+						'title' => 'Project Officer V',
+						'img' => '/wp-content/uploads/2024/06/Agustin-e1717643254281.png',
+						'alt' => 'Nonawin L. Agustin, PhD',
+						'link' => '/about-us/organizational-structure/dr-nonawin-l-agustin/',
+					),
+					array(
+						'name' => 'Amabel Achuela',
+						'title' => 'Science Research Specialist I',
+						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
+						'alt' => 'Amabel Achuela',
+					),
+					array(
+						'name' => 'Aradel Mae Tanaid',
+						'title' => 'Science Research Specialist I',
+						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
+						'alt' => 'Aradel Mae Tanaid',
 					),
 				),
 			),
