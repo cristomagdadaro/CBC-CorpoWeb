@@ -16,11 +16,9 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 		?>
 		<div class="cbc-org-chart-container space-y-12">
 			<?php foreach ($structure as $section): ?>
-				<?php if (!empty($section['heading'])): ?>
-					<h2 class="text-2xl font-bold text-[#1f5d2b] text-center mb-6">
-						<?php echo esc_html($section['heading']); ?>
-					</h2>
-				<?php endif; ?>
+				<?php if (!empty($section['heading'])):
+					echo govph_section_header( $section['heading'], [ 'id' => strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $section['heading']))) . '_header' ] );
+				endif; ?>
 
 				<!-- CASE 1: Direct items -->
 				<?php if (!empty($section['items']) && is_array($section['items'])): ?>
@@ -204,7 +202,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 				),
 			),
 			array(
-				'heading' => 'Roots',
+				'heading' => 'Roots Team',
 				'items' => array(
 					array(
 						'name' => 'Nonawin L. Agustin, PhD',
