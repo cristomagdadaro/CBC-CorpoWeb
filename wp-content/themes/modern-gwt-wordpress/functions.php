@@ -81,6 +81,11 @@ require get_template_directory() . '/inc/function-helpers.php';
 require get_template_directory() . '/inc/shortcode-priority-commodities-carousel.php';
 
 /**
+ * Organizational Shortcode
+ */
+require get_template_directory() . '/inc/shortcode-gov-org.php';
+
+/**
  * Core Programs Shortcode
  */
 require get_template_directory() . '/inc/shortcode-core-programs.php';
