@@ -67,7 +67,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 
 		$hover_class = $link ? 'hover:scale-105 transition-transform duration-200' : '';
 
-		$card  = "<div class='relative flex flex-col gap-2 w-32 md:w-48 h-48 md:h-64 rounded drop-shadow-md overflow-hidden $hover_class'>";
+		$card  = "<div class='relative flex flex-col gap-2 w-48 h-64 rounded drop-shadow-md overflow-hidden $hover_class'>";
 		$card .= "<img src='$img' alt='$alt' class='w-full h-full object-cover object-top rounded'>";
 		$card .= "<div class='absolute bottom-0 w-full bg-gradient-to-t from-[#1f5d2b] to-transparent text-white p-2 text-xs line-clamp-2 whitespace-normal'>";
 		$card .= "<p class='font-semibold text-center m-0 !leading-tight'>$name</p>";
