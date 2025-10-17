@@ -248,13 +248,27 @@ add_shortcode('cbc_ai_messenger', function($atts){
     // Enqueue small fallback CSS to ensure mobile fullscreen + scroll-lock behaviors
     wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.2.0');
 
-    // Enqueue messenger script
-    wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.4.0', true);
+    // Determine reCAPTCHA site key early so we can enqueue reCAPTCHA before the messenger script
+    $recaptcha_site_key = '';
+    if (function_exists('cbc_ai_get_recaptcha_site_key')) {
+        $recaptcha_site_key = cbc_ai_get_recaptcha_site_key();
+    }
+    if ($recaptcha_site_key) {
+        // Enqueue reCAPTCHA v3 loader with site key so grecaptcha becomes available
+        wp_enqueue_script('cbc-ai-recaptcha', 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode($recaptcha_site_key), array(), null, true);
+        // Enqueue messenger script and declare dependency on the reCAPTCHA loader so it prints after
+        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery','cbc-ai-recaptcha'), '1.4.0', true);
+    } else {
+        // No reCAPTCHA: enqueue messenger normally
+        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.4.0', true);
+    }
+
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
         'nonce' => wp_create_nonce('wp_rest'),
         'placeholder' => (string)$atts['placeholder'],
         'title' => (string)$atts['title'],
+        'recaptchaSiteKey' => $recaptcha_site_key,
     ));
 
     ob_start();
@@ -342,6 +356,54 @@ function cbc_ai_rest_ask( WP_REST_Request $req ){
 
     if ($message === '') { return new WP_REST_Response(array('error' => 'Empty message'), 400); }
 
+    // --- reCAPTCHA verification (if secret configured) ---
+    $recaptcha_secret = function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '';
+    $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
+    // Prepare admin-only debug info (will be injected into responses for admins)
+    $admin_debug = array(
+        'recaptcha_secret_configured' => $recaptcha_secret !== '',
+        'recaptcha_token_provided' => $recaptcha_token !== '',
+    );
+    if ($recaptcha_secret !== '') {
+        if ($recaptcha_token === '') {
+            // For debugging: allow administrators to bypass reCAPTCHA token requirement so they can test the flow.
+            if (is_user_logged_in() && current_user_can('manage_options')) {
+                error_log('cbc-ai-messenger: reCAPTCHA token missing but bypassed for admin ' . get_current_user_id());
+            } else {
+                $resp = new WP_REST_Response(array('error' => 'reCAPTCHA token missing'));
+                if (is_user_logged_in() && current_user_can('manage_options')) {
+                    $resp->set_data(array('error' => 'reCAPTCHA token missing', 'debug' => $admin_debug));
+                }
+                return $resp;
+            }
+        }
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $verify = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+            'body' => array(
+                'secret' => $recaptcha_secret,
+                'response' => $recaptcha_token,
+                'remoteip' => $ip,
+            ),
+            'timeout' => 15,
+        ));
+        if (is_wp_error($verify)) {
+            return new WP_REST_Response(array('error' => 'reCAPTCHA verification failed'), 403);
+        }
+        $body = wp_remote_retrieve_body($verify);
+        $data = json_decode($body, true);
+        if (!is_array($data) || empty($data['success'])) {
+            $resp = new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
+            if (is_user_logged_in() && current_user_can('manage_options')) { $resp->set_data(array('error' => 'reCAPTCHA validation failed', 'debug' => $data)); }
+            return $resp;
+        }
+        // If v3, optionally check score threshold
+        if (isset($data['score']) && floatval($data['score']) < 0.45) {
+            $resp = new WP_REST_Response(array('error' => 'reCAPTCHA score too low'), 403);
+            if (is_user_logged_in() && current_user_can('manage_options')) { $resp->set_data(array('error' => 'reCAPTCHA score too low', 'debug' => $data)); }
+            return $resp;
+        }
+    }
+
     // Simple rate limit: 1 request per 10 seconds per IP
     $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
     $key = 'cbc_ai_last_' . md5($ip);
@@ -386,7 +448,9 @@ function cbc_ai_rest_ask( WP_REST_Request $req ){
     if ($reply === '') { $reply = 'I do not have an answer at the moment.'; }
 
     $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'ok','usage' => $result['usage'] ?? array()), $name, $email);
-    return new WP_REST_Response(array('reply' => wp_kses_post($reply)), 200);
+    $response_body = array('reply' => wp_kses_post($reply));
+    if (is_user_logged_in() && current_user_can('manage_options')) { $response_body['debug'] = $admin_debug; }
+    return new WP_REST_Response($response_body, 200);
 }
 
 function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $email = ''){
@@ -599,4 +663,26 @@ function cbc_ai_get_effective_openai_org($opts){
     $env = getenv('OPENAI_ORGANIZATION'); if ($env) return trim((string)$env);
     if (defined('CBC_AI_OPENAI_ORG')) return (string)constant('CBC_AI_OPENAI_ORG');
     return '';
+}
+
+// Add reCAPTCHA helper getters near the end so secrets stay server-side
+if (!function_exists('cbc_ai_get_recaptcha_site_key')) {
+    function cbc_ai_get_recaptcha_site_key(){
+        $k = '';
+        if (defined('CBC_AI_RECAPTCHA_SITE_KEY')) $k = trim((string)CBC_AI_RECAPTCHA_SITE_KEY);
+        if ($k === '') {
+            $env = getenv('RECAPTCHA_SITE_KEY'); if ($env) $k = trim((string)$env);
+        }
+        return $k;
+    }
+}
+if (!function_exists('cbc_ai_get_recaptcha_secret')) {
+    function cbc_ai_get_recaptcha_secret(){
+        $k = '';
+        if (defined('CBC_AI_RECAPTCHA_SECRET')) $k = trim((string)CBC_AI_RECAPTCHA_SECRET);
+        if ($k === '') {
+            $env = getenv('RECAPTCHA_SECRET_KEY'); if ($env) $k = trim((string)$env);
+        }
+        return $k;
+    }
 }
