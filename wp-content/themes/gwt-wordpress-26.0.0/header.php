@@ -1,18 +1,5 @@
-<?php
-/**
- * The template for displaying the header
- *
- * Displays all of the head element and everything up until the "main" div.
- *
- * @package GWT
- * @since Government Website Template 2.0
- */
-
-
-?>
-
 <!DOCTYPE html>
-<html <?php language_attributes(); ?> class="no-js">
+<html <?php language_attributes(); ?> class="no-js" lang="">
 
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">

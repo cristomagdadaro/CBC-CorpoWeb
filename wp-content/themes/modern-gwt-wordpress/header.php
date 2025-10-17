@@ -1,18 +1,5 @@
-<?php
-/**
- * The template for displaying the header
- *
- * Displays all of the head element and everything up until the "main" div.
- *
- * @package GWT
- * @since Government Website Template 2.0
- */
-
-
-?>
-
 <!DOCTYPE html>
-<html <?php language_attributes(); ?> class="no-js">
+<html <?php language_attributes(); ?> class="no-js" lang="en">
 
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
@@ -22,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=League+Spartan:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <title><?php wp_title( '|', true, 'right' ); ?></title>
     <link rel="profile" href="http://gmpg.org/xfn/11">
-	<?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
+    <meta property="fb:app_id" content="792373233661468">
+    <?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
         <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 	<?php endif; ?>
     <link rel="icon" href="<?php echo get_template_directory_uri() ?>/favicon.ico">
