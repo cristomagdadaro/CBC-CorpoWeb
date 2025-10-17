@@ -160,6 +160,22 @@ function enqueue_particles_js() {
 add_action( 'wp_enqueue_scripts', 'enqueue_particles_js' );
 
 /**
+ * Facebook Domain Verification Meta Tag
+ * Add the Facebook domain verification meta tag to the head section of the site.
+*/
+add_action('wp_head', function() {
+	echo '<meta name="facebook-domain-verification" content="i5w8r6xe2xh7kdwq4e3dx22g2ij28v">' . "\n";
+});
+
+/**
+ * Facebook App ID Meta Tag
+ * Add the Facebook App ID meta tag to the head section of the site.
+*/
+add_action('wp_head', function() {
+	echo '<meta property="fb:app_id" content="792373233661468">' . "\n";
+});
+
+/**
  * Enqueue slide animation helper
  */
 function gwt_enqueue_slide_anim(){
