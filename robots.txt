@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dacbc.philrive.gov.ph/sitemap.xml

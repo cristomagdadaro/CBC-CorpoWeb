@@ -23,13 +23,13 @@
 define( 'DB_NAME', 'da-cbc' );
 
 /** Database username */
-define( 'DB_USER', 'root' );
+define( 'DB_USER', 'CBC-CRISNB' );
 
 /** Database password */
-define( 'DB_PASSWORD', '' );
+define( 'DB_PASSWORD', 'AO26@2021' );
 
 /** Database hostname */
-define( 'DB_HOST', 'localhost' );
+define( 'DB_HOST', '192.168.36.10' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
@@ -91,6 +91,8 @@ define( 'WP_DEBUG', true);
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+define('CBC_AI_RECAPTCHA_SITE_KEY', '6LeEVe0rAAAAABjSTE9GDXXz4N1YGkY560EhIlkZ');
+define('CBC_AI_RECAPTCHA_SECRET', '6LeEVe0rAAAAAG4Xq3zFklwVwV7udT_xC7dWvafP');
 
 
 /* That's all, stop editing! Happy publishing. */
