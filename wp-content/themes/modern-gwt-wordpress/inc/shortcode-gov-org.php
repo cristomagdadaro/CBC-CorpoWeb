@@ -14,7 +14,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 
 		ob_start();
 		?>
-		<div class="cbc-org-chart-container space-y-12">
+		<div class="cbc-org-chart-container space-y-4 md:space-y-12">
 			<?php foreach ($structure as $section): ?>
 				<?php if (!empty($section['heading'])):
 					echo govph_section_header( $section['heading'], [ 'id' => strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $section['heading']))) . '_header' ] );
@@ -31,7 +31,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 
 				<!-- CASE 2: Section has grouped subcategories -->
 				<?php if (!empty($section['groups']) && is_array($section['groups'])): ?>
-					<div class="space-y-10">
+					<div class="space-y-4 md:space-y-10">
 						<?php foreach ($section['groups'] as $group): ?>
 							<?php if (!empty($group['label'])): ?>
 								<h3 class="text-lg font-semibold text-[#1f5d2b] text-center mb-4">
@@ -68,8 +68,8 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 		$card  = "<div class='relative flex flex-col gap-2 w-48 h-64 rounded drop-shadow-md overflow-hidden $hover_class'>";
 		$card .= "<img src='$img' alt='$alt' class='w-full h-full object-cover object-top rounded'>";
 		$card .= "<div class='absolute bottom-0 w-full bg-gradient-to-t from-[#1f5d2b] to-transparent text-white p-2 text-xs line-clamp-2 whitespace-normal'>";
-		$card .= "<p class='font-semibold text-center m-0 !leading-tight'>$name</p>";
-		$card .= "<p class='text-center italic m-0 text-[9px] !leading-tight min-h-[2.5em] max-h-[2.5em]'>$title</p>";
+		$card .= "<p class='font-semibold text-center m-0 !leading-tight select-none'>$name</p>";
+		$card .= "<p class='text-center italic m-0 text-[9px] !leading-tight min-h-[2.5em] max-h-[2.5em] select-none'>$title</p>";
 
 		$card .= "</div></div>";
 
@@ -145,7 +145,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 					),
 				),
 			),
-			array(
+			/*array(
 				'heading' => 'R&D Management Team',
 				'groups' => array(
 					array(
@@ -157,46 +157,46 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 								'img' => '/wp-content/uploads/2025/09/Jayvee-500x500.png',
 								'alt' => 'Jayvee Garcia',
 							),
-							array(
-								'name' => 'Benson Munar',
-								'title' => 'Science Research Specialist I',
-								'img' => '/wp-content/uploads/2025/09/Benson-500x500.png',
-								'alt' => 'Benson Munar',
-							),
 						),
 					),
 					array(
 						'label' => 'R4D Biotechnology Capacity-Building Service Group',
 						'items' => array(
+                            array(
+                                    'name' => 'Ephraim Dioeve Yarcia',
+                                    'title' => 'Science Research Specialist I',
+                                    'img' => '/wp-content/uploads/2025/09/Paem-500x500.png',
+                                    'alt' => 'Ephraim Dioeve Yarcia',
+                            ),
 							array(
 								'name' => 'Rebecca I. Santos',
 								'title' => 'Science Research Specialist I',
 								'img' => '/wp-content/uploads/2025/09/Becca-500x500.png',
 								'alt' => 'Rebecca I. Santos',
 							),
-							array(
-								'name' => 'Ephraim Dioeve Yarcia',
-								'title' => 'Science Research Specialist I',
-								'img' => '/wp-content/uploads/2025/09/Paem-500x500.png',
-								'alt' => 'Ephraim Dioeve Yarcia',
-							),
 						),
 					),
 					array(
 						'label' => 'Technology Commercialization and Management Group',
 						'items' => array(
-							array(
-								'name' => 'Precious Mae Gabato',
-								'title' => 'Science Research Specialist II',
-								'img' => '/wp-content/uploads/2025/09/Precious-500x500.png',
-								'alt' => 'Precious Mae Gabato',
-							),
+                            array(
+                                    'name' => 'Benson Munar',
+                                    'title' => 'Science Research Specialist I',
+                                    'img' => '/wp-content/uploads/2025/09/Benson-500x500.png',
+                                    'alt' => 'Benson Munar',
+                            ),
 							array(
 								'name' => 'Cristo Rey C. Magdadaro',
 								'title' => 'Science Research Specialist I',
 								'img' => '/wp-content/uploads/2025/09/Cris-500x500.png',
 								'alt' => 'Cristo Rey C. Magdadaro',
 							),
+                            array(
+                                    'name' => 'Precious Mae Gabato',
+                                    'title' => 'Science Research Specialist II',
+                                    'img' => '/wp-content/uploads/2025/09/Precious-500x500.png',
+                                    'alt' => 'Precious Mae Gabato',
+                            ),
 						),
 					),
 				),
@@ -224,7 +224,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 						'alt' => 'Aradel Mae Tanaid',
 					),
 				),
-			),
+			),*/
 		);
 	}
 

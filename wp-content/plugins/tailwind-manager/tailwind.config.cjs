@@ -195,7 +195,13 @@ module.exports = {
         // Special & Utility
         'z-[999]',
         'cursor-pointer',
+        'max-h-[50vh]',
+        'max-h-full',
         'select-none',
+        'space-y-4',
+        'md:space-y-12',
+        'aspect-[5040/1692]',
+        'md:space-y-10',
         'overflow-hidden',
         'overflow-x-auto',
         'overflow-y-scroll',
@@ -207,6 +213,8 @@ module.exports = {
         'shadow-inner',
         // Arbitrary Variants & Child Styling
         '[&>li]:flex',
+        '[&>figure>img]:md:w-full',
+        '[&>figure>img]:w-[5rem]',
         '[&>li]:flex-wrap',
         '[&>li]:whitespace-nowrap',
         '[&>li>span]:mr-1',
