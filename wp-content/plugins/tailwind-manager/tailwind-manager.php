@@ -17,15 +17,32 @@ class TWM_Tailwind_Manager {
 		add_action( 'admin_menu', [ __CLASS__, 'admin_menu' ] );
 		add_action( 'admin_init', [ __CLASS__, 'maybe_create_default_config' ] );
 		add_action( 'admin_init', [ __CLASS__, 'ensure_config_files' ] );
-		add_action( 'admin_post_twm_save', [ __CLASS__, 'handle_save' ] );
+        add_action( 'admin_init', [ __CLASS__, 'tailwind_manager_add_editor_styles'] );
+        add_action( 'admin_post_twm_save', [ __CLASS__, 'handle_save' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_tailwind' ], 5 );
+        add_action( 'enqueue_block_editor_assets', [ __CLASS__, 'tailwind_manager_enqueue_block_editor_assets'] );
 		add_action( 'admin_notices', [ __CLASS__, 'admin_notice_missing_build' ] );
 		add_action( 'rest_api_init', [ __CLASS__, 'register_rest' ] );
 		register_activation_hook( __FILE__, [ __CLASS__, 'activate' ] );
 		add_shortcode( 'tailwind_color', [ __CLASS__, 'shortcode_color' ] );
 	}
 
-	public static function plugin_dir() { return plugin_dir_path( __FILE__ ); }
+    // Load Tailwind CSS inside the block editor
+    public static function tailwind_manager_add_editor_styles(): void {
+        add_editor_style( plugins_url( 'dist/tailwind.css', __FILE__ ) );
+    }
+
+    public static function tailwind_manager_enqueue_block_editor_assets(): void {
+        wp_enqueue_style(
+                'tailwind-manager-editor-styles',
+                plugins_url( 'dist/tailwind.css', __FILE__ ),
+                array(),
+                filemtime( plugin_dir_path( __FILE__ ) . 'dist/tailwind.css' )
+        );
+    }
+
+
+    public static function plugin_dir() { return plugin_dir_path( __FILE__ ); }
 	public static function plugin_url() { return plugin_dir_url( __FILE__ ); }
 
 	public static function activate() { self::maybe_create_default_config(); self::ensure_config_files(); }

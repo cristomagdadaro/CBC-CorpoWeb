@@ -27,11 +27,15 @@ module.exports = {
         '../../themes/**/*.tsx',
         '../../themes/**/*.vue',
         '../../themes/**/*.html',
-        './src/**/*.{js,ts,jsx,tsx,php,html}'
+        './src/**/*.{js,ts,jsx,tsx,php,html}',
+        '../../wp-admin/**/*.php',
+        '../../wp-includes/**/*.php'
     ],
     safelist: [
         // Layout and display
         'block',
+        'sm:block',
+        'sm:hidden',
         'flex',
         'inline-flex',
         'grid',
@@ -93,6 +97,8 @@ module.exports = {
         'p-3',
         'p-6',
         'p-10',
+        'pl-6',
+        'pr-6',
         'px-5',
         'py-6',
         'pr-4',

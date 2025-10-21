@@ -41,7 +41,7 @@
 
 
 .accordion {
-  background-color: #1A4D2E;
+  background-color: #1f5d2b;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
@@ -71,7 +71,7 @@
 }
 
 .active, .accordion:hover {
-  background-color: #4F6F52;
+  background-color: #1f5d2b;
 }
 
 .accordion:after {
