@@ -241,7 +241,7 @@ if (!function_exists('cbc_event_halls_carousel_shortcode')) {
              data-show-arrows="<?php echo esc_attr($atts['show_arrows']); ?>"
              data-enable-blur="<?php echo esc_attr($atts['enable_blur']); ?>"
              data-center-scale="<?php echo esc_attr($atts['center_scale']); ?>">
-<h1>update</h1>
+
             <div class="cbc-carousel relative overflow-hidden "
                  role="listbox"
                  aria-label="Priority Commodities Carousel"
