@@ -24,19 +24,16 @@ if (!function_exists('cbc_event_halls_carousel_shortcode')) {
             'plenary' => array(
                 array(
                         'name' => 'The Plenary Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210915_0038-scaled.jpg',
+                        'image' => '/wp-content/uploads/2025/10/CBC_20210915_0039-scaled.jpg',
                 ),array(
                         'name' => 'The Plenary Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210915_0039-scaled.jpg',
+                        'image' => '/wp-content/uploads/2025/10/CBC_20210915_0015-scaled.jpg',
                 ),array(
                         'name' => 'The Plenary Hall',
                         'image' => '/wp-content/uploads/2025/10/CBC_20210915_0040-scaled.jpg',
                 ),array(
                         'name' => 'The Plenary Hall',
                         'image' => '/wp-content/uploads/2025/10/CBC_20210915_0041-scaled.jpg',
-                ),array(
-                        'name' => 'The Plenary Hall',
-                        'image' => '/wp-content/uploads/2025/10/plenary-hall-scaled.png',
                 ),array(
                         'name' => 'The Plenary Hall',
                         'image' => '/wp-content/uploads/2025/10/CBC_20210920_0037-scaled.jpg',
@@ -54,20 +51,41 @@ if (!function_exists('cbc_event_halls_carousel_shortcode')) {
             'mph' => array(
                 array(
                         'name' => 'Multipurpose Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210920_0034-scaled.jpg',
-                ), array(
-                        'name' => 'Multipurpose Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210920_0034-scaled.jpg',
+                        'image' => '/wp-content/uploads/2025/10/mph-scaled.png',
                 ),array(
                         'name' => 'Multipurpose Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210920_0034-scaled.jpg',
-                ), array(
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134702-scaled.png',
+                ),array(
                         'name' => 'Multipurpose Hall',
-                        'image' => '/wp-content/uploads/2025/10/CBC_20210920_0034-scaled.jpg',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134721-scaled.png',
+                ),array(
+                        'name' => 'Multipurpose Hall',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134745-scaled.png',
+                ),array(
+                        'name' => 'Multipurpose Hall',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134819-scaled.png',
                 ),
             ),
             'training' => array(
-
+                array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134819-scaled.png',
+                ),array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-135526-scaled.png',
+                ),array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-135510-scaled.png',
+                ),array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-134819-scaled.png',
+                ),array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-135526-scaled.png',
+                ),array(
+                        'name' => 'Training Room',
+                        'image' => '/wp-content/uploads/2025/10/Screenshot-2025-10-21-135510-scaled.png',
+                ),
             )
         );
 
