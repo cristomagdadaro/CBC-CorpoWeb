@@ -18,7 +18,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             'vertical_breakpoint' => 640,
         ), $atts, 'priority_commodities_carousel');
 
-        // Define priority commodities data
+        // Define priority commodities data. Rice, Banana, Coconut, Corn, Abaca
         $commodities = array(
             array(
                 'name' => 'Corn',
@@ -41,24 +41,9 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                 'route' => home_url('/commodity/coconut'),
             ),
             array(
-                'name' => 'Cassava',
-                'image' => get_template_directory_uri() . '/assets/images/commodities/p-cassava.webp',
-                'route' => home_url('/commodity/cassava'),
-            ),
-            array(
-                'name' => 'Sweet Potato',
-                'image' => get_template_directory_uri() . '/assets/images/commodities/p-sweetpotato.webp',
-                'route' => home_url('/commodity/sweet-potato'),
-            ),
-            array(
-                'name' => 'Papaya',
-                'image' => get_template_directory_uri() . '/assets/images/commodities/p-papaya.webp',
-                'route' => home_url('/commodity/papaya'),
-            ),
-            array(
-                'name' => 'Tomato',
-                'image' => get_template_directory_uri() . '/assets/images/commodities/p-tomato.webp',
-                'route' => home_url('/commodity/tomato'),
+                'name' => 'Abaca',
+                'image' => get_template_directory_uri() . '/assets/images/commodities/p-abaca.webp',
+                'route' => home_url('/commodity/abaca'),
             ),
         );
 

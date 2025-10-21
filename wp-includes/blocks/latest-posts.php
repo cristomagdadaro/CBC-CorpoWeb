@@ -93,19 +93,46 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= sprintf( $image_wrapper_template, $featured_image );
 		}
 
-		$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
+		if ( $show_image && has_post_thumbnail( $post ) && isset($attributes['showImageOnHover']) && $attributes['showImageOnHover'] ) {
+			$meta = get_post_meta( $post->ID, 'pm_metrics', true );
+			$views = intval( $meta['views'] ?? 0 );
 
-		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
+			$featured_image = get_the_post_thumbnail(
+				$post,
+				'thumbnail',
+				array(
+					'class' => esc_attr( 'object-cover object-center transition-all duration-500 ease-out w-16 max-h-[5.375rem] z-[10] right-0 absolute wp-post-image right-[-10rem] group-hover:right-0 gradient-mask-fade' ),
+				)
+			);
+			$item_markup .= '<div class="flex w-full justify-center group relative gap-2 flex-row-reverse overflow-hidden">' . $featured_image . '<div class="flex flex-col leading-[1rem] p-2 group">';
+		}
+		else
+			$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
+
+
+
+		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed z-[99]" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
 
 		$item_markup .= '<div class="flex justify-between">';
+		$item_markup .= "<div class='flex items-center gap-2'>";
 
 		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
 			$item_markup .= sprintf(
-				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs">%2$s</time>',
+				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs select-none">%2$s</time>',
 				esc_attr( get_the_date( 'c', $post ) ),
 				get_the_date( '', $post )
 			);
 		}
+
+		if (!$is_grid_layout) {
+			$meta  = get_post_meta( $post->ID, 'pm_metrics', true );
+			$views = intval( $meta['views'] ?? 0 );
+			$item_markup .= '<div class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 16 16">
+	  <path d="M4 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4m2.625.547a3 3 0 0 0-5.584.953H.5a.5.5 0 0 0 0 1h.541A3 3 0 0 0 7 8a1 1 0 0 1 2 0 3 3 0 0 0 5.959.5h.541a.5.5 0 0 0 0-1h-.541a3 3 0 0 0-5.584-.953A2 2 0 0 0 8 6c-.532 0-1.016.208-1.375.547M14 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
+	</svg><span class="text-xs">' . $views . '</span></div>';
+		}
+
+		$item_markup .= '</div>';
 
 		if ( isset( $attributes['displayAuthor'] ) && $attributes['displayAuthor'] ) {
 			$author_display_name = get_the_author_meta( 'display_name', $post->post_author );

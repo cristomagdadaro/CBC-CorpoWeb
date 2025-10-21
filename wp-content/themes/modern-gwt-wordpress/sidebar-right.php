@@ -16,7 +16,7 @@
 
     <?php  echo govph_section_header( 'News and Updates', [ 'id' => 'news_posts_header', 'swap' => $swap ] ); ?>
     <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
-        <?php echo do_shortcode('[gwt_latest_posts posts="4"  excerpt_length="0" show_date="1" show_image="0" show_author="0" post_layout="list"]'); ?>
+        <?php echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="0" show_date="1" show_image="0" hover_image="1" show_author="0" post_layout="list"]'); ?>
     </aside>
 
     <?php else:

@@ -32,7 +32,7 @@ function efs_get_slider(){
 		endwhile;
 
 		while (have_posts()) : the_post();
-			$img = get_the_post_thumbnail($post_id, 'large', array( 'class' => 'orbit-image object-cover object-center w-full h-full aspect-[3/1]' ));
+			$img = get_the_post_thumbnail($post_id, 'large', array( 'class' => 'orbit-image object-cover object-center w-full h-full aspect-[3/1] max-h-[50%]' ));
 
 			$slide_link = slider_link_get_meta_box_data(get_the_ID());
 			$caption = get_the_title();

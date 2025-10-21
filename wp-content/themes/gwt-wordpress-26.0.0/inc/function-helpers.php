@@ -95,6 +95,7 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
             'columns'         => 2,       // used only in grid
             'category_ids'    => '',      // comma-separated category IDs
             'author'          => '',      // author ID
+	        'hover_image'     => '0'        // show thumbnail on hover
         ), $atts, 'gwt_latest_posts' );
 
         // Auto excerpt length logic (phone/tablet/desktop) if user passes 'auto' or 0.
@@ -122,6 +123,7 @@ if ( ! function_exists( 'gwt_latest_posts_shortcode' ) ) {
             'orderBy'                   => in_array( strtolower( $atts['orderby'] ), array( 'date','title','modified','rand' ), true ) ? strtolower( $atts['orderby'] ) : 'date',
             'excerptLength'             => max( 0, intval( $atts['excerpt_length'] ) ),
             'displayFeaturedImage'      => $atts['show_image'] === '1',
+			'showImageOnHover'          => $atts['hover_image'] === '1',
             'featuredImageSizeSlug'     => sanitize_key( $atts['image_size'] ),
             'addLinkToFeaturedImage'    => $atts['link_image'] === '1',
             'displayAuthor'             => $atts['show_author'] === '1',
