@@ -239,6 +239,9 @@ module.exports = {
         'text-center',
         'text-left',
         'text-right',
+        'hover:scale-x-110',
+        'focus:scale-x-110',
+        'active:scale-x-110',
         'shadow-inner',
         // Arbitrary Variants & Child Styling
         '[&>li]:flex',

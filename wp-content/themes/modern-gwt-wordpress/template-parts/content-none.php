@@ -20,7 +20,7 @@
 		<?php else : ?>
 
 			<p><?php _e( 'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.', 'gwt_wp' ); ?></p>
-			<div class="border rounded-full overflow-hidden w-full shadow-md">
+			<div class="border rounded-full overflow-visible w-full shadow-md">
                 <?php get_search_form(); ?>
             </div>
 
