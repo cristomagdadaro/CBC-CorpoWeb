@@ -63,9 +63,9 @@
                             </a>
                         </div>
                     </div>
-                    <div class="grid md:grid-cols-5 grid-cols-2 grid-rows-2 md:grid-rows-1 !text-white text-sm">
+                    <div class="grid md:grid-cols-5 grid-cols-2 grid-rows-2 md:grid-rows-1 !text-white text-sm [&>div>ul>li]:text-[11.2px]">
                         <div>
-                            <h4 class="font-semibold m-5 p-1">Quick Links</h4>
+                            <h4 class="font-semibold m-4 p-1">Quick Links</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/about-us/organizational-structure/">Directory</a></li>
@@ -78,16 +78,16 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-5 p-1">Services</h4>
+                            <h4 class="font-semibold m-4 p-1">Services</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
-                                <li><a href="/">Lab Use Request Form</a></li>
-                                <li><a href="/">Events Booking Form</a></li>
-                                <li><a href="http://192.168.36.71:5000/">Synology BioNAS</a></li>
-                                <li><a href="http://192.168.36.10/">CrAPPs Center</a></li>
+                                <li><a href="#">Lab Use Request Form</a></li>
+                                <li><a href="#">Event Hall Booking Form</a></li>
+                                <li><a href="http://192.168.36.71:5000/">BioNAS</a></li>
+                                <li><a href="http://192.168.36.10/">Apps Center</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-5 p-1">Apps</h4>
+                            <h4 class="font-semibold m-4 p-1">Apps</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="https://cbc360tour.philrice.gov.ph/">360 Virtual Tour</a></li>
                                 <li><a href="/projects/breedersmap-db">Plant Breeders' Map Database</a></li>
@@ -95,30 +95,30 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-5 p-1">Games</h4>
+                            <h4 class="font-semibold m-4 p-1">Games</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="/games/biotech-quiz-bee-game/">Biotech Quiz Bee</a></li>
-                                <li><a href="/games/scramble-game/">Scramble Game</a></li>
-                                <li><a href="/games/crop-memory-game/">Crop Memory Game</a></li>
+                                <li><a href="/games/scramble-game/">Biotech Scramble</a></li>
+                                <li><a href="/games/crop-memory-game/">Crop Biotech Memory</a></li>
                             </ul>
                         </div>
                         <div class="col-span-2 md:col-span-1">
-                            <h4 class="font-semibold m-5 p-1">Contact Us</h4>
+                            <h4 class="font-semibold m-4 p-1">Contact Us</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917] [&>li>span]:mr-1">
                                 <li>
-                                    <span class="text-white opacity-50">Telephone:</span>
+                                    <span class="text-white opacity-50 select-none">Telephone:</span>
                                     (+63) 908 889 7135
                                 </li>
                                 <li>
-                                    <span class="text-white opacity-50">Email:</span>
+                                    <span class="text-white opacity-50 select-none">Email:</span>
                                     cropbiotechcenter@gmail.com
                                 </li>
                                 <li>
-                                    <span class="text-white opacity-50">Facebook:</span>
+                                    <span class="text-white opacity-50 select-none">Facebook:</span>
                                     <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center</a>
                                 </li>
                                 <li>
-                                    <span class="text-white opacity-50">Headquarters:</span>
+                                    <span class="text-white opacity-50 select-none">Headquarters:</span>
                                     <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a>
                                 </li>
                             </ul>

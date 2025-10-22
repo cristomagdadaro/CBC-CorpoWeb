@@ -101,7 +101,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$post,
 				'thumbnail',
 				array(
-					'class' => esc_attr( 'object-cover object-center transition-all duration-500 ease-out w-16 max-h-[5.375rem] z-[10] right-0 absolute wp-post-image right-[-10rem] group-hover:right-0 gradient-mask-fade' ),
+					'class' => esc_attr( 'object-cover object-center transition-all duration-500 ease-out w-34 max-h-[5.375rem] z-[10] right-0 absolute wp-post-image right-[-10rem] group-hover:right-0 gradient-mask-fade' ),
 				)
 			);
 			$item_markup .= '<div class="flex w-full justify-center group relative gap-2 flex-row-reverse overflow-hidden">' . $featured_image . '<div class="flex flex-col leading-[1rem] p-2 group">';
@@ -109,9 +109,7 @@ function render_block_core_latest_posts( $attributes ) {
 		else
 			$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
 
-
-
-		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed z-[99]" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
+		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed z-[99] group-hover:[text-shadow:1px_1px_0_white,-1px_1px_0_white,1px_-1px_0_white,-1px_-1px_0_white,0_2px_0_white,2px_0_0_white,-2px_0_0_white,0_-2px_0_white]" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
 
 		$item_markup .= '<div class="flex justify-between">';
 		$item_markup .= "<div class='flex items-center gap-2'>";
@@ -146,7 +144,6 @@ function render_block_core_latest_posts( $attributes ) {
 			}
 		}
 
-
 		$item_markup .= '</div></div>';
 
 		if ( isset( $attributes['displayPostContent'] ) && $attributes['displayPostContent']
@@ -163,10 +160,7 @@ function render_block_core_latest_posts( $attributes ) {
 			if ( post_password_required( $post ) ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
-			// If this is a right-column item, hide the excerpt on md+ but show on mobile.
-			// Build excerpt classes based on column:
-			// - Left-column items ($is_right === false): hide on small, show on md+ => 'hidden md:block'
-			// - Right-column items ($is_right === true): always hidden => 'hidden'
+
 			$excerpt_base = 'wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-6 entry-content';
 			if ($is_grid_layout && $is_right ) {
 				$excerpt_visibility = 'hidden';
@@ -193,11 +187,8 @@ function render_block_core_latest_posts( $attributes ) {
 		return $item_markup;
 	};
 
-	// Column wrappers: start with left column container
 	$list_items_markup = '<div id="left-posts-list" class="flex flex-col gap-2 md:gap-3">';
 
-	// Prepare right column class and optional id. We keep the right column visible, but the renderer will hide excerpts
-	// on md+ for right-column items (see $is_right handling in the renderer).
 	$right_list_class = 'flex flex-col gap-2 md:gap-3';
 	$right_list_id = 'right-posts-list';
 	if ( isset( $block['attrs'] ) && ! empty( $block['attrs']['uniqueID'] ) ) {
@@ -209,24 +200,21 @@ function render_block_core_latest_posts( $attributes ) {
 	$count = 0;
 	foreach ( $recent_posts as $post ) {
 		if ( $maxCount === $count ) {
-			// Open right column container after the first three posts.
 			$list_items_markup .= '</div><div id="' . esc_attr( $right_list_id ) . '" class="' . esc_attr( $right_list_class ) . '">';
 		}
 
-		// Image wrapper templates with fixed responsive sizes
 		$img_wrapper_first = '<div class="left-images overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
-		// For later items in grid layout: show on small screens, hide on md+
+
 		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
-		// For later items in list layout: always visible
+
 		$img_wrapper_later_list = '<div class="overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 
 		$is_first_group = ( $count < $maxCount );
 
-		// Base container classes
+
 		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded bg-white my-auto opacity-0 reveal-on-scroll-300 ';
 
 		if ( $count < $maxCount && $is_grid_layout) {
-			// Open right column container after the first three posts.
 			$base_container .= 'flex flex-row md:flex-col h-full ';
 		}
 
@@ -234,28 +222,25 @@ function render_block_core_latest_posts( $attributes ) {
 
 		if ( $is_grid_layout ) {
 			if ( $is_first_group ) {
-				// Image wrapper templates with responsive sizes
 				$img_wrapper_first = '<div class="overflow-hidden rounded-md w-[9rem] shrink-0 md:shrink-0 md:w-full h-full md:h-[9rem] lg:h-[12rem]">%s</div>';
-				// First 3 posts: two-column card with image
 				$container_classes = $base_container . 'flex items-center hover:border-[#1f5d2b] hover:shadow-lg ';
 				$list_items_markup .= $render_item(
 					$post,
 					$attributes,
 					$container_classes,
 					$img_wrapper_first,
-					true // show image
+					true
 				);
 
 			} else {
-				// Remaining posts: single-column card, include image but hide it on md+
 				$container_classes = $base_container . 'flex items-center p-0 ';
 				$list_items_markup .= $render_item(
 					$post,
 					$attributes,
 					$container_classes,
-					($attributes['displayFeaturedImage'] ? $img_wrapper_first : $img_wrapper_later_grid), // only wrap if image is shown
-					true, // include image for small screens
-					true // mark as right-column so excerpts are hidden on md+
+					($attributes['displayFeaturedImage'] ? $img_wrapper_first : $img_wrapper_later_grid),
+					true,
+					true
 				);
 
 				if ( $count < $total - 1 && isset( $attributes['postLayout'] ) && 'grid' === $attributes['postLayout'] ) {
@@ -263,7 +248,6 @@ function render_block_core_latest_posts( $attributes ) {
 				}
 			}
 		} else {
-			// Non-grid layouts retain previous behavior but include image
 			if ( ! $is_first_group ) {
 				$container_classes = $base_container . 'flex border hover:border-[#1f5d2b] md:items-center ';
 				$list_items_markup .= $render_item(
@@ -293,12 +277,9 @@ function render_block_core_latest_posts( $attributes ) {
 
 	remove_filter( 'excerpt_length', 'block_core_latest_posts_get_excerpt_length', 20 );
 
-	// List wrapper classes
 	if ( $is_grid_layout ) {
-		// Force a 2-column grid wrapper for grid layout
 		$classes = array( 'wp-block-latest-posts__list','grid','grid-cols-1','md:grid-cols-2','gap-2','md:gap-6' );
 	} else {
-		// Previous default for non-grid
 		$classes = array( 'wp-block-latest-posts__list','flex','flex-col','grid','grid-cols-1','gap-2','md:gap-3');
 	}
 
