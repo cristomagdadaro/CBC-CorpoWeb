@@ -234,12 +234,12 @@ class CBC_Media_Archive {
                 if (!$square || !$full) { continue; }
                 $title = esc_attr(get_the_title());
                 $desc  = esc_html(wp_strip_all_tags(get_the_excerpt() ?: ''));
-                echo '<div class="cbc-photo-item group bg-white rounded shadow hover:shadow-md transition p-2 flex items-center '.($view==='grid'?'flex-col':'gap-3').'" data-full="'.esc_url($full[0]).'" data-title="'.$title.'">';
-                echo '<img src="'.esc_url($square[0]).'" alt="'.$title.'" class="w-[300px] h-[300px] object-cover cursor-zoom-in select-none" draggable="false">';
-                echo '<div class="w-full mt-2 flex flex-col">';
-                echo '<div class="text-sm font-semibold">'.esc_html(get_the_title()).'</div>';
+                echo '<div class="cbc-photo-item group bg-white shadow hover:shadow-md transition rounded-md overflow-hidden relative flex items-center '.($view==='grid'?'flex-col':'gap-3').'" data-full="'.esc_url($full[0]).'" data-title="'.$title.'">';
+	            echo '<div class="cbc-photo-title absolute top-3 left-0 z-[99] pl-4 py-1 text-[#006837] drop-shadow-md bg-gradient-to-r w-full from-white to-transparent whitespace-nowrap overflow-hidden overflow-ellipsis"><h3 class="font-bold text-sm">'.esc_html(get_the_title()).'</h3></div>';
+                echo '<img src="'.esc_url($square[0]).'" alt="'.$title.'" class="aspect-[16/9] object-cover cursor-zoom-in select-none" draggable="false">';
+                echo '<div class="w-fit mb-2 flex flex-col items-end absolute bottom-0 group-hover:right-0 right-[-10rem] duration-300 ease-in-out">';
                 if ($desc) echo '<div class="text-xs text-gray-600">'.$desc.'</div>';
-                echo '<div class="mt-2"><a href="'.esc_url($full[0]).'" download class="inline-block text-xs px-2 py-1 border rounded hover:bg-gray-50">Download Full Size</a></div>';
+                echo '<a href="'.esc_url($full[0]).'" download class="inline-block text-xs px-2 py-1 border bg-white rounded-md hover:bg-gray-50 scale-75">Download Full Size</a>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -275,7 +275,7 @@ class CBC_Media_Archive {
                     container.className = "cbc-photos-container grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3";
                     root.querySelectorAll(".cbc-photo-item").forEach(function(it){ it.classList.remove("flex-row","gap-3"); it.classList.add("flex","flex-col"); });
                 } else {
-                    container.className = "cbc-photos-container flex flex-col divide-y";
+                    container.className = "cbc-photos-container flex flex-col divide-y gap-3";
                     root.querySelectorAll(".cbc-photo-item").forEach(function(it){ it.classList.remove("flex","flex-col"); it.classList.add("flex","flex-row","gap-3"); });
                 }
             }); });
@@ -288,23 +288,17 @@ class CBC_Media_Archive {
             closeBtn.addEventListener("click", function(){ modal.classList.add("hidden"); modalImg.src=""; });
             modal.addEventListener("click", function(e){ if(e.target===modal){ closeBtn.click(); } });
 
-            root.querySelectorAll(".cbc-photo-item img").forEach(function(img){
-                img.addEventListener("dblclick", function(){
-                    var parent = img.closest(".cbc-photo-item");
-                    var full = parent.getAttribute("data-full");
-                    var title = parent.getAttribute("data-title")||"";
-                    modalTitle.textContent = title;
-                    modal.classList.remove("hidden");
-                    modalImg.onload = function(){
-                        try {
-                            var nw = modalImg.naturalWidth || 0; var nh = modalImg.naturalHeight || 0;
-                            if(nw>0){ modalImg.style.width = (nw*0.5) + "px"; modalImg.style.height = "auto"; }
-                        } catch(e){}
-                    };
-                    modalImg.src = full;
-                    modalDl.href = full;
-                });
-            });
+            
+            root.querySelectorAll(".cbc-photo-item img").forEach(function(img) {
+			    img.addEventListener("dblclick", function() {   
+			        var parent = img.closest(".cbc-photo-item");
+			        var full = parent.getAttribute("data-full");
+			        if (full) {
+			            window.open(full, "_blank");
+			        }
+			    });
+			});
+
         })();</script>';
 
         echo '</div>'; // archive root
@@ -337,12 +331,13 @@ class CBC_Media_Archive {
                 $file = (int) get_post_meta($pid, self::VIDEO_FILE_META, true);
                 $poster = (int) get_post_meta($pid, self::VIDEO_POSTER_META, true);
                 $title = esc_html(get_the_title());
-                echo '<div class="bg-white rounded shadow p-2">';
-                echo '<div class="aspect-video w-full bg-black">';
+                echo '<div class="bg-white rounded-md shadow relative">';
+	            echo '<div class="absolute top-3 left-0 z-[99] pl-4 py-1 text-[#006837] drop-shadow-md backdrop-blur-md bg-gradient-to-r w-full from-white to-transparent whitespace-nowrap overflow-hidden overflow-ellipsis"><h3 class="font-bold text-sm">'.$title.'</h3></div>';
+                echo '<div class="aspect-video w-full bg-black rounded-md overflow-hidden z-[10]">';
                 if ($type === 'file' && $file) {
                     $src = wp_get_attachment_url($file);
                     $poster_url = $poster ? wp_get_attachment_url($poster) : '';
-                    echo '<video controls preload="metadata" '.($poster_url?'poster="'.esc_url($poster_url).'"':'').' class="w-full h-full"><source src="'.esc_url($src).'" type="'.esc_attr(get_post_mime_type($file)).'"></video>';
+                    echo '<video controls preload="metadata" '.($poster_url?'poster="'.esc_url($poster_url).'"':'').' class="w-full h-full rounded-md"><source src="'.esc_url($src).'" type="'.esc_attr(get_post_mime_type($file)).'"></video>';
                 } else if (!empty($url)) {
                     // Try oEmbed
                     $embed = wp_oembed_get($url, ['height' => 360]);
@@ -354,7 +349,6 @@ class CBC_Media_Archive {
                     echo '<div class="text-white p-4">No video source.</div>';
                 }
                 echo '</div>';
-                echo '<div class="mt-2 font-semibold">'.$title.'</div>';
                 echo '</div>';
             }
             wp_reset_postdata();
