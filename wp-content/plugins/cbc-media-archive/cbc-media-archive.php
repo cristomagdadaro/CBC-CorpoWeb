@@ -58,7 +58,6 @@ class CBC_Media_Archive {
 		    'has_archive' => false,
 		    'show_in_rest' => true,
 	    ]);
-
         // Photos
         register_post_type(self::PHOTO_CPT, [
             'labels' => [
@@ -220,7 +219,7 @@ class CBC_Media_Archive {
 
         ob_start();
         echo '<div class="cbc-photos-archive">';
-        echo '<div class="flex justify-end gap-2 mb-3"><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="grid">Grid</button><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="list">List</button></div>';
+        echo '<div class="flex justify-end gap-2 mb-3 hidden"><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="grid">Grid</button><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="list">List</button></div>';
 
         $container_class = $view === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3' : 'flex flex-col divide-y';
         echo '<div class="cbc-photos-container ' . esc_attr($container_class) . '" data-initial-view="' . esc_attr($view) . '">';
@@ -229,12 +228,12 @@ class CBC_Media_Archive {
                 $pid = get_the_ID();
                 $att_id = (int) get_post_meta($pid, self::PHOTO_META, true);
                 if (!$att_id) { continue; }
-                $square = wp_get_attachment_image_src($att_id, 'cbc_square_300');
+                $square = wp_get_attachment_image_src($att_id, 'medium');
                 $full   = wp_get_attachment_image_src($att_id, 'full');
                 if (!$square || !$full) { continue; }
                 $title = esc_attr(get_the_title());
                 $desc  = esc_html(wp_strip_all_tags(get_the_excerpt() ?: ''));
-                echo '<div class="cbc-photo-item group bg-white shadow hover:shadow-md transition rounded-md overflow-hidden relative flex items-center '.($view==='grid'?'flex-col':'gap-3').'" data-full="'.esc_url($full[0]).'" data-title="'.$title.'">';
+                echo '<div class="cbc-photo-item group bg-white shadow hover:shadow-md transition rounded-md overflow-hidden relative flex items-center '.($view==='grid'?'flex-col w-fit':'gap-3').'" data-full="'.esc_url($full[0]).'" data-title="'.$title.'">';
 	            echo '<div class="cbc-photo-title absolute top-3 left-0 z-[99] pl-4 py-1 text-[#006837] drop-shadow-md bg-gradient-to-r w-full from-white to-transparent whitespace-nowrap overflow-hidden overflow-ellipsis"><h3 class="font-bold text-sm">'.esc_html(get_the_title()).'</h3></div>';
                 echo '<img src="'.esc_url($square[0]).'" alt="'.$title.'" class="aspect-[16/9] object-cover cursor-zoom-in select-none" draggable="false">';
                 echo '<div class="w-fit mb-2 flex flex-col items-end absolute bottom-0 group-hover:right-0 right-[-10rem] duration-300 ease-in-out">';
