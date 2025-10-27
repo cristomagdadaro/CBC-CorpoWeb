@@ -212,7 +212,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$is_first_group = ( $count < $maxCount );
 
 
-		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded bg-white my-auto opacity-0 reveal-on-scroll-300 ';
+		$base_container = 'relative md:gap-5 w-full h-fit items-stretch rounded-md overflow-hidden bg-white my-auto opacity-0 reveal-on-scroll-300 ';
 
 		if ( $count < $maxCount && $is_grid_layout) {
 			$base_container .= 'flex flex-row md:flex-col h-full ';
