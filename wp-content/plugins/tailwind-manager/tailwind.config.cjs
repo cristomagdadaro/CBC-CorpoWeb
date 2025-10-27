@@ -99,6 +99,7 @@ module.exports = {
         'p-10',
         'pl-6',
         'pr-6',
+        'mx-2',
         'px-5',
         'py-6',
         'pr-4',

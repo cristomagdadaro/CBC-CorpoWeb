@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: CBC AI Messenger
- * Description: Adds an AI messaging feature using a public LLM provider (OpenAI or OpenRouter). Provides a shortcode [cbc_ai_messenger] and records all Q&A in a custom post type.
+ * Description: Adds an AI messaging feature using a public LLM provider (OpenAIOpenRoute,OpenRouter, or LM Studio). Provides a shortcode [cbc_ai_messenger] and records all Q&A in a custom post type.
  * Version: 1.0.1
  * Author: Cristo Rey C. Magdadaro
  * License: GPL2+
@@ -57,6 +57,7 @@ add_action('admin_init', function(){
     add_settings_section('cbc_ai_main', '', '__return_null', 'cbc-ai-messenger');
 
     add_settings_field('cbc_ai_provider', 'Provider', 'cbc_ai_field_provider', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_provider'));
+    add_settings_field('cbc_ai_field_api_url', 'API URL', 'cbc_ai_field_api_url', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_field_api_url'));
     add_settings_field('cbc_ai_api_key', 'API Key', 'cbc_ai_field_api_key', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_api_key'));
     add_settings_field('cbc_ai_openai_org', 'OpenAI Organization (optional)', 'cbc_ai_field_openai_org', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_openai_org'));
     add_settings_field('cbc_ai_model', 'Model', 'cbc_ai_field_model', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_model'));
@@ -79,7 +80,8 @@ add_action('admin_init', function(){
 
 function cbc_ai_default_settings(){
     return array(
-        'provider' => 'openrouter', // openai|openrouter
+        'provider' => 'openrouter', // openai|openrouter|lmstudio
+        'api_url' => 'http://localhost:1234',
         'api_key' => '',
         'model' => 'openai/gpt-4o-mini',
         'temperature' => 0.2,
@@ -87,7 +89,7 @@ function cbc_ai_default_settings(){
         'frequency_penalty' => 0,
         'presence_penalty' => 0,
         'max_tokens' => 1024,
-        'system_prompt' => "You are CBC AI Assistant. Your primary role is to answer questions about DA-Crop Biotechnology Center (DA-CBC), including its projects, research, and initiatives. You should also be knowledgeable about general topics in biotechnology, agriculture, genetic engineering, and biology. When asked a question outside of this scope, politely decline and state that your expertise is limited to these topics. Your responses should be informative, accurate, and easy to understand for a general audience.",
+        'system_prompt' => "",
         'enforce_scope' => 1,
         'openai_org' => '',
         // New defaults for site context
@@ -100,18 +102,19 @@ function cbc_ai_default_settings(){
     );
 }
 
-function cbc_ai_get_settings(){
+function cbc_ai_get_settings(): array {
     $opts = get_option(CBC_AI_OPT);
     if (!is_array($opts)) { $opts = array(); }
     return wp_parse_args($opts, cbc_ai_default_settings());
 }
 
-function cbc_ai_sanitize_settings($input){
+function cbc_ai_sanitize_settings($input): array {
     if (!is_array($input)) { $input = array(); }
     $out = cbc_ai_get_settings();
     $prov = $input['provider'] ?? '';
-    $out['provider'] = in_array($prov, array('openai','openrouter'), true) ? $prov : $out['provider'];
+    $out['provider'] = in_array($prov, array('openai','openrouter','lmstudio'), true) ? $prov : $out['provider'];
     $out['api_key'] = trim((string)($input['api_key'] ?? $out['api_key']));
+    $out['api_url'] = esc_url_raw($input['api_url'] ?? $out['api_url']);
     $out['openai_org'] = sanitize_text_field($input['openai_org'] ?? $out['openai_org']);
     $out['model'] = sanitize_text_field($input['model'] ?? $out['model']);
     $out['temperature'] = is_numeric($input['temperature'] ?? null) ? max(0, min(2, floatval($input['temperature']))) : $out['temperature'];
@@ -131,7 +134,7 @@ function cbc_ai_sanitize_settings($input){
     return $out;
 }
 
-function cbc_ai_render_settings_page(){
+function cbc_ai_render_settings_page(): void {
     if (!current_user_can('manage_options')) return;
     ?>
     <div class="wrap">
@@ -146,8 +149,8 @@ function cbc_ai_render_settings_page(){
     <?php
 }
 
-function cbc_ai_field_provider($args){
-    $opts = array('openai' => 'OpenAI', 'openrouter' => 'OpenRouter');
+function cbc_ai_field_provider($args): void {
+    $opts = array('openai' => 'OpenAI', 'openrouter' => 'OpenRouter', 'lmstudio' => 'LM Studio');
     $val = cbc_ai_get_settings()['provider'] ?? '';
     $html = "<select id='{$args['label_for']}' name='" . CBC_AI_OPT . "[provider]'>";
     foreach ($opts as $k => $v) {
@@ -157,81 +160,88 @@ function cbc_ai_field_provider($args){
     echo $html;
 }
 
-function cbc_ai_field_api_key($args){
+function cbc_ai_field_api_url($args): void {
+    $val = cbc_ai_get_settings()['api_url'] ?? '';
+    // Use esc_attr() for security and remove non-functional button
+    echo "<div><input type='text' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[api_url]' value='" . esc_attr($val) . "' class='regular-text' />";
+    echo "<p class='description'>Enter the base URL for local providers like LM Studio (e.g., <code>http://localhost:1234</code>). This is ignored for OpenAI and OpenRouter.</p></div>";
+}
+
+function cbc_ai_field_api_key($args): void {
     $val = cbc_ai_get_settings()['api_key'] ?? '';
     echo "<input type='password' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[api_key]' value='" . esc_attr($val) . "' class='regular-text' />";
 }
 
-function cbc_ai_field_openai_org($args){
+function cbc_ai_field_openai_org($args): void {
     $val = cbc_ai_get_settings()['openai_org'] ?? '';
     echo "<input type='text' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[openai_org]' value='" . esc_attr($val) . "' class='regular-text' />";
 }
 
-function cbc_ai_field_model($args){
+function cbc_ai_field_model($args): void {
     $val = cbc_ai_get_settings()['model'] ?? '';
     echo "<input type='text' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[model]' value='" . esc_attr($val) . "' class='regular-text' />";
     echo "<p class='description'>e.g., openai/gpt-4o-mini, google/gemini-flash-1.5, anthropic/claude-3-haiku</p>";
 }
 
-function cbc_ai_field_temperature($args){
+function cbc_ai_field_temperature($args): void {
     $val = cbc_ai_get_settings()['temperature'] ?? 0.3;
     echo "<input type='number' step='0.1' min='0' max='2' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[temperature]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_top_p($args){
+function cbc_ai_field_top_p($args): void {
     $val = cbc_ai_get_settings()['top_p'] ?? 1;
     echo "<input type='number' step='0.1' min='0' max='1' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[top_p]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_frequency_penalty($args){
+function cbc_ai_field_frequency_penalty($args): void {
     $val = cbc_ai_get_settings()['frequency_penalty'] ?? 0;
     echo "<input type='number' step='0.1' min='-2' max='2' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[frequency_penalty]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_presence_penalty($args){
+function cbc_ai_field_presence_penalty($args): void {
     $val = cbc_ai_get_settings()['presence_penalty'] ?? 0;
     echo "<input type='number' step='0.1' min='-2' max='2' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[presence_penalty]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_max_tokens($args){
+function cbc_ai_field_max_tokens($args): void {
     $val = cbc_ai_get_settings()['max_tokens'] ?? 1024;
     echo "<input type='number' step='1' min='1' max='4096' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[max_tokens]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_system_prompt($args){
+function cbc_ai_field_system_prompt($args): void {
     $val = cbc_ai_get_settings()['system_prompt'] ?? '';
     echo "<textarea id='{$args['label_for']}' name='" . CBC_AI_OPT . "[system_prompt]' rows='5' class='large-text'>" . esc_textarea($val) . "</textarea>";
 }
 
-function cbc_ai_field_enforce_scope($args){
+function cbc_ai_field_enforce_scope($args): void {
     $val = cbc_ai_get_settings()['enforce_scope'] ?? 0;
     echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[enforce_scope]' value='1' " . checked(1, $val, false) . " />";
 }
 
-function cbc_ai_field_include_site_context($args){
+function cbc_ai_field_include_site_context($args): void {
     $val = cbc_ai_get_settings()['include_site_context'] ?? 1;
     echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[include_site_context]' value='1' " . checked(1, $val, false) . " />";
     echo "<p class='description'>Include top matching posts/pages as context so the model can answer questions about your site content.</p>";
 }
 
-function cbc_ai_field_site_context_types($args){
+function cbc_ai_field_site_context_types($args): void {
     $val = cbc_ai_get_settings()['site_context_types'] ?? 'post,page';
     echo "<input type='text' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_types]' value='" . esc_attr($val) . "' class='regular-text' />";
     echo "<p class='description'>Comma-separated post types to search, e.g., post,page</p>";
 }
 
-function cbc_ai_field_site_context_limit($args){
+function cbc_ai_field_site_context_limit($args): void {
     $val = cbc_ai_get_settings()['site_context_limit'] ?? 5;
     echo "<input type='number' min='1' max='10' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_limit]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
-function cbc_ai_field_site_context_chars($args){
+function cbc_ai_field_site_context_chars($args): void{
     $val = cbc_ai_get_settings()['site_context_chars'] ?? 2000;
     echo "<input type='number' min='500' max='8000' step='100' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[site_context_chars]' value='" . esc_attr($val) . "' class='small-text' />";
 }
 
 // New render in footer field
-function cbc_ai_field_render_in_footer($args){
+function cbc_ai_field_render_in_footer($args): void{
     $val = cbc_ai_get_settings()['render_in_footer'] ?? 0;
     echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[render_in_footer]' value='1' " . checked(1, $val, false) . " />";
     echo "<p class='description'>Outputs the floating chat in the site footer on pages that don’t already include the shortcode.</p>";
@@ -311,7 +321,7 @@ add_action('rest_api_init', function(){
     ));
 });
 
-function cbc_ai_is_contact_request($text, &$type){
+function cbc_ai_is_contact_request($text, &$type): bool {
     $text = strtolower((string)$text);
     $type = 'general';
     $address_k = array('address','location','where','located','reside','where is');
@@ -327,7 +337,7 @@ function cbc_ai_is_contact_request($text, &$type){
     return false;
 }
 
-function cbc_ai_rest_ask( WP_REST_Request $req ){
+function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $message = trim((string)$req->get_param('message'));
     $name = trim((string)$req->get_param('name'));
     $email = trim((string)$req->get_param('email'));
@@ -389,7 +399,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ){
     return new WP_REST_Response(array('reply' => wp_kses_post($reply)), 200);
 }
 
-function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $email = ''){
+function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $email = ''): WP_Error|int {
     $title = wp_trim_words($question, 10, '...');
     $post_id = wp_insert_post(array('post_type' => 'cbc_ai_message','post_status' => 'private','post_title' => $title,));
     if (!$post_id || is_wp_error($post_id)) { return 0; }
@@ -404,7 +414,7 @@ function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $em
     return $post_id;
 }
 
-function cbc_ai_normalize_model($provider, $model){
+function cbc_ai_normalize_model($provider, $model): bool|string {
     $model = trim((string)$model);
     if ($provider === 'openai') {
         if (strpos($model, '/') !== false) { $parts = explode('/', $model, 2); $model = end($parts); }
@@ -416,7 +426,7 @@ function cbc_ai_normalize_model($provider, $model){
     return $model;
 }
 
-function cbc_ai_build_site_context($query, $opts){
+function cbc_ai_build_site_context($query, $opts): string {
     $query = trim((string)$query);
     if ($query === '') return '';
 
@@ -498,12 +508,24 @@ function cbc_ai_call_provider($opts, $message, $api_key = ''){
     );
 
     $headers = array('Content-Type' => 'application/json');
+
     if ($provider === 'openrouter') {
         $url = 'https://openrouter.ai/api/v1/chat/completions';
         $headers['Authorization'] = 'Bearer ' . $api_key;
         $headers['HTTP-Referer'] = home_url('/');
         $headers['X-Title'] = get_bloginfo('name');
-    } else {
+
+    } elseif ($provider === 'lmstudio') {
+        // Use the saved API URL or a sensible default for LM Studio
+        $base_url = !empty($opts['api_url']) ? $opts['api_url'] : 'http://localhost:1234';
+        $url = rtrim($base_url, '/') . '/v1/chat/completions';
+
+        // LM Studio can use an API key (often 'lm-studio'), send if provided
+        if ($api_key !== '') {
+            $headers['Authorization'] = 'Bearer ' . $api_key;
+        }
+
+    } else { // Default to OpenAI
         $url = 'https://api.openai.com/v1/chat/completions';
         $headers['Authorization'] = 'Bearer ' . $api_key;
         $org = cbc_ai_get_effective_openai_org($opts);
@@ -585,7 +607,7 @@ add_action('wp_footer', function(){
     echo do_shortcode('[cbc_ai_messenger]');
 });
 
-function cbc_ai_get_effective_api_key($opts){
+function cbc_ai_get_effective_api_key($opts): string {
     $prov = $opts['provider'] ?? 'openrouter';
     $key = trim((string)($opts['api_key'] ?? ''));
     if ($key !== '') return $key;
@@ -593,7 +615,7 @@ function cbc_ai_get_effective_api_key($opts){
     else { $env = getenv('OPENAI_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENAI_API_KEY')) return (string)constant('CBC_AI_OPENAI_API_KEY'); }
     return '';
 }
-function cbc_ai_get_effective_openai_org($opts){
+function cbc_ai_get_effective_openai_org($opts): string {
     $org = trim((string)($opts['openai_org'] ?? ''));
     if ($org !== '') return $org;
     $env = getenv('OPENAI_ORGANIZATION'); if ($env) return trim((string)$env);
