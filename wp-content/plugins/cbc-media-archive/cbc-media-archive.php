@@ -38,6 +38,27 @@ class CBC_Media_Archive {
         // Parent menu: Archives
         $parent_slug = 'edit.php?post_type=' . self::PHOTO_CPT; // Photos will be first
 
+	    // Videos (as a submenu under Photos/Archives)
+	    register_post_type(self::VIDEO_CPT, [
+		    'labels' => [
+			    'name' => 'Videos',
+			    'singular_name' => 'Video',
+			    'add_new_item' => 'Add New Video',
+			    'edit_item' => 'Edit Video',
+			    'new_item' => 'New Video',
+			    'view_item' => 'View Video',
+			    'search_items' => 'Search Videos',
+			    'not_found' => 'No videos found',
+			    'menu_name' => 'Videos',
+		    ],
+		    'public' => true,
+		    'menu_icon' => 'dashicons-video-alt3',
+		    'show_in_menu' => 'edit.php?post_type=' . self::PHOTO_CPT,
+		    'supports' => ['title','editor','thumbnail'],
+		    'has_archive' => false,
+		    'show_in_rest' => true,
+	    ]);
+
         // Photos
         register_post_type(self::PHOTO_CPT, [
             'labels' => [
@@ -54,27 +75,6 @@ class CBC_Media_Archive {
             'public' => true,
             'menu_icon' => 'dashicons-images-alt2',
             'show_in_menu' => true,
-            'supports' => ['title','editor','thumbnail'],
-            'has_archive' => false,
-            'show_in_rest' => true,
-        ]);
-
-        // Videos (as a submenu under Photos/Archives)
-        register_post_type(self::VIDEO_CPT, [
-            'labels' => [
-                'name' => 'Videos',
-                'singular_name' => 'Video',
-                'add_new_item' => 'Add New Video',
-                'edit_item' => 'Edit Video',
-                'new_item' => 'New Video',
-                'view_item' => 'View Video',
-                'search_items' => 'Search Videos',
-                'not_found' => 'No videos found',
-                'menu_name' => 'Videos',
-            ],
-            'public' => true,
-            'menu_icon' => 'dashicons-video-alt3',
-            'show_in_menu' => 'edit.php?post_type=' . self::PHOTO_CPT,
             'supports' => ['title','editor','thumbnail'],
             'has_archive' => false,
             'show_in_rest' => true,
