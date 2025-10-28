@@ -52,6 +52,7 @@ class BRM_Plugin {
             og_title VARCHAR(255) DEFAULT NULL,
             og_description TEXT DEFAULT NULL,
             og_image VARCHAR(255) DEFAULT NULL;
+            qr_code VARCHAR(255) DEFAULT NULL,
             created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             expires DATETIME NULL,
             status TINYINT(1) NOT NULL DEFAULT 1,
@@ -300,6 +301,7 @@ class BRM_Plugin {
                     <th>Target URL</th>
                     <th>Clicks</th>
                     <th>Expires</th>
+                    <th>QR Code</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -310,6 +312,13 @@ class BRM_Plugin {
                         <td style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?php echo esc_html( $r->target_url ); ?></td>
                         <td><?php echo number_format_i18n( $r->clicks ); ?></td>
                         <td><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
+                        <td>
+                            <?php if ( ! empty( $r->qr_code ) ): ?>
+                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR" width="64" height="64">
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <a href="<?php echo esc_url( site_url( '/go/' . $r->slug ) ); ?>" target="_blank">Visit</a>
                             |
@@ -501,6 +510,42 @@ class BRM_Plugin {
                     array( '%s', '%s', '%s', '%d' )
             );
         }
+
+        // Generate QR code URL
+        $qr_url = site_url('/go/' . $slug);
+        $upload_dir = wp_upload_dir();
+        $qr_file = 'brm-qrcode-' . $slug . '.png';
+        $qr_path = trailingslashit($upload_dir['basedir']) . $qr_file;
+        $qr_url_path = trailingslashit($upload_dir['baseurl']) . $qr_file;
+
+        // Generate QR using Google Chart API (or a library like PHP QR Code)
+        $qr_image = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . urlencode($qr_url) . '&choe=UTF-8';
+
+        // Save a copy locally
+        $image_data = file_get_contents($qr_image);
+        if ($image_data) {
+            file_put_contents($qr_path, $image_data);
+        }
+
+        // Update QR code URL in DB
+        if ($id) {
+            $wpdb->update(
+                    $this->table,
+                    array('qr_code' => $qr_url_path),
+                    array('id' => $id),
+                    array('%s'),
+                    array('%d')
+            );
+        } else {
+            $last_id = $wpdb->insert_id;
+            $wpdb->update(
+                    $this->table,
+                    array('qr_code' => $qr_url_path),
+                    array('id' => $last_id),
+                    array('%s'),
+                    array('%d')
+            );
+        } // End Qr code generate
 
         // redirect back to list
         wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
