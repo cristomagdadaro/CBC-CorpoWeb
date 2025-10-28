@@ -14,41 +14,47 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 
 		ob_start();
 		?>
-		<div class="cbc-org-chart-container space-y-4 md:space-y-12">
+		<div class="cbc-org-chart-container space-y-6 gap-6">
 			<?php foreach ($structure as $section): ?>
+            <div>
 				<?php if (!empty($section['heading'])):
-					echo govph_section_header( $section['heading'], [ 'id' => strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $section['heading']))) . '_header' ] );
+                    echo '<h1 class="text-lg font-bold text-center text-[#1f5d2b] flex flex-col items-center my-2">
+                            <span class="block mx-auto w-full h-[3px] mb-2 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]"></span>
+                            <span class="transition duration-700 ease-out will-change-transform opacity-100 translate-y-0 mt-3">' . $section['heading'] . '</span>
+                          </h1>';
+					//echo govph_section_header( $section['heading'], [ 'id' => strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $section['heading']))) . '_header', 'classes' => 'text-sm font-extrabold  drop-shadow text-white p-2 bg-gradient-to-r text-center px-5' ] );
 				endif; ?>
 
 				<!-- CASE 1: Direct items -->
 				<?php if (!empty($section['items']) && is_array($section['items'])): ?>
-					<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-						<?php foreach ($section['items'] as $person): ?>
-							<?php echo cbc_org_chart_render_person($person); ?>
-						<?php endforeach; ?>
-					</div>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <?php foreach ($section['items'] as $person): ?>
+                        <?php echo cbc_org_chart_render_person($person); ?>
+                    <?php endforeach; ?>
+                </div>
 				<?php endif; ?>
 
 				<!-- CASE 2: Section has grouped subcategories -->
 				<?php if (!empty($section['groups']) && is_array($section['groups'])): ?>
-					<div class="space-y-4 md:space-y-10">
-						<?php foreach ($section['groups'] as $group): ?>
-							<?php if (!empty($group['label'])): ?>
-								<h3 class="text-lg font-semibold text-[#1f5d2b] text-center mb-4">
-									<?php echo esc_html($group['label']); ?>
-								</h3>
-							<?php endif; ?>
+                <div class="space-y-6">
+                    <?php foreach ($section['groups'] as $group): ?>
+                        <?php if (!empty($group['label'])): ?>
+                            <h3 class="text-lg font-semibold text-[#1f5d2b] text-center mb-4">
+                                <?php echo esc_html($group['label']); ?>
+                            </h3>
+                        <?php endif; ?>
 
-							<?php if (!empty($group['items']) && is_array($group['items'])): ?>
-								<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-									<?php foreach ($group['items'] as $person): ?>
-										<?php echo cbc_org_chart_render_person($person); ?>
-									<?php endforeach; ?>
-								</div>
-							<?php endif; ?>
-						<?php endforeach; ?>
-					</div>
+                        <?php if (!empty($group['items']) && is_array($group['items'])): ?>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                                <?php foreach ($group['items'] as $person): ?>
+                                    <?php echo cbc_org_chart_render_person($person); ?>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
 				<?php endif; ?>
+            </div>
 			<?php endforeach; ?>
 		</div>
 		<?php
@@ -83,42 +89,67 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 
 	function cbc_org_chart_default_structure() {
 		return array(
+            array(
+                'heading' => 'Office of the President',
+                'items' => array(
+                    array(
+                        'name' => 'Ferdinand R. Marcos Jr.',
+                        'title' => 'Republic of the Philippines President',
+                        'img' => '/wp-content/uploads/2024/06/BBM-Profile-Pic2.webp',
+                        'alt' => 'Ferdinand R. Marcos Jr.',
+                        'link' => 'https://op-proper.gov.ph/',
+                    ),
+                ),
+            ),
 			array(
-				'heading' => 'Top Leadership',
+				'heading' => 'Office of the Secretary',
 				'items' => array(
-					array(
-						'name' => 'Ferdinand R. Marcos Jr.',
-						'title' => 'Republic of the Philippines President',
-						'img' => '/wp-content/uploads/2024/06/BBM-Profile-Pic2.webp',
-						'alt' => 'Ferdinand R. Marcos Jr.',
-					),
 					array(
 						'name' => 'Francisco Tiu Laurel Jr.',
 						'title' => 'Secretary of Agriculture',
 						'img' => '/wp-content/uploads/2025/10/Sec.-Laurel.png',
 						'alt' => 'Francisco Tiu Laurel Jr.',
+                        'link' => 'https://www.da.gov.ph/about-us/directory-of-officials/',
 					),
-					array(
-						'name' => 'Atty. Adonis P. Sulit, CESO II',
-						'title' => 'Undersecretary for Policy and Plans Group',
-						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
-						'alt' => 'Atty. Adonis P. Sulit, CESO II',
-					),
-					array(
-						'name' => 'Paul C. Limson, DVM',
-						'title' => 'Biotechnology Program Director',
-						'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
-						'alt' => 'Paul C. Limson, DVM',
-					),
-					array(
-						'name' => 'Roel R. Suralta, PhD',
-						'title' => 'Center Chief, DA-CBC',
-						'img' => '/wp-content/uploads/2024/06/RRSuralta-scaled-e1717643185253.jpg',
-						'alt' => 'Roel R. Suralta, PhD',
-						'link' => '/about-us/organizational-structure/dr-roel-r-suralta/',
-					),
+
 				),
 			),
+            array(
+                'heading' => 'Office of the Undersecretary for Policy, Planning, and Regulations',
+                'items' => array(
+                    array(
+                        'name' => 'Atty. Asis G. Perez',
+                        'title' => 'Undersecretary for Policy, Planning, and Regulations',
+                        'img' => '/wp-content/uploads/2025/10/asis-perez.jpg',
+                        'alt' => 'Atty. Asis G. Perez',
+                        'link' => 'https://www.da.gov.ph/about-us/directory-of-officials/',
+                    ),
+                ),
+            ),
+            array(
+                'heading' => 'Program Management',
+                'items' => array(
+                    array(
+                        'name' => 'Paul C. Limson, DVM',
+                        'title' => 'Biotechnology Program Director',
+                        'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
+                        'alt' => 'Paul C. Limson, DVM',
+                        'link' => 'https://bpo.da.gov.ph/',
+                    ),
+                ),
+            ),
+            array(
+                'heading' => 'Center Management',
+                'items' => array(
+                    array(
+                            'name' => 'Roel R. Suralta, PhD',
+                            'title' => 'Center Chief, DA-CBC',
+                            'img' => '/wp-content/uploads/2024/06/RRSuralta-scaled-e1717643185253.jpg',
+                            'alt' => 'Roel R. Suralta, PhD',
+                            'link' => '/about-us/organizational-structure/dr-roel-r-suralta/',
+                    ),
+                ),
+            ),
 			array(
 				'heading' => 'CBC Experts',
 				'items' => array(
