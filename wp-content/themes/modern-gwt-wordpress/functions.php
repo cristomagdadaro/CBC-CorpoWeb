@@ -177,7 +177,7 @@ add_action('wp_head', function() {
  * Add the Facebook App ID meta tag to the head section of the site.
 */
 add_action('wp_head', function() {
-	echo '<meta property="fb:app_id" content="792373233661468">' . "\n";
+	echo '<meta property="fb:app_id" content="807761025286157">' . "\n";
 });
 
 /**
