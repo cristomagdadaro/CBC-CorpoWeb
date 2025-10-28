@@ -1,0 +1,19 @@
+/* Branded Redirect Manager Admin Styles */
+.wrap table.widefat td code {
+    background: #f3f4f6;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.wrap table.widefat td {
+    vertical-align: middle;
+}
+
+.wrap h1 {
+    margin-bottom: 1em;
+}
+
+input#brm_slug, input#brm_target {
+    width: 100%;
+    max-width: 600px;
+}
