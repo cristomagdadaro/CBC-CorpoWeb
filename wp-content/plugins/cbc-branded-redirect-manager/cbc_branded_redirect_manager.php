@@ -536,6 +536,9 @@ class BRM_Plugin {
         $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ) ) );
         $expires = ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
         $status  = isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
+        $og_title = sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ); // Sanitize title
+        $og_description = sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ); // Sanitize description
+        $og_image = esc_url_raw( trim( wp_unslash( $_POST['og_image'] ?? '' ) ) ); // Sanitize URL
 
         // Basic validation
         if ( empty( $slug ) || empty( $target ) ) {
@@ -558,19 +561,39 @@ class BRM_Plugin {
         }
 
         if ( $id ) {
+            $data = array(
+                    'slug'           => $slug,
+                    'target_url'     => $target,
+                    'expires'        => $expires,
+                    'status'         => $status,
+                    'og_title'       => $og_title,
+                    'og_description' => $og_description,
+                    'og_image'       => $og_image,
+            );
+
+            $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ); // Add '%s' for each new field
+
             $wpdb->update(
                     $this->table,
-                    array( 'slug' => $slug, 'target_url' => $target, 'expires' => $expires, 'status' => $status ),
+                    $data,
                     array( 'id' => $id ),
-                    array( '%s', '%s', '%s', '%d' ),
+                    $format,
                     array( '%d' )
             );
         } else {
-            $wpdb->insert(
-                    $this->table,
-                    array( 'slug' => $slug, 'target_url' => $target, 'expires' => $expires, 'status' => $status ),
-                    array( '%s', '%s', '%s', '%d' )
+            $data = array(
+                    'slug'           => $slug,
+                    'target_url'     => $target,
+                    'expires'        => $expires,
+                    'status'         => $status,
+                    'og_title'       => $og_title,
+                    'og_description' => $og_description,
+                    'og_image'       => $og_image,      
             );
+
+            $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ); // Add '%s' for each new field
+
+            $wpdb->insert( $this->table, $data, $format );
         }
 
         // --- Start QR Code Generation and Saving ---
