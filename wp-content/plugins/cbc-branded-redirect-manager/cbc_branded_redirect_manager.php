@@ -427,7 +427,7 @@ class BRM_Plugin {
                         <th scope="row"><label for="brm_slug">Slug</label></th>
                         <td>
                             <div style="display:flex;align-items:center;gap:8px;">
-                                <input type="text" name="slug" id="slug" value="<?php echo esc_attr( $slug ?? '' ); ?>"
+                                <input type="text" name="slug" id="slug" value="<?php echo esc_attr( $edit->slug ?? '' ); ?>"
                                        placeholder="Auto-generated if empty"/>
                                 <span>Optionally you can</span>
                                 <button type="button" class="button" id="generate-slug-btn">Auto Generate</button>
@@ -506,16 +506,15 @@ class BRM_Plugin {
                     return result;
                 }
 
-                // Auto-fill if empty on page load (new record)
-                if (slugInput && slugInput.value.trim() === "") {
-                    slugInput.value = generateSlug();
-                }
-
-                // Optional: add "Generate" button
                 if (slugInput && generateBtn) {
                     generateBtn.addEventListener("click", (e) => {
                         e.preventDefault();
                         slugInput.value = generateSlug();
+
+                        const preview = document.getElementById('slug-preview');
+                        if (preview) {
+                            preview.textContent = slugInput.value;
+                        }
                     });
                 }
             });
