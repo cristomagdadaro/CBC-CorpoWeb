@@ -25,7 +25,10 @@
         <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
     </aside>
     <?php endif; ?>
-
+    <?php echo govph_section_header( 'Subscribe Now!', [ 'id' => 'popular_posts_header', 'swap' => $swap ] ); ?>
+    <aside class="widget callout border-none secondary widget_block">
+        <?php echo  do_shortcode('[newsletter_subscribe]'); ?>
+    </aside>
     <aside class="widget callout border-none secondary widget_block">
         <div class="flex flex-col items-center gap-2">
             <div class="grid grid-cols-2 gap-4 items-center">
@@ -52,10 +55,6 @@
                 </a>
             </div>
         </div>
-    </aside>
-
-    <aside class="widget callout border-none secondary widget_block">
-        <?php echo  do_shortcode('[cbc_newsletter_form]'); ?>
     </aside>
     <?php do_action( 'before_sidebar' ); ?>
     <?php if ( is_active_sidebar( 'right-sidebar' ) ) {
