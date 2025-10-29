@@ -588,7 +588,7 @@ class BRM_Plugin {
                     'status'         => $status,
                     'og_title'       => $og_title,
                     'og_description' => $og_description,
-                    'og_image'       => $og_image,      
+                    'og_image'       => $og_image,
             );
 
             $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ); // Add '%s' for each new field
