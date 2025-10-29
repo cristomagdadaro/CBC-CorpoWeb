@@ -253,8 +253,8 @@ class BRM_Plugin {
             <div class="cbc-card">
                 <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
                 <h2>Redirecting to External Link</h2>
-                <p>You’ll be redirected shortly&hellip;</p>
                 <p>If you’re not redirected, <a href="' . esc_url( $row->target_url ) . '">click here</a>.</p>
+                <p>' . $row->clicks . ' link visits</p>
             </div>
         </body>
         </html>';
@@ -266,7 +266,7 @@ class BRM_Plugin {
 
     /* Admin menu and pages */
     public function admin_menu() {
-        add_menu_page( 'Branded Redirects', 'Branded Redirects', 'manage_options', 'brm_redirects', array(
+        add_menu_page( 'Redirect Manager', 'Redirect Manager', 'manage_options', 'brm_redirects', array(
                 $this,
                 'admin_page_list'
         ), 'dashicons-admin-links', 58 );
@@ -290,10 +290,12 @@ class BRM_Plugin {
         }
         global $wpdb;
         $rows = $wpdb->get_results( "SELECT * FROM {$this->table} ORDER BY created DESC" );
+
+        // Get the site URL for the shortlink base
+        $base_url = site_url( '/go/' );
         ?>
         <div class="wrap">
-            <h1>Branded Redirects <a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>"
-                                     class="page-title-action">Add New</a></h1>
+            <h1>Redirect Manager<a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>" class="page-title-action">Add New</a></h1>
             <table class="widefat fixed striped">
                 <thead>
                 <tr>
@@ -306,21 +308,28 @@ class BRM_Plugin {
                 </tr>
                 </thead>
                 <tbody>
-                <?php if ( $rows ): foreach ( $rows as $r ): ?>
+                <?php if ( $rows ): foreach ( $rows as $r ):
+                    // Construct the full short URL
+                    $short_url = esc_url( $base_url . $r->slug );
+                    ?>
                     <tr>
                         <td><code><?php echo esc_html( $r->slug ); ?></code></td>
                         <td style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?php echo esc_html( $r->target_url ); ?></td>
                         <td><?php echo number_format_i18n( $r->clicks ); ?></td>
                         <td><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
-                        <td>
+                        <td style="display: flex; flex-direction: row; align-items: center; gap: 8px;">
                             <?php if ( ! empty( $r->qr_code ) ): ?>
-                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR" width="64" height="64">
+                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" width="64" height="64">
+                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="button button-small">Download</a>
                             <?php else: ?>
                                 -
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="<?php echo esc_url( site_url( '/go/' . $r->slug ) ); ?>" target="_blank">Visit</a>
+                            <button class="button button-small brm-copy-url" data-url="<?php echo $short_url; ?>">Copy
+                            </button>
+                            |
+                            <a href="<?php echo $short_url; ?>" target="_blank">Visit</a>
                             |
                             <a href="<?php echo admin_url( 'admin.php?page=brm_add&edit=' . intval( $r->id ) ); ?>">Edit</a>
                             |
@@ -336,14 +345,64 @@ class BRM_Plugin {
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="5">No redirects found.</td>
+                        <td colspan="6">No redirects found.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
             </table>
         </div>
+        <script>
+            // JavaScript for the Copy Button functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.brm-copy-url').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const urlToCopy = this.getAttribute('data-url');
+
+                        // Use the modern clipboard API
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(urlToCopy).then(() => {
+                                const originalText = this.textContent;
+                                this.textContent = 'Copied!';
+                                this.classList.add('copied');
+                                setTimeout(() => {
+                                    this.textContent = originalText;
+                                    this.classList.remove('copied');
+                                }, 1500);
+                            }).catch(err => {
+                                // Fallback for older browsers (or if permission is denied)
+                                console.error('Could not copy text: ', err);
+                                // Fallback: Create a temporary textarea
+                                const tempInput = document.createElement('textarea');
+                                tempInput.value = urlToCopy;
+                                document.body.appendChild(tempInput);
+                                tempInput.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(tempInput);
+
+                                const originalText = this.textContent;
+                                this.textContent = 'Copied!';
+                                this.classList.add('copied');
+                                setTimeout(() => {
+                                    this.textContent = originalText;
+                                    this.classList.remove('copied');
+                                }, 1500);
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+        <style>
+            /* Basic styling for the copied state */
+            .brm-copy-url.copied {
+                background: #46b450 !important; /* WordPress success color */
+                border-color: #3b9944 !important;
+                color: #fff !important;
+            }
+        </style>
         <?php
-    }
+    } // End admin_page_list()
 
     /* Admin add/edit page */
     public function admin_page_add() {
@@ -366,14 +425,17 @@ class BRM_Plugin {
                 <table class="form-table">
                     <tr>
                         <th scope="row"><label for="brm_slug">Slug</label></th>
-                        <td> <div style="display:flex;align-items:center;gap:8px;">
-                                <input type="text" name="slug" id="slug" value="<?php echo esc_attr($slug ?? ''); ?>" placeholder="Auto-generated if empty" />
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <input type="text" name="slug" id="slug" value="<?php echo esc_attr( $slug ?? '' ); ?>"
+                                       placeholder="Auto-generated if empty"/>
                                 <span>Optionally you can</span>
                                 <button type="button" class="button" id="generate-slug-btn">Auto Generate</button>
                             </div>
                             <p class="description">Short unique identifier used in the URL:
                                 <code><?php echo esc_html( site_url( '/go/' ) ); ?><span
-                                            id="slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>. You customize this to your preference or auto generate with the button.
+                                            id="slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>.
+                                You customize this to your preference or auto generate with the button.
                             </p></td>
                     </tr>
 
@@ -431,7 +493,7 @@ class BRM_Plugin {
             })();
         </script>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 const slugInput = document.querySelector(`input[name="slug"]`);
                 const generateBtn = document.querySelector("#generate-slug-btn");
 
@@ -511,23 +573,36 @@ class BRM_Plugin {
             );
         }
 
-        // Generate QR code URL
+        // --- Start QR Code Generation and Saving ---
+
         $qr_url = site_url('/go/' . $slug);
         $upload_dir = wp_upload_dir();
+
+        // 1. Define the custom subdirectory path
+        $qr_base_dir = trailingslashit($upload_dir['basedir']) . 'qr';
+        $qr_base_url = trailingslashit($upload_dir['baseurl']) . 'qr';
+
+        // 2. Create the directory if it doesn't exist
+        if ( ! is_dir( $qr_base_dir ) ) {
+            wp_mkdir_p( $qr_base_dir );
+        }
+
+        // 3. Define the file path and URL
         $qr_file = 'brm-qrcode-' . $slug . '.png';
-        $qr_path = trailingslashit($upload_dir['basedir']) . $qr_file;
-        $qr_url_path = trailingslashit($upload_dir['baseurl']) . $qr_file;
+        $qr_path = trailingslashit($qr_base_dir) . $qr_file;
+        $qr_url_path = trailingslashit($qr_base_url) . $qr_file;
 
         // Generate QR using Google Chart API (or a library like PHP QR Code)
-        $qr_image = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . urlencode($qr_url) . '&choe=UTF-8';
+        // Note: Using quickchart.io as in your original code
+        $qr_image = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
 
-        // Save a copy locally
-        $image_data = file_get_contents($qr_image);
+        // 4. Save a copy locally
+        $image_data = @file_get_contents($qr_image);
         if ($image_data) {
             file_put_contents($qr_path, $image_data);
         }
 
-        // Update QR code URL in DB
+        // 5. Update QR code URL in DB
         if ($id) {
             $wpdb->update(
                     $this->table,
@@ -545,7 +620,8 @@ class BRM_Plugin {
                     array('%s'),
                     array('%d')
             );
-        } // End Qr code generate
+        }
+        // --- End QR Code Generation and Saving ---
 
         // redirect back to list
         wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );

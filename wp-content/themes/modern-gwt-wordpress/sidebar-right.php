@@ -32,7 +32,8 @@
                 <a href="https://privacy.gov.ph/transparency-seal/" class="flex justify-center">
                     <img
                             decoding="async"
-                            id="tp-seal"
+
+                     id="tp-seal"
                             src="/wp-content/themes/gwt-wordpress-26.0.0/images/transparency-seal-160x160.png"
                             alt="transparency seal logo"
                             title="Transparency Seal"
@@ -50,10 +51,12 @@
                     >
                 </a>
             </div>
-
         </div>
     </aside>
 
+    <aside class="widget callout border-none secondary widget_block">
+        <?php echo  do_shortcode('[cbc_newsletter_form]'); ?>
+    </aside>
     <?php do_action( 'before_sidebar' ); ?>
     <?php if ( is_active_sidebar( 'right-sidebar' ) ) {
         dynamic_sidebar( 'right-sidebar' );
