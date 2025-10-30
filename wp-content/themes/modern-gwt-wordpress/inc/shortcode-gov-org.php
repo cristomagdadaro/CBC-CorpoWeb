@@ -175,10 +175,10 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 						'link' => '/about-us/organizational-structure/dr-arlen-anglacer-dela-cruz/',
 					),
                     array(
-						'name' => 'Shyatesa C Razo-Regino, PhD',
+						'name' => 'Shyatesa C. Razo-Regino, PhD',
 						'title' => 'Balik Scienctist Fellow',
 						'img' => '/wp-content/uploads/2025/10/shaya-500x532.png',
-						'alt' => 'Shyatesa C Razo-Regino, PhD',
+						'alt' => 'Shyatesa C. Razo-Regino, PhD',
 						'link' => '/about-us/organizational-structure/shyatesa-c-razo-regino/',
 					),
 				),

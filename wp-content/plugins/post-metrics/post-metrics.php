@@ -50,8 +50,8 @@ class PM_Post_Metrics {
 		if ( get_transient( $transient_key ) ) {
 			return new WP_REST_Response( array( 'success' => true, 'skipped' => true ), 200 );
 		}
-		// lock for 30 seconds
-		set_transient( $transient_key, 1, 30 );
+		// lock for 15 seconds
+		set_transient( $transient_key, 1, 15 );
 
 		// Enforce authentication for sensitive actions: likes and comments require a logged-in user
 		if ( in_array( $event, array( 'like', 'comment' ), true ) && ! is_user_logged_in() ) {
@@ -75,8 +75,8 @@ class PM_Post_Metrics {
 				// If visitor hasn't got the post cookie, count as a unique viewer and set cookie for 30 days
 				if ( ! $has_cookie ) {
 					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
-					// set cookie so subsequent views in the next 30 days won't be double-counted
-					setcookie( $cookie_name, '1', time() + ( DAY_IN_SECONDS * 30 ), COOKIEPATH ? COOKIEPATH : '/' );
+					// set cookie so subsequent views in the everyday won't be double-counted
+					setcookie( $cookie_name, '1', time() + ( DAY_IN_SECONDS * 1 ), COOKIEPATH ? COOKIEPATH : '/' );
 					// also set in PHP superglobal so subsequent logic in this request sees it
 					$_COOKIE[ $cookie_name ] = '1';
 					$has_cookie = true;
