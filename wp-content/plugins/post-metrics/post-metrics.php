@@ -44,21 +44,24 @@ class PM_Post_Metrics {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'invalid event' ), 400 );
 		}
 
+		// REMOVE THIS BLOCK
+		/*
 		// Simple server-side rate limiting by IP for short intervals to avoid spammy repeated hits.
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 		$transient_key = 'pm_track_' . md5( $event . '_' . $post_id . '_' . $ip );
 		if ( get_transient( $transient_key ) ) {
-			return new WP_REST_Response( array( 'success' => true, 'skipped' => true ), 200 );
+		   return new WP_REST_Response( array( 'success' => true, 'skipped' => true ), 200 );
 		}
-		// lock for 15 seconds
+		// lock for 15 seconds (your custom setting)
 		set_transient( $transient_key, 1, 15 );
+		*/
 
 		// Enforce authentication for sensitive actions: likes and comments require a logged-in user
 		if ( in_array( $event, array( 'like', 'comment' ), true ) && ! is_user_logged_in() ) {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'auth_required' ), 401 );
 		}
 
-		// Reintroduce 'viewers' tracked via cookie (30 days)
+		// Reintroduce 'viewers' tracked via cookie (1 day - your custom setting)
 		$meta = get_post_meta( $post_id, 'pm_metrics', true );
 		if ( ! is_array( $meta ) ) {
 			$meta = array( 'views' => 0, 'viewers' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
@@ -70,12 +73,14 @@ class PM_Post_Metrics {
 
 		switch ( $event ) {
 			case 'view':
-				// increment views (raw page views)
+				// increment views (raw page views) - THIS IS THE ONLY LINE WE NEED FOR RAW VIEWS
 				$meta['views'] = intval( $meta['views'] ?? 0 ) + 1;
-				// If visitor hasn't got the post cookie, count as a unique viewer and set cookie for 30 days
+
+				// REMOVE/MODIFY THIS BLOCK IF YOU WANT TO KEEP 'VIEWERS' FOR OTHER COUNTS
+				// If visitor hasn't got the post cookie, count as a unique viewer and set cookie for 1 day
 				if ( ! $has_cookie ) {
 					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
-					// set cookie so subsequent views in the everyday won't be double-counted
+					// set cookie so subsequent views in the next 1 day won't be double-counted
 					setcookie( $cookie_name, '1', time() + ( DAY_IN_SECONDS * 1 ), COOKIEPATH ? COOKIEPATH : '/' );
 					// also set in PHP superglobal so subsequent logic in this request sees it
 					$_COOKIE[ $cookie_name ] = '1';
