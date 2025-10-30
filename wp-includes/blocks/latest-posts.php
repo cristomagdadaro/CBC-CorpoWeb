@@ -112,7 +112,7 @@ function render_block_core_latest_posts( $attributes ) {
 		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed z-[99] group-hover:[text-shadow:1px_1px_0_white,-1px_1px_0_white,1px_-1px_0_white,-1px_-1px_0_white,0_2px_0_white,2px_0_0_white,-2px_0_0_white,0_-2px_0_white]" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
 
 		$item_markup .= '<div class="flex justify-between">';
-		$item_markup .= "<div class='flex items-center gap-2'>";
+		$item_markup .= "<div class='flex flex-col sm:flex-row items-start sm:items-center gap-0 sm:gap-2'>";
 
 		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
 			$item_markup .= sprintf(
@@ -125,7 +125,7 @@ function render_block_core_latest_posts( $attributes ) {
 		if (!$is_grid_layout) {
 			$meta  = get_post_meta( $post->ID, 'pm_metrics', true );
 			$views = intval( $meta['views'] ?? 0 );
-			$item_markup .= '<div class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 16 16">
+			$item_markup .= '<div class="flex items-start sm:items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 16 16">
 	  <path d="M4 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4m2.625.547a3 3 0 0 0-5.584.953H.5a.5.5 0 0 0 0 1h.541A3 3 0 0 0 7 8a1 1 0 0 1 2 0 3 3 0 0 0 5.959.5h.541a.5.5 0 0 0 0-1h-.541a3 3 0 0 0-5.584-.953A2 2 0 0 0 8 6c-.532 0-1.016.208-1.375.547M14 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
 	</svg><span class="text-xs">' . $views . '</span></div>';
 		}

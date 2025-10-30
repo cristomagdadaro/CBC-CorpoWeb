@@ -45,7 +45,7 @@ function cbc_newsletter_subscribe_form() {
 	// Display a message if subscription was successful
 	$message = '';
 	if (isset($_GET['cbc_subscribed']) && $_GET['cbc_subscribed'] == '1') {
-		$message = '<p style="color: green; text-align: center; font-weight: bolder; font-family: League Spartan">Thank you for subscribing!</p>';
+		$message = '<p style="color: green; text-align: center; font-weight: bolder; font-family: League Spartan,serif">Thank you for subscribing!</p>';
 	}
 
 	ob_start();

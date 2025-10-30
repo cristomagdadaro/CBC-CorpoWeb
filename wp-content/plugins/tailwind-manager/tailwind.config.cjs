@@ -51,6 +51,9 @@ module.exports = {
         'md:flex-col',
         'shrink-0',
         'col-span-2',
+        'sm:gap-2',
+        'flex-col',
+        'sm:flex-row',
         'md:col-span-1',
         'grid-cols-3',
         'md:grid-cols-5',
@@ -63,6 +66,8 @@ module.exports = {
         'bg-gradient-to-r',
         'from-[#1f5d2b]',
         'to-[#a2b917]',
+        'items-start',
+        'sm:items-center',
         'md:justify-start',
         // Sizing
         'w-[9rem]',
