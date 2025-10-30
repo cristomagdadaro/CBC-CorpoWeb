@@ -107,16 +107,16 @@ function render_block_core_latest_posts( $attributes ) {
 			$item_markup .= '<div class="flex w-full justify-center group relative gap-2 flex-row-reverse overflow-hidden">' . $featured_image . '<div class="flex flex-col leading-[1rem] p-2 group">';
 		}
 		else
-			$item_markup .= '<div class="flex flex-col w-full justify-center p-2 gap-2"><div class="flex flex-col leading-[1rem]">';
+			$item_markup .= '<div class="flex flex-col w-full justify-center p-2 pr-2 md:pr-4 gap-2"><div class="flex flex-col leading-[1rem]">';
 
 		$item_markup .= '<a class="wp-block-latest-posts__post-title text-normal md:text-lg uppercase !font-sans text-left font-bold !leading-none md:leading-relaxed z-[99] group-hover:[text-shadow:1px_1px_0_white,-1px_1px_0_white,1px_-1px_0_white,-1px_-1px_0_white,0_2px_0_white,2px_0_0_white,-2px_0_0_white,0_-2px_0_white]" href="' . esc_url( $post_link ) . '">' . $title . '</a>';
 
-		$item_markup .= '<div class="flex justify-between">';
+		$item_markup .= '<div class="flex justify-between text-xs md:text-base">';
 		$item_markup .= "<div class='flex flex-col sm:flex-row items-start sm:items-center gap-0 sm:gap-2'>";
 
 		if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
 			$item_markup .= sprintf(
-				'<time datetime="%1$s" class="wp-block-latest-posts__post-date text-xs select-none">%2$s</time>',
+				'<time datetime="%1$s" class="wp-block-latest-posts__post-date select-none">%2$s</time>',
 				esc_attr( get_the_date( 'c', $post ) ),
 				get_the_date( '', $post )
 			);
@@ -161,7 +161,7 @@ function render_block_core_latest_posts( $attributes ) {
 				$trimmed_excerpt = __( 'This content is password protected.' );
 			}
 
-			$excerpt_base = 'wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-6 entry-content';
+			$excerpt_base = 'wp-block-latest-posts__post-excerpt !m-0 text-xs md:text-base !leading-none md:!leading-5 entry-content';
 			if ($is_grid_layout && $is_right ) {
 				$excerpt_visibility = 'hidden';
 			} else {
