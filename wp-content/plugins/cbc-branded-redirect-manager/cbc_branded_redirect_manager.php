@@ -492,7 +492,7 @@ class BRM_Plugin {
         }
 
         $is_edit  = $edit !== null;
-        $title    = $is_edit ? 'Edit Redirect' : 'Create New Redirect';
+        $title    = $is_edit ? 'Edit Redirect' : 'GoLink';
         $submit_btn_text = $is_edit ? 'Update Redirect' : 'Create Redirect';
 
         $form_action = esc_url( admin_url( 'admin-post.php' ) );
@@ -502,7 +502,7 @@ class BRM_Plugin {
         ?>
         <div class="wrap brm-form-wrap <?php echo $is_admin ? 'brm-admin-form' : 'brm-public-form'; ?>">
             <h1><?php echo esc_html( $title ); ?></h1>
-
+            <p>Shorten and customize your link using this service.</p>
             <?php if ( ! $is_admin && $current_user_is_logged_in ) : ?>
                 <div class="brm-alert brm-alert-info">
                     **Note:** As a logged-in user, you are using the public form. Your link will be marked as a public submission.
@@ -521,30 +521,31 @@ class BRM_Plugin {
                         <td>
                             <input name="target_url" type="url" id="target_url"
                                    value="<?php echo $is_edit ? esc_attr( $edit->target_url ) : ''; ?>"
-                                   class="regular-text brm-input-url"
+                                   class="regular-text brm-input-url !m-0"
                                    placeholder="https://example.com/zoom/meeting..." required/>
-                            <p class="description">Full destination URL to redirect to.</p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row"><label for="slug">Slug</label></th>
                         <td>
-                            <div class="brm-slug-control">
+                            <div class="brm-slug-control flex items-center">
                                 <input type="text" name="slug" id="slug"
                                        value="<?php echo esc_attr( $edit->slug ?? '' ); ?>"
-                                       class="regular-text brm-input-slug"
+                                       class="regular-text brm-input-slug !m-0"
                                        placeholder="Auto-generated if empty"/>
                                 <button type="button" class="button" id="generate-slug-btn">
                                     Auto Generate
                                 </button>
                             </div>
-                            <p class="description">
-                                Short unique identifier: <code><?php echo esc_html( site_url( '/go/' ) ); ?><span id="slug-preview" class="brm-slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>.
-                            </p>
                         </td>
                     </tr>
-
+                    <tr>
+                        <th scope="row"><label for="description">GoLink Generated</label></th>
+                        <td class="description">
+                            <code><?php echo esc_html( site_url( '/go/' ) ); ?><span id="slug-preview" class="brm-slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>
+                        </td>
+                    </tr>
                     <?php if ( $is_admin ) : // Admin-only fields ?>
 
                         <tr>
