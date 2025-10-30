@@ -84,6 +84,7 @@
                                 <li><a href="#">Event Hall Booking Form</a></li>
                                 <li><a href="http://192.168.36.71:5000/">BioNAS</a></li>
                                 <li><a href="http://192.168.36.10/">Apps Center</a></li>
+                                <li><a href="/golink/">GoLink Generator</a></li>
                             </ul>
                         </div>
                         <div>

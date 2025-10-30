@@ -1,19 +1,25 @@
-/* Branded Redirect Manager Admin Styles */
-.wrap table.widefat td code {
-    background: #f3f4f6;
-    padding: 2px 5px;
-    border-radius: 3px;
-}
-
-.wrap table.widefat td {
-    vertical-align: middle;
-}
-
-.wrap h1 {
-    margin-bottom: 1em;
-}
-
-input#brm_slug, input#brm_target {
-    width: 100%;
+/* Basic styling for the public form */
+.brm-public-form {
     max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.brm-public-form .form-table th,
+.brm-public-form .form-table td {
+    padding: 8px 10px;
+}
+
+.brm-public-form .regular-text,
+.brm-public-form .brm-input-datetime {
+    width: 100%;
+    max-width: 400px; /* Constrain inputs */
+}
+
+.brm-public-form .brm-submit-button {
+    width: 100%;
 }

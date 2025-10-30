@@ -1,0 +1,101 @@
+/* General Admin Styling */
+.brm-admin-list h1 a.brm-add-button {
+    /* WordPress's page-title-action style */
+    display: inline-block;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 26px;
+    height: 28px;
+    margin: 0 0 0 8px;
+    padding: 0 10px 1px;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+/* List Table Specifics */
+.brm-admin-list .wp-list-table {
+    margin-top: 10px;
+}
+.brm-admin-list .brm-slug-code {
+    background: #f3f3f3;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: monospace;
+}
+.brm-admin-list .brm-target-url {
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    direction: rtl; /* For better display of long URLs */
+    text-align: left;
+}
+.brm-admin-list .brm-qr-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.brm-admin-list .brm-qr-image {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+.brm-admin-list .brm-actions-cell {
+    white-space: nowrap;
+}
+.brm-admin-list .brm-delete-form {
+    display: inline;
+}
+
+/* Form Styling */
+.brm-form-wrap .brm-slug-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.brm-form-wrap .brm-input-slug {
+    flex-grow: 1;
+}
+.brm-form-wrap .brm-slug-preview {
+    font-weight: bold;
+    color: #007cba;
+}
+.brm-form-wrap .brm-og-meta-heading td {
+    padding-top: 20px;
+    border-top: 1px solid #c3c4c7;
+}
+
+/* Custom Alerts */
+.brm-alert {
+    padding: 12px;
+    margin: 10px 0 20px 0;
+    border-left: 4px solid;
+    border-radius: 3px;
+}
+.brm-alert-warning {
+    background-color: #fff8e1;
+    border-color: #ffc107;
+    color: #856404;
+}
+.brm-alert-error {
+    background-color: #fcebeb;
+    border-color: #dc3232;
+    color: #a94442;
+}
+.brm-alert-info {
+    background-color: #e7f5fe;
+    border-color: #007cba;
+    color: #004a7c;
+}
+
+/* Copy Button Feedback */
+.brm-copy-url.copied {
+    color: #46b450 !important;
+    font-weight: bold;
+}

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CBC Branded Redirect Manager
  * Description: Create and manage branded short links that redirect to external URLs and log clicks. Adds shortlinks at /go/{slug} and an admin UI to create/manage links.
- * Version: 1.0
+ * Version: 1.4
  * Author: Cristo Rey C. Magdadaro
  * Text Domain: branded-redirect-manager
  */
@@ -33,14 +33,35 @@ class BRM_Plugin {
         add_action( 'init', array( $this, 'add_rewrite' ) );
         add_action( 'template_redirect', array( $this, 'handle_redirect' ) );
 
+        // Admin actions
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-        add_action( 'admin_post_brm_save_link', array( $this, 'admin_save_link' ) );
+        add_action( 'admin_init', array( $this, 'register_settings' ) );
+        add_action( 'admin_post_brm_save_link', array( $this, 'handle_save_link' ) );
+        add_action( 'admin_post_nopriv_brm_save_link', array( $this, 'handle_save_link' ) );
         add_action( 'admin_post_brm_delete_link', array( $this, 'admin_delete_link' ) );
 
+        // Assets
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'frontend_assets' ) );
+
+        // Frontend Shortcode
+        add_shortcode( 'brm_create_link_form', array( $this, 'create_link_form_shortcode' ) );
     }
 
-    /* Activation - create DB table and flush rules */
+    /**
+     * Helper function to generate a random slug.
+     */
+    private function generate_random_slug( $length = 9 ) {
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        $result = "";
+        for ( $i = 0; $i < $length; $i ++ ) {
+            $result .= $chars[ rand( 0, strlen( $chars ) - 1 ) ];
+        }
+        return $result;
+    }
+
+
+    /* Activation - create DB table, set default options, and flush rules */
     public function activate() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
@@ -51,24 +72,27 @@ class BRM_Plugin {
             clicks BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
             og_title VARCHAR(255) DEFAULT NULL,
             og_description TEXT DEFAULT NULL,
-            og_image VARCHAR(255) DEFAULT NULL;
+            og_image VARCHAR(255) DEFAULT NULL,
             qr_code VARCHAR(255) DEFAULT NULL,
             created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             expires DATETIME NULL,
             status TINYINT(1) NOT NULL DEFAULT 1,
+            is_public TINYINT(1) NOT NULL DEFAULT 0,
             PRIMARY KEY(id),
             UNIQUE KEY slug (slug)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
 
-        // flush rewrite rules
+        if ( ! get_option( 'brm_public_access' ) ) {
+            add_option( 'brm_public_access', 'private' );
+        }
+
         $this->add_rewrite();
         flush_rewrite_rules();
     }
 
     public function deactivate() {
-        // flush rewrite rules
         flush_rewrite_rules();
     }
 
@@ -78,7 +102,7 @@ class BRM_Plugin {
         add_rewrite_tag( '%brm_redirect%', '([^&]+)' );
     }
 
-    /* Handle front-end redirect */
+    /* Handle front-end redirect (Styles reverted to original inline, as CSS files are generally not loaded on direct redirects) */
     public function handle_redirect() {
         $slug = get_query_var( 'brm_redirect' );
         if ( empty( $slug ) ) {
@@ -97,7 +121,7 @@ class BRM_Plugin {
 
         // --- Check expiration ---
         if ( ! empty( $row->expires ) && $row->expires <= current_time( 'mysql' ) ) {
-            status_header( 410 ); // 410 Gone (SEO-friendly for expired links)
+            status_header( 410 );
             header( 'X-Robots-Tag: noindex, nofollow', true );
 
             echo '<!doctype html>
@@ -149,11 +173,6 @@ class BRM_Plugin {
                     text-decoration: none;
                 }
                 a:hover { text-decoration: underline; }
-                .footer {
-                    margin-top: 16px;
-                    font-size: 12px;
-                    color: #777;
-                }
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
@@ -238,11 +257,6 @@ class BRM_Plugin {
                     text-decoration: none;
                 }
                 a:hover { text-decoration: underline; }
-                .footer {
-                    margin-top: 16px;
-                    font-size: 12px;
-                    color: #777;
-                }
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
@@ -254,17 +268,16 @@ class BRM_Plugin {
                 <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
                 <h2>Redirecting to External Link</h2>
                 <p>If you’re not redirected, <a href="' . esc_url( $row->target_url ) . '">click here</a>.</p>
-                <p>' . $row->clicks . ' link visits</p>
+                <p>' . number_format_i18n( $row->clicks ) . ' link visits</p>
             </div>
         </body>
         </html>';
 
-        // Uncomment this for live mode
         echo '<meta http-equiv="refresh" content="2;url=' . esc_attr( $row->target_url ) . '">';
         exit;
     }
 
-    /* Admin menu and pages */
+    /* Admin menu, pages, and settings */
     public function admin_menu() {
         add_menu_page( 'Redirect Manager', 'Redirect Manager', 'manage_options', 'brm_redirects', array(
                 $this,
@@ -274,13 +287,94 @@ class BRM_Plugin {
                 $this,
                 'admin_page_add'
         ) );
+        add_submenu_page( 'brm_redirects', 'Settings', 'Settings', 'manage_options', 'brm_settings', array(
+                $this,
+                'admin_page_settings'
+        ) );
     }
 
+    public function register_settings() {
+        register_setting( 'brm_options_group', 'brm_public_access' );
+        add_settings_section( 'brm_general_section', 'General Settings', null, 'brm_settings_page' );
+        add_settings_field( 'brm_public_access_field', 'Public Link Creation', array(
+                $this,
+                'public_access_field_callback'
+        ), 'brm_settings_page', 'brm_general_section' );
+    }
+
+    public function public_access_field_callback() {
+        $option = get_option( 'brm_public_access', 'private' );
+        ?>
+        <select name="brm_public_access">
+            <option value="private" <?php selected( $option, 'private' ); ?>>Private (Admin only)</option>
+            <option value="public" <?php selected( $option, 'public' ); ?>>Public (Allow frontend shortcode)</option>
+        </select>
+        <p class="description">Controls whether the `[brm_create_link_form]` shortcode will display the creation form.</p>
+        <?php
+    }
+
+    public function admin_page_settings() {
+        ?>
+        <div class="wrap">
+            <h1>Redirect Manager Settings</h1>
+            <form method="post" action="options.php">
+                <?php
+                settings_fields( 'brm_options_group' );
+                do_settings_sections( 'brm_settings_page' );
+                submit_button();
+                ?>
+            </form>
+        </div>
+        <?php
+    }
+
+    /**
+     * Enqueue Admin CSS and JS files.
+     */
     public function admin_assets( $hook ) {
+        // Only load assets on pages related to the BRM plugin (e.g., admin.php?page=brm_...)
         if ( strpos( $hook, 'brm' ) === false ) {
             return;
         }
-        wp_enqueue_style( 'brm-admin', plugins_url( 'admin.css', __FILE__ ) );
+
+        // 1. Enqueue CSS
+        wp_enqueue_style( 'brm-admin-style', plugins_url( 'brm-admin.css', __FILE__ ), array(), '1.0' );
+
+        // 2. Enqueue JavaScript for Admin functionality (Copy button, etc.)
+        wp_enqueue_script(
+                'brm-admin-script',
+                plugins_url( 'brm-admin-script.js', __FILE__ ),
+                array( 'jquery' ),
+                '1.0',
+                true
+        );
+
+        // 3. Enqueue JavaScript for form functionality (Slug generation/preview)
+        // We reuse the same form script for admin and frontend for better reusability
+        wp_enqueue_script(
+                'brm-form-script',
+                plugins_url( 'brm-form-script.js', __FILE__ ),
+                array(),
+                '1.0',
+                true
+        );
+    }
+
+    /**
+     * Enqueue Frontend CSS and JS files.
+     */
+    public function frontend_assets() {
+        // 1. Enqueue CSS for the form (optional, if you want specific form styling)
+        wp_enqueue_style( 'brm-frontend-style', plugins_url( 'brm-frontend.css', __FILE__ ), array(), '1.0' );
+
+        // 2. Enqueue JavaScript for form functionality (Slug generation/preview)
+        wp_enqueue_script(
+                'brm-form-script',
+                plugins_url( 'brm-form-script.js', __FILE__ ),
+                array(),
+                '1.0',
+                true
+        );
     }
 
     /* Admin list page */
@@ -288,121 +382,76 @@ class BRM_Plugin {
         if ( ! current_user_can( 'manage_options' ) ) {
             return;
         }
+
         global $wpdb;
         $rows = $wpdb->get_results( "SELECT * FROM {$this->table} ORDER BY created DESC" );
 
-        // Get the site URL for the shortlink base
         $base_url = site_url( '/go/' );
         ?>
-        <div class="wrap">
-            <h1>Redirect Manager<a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>" class="page-title-action">Add New</a></h1>
-            <table class="widefat fixed striped">
+        <div class="wrap brm-admin-list">
+            <h1>Redirect Manager
+                <a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>"
+                   class="page-title-action brm-add-button">
+                    Add New
+                </a>
+            </h1>
+            <table class="wp-list-table widefat fixed striped">
                 <thead>
                 <tr>
-                    <th>Slug</th>
-                    <th>Target URL</th>
-                    <th>Clicks</th>
-                    <th>Expires</th>
-                    <th>QR Code</th>
-                    <th>Actions</th>
+                    <th scope="col" class="brm-col-slug">Slug</th>
+                    <th scope="col" class="brm-col-target">Target URL</th>
+                    <th scope="col" class="brm-col-clicks">Clicks</th>
+                    <th scope="col" class="brm-col-expires">Expires</th>
+                    <th scope="col" class="brm-col-qr">QR Code</th>
+                    <th scope="col" class="brm-col-actions">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php if ( $rows ): foreach ( $rows as $r ):
-                    // Construct the full short URL
                     $short_url = esc_url( $base_url . $r->slug );
                     ?>
                     <tr>
-                        <td><code><?php echo esc_html( $r->slug ); ?></code></td>
-                        <td style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?php echo esc_html( $r->target_url ); ?></td>
-                        <td><?php echo number_format_i18n( $r->clicks ); ?></td>
-                        <td><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
-                        <td style="display: flex; flex-direction: row; align-items: center; gap: 8px;">
+                        <td data-colname="Slug"><code class="brm-slug-code"><?php echo esc_html( $r->slug ); ?></code></td>
+                        <td data-colname="Target URL" class="brm-target-url"><?php echo esc_html( $r->target_url ); ?></td>
+                        <td data-colname="Clicks"><?php echo number_format_i18n( $r->clicks ); ?></td>
+                        <td data-colname="Expires"><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
+                        <td data-colname="QR Code" class="brm-qr-cell">
                             <?php if ( ! empty( $r->qr_code ) ): ?>
-                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" width="64" height="64">
-                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="button button-small">Download</a>
+                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" class="brm-qr-image">
+                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="button button-small brm-download-qr">Download</a>
                             <?php else: ?>
                                 -
                             <?php endif; ?>
                         </td>
-                        <td>
+                        <td data-colname="Actions" class="brm-actions-cell">
                             <button class="button button-small brm-copy-url" data-url="<?php echo $short_url; ?>">Copy
                             </button>
                             |
-                            <a href="<?php echo $short_url; ?>" target="_blank">Visit</a>
+                            <a href="<?php echo $short_url; ?>" target="_blank" class="brm-action-visit">Visit</a>
                             |
-                            <a href="<?php echo admin_url( 'admin.php?page=brm_add&edit=' . intval( $r->id ) ); ?>">Edit</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=brm_add&edit=' . intval( $r->id ) ); ?>" class="brm-action-edit">Edit</a>
                             |
-                            <form style="display:inline" method="post"
+                            <form class="brm-delete-form" method="post"
                                   action="<?php echo admin_url( 'admin-post.php' ); ?>">
                                 <?php wp_nonce_field( 'brm_delete_' . $r->id ); ?>
                                 <input type="hidden" name="action" value="brm_delete_link"/>
                                 <input type="hidden" name="id" value="<?php echo intval( $r->id ); ?>"/>
-                                <button class="button-link" onclick="return confirm('Delete this redirect?')">Delete
+                                <button class="button-link brm-action-delete" onclick="return confirm('Delete this redirect?')">Delete
                                 </button>
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="6">No redirects found.</td>
+                        <td colspan="6" class="brm-no-redirects">No redirects found.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <script>
-            // JavaScript for the Copy Button functionality
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.brm-copy-url').forEach(button => {
-                    button.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const urlToCopy = this.getAttribute('data-url');
-
-                        // Use the modern clipboard API
-                        if (navigator.clipboard) {
-                            navigator.clipboard.writeText(urlToCopy).then(() => {
-                                const originalText = this.textContent;
-                                this.textContent = 'Copied!';
-                                this.classList.add('copied');
-                                setTimeout(() => {
-                                    this.textContent = originalText;
-                                    this.classList.remove('copied');
-                                }, 1500);
-                            }).catch(err => {
-                                // Fallback for older browsers (or if permission is denied)
-                                console.error('Could not copy text: ', err);
-                                // Fallback: Create a temporary textarea
-                                const tempInput = document.createElement('textarea');
-                                tempInput.value = urlToCopy;
-                                document.body.appendChild(tempInput);
-                                tempInput.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(tempInput);
-
-                                const originalText = this.textContent;
-                                this.textContent = 'Copied!';
-                                this.classList.add('copied');
-                                setTimeout(() => {
-                                    this.textContent = originalText;
-                                    this.classList.remove('copied');
-                                }, 1500);
-                            });
-                        }
-                    });
-                });
-            });
-        </script>
-        <style>
-            /* Basic styling for the copied state */
-            .brm-copy-url.copied {
-                background: #46b450 !important; /* WordPress success color */
-                border-color: #3b9944 !important;
-                color: #fff !important;
-            }
-        </style>
         <?php
-    } // End admin_page_list()
+        // JS is handled by brm-admin-script.js
+    }
 
     /* Admin add/edit page */
     public function admin_page_add() {
@@ -414,243 +463,266 @@ class BRM_Plugin {
         if ( ! empty( $_GET['edit'] ) ) {
             $edit = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE id = %d", intval( $_GET['edit'] ) ) );
         }
+        echo $this->get_link_creation_form( true, $edit );
+    }
+
+    /**
+     * Reusable function to generate the link creation form (Admin or Public).
+     *
+     * @param bool $is_admin Whether the form is for the admin area (shows all fields).
+     * @param object|null $edit Existing link object for editing.
+     * @return string The HTML form.
+     */
+    private function get_link_creation_form( $is_admin, $edit = null ) {
+        $current_user_is_logged_in = is_user_logged_in();
+        $public_access_option = get_option( 'brm_public_access', 'private' );
+
+        // If not admin AND public access is 'private', show message.
+        if ( ! $is_admin && $public_access_option !== 'public' ) {
+            return '<div class="brm-alert brm-alert-warning">GoLink is currently restricted.</div>';
+        }
+
+        // If admin and no permission, return.
+        if ( $is_admin && ! current_user_can( 'manage_options' ) ) {
+            return '<div class="brm-alert brm-alert-error">You do not have permission to access this page.</div>';
+        }
+
+        if ( ! function_exists( 'submit_button' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/template.php';
+        }
+
+        $is_edit  = $edit !== null;
+        $title    = $is_edit ? 'Edit Redirect' : 'Create New Redirect';
+        $submit_btn_text = $is_edit ? 'Update Redirect' : 'Create Redirect';
+
+        $form_action = esc_url( admin_url( 'admin-post.php' ) );
+        $nonce_action = 'brm_save';
+
+        ob_start();
         ?>
-        <div class="wrap">
-            <h1><?php echo $edit ? 'Edit Redirect' : 'Add New Redirect'; ?></h1>
-            <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
-                <?php wp_nonce_field( 'brm_save' ); ?>
+        <div class="wrap brm-form-wrap <?php echo $is_admin ? 'brm-admin-form' : 'brm-public-form'; ?>">
+            <h1><?php echo esc_html( $title ); ?></h1>
+
+            <?php if ( ! $is_admin && $current_user_is_logged_in ) : ?>
+                <div class="brm-alert brm-alert-info">
+                    **Note:** As a logged-in user, you are using the public form. Your link will be marked as a public submission.
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="<?php echo $form_action; ?>" class="brm-form">
+                <?php wp_nonce_field( $nonce_action ); ?>
                 <input type="hidden" name="action" value="brm_save_link"/>
-                <input type="hidden" name="id" value="<?php echo $edit ? intval( $edit->id ) : ''; ?>"/>
+                <input type="hidden" name="id" value="<?php echo $is_edit ? intval( $edit->id ) : ''; ?>"/>
+                <input type="hidden" name="is_public_submission" value="<?php echo $is_admin ? 0 : 1; ?>" />
 
                 <table class="form-table">
                     <tr>
-                        <th scope="row"><label for="brm_slug">Slug</label></th>
+                        <th scope="row"><label for="target_url">Target URL <span class="brm-required">*</span></label></th>
                         <td>
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <input type="text" name="slug" id="slug" value="<?php echo esc_attr( $edit->slug ?? '' ); ?>"
+                            <input name="target_url" type="url" id="target_url"
+                                   value="<?php echo $is_edit ? esc_attr( $edit->target_url ) : ''; ?>"
+                                   class="regular-text brm-input-url"
+                                   placeholder="https://example.com/zoom/meeting..." required/>
+                            <p class="description">Full destination URL to redirect to.</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row"><label for="slug">Slug</label></th>
+                        <td>
+                            <div class="brm-slug-control">
+                                <input type="text" name="slug" id="slug"
+                                       value="<?php echo esc_attr( $edit->slug ?? '' ); ?>"
+                                       class="regular-text brm-input-slug"
                                        placeholder="Auto-generated if empty"/>
-                                <span>Optionally you can</span>
-                                <button type="button" class="button" id="generate-slug-btn">Auto Generate</button>
+                                <button type="button" class="button" id="generate-slug-btn">
+                                    Auto Generate
+                                </button>
                             </div>
-                            <p class="description">Short unique identifier used in the URL:
-                                <code><?php echo esc_html( site_url( '/go/' ) ); ?><span
-                                            id="slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>.
-                                You customize this to your preference or auto generate with the button.
-                            </p></td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><label for="brm_target">Target URL</label></th>
-                        <td><input name="target_url" type="url" id="brm_target"
-                                   value="<?php echo $edit ? esc_attr( $edit->target_url ) : ''; ?>"
-                                   class="regular-text" placeholder="https://example.com/zoom/meeting..." required/>
-                            <p class="description">Full destination URL to redirect to.</p></td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><label for="brm_expires">Expires</label></th>
-                        <td><input name="expires" type="datetime-local" id="brm_expires"
-                                   value="<?php echo $edit && $edit->expires ? date( 'Y-m-d\TH:i', strtotime( $edit->expires ) ) : ''; ?>"/>
-                            <p class="description">Optional expiration date/time (local).</p></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="og_title">OG Title</label></th>
-                        <td><textarea type="text" name="og_title" id="og_title"
-                                      class="large-text"><?php echo esc_attr( $edit->og_title ?? '' ); ?></textarea>
+                            <p class="description">
+                                Short unique identifier: <code><?php echo esc_html( site_url( '/go/' ) ); ?><span id="slug-preview" class="brm-slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>.
+                            </p>
                         </td>
                     </tr>
-                    <tr>
-                        <th scope="row"><label for="og_description">OG Description</label></th>
-                        <td><textarea name="og_description" id="og_description" rows="3"
-                                      class="large-text"><?php echo esc_textarea( $edit->og_description ?? '' ); ?></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="og_image">OG Image URL</label></th>
-                        <td><input type="text" name="og_image" id="og_image"
-                                   value="<?php echo esc_url( $edit->og_image ?? '' ); ?>" class="regular-text">
-                            <p class="description">Paste full image URL</p></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Status</th>
-                        <td><select name="status">
-                                <option value="1" <?php selected( $edit && $edit->status, 1 ); ?>>Active</option>
-                                <option value="0" <?php selected( $edit && $edit->status, 0 ); ?>>Inactive</option>
-                            </select></td>
-                    </tr>
+
+                    <?php if ( $is_admin ) : // Admin-only fields ?>
+
+                        <tr>
+                            <th scope="row"><label for="expires">Expires</label></th>
+                            <td>
+                                <input name="expires" type="datetime-local" id="expires"
+                                       value="<?php echo $is_edit && $edit->expires ? date( 'Y-m-d\TH:i', strtotime( $edit->expires ) ) : ''; ?>"
+                                       class="brm-input-datetime"/>
+                                <p class="description">Optional expiration date/time (local).</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="status">Status</label></th>
+                            <td>
+                                <select name="status" id="status" class="brm-input-select">
+                                    <option value="1" <?php selected( $is_edit && $edit->status, 1 ); ?>>Active</option>
+                                    <option value="0" <?php selected( $is_edit && $edit->status, 0 ); ?>>Inactive</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr class="brm-og-meta-heading">
+                            <td colspan="2"><h3>Open Graph (OG) Meta Data (Advanced)</h3></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="og_title">OG Title</label></th>
+                            <td>
+                                <textarea name="og_title" id="og_title" rows="2"
+                                          class="large-text brm-input-textarea"><?php echo esc_attr( $edit->og_title ?? '' ); ?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="og_description">OG Description</label></th>
+                            <td>
+                                <textarea name="og_description" id="og_description" rows="3"
+                                          class="large-text brm-input-textarea"><?php echo esc_textarea( $edit->og_description ?? '' ); ?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="og_image">OG Image URL</label></th>
+                            <td>
+                                <input type="text" name="og_image" id="og_image"
+                                       value="<?php echo esc_url( $edit->og_image ?? '' ); ?>" class="regular-text brm-input-image-url">
+                                <p class="description">Paste full image URL (e.g., for social media sharing).</p>
+                            </td>
+                        </tr>
+
+                    <?php endif; // End admin-only fields ?>
+
                 </table>
 
-                <?php submit_button( $edit ? 'Update Redirect' : 'Create Redirect' ); ?>
+                <?php submit_button( $submit_btn_text, 'primary large brm-submit-button' ); ?>
             </form>
         </div>
-        <script>
-            (function () {
-                var slug = document.getElementById('brm_slug');
-                var preview = document.getElementById('slug-preview');
-                if (slug) slug.addEventListener('input', function () {
-                    preview.textContent = slug.value;
-                });
-            })();
-        </script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const slugInput = document.querySelector(`input[name="slug"]`);
-                const generateBtn = document.querySelector("#generate-slug-btn");
-
-                function generateSlug(length = 9) {
-                    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                    let result = "";
-                    for (let i = 0; i < length; i++) {
-                        result += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    return result;
-                }
-
-                if (slugInput && generateBtn) {
-                    generateBtn.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        slugInput.value = generateSlug();
-
-                        const preview = document.getElementById('slug-preview');
-                        if (preview) {
-                            preview.textContent = slugInput.value;
-                        }
-                    });
-                }
-            });
-        </script>
         <?php
+        return ob_get_clean();
     }
 
-    /* Save link handler */
-    public function admin_save_link() {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( 'Unauthorized' );
-        }
+
+    /* Shortcode to display the public form */
+    public function create_link_form_shortcode( $atts ) {
+        return $this->get_link_creation_form( false );
+    }
+
+    /**
+     * Unified handler for saving link from both Admin and Public forms. (No change to logic)
+     */
+    public function handle_save_link() {
+        $is_admin_submission = current_user_can( 'manage_options' );
+        $is_public_submission_flag = ! empty( $_POST['is_public_submission'] ) ? intval( $_POST['is_public_submission'] ) : 0;
+        $is_public_access_allowed = get_option( 'brm_public_access', 'private' ) === 'public';
+
         check_admin_referer( 'brm_save' );
+
+        if ( ! $is_admin_submission && ! $is_public_access_allowed ) {
+            wp_die( 'Public link creation is currently disabled.' );
+        }
 
         global $wpdb;
         $id      = ! empty( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
-        $slug    = sanitize_title_with_dashes( wp_unslash( $_POST['slug'] ) );
-        $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ) ) );
-        $expires = ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
-        $status  = isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
-        $og_title = sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ); // Sanitize title
-        $og_description = sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ); // Sanitize description
-        $og_image = esc_url_raw( trim( wp_unslash( $_POST['og_image'] ?? '' ) ) ); // Sanitize URL
+        $slug    = sanitize_title_with_dashes( wp_unslash( $_POST['slug'] ?? '' ) );
+        $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ?? '' ) ) );
 
-        // Basic validation
+        $expires = $is_admin_submission && ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
+        $status  = $is_admin_submission && isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
+        $og_title = $is_admin_submission ? sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ) : '';
+        $og_description = $is_admin_submission ? sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ) : '';
+        $og_image = $is_admin_submission ? esc_url_raw( trim( wp_unslash( $_POST['og_image'] ?? '' ) ) ) : '';
+
+        $is_public = $is_public_submission_flag;
+        if ( $is_admin_submission && $is_public_submission_flag === 0 ) {
+            $is_public = 0;
+        }
+
+        if ( empty( $id ) && empty( $slug ) ) {
+            do {
+                $slug = $this->generate_random_slug();
+                $is_slug_unique = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table} WHERE slug = %s", $slug ) ) === '0';
+            } while ( ! $is_slug_unique );
+        }
+
         if ( empty( $slug ) || empty( $target ) ) {
             wp_die( 'Slug and target URL are required.' );
         }
 
-        // Prevent open redirect to local admin pages or site URL (optional)
+        $is_slug_unique = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table} WHERE slug = %s AND id != %d", $slug, $id ) );
+        if ( $is_slug_unique > 0 ) {
+            wp_die( 'Slug already exists. Please choose a different one or auto-generate.' );
+        }
+
         $allowed_protocols = array( 'http', 'https' );
         $parsed            = wp_parse_url( $target );
         if ( ! $parsed || empty( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], $allowed_protocols ) ) {
             wp_die( 'Invalid target URL protocol. Use http or https.' );
         }
-
-        // Prevent target to the same site path (you may choose to allow this)
         $site_host   = wp_parse_url( home_url(), PHP_URL_HOST );
         $target_host = wp_parse_url( $target, PHP_URL_HOST );
         if ( $target_host && $site_host && strtolower( $site_host ) === strtolower( $target_host ) ) {
-            // disallow redirecting to same host to avoid loops (change if you prefer to allow)
             wp_die( 'Target URL must point to an external host.' );
         }
 
+        $data = array(
+                'slug'           => $slug,
+                'target_url'     => $target,
+                'expires'        => $expires,
+                'status'         => $status,
+                'og_title'       => $og_title,
+                'og_description' => $og_description,
+                'og_image'       => $og_image,
+                'is_public'      => $is_public,
+        );
+
+        $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d' );
+
         if ( $id ) {
-            $data = array(
-                    'slug'           => $slug,
-                    'target_url'     => $target,
-                    'expires'        => $expires,
-                    'status'         => $status,
-                    'og_title'       => $og_title,
-                    'og_description' => $og_description,
-                    'og_image'       => $og_image,
-            );
-
-            $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ); // Add '%s' for each new field
-
-            $wpdb->update(
-                    $this->table,
-                    $data,
-                    array( 'id' => $id ),
-                    $format,
-                    array( '%d' )
-            );
+            $wpdb->update( $this->table, $data, array( 'id' => $id ), $format, array( '%d' ) );
         } else {
-            $data = array(
-                    'slug'           => $slug,
-                    'target_url'     => $target,
-                    'expires'        => $expires,
-                    'status'         => $status,
-                    'og_title'       => $og_title,
-                    'og_description' => $og_description,
-                    'og_image'       => $og_image,
-            );
-
-            $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ); // Add '%s' for each new field
-
             $wpdb->insert( $this->table, $data, $format );
+            $id = $wpdb->insert_id;
         }
 
         // --- Start QR Code Generation and Saving ---
-
         $qr_url = site_url('/go/' . $slug);
         $upload_dir = wp_upload_dir();
-
-        // 1. Define the custom subdirectory path
         $qr_base_dir = trailingslashit($upload_dir['basedir']) . 'qr';
         $qr_base_url = trailingslashit($upload_dir['baseurl']) . 'qr';
 
-        // 2. Create the directory if it doesn't exist
         if ( ! is_dir( $qr_base_dir ) ) {
             wp_mkdir_p( $qr_base_dir );
         }
 
-        // 3. Define the file path and URL
         $qr_file = 'brm-qrcode-' . $slug . '.png';
         $qr_path = trailingslashit($qr_base_dir) . $qr_file;
         $qr_url_path = trailingslashit($qr_base_url) . $qr_file;
 
-        // Generate QR using Google Chart API (or a library like PHP QR Code)
-        // Note: Using quickchart.io as in your original code
         $qr_image = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
 
-        // 4. Save a copy locally
-        $image_data = @file_get_contents($qr_image);
-        if ($image_data) {
-            file_put_contents($qr_path, $image_data);
-        }
+        $response = wp_remote_get( $qr_image, array( 'timeout' => 15, 'sslverify' => false ) );
 
-        // 5. Update QR code URL in DB
-        if ($id) {
-            $wpdb->update(
-                    $this->table,
-                    array('qr_code' => $qr_url_path),
-                    array('id' => $id),
-                    array('%s'),
-                    array('%d')
-            );
-        } else {
-            $last_id = $wpdb->insert_id;
-            $wpdb->update(
-                    $this->table,
-                    array('qr_code' => $qr_url_path),
-                    array('id' => $last_id),
-                    array('%s'),
-                    array('%d')
-            );
+        if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+            $image_data = wp_remote_retrieve_body( $response );
+            if ( $image_data ) {
+                file_put_contents($qr_path, $image_data);
+                $wpdb->update( $this->table, array('qr_code' => $qr_url_path), array('id' => $id), array('%s'), array('%d') );
+            }
         }
         // --- End QR Code Generation and Saving ---
 
-        // redirect back to list
-        wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
+        if ( $is_admin_submission ) {
+            wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
+        } else {
+            wp_redirect( esc_url( home_url( '/go/' . $slug ) ) );
+        }
         exit;
     }
 
-    /* Delete link handler */
+    /* Delete link handler (No change needed) */
     public function admin_delete_link() {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Unauthorized' );
@@ -666,15 +738,5 @@ class BRM_Plugin {
     }
 }
 
+// Instantiate the class
 BRM_Plugin::instance();
-
-// Add query var so WordPress populates it
-function brm_query_vars( $vars ) {
-    $vars[] = 'brm_redirect';
-
-    return $vars;
-}
-
-add_filter( 'query_vars', 'brm_query_vars' );
-
-?>
