@@ -25,8 +25,18 @@ class Form implements FormModuleInterface
 
     public function enqueue_assets(): void
     {
-        wp_enqueue_style('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/style.css', [], '1.0.1');
-        wp_enqueue_script('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/script.js', ['jquery'], '1.0.0', true);
+        $style_path = CBC_FM_PLUGIN_DIR . 'presentation/cbc_appointment_form/assets/style.css';
+        $script_path = CBC_FM_PLUGIN_DIR . 'presentation/cbc_appointment_form/assets/script.js';
+        $ver_style = file_exists($style_path) ? (string) @filemtime($style_path) : '1.0.2';
+        $ver_script = file_exists($script_path) ? (string) @filemtime($script_path) : '1.0.2';
+
+        wp_enqueue_style('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/style.css', [], $ver_style);
+        wp_enqueue_script('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/script.js', ['jquery'], $ver_script, true);
+        // Provide AJAX URL and action to the script
+        wp_localize_script('cbc-appointment-form', 'cbcAppointmentForm', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'action'   => 'cbc_form_submit',
+        ]);
     }
 
     public function render(array $view = []): string
@@ -50,46 +60,50 @@ class Form implements FormModuleInterface
 
             <?php if (!empty($errors['_global'])): ?>
                 <div class="cbc-form-alert cbc-form-alert-danger"><?php echo esc_html($errors['_global']); ?></div>
+            <?php else: ?>
+                <div class="cbc-form-alert cbc-form-alert-danger" style="display:none"></div>
             <?php endif; ?>
 
             <?php if ($success): ?>
                 <div class="cbc-form-alert cbc-form-alert-success"><?php echo esc_html($success); ?></div>
+            <?php else: ?>
+                <div class="cbc-form-alert cbc-form-alert-success" style="display:none"></div>
             <?php endif; ?>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('name')); ?>"><?php echo esc_html($fields['name']['label']); ?> *</label>
                 <input id="<?php echo esc_attr($id('name')); ?>" type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>" />
-                <?php if (!empty($errors['name'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['name']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['name'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['name']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('email')); ?>"><?php echo esc_html($fields['email']['label']); ?> *</label>
                 <input id="<?php echo esc_attr($id('email')); ?>" type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>" />
-                <?php if (!empty($errors['email'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['email']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['email'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['email']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('phone')); ?>"><?php echo esc_html($fields['phone']['label']); ?></label>
                 <input id="<?php echo esc_attr($id('phone')); ?>" type="text" name="phone" value="<?php echo esc_attr($old['phone'] ?? ''); ?>" />
-                <?php if (!empty($errors['phone'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['phone']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['phone'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['phone']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('preferred_date')); ?>"><?php echo esc_html($fields['preferred_date']['label']); ?> *</label>
                 <input id="<?php echo esc_attr($id('preferred_date')); ?>" type="date" name="preferred_date" value="<?php echo esc_attr($old['preferred_date'] ?? ''); ?>" />
-                <?php if (!empty($errors['preferred_date'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_date']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['preferred_date'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_date']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('preferred_time')); ?>"><?php echo esc_html($fields['preferred_time']['label']); ?> *</label>
                 <input id="<?php echo esc_attr($id('preferred_time')); ?>" type="text" name="preferred_time" value="<?php echo esc_attr($old['preferred_time'] ?? ''); ?>" placeholder="e.g., 14:00" />
-                <?php if (!empty($errors['preferred_time'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_time']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['preferred_time'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_time']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('message')); ?>"><?php echo esc_html($fields['message']['label']); ?></label>
                 <textarea id="<?php echo esc_attr($id('message')); ?>" name="message" rows="5"><?php echo esc_textarea($old['message'] ?? ''); ?></textarea>
-                <?php if (!empty($errors['message'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['message']); ?></div><?php endif; ?>
+                <?php if (!empty($errors['message'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['message']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-actions">

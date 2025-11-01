@@ -1,11 +1,9 @@
 <?php
 /*
 Plugin Name: CBC Form Manager
-Description: A DDD-based form manager supporting multiple form modules and shortcodes.
+Description: A DDD-based form manager supporting multiple form modules and shortcodes. Generate instantly using CLI command <code>*Drive*\wp-content\plugins\cbc-form-manager\tools> php generate-form.php cbc_attendance_form "CBC Event Attendance Form" cbc_attendance_form<code>
 Version: 1.0.0
 Author: Cristo Rey C. Magdadaro
-Text Domain: cbc-form-manager
-Domain Path: /languages
 */
 
 if (!defined('ABSPATH')) { exit; }

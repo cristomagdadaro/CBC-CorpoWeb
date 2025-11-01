@@ -33,10 +33,25 @@ class FormService
                 return $this->handleShortcode($module, $attrs);
             });
         }
+
+        // Enable AJAX submission endpoint for all forms
+        add_action('wp_ajax_cbc_form_submit', [$this, 'ajaxSubmit']);
+        add_action('wp_ajax_nopriv_cbc_form_submit', [$this, 'ajaxSubmit']);
     }
 
     private function handleShortcode(FormModuleInterface $module, array $attrs): string
     {
+        // Enqueue generic AJAX handler for all CBC forms
+        $global_script_rel = 'assets/js/form-ajax.js';
+        $global_script_path = CBC_FM_PLUGIN_DIR . $global_script_rel;
+        $global_script_url = CBC_FM_PLUGIN_URL . $global_script_rel;
+        $ver_script = file_exists($global_script_path) ? (string) @filemtime($global_script_path) : '1.0.0';
+        wp_enqueue_script('cbc-form-ajax', $global_script_url, ['jquery'], $ver_script, true);
+        wp_localize_script('cbc-form-ajax', 'cbcFormAjax', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'action'   => 'cbc_form_submit',
+        ]);
+
         $module->enqueue_assets();
 
         $view = [
@@ -185,6 +200,159 @@ class FormService
         }
 
         return $module->render($view);
+    }
+
+    // Handle AJAX submissions via admin-ajax.php
+    public function ajaxSubmit(): void
+    {
+        // Expecting: _cbc_form_key and nonce fields in POST
+        $formKey = isset($_POST['_cbc_form_key']) ? sanitize_text_field(wp_unslash($_POST['_cbc_form_key'])) : '';
+        if ($formKey === '') {
+            wp_send_json_error(['message' => __('Missing form key.', 'cbc-form-manager')]);
+        }
+
+        // Find module by key
+        $module = null;
+        foreach ($this->formsByShortcode as $m) {
+            if ($m->key() === $formKey) { $module = $m; break; }
+        }
+        if (!$module) {
+            wp_send_json_error(['message' => __('Unknown form.', 'cbc-form-manager')]);
+        }
+
+        // Allow override of AJAX handling for specific forms or globally
+        $override = apply_filters('cbc_form_manager/ajax_handle', null, $module);
+        $override = apply_filters('cbc_form_manager/ajax_handle/' . $module->key(), $override, $module);
+        if (is_wp_error($override)) {
+            wp_send_json_error(['message' => $override->get_error_message()]);
+        } elseif (is_array($override) && array_key_exists('success', $override)) {
+            if (!empty($override['success'])) {
+                wp_send_json_success($override['data'] ?? []);
+            } else {
+                wp_send_json_error($override['data'] ?? []);
+            }
+        }
+
+        $nonce_action = 'cbc_form_' . $module->key();
+        $nonce_name = '_cbc_form_nonce';
+        if (!$this->nonce->verify($nonce_action, $nonce_name)) {
+            wp_send_json_error(['errors' => ['_global' => __('Security check failed. Please try again.', 'cbc-form-manager')]]);
+        }
+
+        // Replicate the same processing as non-AJAX
+        $fields = $module->fields();
+        $sanitized = [];
+        $errors = [];
+
+        foreach ($fields as $name => $def) {
+            $type = $def['type'] ?? 'text';
+            $required = !empty($def['required']);
+
+            if ($type === 'file') {
+                $fileArr = isset($_FILES[$name]) ? $_FILES[$name] : null;
+                if (!$fileArr || ($fileArr['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                    if ($required) {
+                        $errors[$name] = sprintf(__('%s is required.', 'cbc-form-manager'), $def['label'] ?? $name);
+                    }
+                    $sanitized[$name] = null;
+                    continue;
+                }
+
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+                $overrides = [ 'test_form' => false ];
+                $uploaded = wp_handle_upload($fileArr, $overrides);
+                if (!is_array($uploaded) || isset($uploaded['error'])) {
+                    $errors[$name] = sprintf(__('Failed to upload %s: %s', 'cbc-form-manager'), $def['label'] ?? $name, $uploaded['error'] ?? __('Unknown error', 'cbc-form-manager'));
+                    $sanitized[$name] = null;
+                    continue;
+                }
+
+                $filetype = wp_check_filetype(basename($uploaded['file']), null);
+                $ext = strtolower($filetype['ext'] ?? '');
+                $mime = strtolower($filetype['type'] ?? '');
+                if ($ext !== 'pdf' || $mime !== 'application/pdf') {
+                    @unlink($uploaded['file']);
+                    $errors[$name] = sprintf(__('%s must be a PDF file.', 'cbc-form-manager'), $def['label'] ?? $name);
+                    $sanitized[$name] = null;
+                    continue;
+                }
+
+                $attachment = [
+                    'guid' => $uploaded['url'],
+                    'post_mime_type' => $mime,
+                    'post_title' => sanitize_file_name(basename($uploaded['file'])),
+                    'post_content' => '',
+                    'post_status' => 'inherit',
+                ];
+                $attach_id = wp_insert_attachment($attachment, $uploaded['file']);
+                if (!is_wp_error($attach_id)) {
+                    if (!function_exists('wp_generate_attachment_metadata')) {
+                        require_once ABSPATH . 'wp-admin/includes/image.php';
+                    }
+                    $attach_data = wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+                    if (!empty($attach_data)) {
+                        wp_update_attachment_metadata($attach_id, $attach_data);
+                    }
+                    $sanitized[$name] = [
+                        'attachment_id' => (int)$attach_id,
+                        'url' => esc_url_raw($uploaded['url']),
+                        'type' => $mime,
+                        'filename' => basename($uploaded['file']),
+                    ];
+                } else {
+                    $errors[$name] = sprintf(__('Failed to save uploaded file for %s.', 'cbc-form-manager'), $def['label'] ?? $name);
+                    $sanitized[$name] = null;
+                }
+                continue;
+            }
+
+            $raw = isset($_POST[$name]) ? wp_unslash($_POST[$name]) : '';
+            $value = $this->sanitizeByType($raw, $type);
+
+            if ($type === 'select') {
+                $options = isset($def['options']) && is_array($def['options']) ? array_keys($def['options']) : [];
+                if ($value !== '' && !in_array((string)$value, array_map('strval', $options), true)) {
+                    $errors[$name] = sprintf(__('%s has an invalid selection.', 'cbc-form-manager'), $def['label'] ?? $name);
+                    $value = '';
+                }
+            }
+
+            if ($required && ($value === '' || $value === null)) {
+                $errors[$name] = sprintf(__('%s is required.', 'cbc-form-manager'), $def['label'] ?? $name);
+            }
+            if ($value !== '' && $value !== null) {
+                if ($type === 'email' && !is_email($value)) {
+                    $errors[$name] = sprintf(__('%s must be a valid email address.', 'cbc-form-manager'), $def['label'] ?? $name);
+                }
+            }
+
+            $sanitized[$name] = $value;
+        }
+
+        $validation = apply_filters('cbc_form_manager/validate', [
+            'errors' => $errors,
+            'data' => $sanitized,
+        ], $module);
+        $validation = apply_filters('cbc_form_manager/validate/' . $module->key(), $validation, $module);
+
+        $errors = is_array($validation['errors'] ?? null) ? $validation['errors'] : $errors;
+        $sanitized = is_array($validation['data'] ?? null) ? $validation['data'] : $sanitized;
+
+        if (empty($errors)) {
+            $userId = get_current_user_id() ?: 0;
+            $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '';
+            $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
+
+            $entity = new FormSubmission($module->key(), $sanitized, (int)$userId, $ip, $ua);
+            $entity = apply_filters('cbc_form_manager/before_save', $entity, $module);
+            $savedId = $this->repository->save($entity);
+
+            do_action('cbc_form_manager/submitted', $module->key(), $savedId, $sanitized);
+
+            wp_send_json_success(['success' => __('Thanks! Your submission has been received.', 'cbc-form-manager')]);
+        }
+
+        wp_send_json_error(['errors' => $errors, 'old' => $sanitized]);
     }
 
     private function sanitizeByType($value, string $type)
