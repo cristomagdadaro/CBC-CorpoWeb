@@ -1455,3 +1455,71 @@ if (!function_exists('govph_displayoptions')) {
 	}
 }
 
+// Define govph_section_header in theme so templates can call it without the plugin.
+if (!function_exists('govph_section_header')) {
+    /**
+     * Render a GOVPH section header.
+     *
+     * @param string $title The header title text.
+     * @param array $args Optional args: classes, tag, strong, id, text_alignment, from, to, swap
+     * @return string HTML markup for the section header
+     */
+    function govph_section_header($title, $args = []) {
+        // Default styles mirror the previous plugin behavior (Tailwind-like utility classes)
+        $defaults = [
+            'classes' => 'w-full text-lg md:text-2xl lg:text-3xl uppercase font-semibold md:font-bold tracking-wide text-white px-3 py-1 md:px-5 md:py-2 rounded-sm shadow-md bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow',
+            'tag' => 'h2',
+            'strong' => false,
+            'id' => '',
+            'text_alignment' => 'center', // left|center|right
+            // Optional gradient customization
+            'from'    => '#1f5d2b',
+            'to'      => '#a2b917',
+            'swap'    => false,
+        ];
+
+        /**
+         * Filter the default args for the section header markup.
+         *
+         * @param array $defaults Default args (classes, tag, strong, id, text_alignment, from, to, swap)
+         */
+        $defaults = apply_filters('govph_section_header_args', $defaults);
+
+        // Backwards-compat: allow only the classes string to be filtered easily
+        $defaults['classes'] = apply_filters('govph_section_header_classes', $defaults['classes']);
+
+        $args = wp_parse_args($args, $defaults);
+
+        // Sanitize tag
+        $tag = preg_replace('/[^a-z0-9_-]/i', '', (string)$args['tag']);
+        if (!$tag) { $tag = 'h2'; }
+
+        // Build classes and optional gradient overrides
+        $classes = (string)$args['classes'];
+        $from = isset($args['from']) ? trim((string)$args['from']) : '';
+        $to = isset($args['to']) ? trim((string)$args['to']) : '';
+        $swap = filter_var($args['swap'], FILTER_VALIDATE_BOOLEAN);
+        if ($swap) { $tmp = $from; $from = $to; $to = $tmp; }
+        if ($from !== '' && $to !== '') {
+            $from_hex = ltrim(strtolower($from), '#');
+            $to_hex = ltrim(strtolower($to), '#');
+            // Remove existing gradient tokens to avoid duplication
+            $classes = preg_replace('/\b(?:bg-gradient-to-(?:r|l|t|b|tr|tl|br|bl)|from-\[[^\]]+\]|to-\[[^\]]+\])\b/', '', $classes);
+            $classes = preg_replace('/\s+/', ' ', trim($classes));
+            $direction = $swap ? 'bg-gradient-to-l' : 'bg-gradient-to-r';
+            $gradient_class = $direction . ' from-[#' . $from_hex . '] to-[#' . $to_hex . ']';
+            $classes = trim($classes . ' ' . $gradient_class);
+        }
+
+        $id_attr = !empty($args['id']) ? ' id="' . esc_attr($args['id']) . '"' : '';
+        $strong = filter_var($args['strong'], FILTER_VALIDATE_BOOLEAN);
+        $align = in_array($args['text_alignment'], ['left','center','right'], true) ? $args['text_alignment'] : 'center';
+        $align_style = ' style="text-align:' . esc_attr($align) . ';"';
+
+        $title_escaped = esc_html((string)$title);
+        $classes_attr = esc_attr($classes);
+        $inner = $strong ? '<strong>' . $title_escaped . '</strong>' : $title_escaped;
+
+        return '<' . $tag . $id_attr . ' class="' . $classes_attr . '"' . $align_style . '>' . $inner . '</' . $tag . '>';
+    }
+}
