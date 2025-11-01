@@ -258,7 +258,7 @@ li.current-menu-item:not(.has-form) {
 #aux-main ul li:hover:not(.has-form) > a,
 #aux-main .dropdown li:not(.has-form) a:not(.button):hover,
 #aux-main .dropdown li:not(.has-form):hover > a:not(.button) {
-    background: #006837;
+    background: transparent;
     color: #fff;
     /*font-size: 0.9rem;
     font-weight: bold;*/
