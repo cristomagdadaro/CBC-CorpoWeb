@@ -37,7 +37,7 @@
                             decoding="async"
 
                      id="tp-seal"
-                            src="/wp-content/themes/gwt-wordpress-26.0.0/images/transparency-seal-160x160.png"
+                            src="/wp-content/themes/modern-gwt-wordpress/images/transparency-seal-160x160.png"
                             alt="transparency seal logo"
                             title="Transparency Seal"
                             class="w-32 h-32 object-contain md:w-40 md:h-40"
@@ -47,7 +47,7 @@
                     <img
                             decoding="async"
                             id="foi-logo"
-                            src="/wp-content/themes/gwt-wordpress-26.0.0/images/foi-logo-160x160.png"
+                            src="/wp-content/themes/modern-gwt-wordpress/images/foi-logo-160x160.png"
                             alt="freedom of information logo"
                             title="Freedom of Information"
                             class="w-32 h-32 object-contain md:w-40 md:h-40"
