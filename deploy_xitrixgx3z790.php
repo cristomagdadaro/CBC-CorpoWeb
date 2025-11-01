@@ -59,7 +59,7 @@ $timestamp = date('Y-m-d H:i:s');
 echo "<p class='timestamp'>Last updated: " . htmlspecialchars($timestamp) . "</p>";
 
 $repoPath = 'C:/nginx-1.24.0/vhost/cbccorpo';
-$expectedUser = 'CBC-REY'; // ✅ change if your Windows username differs
+$expectedUser = 'CBC-REY'; // change if your Windows username differs
 
 $currentUser = get_current_user();
 echo "<p>Running as: <strong>" . htmlspecialchars($currentUser) . "</strong></p>";
@@ -69,7 +69,7 @@ if (strtoupper($currentUser) !== strtoupper($expectedUser)) {
 	echo "<p style='color:red; font-weight:bold;'>Warning: PHP is running as <strong>$currentUser</strong> instead of <strong>$expectedUser</strong>.<br>
     Please restart PHP using <code>C:\\php\\restart-php-cgi.bat</code>.</p>";
 } else {
-	echo "<p style='color:green; font-weight:bold;'>✅ PHP is running under the correct user ($expectedUser).</p>";
+	echo "<p style='color:green; font-weight:bold;'>PHP is running under the correct user ($expectedUser).</p>";
 }
 
 // 🗂 Change to repository directory
