@@ -55,21 +55,29 @@ echo <<<HTML
     <div class="container">
         <h1>Deployment Status</h1>
 HTML;
+echo "<p>Running as: " . get_current_user() . "</p>";
 
-    $timestamp = date('Y-m-d H:i:s');
-    echo "<p class='timestamp'>Last updated: " . htmlspecialchars($timestamp) . "</p>";
+$timestamp = date( 'Y-m-d H:i:s' );
+echo "<p class='timestamp'>Last updated: " . htmlspecialchars( $timestamp ) . "</p>";
 
-    chdir('C:/nginx-1.24.0/vhost/cbccorpo');
+$repoPath = 'C:/nginx-1.24.0/vhost/cbccorpo';
+chdir( $repoPath );
 
-    $command = 'git pull 2>&1';
-    $output = shell_exec($command);
+shell_exec( "git config --add safe.directory " . escapeshellarg( $repoPath ) );
 
-    file_put_contents('deploy_log.txt', $timestamp . "\n" . $output . "\n\n", FILE_APPEND);
+// Run git pull
+$command = 'git pull 2>&1';
+$output  = shell_exec( $command );
 
-    echo "<h2>Git Output:</h2>";
-    echo "<pre>" . htmlspecialchars($output) . "</pre>";
+// Log results
+file_put_contents( $repoPath . '/deploy_log.txt', $timestamp . "\n" . $output . "\n\n", FILE_APPEND );
 
-    echo <<<HTML
+// Display output
+echo "<h2>Git Output:</h2>";
+echo "<pre>" . htmlspecialchars( $output ) . "</pre>";
+
+
+echo <<<HTML
     </div>
 </body>
 </html>
