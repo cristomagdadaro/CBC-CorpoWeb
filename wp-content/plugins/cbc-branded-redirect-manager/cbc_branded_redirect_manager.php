@@ -433,6 +433,7 @@ class BRM_Plugin {
                     <th scope="col" class="brm-col-target">Target URL</th>
                     <th scope="col" class="brm-col-clicks">Clicks</th>
                     <th scope="col" class="brm-col-expires">Expires</th>
+                    <th scope="col" class="brm-col-public">From Public</th>
                     <th scope="col" class="brm-col-qr">QR Code</th>
                     <th scope="col" class="brm-col-actions">Actions</th>
                 </tr>
@@ -446,6 +447,7 @@ class BRM_Plugin {
                         <td data-colname="Target URL" class="brm-target-url"><?php echo esc_html( $r->target_url ); ?></td>
                         <td data-colname="Clicks"><?php echo number_format_i18n( $r->clicks ); ?></td>
                         <td data-colname="Expires"><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
+                        <td data-colname="From Public"><?php echo $r->is_public ? 'Yes' : 'No'; ?></td>
                         <td data-colname="QR Code" class="brm-qr-cell">
                             <?php if ( ! empty( $r->qr_code ) ): ?>
                                 <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" class="brm-qr-image">
