@@ -15,7 +15,7 @@ class Form implements FormModuleInterface
     {
         return [
             'name' => ['label' => __('Your Name', 'cbc-form-manager'), 'type' => 'text', 'required' => true],
-            'email' => ['label' => __('Your Email (optional)', 'cbc-form-manager'), 'type' => 'email', 'required' => false],
+            'email' => ['label' => __('Your Email', 'cbc-form-manager'), 'type' => 'email', 'required' => true],
             'rating' => ['label' => __('Rating', 'cbc-form-manager'), 'type' => 'select', 'required' => true, 'options' => [
                 '5' => __('Excellent', 'cbc-form-manager'),
                 '4' => __('Very Good', 'cbc-form-manager'),
@@ -23,13 +23,13 @@ class Form implements FormModuleInterface
                 '2' => __('Fair', 'cbc-form-manager'),
                 '1' => __('Poor', 'cbc-form-manager'),
             ]],
-            'comments' => ['label' => __('Comments', 'cbc-form-manager'), 'type' => 'textarea', 'required' => true],
+            'feedback' => ['label' => __('Feedback Message', 'cbc-form-manager'), 'type' => 'textarea', 'required' => true],
         ];
     }
 
     public function enqueue_assets(): void
     {
-        wp_enqueue_style('cbc-feedback-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_feedback_form/assets/style.css', [], '1.0.0');
+        wp_enqueue_style('cbc-feedback-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_feedback_form/assets/style.css', [], '1.0.1');
         wp_enqueue_script('cbc-feedback-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_feedback_form/assets/script.js', ['jquery'], '1.0.0', true);
     }
 
@@ -42,6 +42,8 @@ class Form implements FormModuleInterface
         $action = $view['action'] ?? '';
         $nonce_action = $view['nonce_action'] ?? '';
         $nonce_name = $view['nonce_name'] ?? '_cbc_form_nonce';
+
+        $id = function(string $name): string { return 'cbc_feedback_' . $name; };
 
         ob_start();
         ?>
@@ -58,20 +60,20 @@ class Form implements FormModuleInterface
             <?php endif; ?>
 
             <div class="cbc-form-row">
-                <label><?php echo esc_html($fields['name']['label']); ?> *</label>
-                <input type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>" />
+                <label for="<?php echo esc_attr($id('name')); ?>"><?php echo esc_html($fields['name']['label']); ?> *</label>
+                <input id="<?php echo esc_attr($id('name')); ?>" type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>" />
                 <?php if (!empty($errors['name'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['name']); ?></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
-                <label><?php echo esc_html($fields['email']['label']); ?></label>
-                <input type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>" />
+                <label for="<?php echo esc_attr($id('email')); ?>"><?php echo esc_html($fields['email']['label']); ?> *</label>
+                <input id="<?php echo esc_attr($id('email')); ?>" type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>" />
                 <?php if (!empty($errors['email'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['email']); ?></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-row">
-                <label><?php echo esc_html($fields['rating']['label']); ?> *</label>
-                <select name="rating">
+                <label for="<?php echo esc_attr($id('rating')); ?>"><?php echo esc_html($fields['rating']['label']); ?> *</label>
+                <select id="<?php echo esc_attr($id('rating')); ?>" name="rating">
                     <option value="">—</option>
                     <?php foreach ($fields['rating']['options'] as $val => $label): ?>
                         <option value="<?php echo esc_attr($val); ?>" <?php selected(($old['rating'] ?? ''), $val); ?>><?php echo esc_html($label); ?></option>
@@ -81,9 +83,9 @@ class Form implements FormModuleInterface
             </div>
 
             <div class="cbc-form-row">
-                <label><?php echo esc_html($fields['comments']['label']); ?> *</label>
-                <textarea name="comments" rows="5"><?php echo esc_textarea($old['comments'] ?? ''); ?></textarea>
-                <?php if (!empty($errors['comments'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['comments']); ?></div><?php endif; ?>
+                <label for="<?php echo esc_attr($id('feedback')); ?>"><?php echo esc_html($fields['feedback']['label']); ?> *</label>
+                <textarea id="<?php echo esc_attr($id('feedback')); ?>" name="feedback" rows="5"><?php echo esc_textarea($old['feedback'] ?? ''); ?></textarea>
+                <?php if (!empty($errors['feedback'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['feedback']); ?></div><?php endif; ?>
             </div>
 
             <div class="cbc-form-actions">
@@ -94,4 +96,3 @@ class Form implements FormModuleInterface
         return (string)ob_get_clean();
     }
 }
-

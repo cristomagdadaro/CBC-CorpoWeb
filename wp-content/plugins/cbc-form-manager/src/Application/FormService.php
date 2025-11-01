@@ -61,6 +61,71 @@ class FormService
             foreach ($fields as $name => $def) {
                 $type = $def['type'] ?? 'text';
                 $required = !empty($def['required']);
+
+                if ($type === 'file') {
+                    $fileArr = isset($_FILES[$name]) ? $_FILES[$name] : null;
+                    if (!$fileArr || ($fileArr['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                        if ($required) {
+                            $errors[$name] = sprintf(__('%s is required.', 'cbc-form-manager'), $def['label'] ?? $name);
+                        }
+                        $sanitized[$name] = null;
+                        continue;
+                    }
+
+                    // Validate and handle upload (PDF only)
+                    require_once ABSPATH . 'wp-admin/includes/file.php';
+                    $overrides = [ 'test_form' => false ];
+                    $uploaded = wp_handle_upload($fileArr, $overrides);
+                    if (!is_array($uploaded) || isset($uploaded['error'])) {
+                        $errors[$name] = sprintf(__('Failed to upload %s: %s', 'cbc-form-manager'), $def['label'] ?? $name, $uploaded['error'] ?? __('Unknown error', 'cbc-form-manager'));
+                        $sanitized[$name] = null;
+                        continue;
+                    }
+
+                    $filetype = wp_check_filetype(basename($uploaded['file']), null);
+                    $ext = strtolower($filetype['ext'] ?? '');
+                    $mime = strtolower($filetype['type'] ?? '');
+                    if ($ext !== 'pdf' || $mime !== 'application/pdf') {
+                        // Not a PDF; remove the uploaded file
+                        @unlink($uploaded['file']);
+                        $errors[$name] = sprintf(__('%s must be a PDF file.', 'cbc-form-manager'), $def['label'] ?? $name);
+                        $sanitized[$name] = null;
+                        continue;
+                    }
+
+                    // Insert as attachment
+                    $attachment = [
+                        'guid' => $uploaded['url'],
+                        'post_mime_type' => $mime,
+                        'post_title' => sanitize_file_name(basename($uploaded['file'])),
+                        'post_content' => '',
+                        'post_status' => 'inherit',
+                    ];
+                    $attach_id = wp_insert_attachment($attachment, $uploaded['file']);
+                    if (is_wp_error($attach_id)) {
+                        $errors[$name] = sprintf(__('Failed to save uploaded file for %s.', 'cbc-form-manager'), $def['label'] ?? $name);
+                        $sanitized[$name] = null;
+                        continue;
+                    }
+
+                    // Optionally generate metadata; for PDFs this is minimal.
+                    if (!function_exists('wp_generate_attachment_metadata')) {
+                        require_once ABSPATH . 'wp-admin/includes/image.php';
+                    }
+                    $attach_data = wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+                    if (!empty($attach_data)) {
+                        wp_update_attachment_metadata($attach_id, $attach_data);
+                    }
+
+                    $sanitized[$name] = [
+                        'attachment_id' => (int)$attach_id,
+                        'url' => esc_url_raw($uploaded['url']),
+                        'type' => $mime,
+                        'filename' => basename($uploaded['file']),
+                    ];
+                    continue;
+                }
+
                 $raw = isset($_POST[$name]) ? wp_unslash($_POST[$name]) : '';
                 $value = $this->sanitizeByType($raw, $type);
 
@@ -142,8 +207,9 @@ class FormService
                 return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : '';
             case 'select':
                 return sanitize_text_field((string)$value);
+            case 'file':
+                return null; // handled separately
             case 'text':
-	            return sanitize_text_field((string)$value);
             default:
                 return sanitize_text_field((string)$value);
         }
