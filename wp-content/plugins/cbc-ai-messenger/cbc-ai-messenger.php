@@ -311,8 +311,10 @@ add_shortcode('cbc_ai_messenger', function($atts){
                         <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
                     </div>
                     <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-fit" style="height: 100px;" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
+                    <div class="flex items-center justify-center">
+                        <?php if (function_exists('cbc_recaptcha_field')) { cbc_recaptcha_field(); } ?>
+                    </div>
                     <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
-                    <?php if (function_exists('cbc_recaptcha_field')) { cbc_recaptcha_field(); } ?>
                 </form>
                 <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>
             </div>

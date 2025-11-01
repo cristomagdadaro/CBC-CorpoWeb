@@ -1,5 +1,7 @@
 # Configuration
 wp-config.php
+/wp-config.php
 wp-content/cache/
 /wp-content/cache
-wp-config.php
+deploy_log.txt
+/deploy_log.txt

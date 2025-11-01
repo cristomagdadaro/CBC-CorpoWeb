@@ -384,6 +384,9 @@ module.exports = {
         // Arbitrary Variants & Child Styling
         '[&>li]:flex',
         '[&>figure>img]:md:w-full',
+        '[&>g-recaptcha]:flex',
+        '[&>g-recaptcha]:items-center',
+        '[&>g-recaptcha]:justify-center',
         '[&>figure>img]:w-[5rem]',
         '[&>li]:flex-wrap',
         '[&>li]:whitespace-nowrap',
