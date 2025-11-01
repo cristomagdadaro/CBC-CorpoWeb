@@ -3,8 +3,9 @@
 Plugin Name: CBC Form Manager
 Description: A DDD-based form manager supporting multiple form modules and shortcodes.
 Version: 1.0.0
-Author: CBC
+Author: Cristo Rey C. Magdadaro
 Text Domain: cbc-form-manager
+Domain Path: /languages
 */
 
 if (!defined('ABSPATH')) { exit; }
