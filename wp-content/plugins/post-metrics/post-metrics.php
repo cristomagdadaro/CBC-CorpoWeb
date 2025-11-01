@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Post Metrics (Lightweight)
- * Description: Tracks post/page views and engagement events (views, likes, shares, custom). Provides a REST endpoint and frontend tracker script plus a shortcode to display counts.
- * Version: 0.1
- * Author: Automated Assistant
+ * Plugin Name: CBC Post Metrics
+ * Description: Lightweight Tracks post/page views and engagement events (views, likes, shares, custom). Provides a REST endpoint and frontend tracker script plus a shortcode to display counts.
+ * Version: 1.3.0
+ * Author: Cristo Rey C. Magdadaro
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -17,15 +17,86 @@ class PM_Post_Metrics {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'register_meta_box' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 		add_action( 'init', array( __CLASS__, 'register_dashboard_widgets' ) );
-		// Re-add ONLY metrics caching toggle (full page cache moved to separate plugin)
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+		add_action( 'wp_head', array( __CLASS__, 'track_post_view' ) );
+
+		// AJAX handler for public share tracking
+		add_action( 'wp_ajax_nopriv_pm_share', array( __CLASS__, 'handle_public_share_increment' ) );
+		add_action( 'wp_ajax_pm_share', array( __CLASS__, 'handle_public_share_increment' ) ); // Also for logged-in users
+	}
+
+	public static function handle_public_share_increment() {
+		check_ajax_referer( 'pm-share-nonce', 'nonce' );
+
+		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+
+		if ( ! $post_id || ! get_post_status( $post_id ) ) {
+			wp_send_json_error( array( 'message' => 'invalid post_id' ), 400 );
+		}
+
+		self::increment_metric( $post_id, 'share' );
+
+		wp_send_json_success( array( 'metrics' => get_post_meta( $post_id, 'pm_metrics', true ) ) );
+	}
+
+	public static function track_post_view() {
+		if ( is_singular() && ! is_admin() ) {
+			global $post;
+			if ( $post && $post->ID ) {
+				self::increment_metric( $post->ID, 'view' );
+			}
+		}
+	}
+
+	public static function increment_metric( $post_id, $event, $label = '' ) {
+		$meta = get_post_meta( $post_id, 'pm_metrics', true );
+		if ( ! is_array( $meta ) ) {
+			$meta = array( 'views' => 0, 'viewers' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
+		}
+
+		$cookie_name = 'pm_viewed_' . $post_id;
+		$has_cookie  = isset( $_COOKIE[ $cookie_name ] ) && $_COOKIE[ $cookie_name ];
+
+		switch ( $event ) {
+			case 'view':
+				$meta['views'] = intval( $meta['views'] ?? 0 ) + 1;
+				if ( ! $has_cookie ) {
+					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
+					setcookie( $cookie_name, '1', time() + DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/' );
+				}
+				break;
+			case 'like':
+				$meta['likes'] = intval( $meta['likes'] ?? 0 ) + 1;
+				break;
+			case 'share':
+				$meta['shares'] = intval( $meta['shares'] ?? 0 ) + 1;
+				break;
+			case 'engagement':
+				$meta['engagements'] = intval( $meta['engagements'] ?? 0 ) + 1;
+				break;
+			case 'comment':
+				$meta['comments'] = intval( $meta['comments'] ?? 0 ) + 1;
+				break;
+			default:
+				if ( ! empty( $label ) ) {
+					if ( ! isset( $meta['custom'][ $label ] ) ) {
+						$meta['custom'][ $label ] = 0;
+					}
+					$meta['custom'][ $label ] = intval( $meta['custom'][ $label ] ) + 1;
+				}
+				break;
+		}
+
+		update_post_meta( $post_id, 'pm_metrics', $meta );
+
+		// Monthly buckets logic can also be updated here if needed.
 	}
 
 	public static function register_routes() {
 		register_rest_route( 'post-metrics/v1', '/track', array(
 			'methods'  => 'POST',
 			'callback' => array( __CLASS__, 'handle_track' ),
-			'permission_callback' => '__return_true',
+			'permission_callback' => 'is_user_logged_in', // Stricter: only logged-in users for like/comment
 		) );
 	}
 
@@ -44,108 +115,22 @@ class PM_Post_Metrics {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'invalid event' ), 400 );
 		}
 
-		// REMOVE THIS BLOCK
-		/*
-		// Simple server-side rate limiting by IP for short intervals to avoid spammy repeated hits.
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-		$transient_key = 'pm_track_' . md5( $event . '_' . $post_id . '_' . $ip );
-		if ( get_transient( $transient_key ) ) {
-		   return new WP_REST_Response( array( 'success' => true, 'skipped' => true ), 200 );
+		// Views and shares are handled by other functions, so we can ignore them here.
+		if ( in_array( $event, array( 'view', 'share' ), true ) ) {
+			return new WP_REST_Response( array( 'success' => true, 'message' => 'event handled by a different endpoint' ), 200 );
 		}
-		// lock for 15 seconds (your custom setting)
-		set_transient( $transient_key, 1, 15 );
-		*/
 
-		// Enforce authentication for sensitive actions: likes and comments require a logged-in user
-		if ( in_array( $event, array( 'like', 'comment' ), true ) && ! is_user_logged_in() ) {
+		// The permission callback `is_user_logged_in` already handles this, but this is a safeguard.
+		if ( ! is_user_logged_in() ) {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'auth_required' ), 401 );
 		}
 
-		// Reintroduce 'viewers' tracked via cookie (1 day - your custom setting)
-		$meta = get_post_meta( $post_id, 'pm_metrics', true );
-		if ( ! is_array( $meta ) ) {
-			$meta = array( 'views' => 0, 'viewers' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
-		}
+		self::increment_metric( $post_id, $event, $label );
 
-		// Determine if visitor cookie exists for this post
-		$cookie_name = 'pm_viewed_' . $post_id;
-		$has_cookie = isset( $_COOKIE[ $cookie_name ] ) && $_COOKIE[ $cookie_name ];
+		// The monthly update logic can be centralized in increment_metric if you want to keep it.
+		// For now, I'll leave it out of the REST handler to avoid duplication.
 
-		switch ( $event ) {
-			case 'view':
-				// increment views (raw page views) - THIS IS THE ONLY LINE WE NEED FOR RAW VIEWS
-				$meta['views'] = intval( $meta['views'] ?? 0 ) + 1;
-
-				// REMOVE/MODIFY THIS BLOCK IF YOU WANT TO KEEP 'VIEWERS' FOR OTHER COUNTS
-				// If visitor hasn't got the post cookie, count as a unique viewer and set cookie for 1 day
-				if ( ! $has_cookie ) {
-					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
-					// set cookie so subsequent views in the next 1 day won't be double-counted
-					setcookie( $cookie_name, '1', time() + ( DAY_IN_SECONDS * 1 ), COOKIEPATH ? COOKIEPATH : '/' );
-					// also set in PHP superglobal so subsequent logic in this request sees it
-					$_COOKIE[ $cookie_name ] = '1';
-					$has_cookie = true;
-				}
-				break;
-			case 'like':
-				$meta['likes'] = intval( $meta['likes'] ?? 0 ) + 1;
-				break;
-			case 'share':
-				// allow anonymous shares
-				$meta['shares'] = intval( $meta['shares'] ?? 0 ) + 1;
-				break;
-			case 'engagement':
-				$meta['engagements'] = intval( $meta['engagements'] ?? 0 ) + 1;
-				break;
-			case 'comment':
-				// comment event requires login (checked earlier)
-				$meta['comments'] = intval( $meta['comments'] ?? 0 ) + 1;
-				break;
-			default:
-				// custom event aggregated by label
-				if ( ! isset( $meta['custom'][ $label ] ) ) {
-					$meta['custom'][ $label ] = 0;
-				}
-				$meta['custom'][ $label ] = intval( $meta['custom'][ $label ] ) + 1;
-				break;
-		}
-
-		update_post_meta( $post_id, 'pm_metrics', $meta );
-
-		// Update monthly buckets (YYYY-MM)
-		$month_key = date( 'Y-m' );
-		$monthly = get_post_meta( $post_id, 'pm_metrics_monthly', true );
-		if ( ! is_array( $monthly ) ) $monthly = array();
-		if ( ! isset( $monthly[ $month_key ] ) ) {
-			$monthly[ $month_key ] = array( 'views' => 0, 'likes' => 0, 'shares' => 0, 'comments' => 0, 'engagements' => 0, 'custom' => array() );
-		}
-		switch ( $event ) {
-			case 'view':
-				$monthly[ $month_key ]['views'] = intval( $monthly[ $month_key ]['views' ] ?? 0 ) + 1;
-				$monthly[ $month_key ]['viewers'] = intval( $monthly[ $month_key ]['viewers' ] ?? 0 ) + 1;
-				break;
-			case 'like':
-				$monthly[ $month_key ]['likes'] = intval( $monthly[ $month_key ]['likes' ] ?? 0 ) + 1;
-				break;
-			case 'share':
-				$monthly[ $month_key ]['shares'] = intval( $monthly[ $month_key ]['shares' ] ?? 0 ) + 1;
-				break;
-			case 'engagement':
-				$monthly[ $month_key ]['engagements'] = intval( $monthly[ $month_key ]['engagements' ] ?? 0 ) + 1;
-				break;
-			case 'comment':
-				$monthly[ $month_key ]['comments'] = intval( $monthly[ $month_key ]['comments' ] ?? 0 ) + 1;
-				break;
-			default:
-				if ( ! isset( $monthly[ $month_key ]['custom'][ $label ] ) ) {
-					$monthly[ $month_key ]['custom'][ $label ] = 0;
-				}
-				$monthly[ $month_key ]['custom'][ $label ] = intval( $monthly[ $month_key ]['custom'][ $label ] ) + 1;
-				break;
-		}
-		update_post_meta( $post_id, 'pm_metrics_monthly', $monthly );
-
-		return new WP_REST_Response( array( 'success' => true, 'metrics' => $meta ), 200 );
+		return new WP_REST_Response( array( 'success' => true, 'metrics' => get_post_meta( $post_id, 'pm_metrics', true ) ), 200 );
 	}
 
 	public static function enqueue_scripts() {
@@ -156,8 +141,9 @@ class PM_Post_Metrics {
 		wp_register_script( 'pm-tracker', plugin_dir_url( __FILE__ ) . 'js/pm-tracker.js', array(), '0.1', true );
 		wp_localize_script( 'pm-tracker', 'PM_TRACKER', array(
 			'rest_url' => esc_url_raw( rest_url( 'post-metrics/v1/track' ) ),
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'post_id'  => intval( $post->ID ),
-			'nonce'    => wp_create_nonce( 'wp_rest' ),
+			'share_nonce' => wp_create_nonce( 'pm-share-nonce' ),
 			'is_logged_in' => is_user_logged_in(),
 			'login_url' => wp_login_url( get_permalink( $post->ID ) ),
 			'register_url' => function_exists( 'wp_registration_url' ) ? '/wp-login.php?action=register' : '',

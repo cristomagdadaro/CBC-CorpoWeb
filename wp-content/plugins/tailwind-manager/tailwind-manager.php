@@ -1,10 +1,9 @@
 <?php
 /**
- * Plugin Name: Tailwind Manager
+ * Plugin Name: CBC Tailwind Manager
  * Description: Manage Tailwind CSS configuration (colors, dark mode, fonts) from WP Admin and enqueue compiled Tailwind CSS instead of the CDN script.
- * Version: 0.2.0
+ * Version: 1.2.0
  * Author: Cristo Rey C. Magdadaro
- * License: MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
