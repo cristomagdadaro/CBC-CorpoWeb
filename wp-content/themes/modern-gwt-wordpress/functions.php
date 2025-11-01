@@ -11,6 +11,16 @@
 require get_template_directory() . '/inc/function-initialize.php';
 
 /**
+ * Load custom nav menu walker (Tailwind-style markup)
+ */
+require get_template_directory() . '/inc/class-gwt-walker-nav-menu.php';
+
+function gwt_register_menu() {
+	register_nav_menu('primary', __('Primary Menu', 'gwt'));
+}
+add_action('after_setup_theme', 'gwt_register_menu');
+
+/**
  * Register widgetized area
  */
 require get_template_directory() . '/inc/function-widget.php';

@@ -12,7 +12,9 @@ function gwt_wp_scripts() {
 	wp_enqueue_style( 'genericons', get_template_directory_uri() . '/genericons/genericons.css', array(), '3.4.1' );
 	wp_enqueue_style( 'gwt_wp-style', get_template_directory_uri() . '/theme.css', array(), '20160530' );
 	wp_enqueue_style( 'gwt_wp-user-style', get_stylesheet_uri(), array(), '20160530' );
-		
+	// Walker-specific CSS to control submenu visibility
+	wp_enqueue_style( 'gwt_walker_nav_css', get_template_directory_uri() . '/css/gwt-walker-nav.css', array(), '1.0.1' );
+
 	/** js **/
 	wp_enqueue_script( 'gwt_wp-jquery', get_template_directory_uri() . '/foundation/js/vendor/jquery-3.6.0.min.js', array(), '20160530', false );
 	wp_enqueue_script( 'gwt_wp-foundation', get_template_directory_uri() . '/foundation/js/vendor/foundation.min.js', array(), '20160530', false );

@@ -1,0 +1,16 @@
+/* GWT Walker Nav Menu: show submenus on hover/focus */
+/* Ensure the top-level li is positioning context; class 'relative' is added by the walker */
+
+/* Default hidden submenu; overlay stays hidden unless custom JS toggles it */
+.dropdown.menu li.relative > div > .absolute { display: none; }
+.dropdown.menu li.relative > div > .fixed { display: none; }
+
+/* Reveal submenu on hover and keyboard focus */
+.dropdown.menu li.relative:hover > div > .absolute,
+.dropdown.menu li.relative:focus-within > div > .absolute { display: block; }
+
+/* Submenu link color override to ensure readability */
+.dropdown.menu li .absolute a { color: #374151 !important; /* Tailwind gray-700 */ }
+
+/* Optional: pointer cursor on submenu rows */
+.dropdown.menu li .absolute > div { cursor: pointer; }

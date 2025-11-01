@@ -425,7 +425,7 @@ Press esc, or click the close the button to close this dialog box.
                                 'items_wrap'     => '%3$s',
                                 'container'      => false,
                                 'fallback_cb'    => false,
-                                'walker'         => new Topbar_Nav_Menu()
+                                'walker'         => new GWT_Walker_Nav_Menu()
                             )
                         );
                         ?>
@@ -436,7 +436,7 @@ Press esc, or click the close the button to close this dialog box.
                             'items_wrap'     => '%3$s',
                             'container'      => false,
                             'fallback_cb'    => false,
-                            'walker'         => new Topbar_Nav_Menu()
+                            'walker'         => new GWT_Walker_Nav_Menu()
                         ) ); ?>
                     </ul>
                 </div>
@@ -450,12 +450,12 @@ Press esc, or click the close the button to close this dialog box.
 						    <?php
 						    wp_nav_menu(
 							    array(
-							    	'theme_location'  => 'aux_nav',
-							    	'items_wrap' => '%3$s',
-							    	'container' => false,
-							    	'fallback_cb' => false,
-							    	'walker' => new Topbar_Nav_Menu()
-							    )
+						    	'theme_location'  => 'aux_nav',
+						    	'items_wrap' => '%3$s',
+						    	'container' => false,
+						    	'fallback_cb' => false,
+						    	'walker' => new GWT_Walker_Nav_Menu()
+						    )
 						    );
 						    ?>
                         </ul>
