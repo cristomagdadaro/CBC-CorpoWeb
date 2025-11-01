@@ -33,7 +33,7 @@ class Form implements FormModuleInterface
 
     public function enqueue_assets(): void
     {
-        wp_enqueue_style('cbc-internship-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_internship_form/assets/style.css', [], '1.0.1');
+        //wp_enqueue_style('cbc-internship-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_internship_form/assets/style.css', [], '1.0.1');
         wp_enqueue_script('cbc-internship-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_internship_form/assets/script.js', ['jquery'], '1.0.0', true);
     }
 
@@ -52,8 +52,7 @@ class Form implements FormModuleInterface
 
         ob_start();
         ?>
-        <form class="cbc-form cbc-internship-form" method="post" action="<?php echo esc_url($action); ?>" <?php echo $hasFile ? 'enctype="multipart/form-data"' : ''; ?>>
-            <h2>CBC  Form Manager</h2>
+        <form class="cbc-form cbc-internship-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>" <?php echo $hasFile ? 'enctype="multipart/form-data"' : ''; ?>>
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
             <?php wp_nonce_field($nonce_action, $nonce_name); ?>
 
@@ -113,7 +112,9 @@ class Form implements FormModuleInterface
             </div>
 
             <div class="cbc-form-actions">
-                <button type="submit" class="button"><?php echo esc_html__('Apply for Internship', 'cbc-form-manager'); ?></button>
+                <button type="submit" class="w-full bg-[#1f5d2b] hover:bg-[#a2b917] text-white font-semibold py-2.5 px-4 rounded-md transition duration-150 ease-in-out">
+                    <?php echo esc_html__('Apply for Internship', 'cbc-form-manager'); ?>
+                </button>
             </div>
         </form>
         <?php

@@ -18,7 +18,7 @@ class Form implements FormModuleInterface
             'email' => ['label' => __('Email', 'cbc-form-manager'), 'type' => 'email', 'required' => true],
             'phone' => ['label' => __('Phone', 'cbc-form-manager'), 'type' => 'text', 'required' => false],
             'preferred_date' => ['label' => __('Preferred Date', 'cbc-form-manager'), 'type' => 'date', 'required' => true],
-            'preferred_time' => ['label' => __('Preferred Time', 'cbc-form-manager'), 'type' => 'text', 'required' => true],
+            'preferred_time' => ['label' => __('Preferred Time', 'cbc-form-manager'), 'type' => 'time', 'required' => true],
             'message' => ['label' => __('Message', 'cbc-form-manager'), 'type' => 'textarea', 'required' => false],
         ];
     }
@@ -30,7 +30,7 @@ class Form implements FormModuleInterface
         $ver_style = file_exists($style_path) ? (string) @filemtime($style_path) : '1.0.2';
         $ver_script = file_exists($script_path) ? (string) @filemtime($script_path) : '1.0.2';
 
-        wp_enqueue_style('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/style.css', [], $ver_style);
+        //wp_enqueue_style('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/style.css', [], $ver_style);
         wp_enqueue_script('cbc-appointment-form', CBC_FM_PLUGIN_URL . 'presentation/cbc_appointment_form/assets/script.js', ['jquery'], $ver_script, true);
         // Provide AJAX URL and action to the script
         wp_localize_script('cbc-appointment-form', 'cbcAppointmentForm', [
@@ -53,63 +53,102 @@ class Form implements FormModuleInterface
 
         ob_start();
         ?>
-        <form class="cbc-form cbc-appointment-form" method="post" action="<?php echo esc_url($action); ?>">
-	        <h2>CBC  Form Manager</h2>
+        <form class="cbc-form cbc-appointment-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>">
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
             <?php wp_nonce_field($nonce_action, $nonce_name); ?>
 
             <?php if (!empty($errors['_global'])): ?>
-                <div class="cbc-form-alert cbc-form-alert-danger"><?php echo esc_html($errors['_global']); ?></div>
+                <div class="bg-red-100 text-red-700 p-3 rounded-md text-sm"><?php echo esc_html($errors['_global']); ?></div>
             <?php else: ?>
-                <div class="cbc-form-alert cbc-form-alert-danger" style="display:none"></div>
+                <div class="bg-red-100 text-red-700 p-3 rounded-md text-sm hidden"></div>
             <?php endif; ?>
 
             <?php if ($success): ?>
-                <div class="cbc-form-alert cbc-form-alert-success"><?php echo esc_html($success); ?></div>
+                <div class="bg-green-100 text-green-700 p-3 rounded-md text-sm"><?php echo esc_html($success); ?></div>
             <?php else: ?>
-                <div class="cbc-form-alert cbc-form-alert-success" style="display:none"></div>
+                <div class="bg-green-100 text-green-700 p-3 rounded-md text-sm hidden"></div>
             <?php endif; ?>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('name')); ?>"><?php echo esc_html($fields['name']['label']); ?> *</label>
-                <input id="<?php echo esc_attr($id('name')); ?>" type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>" />
-                <?php if (!empty($errors['name'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['name']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Name -->
+            <div>
+                <label for="<?php echo esc_attr($id('name')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['name']['label']); ?> *
+                </label>
+                <input id="<?php echo esc_attr($id('name')); ?>" type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>"
+                       class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5" />
+                <?php if (!empty($errors['name'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['name']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('email')); ?>"><?php echo esc_html($fields['email']['label']); ?> *</label>
-                <input id="<?php echo esc_attr($id('email')); ?>" type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>" />
-                <?php if (!empty($errors['email'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['email']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Email -->
+            <div>
+                <label for="<?php echo esc_attr($id('email')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['email']['label']); ?> *
+                </label>
+                <input id="<?php echo esc_attr($id('email')); ?>" type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>"
+                       class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5" />
+                <?php if (!empty($errors['email'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['email']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('phone')); ?>"><?php echo esc_html($fields['phone']['label']); ?></label>
-                <input id="<?php echo esc_attr($id('phone')); ?>" type="text" name="phone" value="<?php echo esc_attr($old['phone'] ?? ''); ?>" />
-                <?php if (!empty($errors['phone'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['phone']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Phone -->
+            <div>
+                <label for="<?php echo esc_attr($id('phone')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['phone']['label']); ?>
+                </label>
+                <input id="<?php echo esc_attr($id('phone')); ?>" type="text" name="phone" value="<?php echo esc_attr($old['phone'] ?? ''); ?>"
+                       class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5" />
+                <?php if (!empty($errors['phone'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['phone']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('preferred_date')); ?>"><?php echo esc_html($fields['preferred_date']['label']); ?> *</label>
-                <input id="<?php echo esc_attr($id('preferred_date')); ?>" type="date" name="preferred_date" value="<?php echo esc_attr($old['preferred_date'] ?? ''); ?>" />
-                <?php if (!empty($errors['preferred_date'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_date']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Preferred Date -->
+            <div>
+                <label for="<?php echo esc_attr($id('preferred_date')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['preferred_date']['label']); ?> *
+                </label>
+                <input id="<?php echo esc_attr($id('preferred_date')); ?>" type="date" name="preferred_date" value="<?php echo esc_attr($old['preferred_date'] ?? ''); ?>"
+                       class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5" />
+                <?php if (!empty($errors['preferred_date'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['preferred_date']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('preferred_time')); ?>"><?php echo esc_html($fields['preferred_time']['label']); ?> *</label>
-                <input id="<?php echo esc_attr($id('preferred_time')); ?>" type="text" name="preferred_time" value="<?php echo esc_attr($old['preferred_time'] ?? ''); ?>" placeholder="e.g., 14:00" />
-                <?php if (!empty($errors['preferred_time'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['preferred_time']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Preferred Time -->
+            <div>
+                <label for="<?php echo esc_attr($id('preferred_time')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['preferred_time']['label']); ?> *
+                </label>
+                <input id="<?php echo esc_attr($id('preferred_time')); ?>" type="time" name="preferred_time" placeholder="e.g., 14:00" value="<?php echo esc_attr($old['preferred_time'] ?? ''); ?>"
+                       class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5" />
+                <?php if (!empty($errors['preferred_time'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['preferred_time']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-row">
-                <label for="<?php echo esc_attr($id('message')); ?>"><?php echo esc_html($fields['message']['label']); ?></label>
-                <textarea id="<?php echo esc_attr($id('message')); ?>" name="message" rows="5"><?php echo esc_textarea($old['message'] ?? ''); ?></textarea>
-                <?php if (!empty($errors['message'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['message']); ?></div><?php else: ?><div class="cbc-form-error" style="display:none"></div><?php endif; ?>
+            <!-- Message -->
+            <div>
+                <label for="<?php echo esc_attr($id('message')); ?>" class="block text-gray-700 font-medium mb-1">
+                    <?php echo esc_html($fields['message']['label']); ?>
+                </label>
+                <textarea id="<?php echo esc_attr($id('message')); ?>" name="message" rows="5"
+                          class="w-full border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-100 rounded-md p-2.5"><?php echo esc_textarea($old['message'] ?? ''); ?></textarea>
+                <?php if (!empty($errors['message'])): ?>
+                    <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['message']); ?></p>
+                <?php endif; ?>
             </div>
 
-            <div class="cbc-form-actions">
-                <button type="submit" class="button"><?php echo esc_html__('Book Appointment', 'cbc-form-manager'); ?></button>
+            <!-- Actions -->
+            <div class="pt-4 cbc-form-actions">
+                <button type="submit" class="w-full bg-[#1f5d2b] hover:bg-[#a2b917] text-white font-semibold py-2.5 px-4 rounded-md transition duration-150 ease-in-out">
+                    <?php echo esc_html__('Book Appointment', 'cbc-form-manager'); ?>
+                </button>
             </div>
         </form>
+
         <?php
         return (string)ob_get_clean();
     }

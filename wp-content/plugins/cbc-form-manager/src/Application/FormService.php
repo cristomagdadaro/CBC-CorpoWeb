@@ -360,26 +360,47 @@ class FormService
         if (is_array($value)) {
             return array_map(function ($v) use ($type) { return $this->sanitizeByType($v, $type); }, $value);
         }
-        switch ($type) {
-            case 'email':
-                return sanitize_email((string)$value);
-            case 'textarea':
-                return wp_kses_post((string)$value);
-            case 'url':
-                return esc_url_raw((string)$value);
-            case 'number':
-                return is_numeric($value) ? 0 + $value : '';
-            case 'date':
-                $v = sanitize_text_field((string)$value);
-                // Basic YYYY-MM-DD check
-                return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : '';
-            case 'select':
-                return sanitize_text_field((string)$value);
-            case 'file':
-                return null; // handled separately
-            case 'text':
-            default:
-                return sanitize_text_field((string)$value);
-        }
+	    switch ($type) {
+		    case 'email':
+			    return sanitize_email((string) $value);
+
+		    case 'textarea':
+			    return wp_kses_post((string) $value);
+
+		    case 'url':
+			    return esc_url_raw((string) $value);
+
+		    case 'number':
+			    return is_numeric($value) ? (float) $value : '';
+
+		    case 'date':
+			    $v = sanitize_text_field((string) $value);
+			    return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : '';
+
+		    case 'datetime':
+			    $v = sanitize_text_field((string) $value);
+			    // Validate simple ISO 8601 datetime (e.g. 2025-11-01T14:30)
+			    return preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $v) ? $v : '';
+
+		    case 'time':
+			    $v = sanitize_text_field((string) $value);
+			    // 24-hour time format validation
+			    return preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $v) ? $v : '';
+
+		    case 'select':
+		    case 'radio':
+			    return sanitize_text_field((string) $value);
+
+		    case 'checkbox':
+			    return $value ? 1 : 0;
+
+		    case 'file':
+			    return null; // handled separately by upload handler
+
+		    case 'text':
+		    default:
+			    return sanitize_text_field((string) $value);
+	    }
+
     }
 }
