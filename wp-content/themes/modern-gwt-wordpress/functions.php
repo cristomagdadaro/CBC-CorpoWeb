@@ -181,6 +181,15 @@ add_action('wp_head', function() {
 });
 
 /**
+ * Google reCAPTCHA Script
+ * Add the Google reCAPTCHA script to the head section of the site.
+ * Site Key: 6LeEVe0rAAAAABjSTE9GDXXz4N1YGkY560EhIlkZ - Use this site key in the HTML code your site serves to users
+*/
+add_action('wp_head', function() {
+	echo '<script src="https://www.google.com/recaptcha/api.js?render=6LeEVe0rAAAAABjSTE9GDXXz4N1YGkY560EhIlkZ"></script>' . "\n";
+});
+
+/**
  * Enqueue slide animation helper
  */
 function gwt_enqueue_slide_anim(){
