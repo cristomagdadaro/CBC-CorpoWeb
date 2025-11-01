@@ -23,12 +23,75 @@
         $log.removeClass('hidden').addClass('block flex');
         $convoLabel.removeClass('hidden').addClass('block');
 
+        // Save to history
+        appendToHistory({who: who, text: text});
     }
 
     function escapeHtml(str) {
         return String(str).replace(/[&<>"']/g, function (s) {
             return ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'}[s]);
         });
+    }
+
+    // --- History Management ---
+    var historyKey = 'cbc_ai_chat_history';
+
+    function getHistory() {
+        try {
+            var stored = localStorage.getItem(historyKey);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveHistory(history) {
+        try {
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        } catch (e) {}
+    }
+
+    function appendToHistory(entry) {
+        var history = getHistory();
+        history.push(entry);
+        saveHistory(history);
+    }
+
+    function clearHistory() {
+        try {
+            localStorage.removeItem(historyKey);
+        } catch (e) {}
+
+        var $panel = $('#cbc-ai-chat-panel');
+        if ($panel.length) {
+            var $log = $panel.find('.cbc-ai-log');
+            var $convoLabel = $panel.find('.cbc-ai-convo-label');
+            $log.empty().addClass('hidden');
+            $convoLabel.addClass('hidden');
+        }
+    }
+
+    function restoreHistory() {
+        var history = getHistory();
+        var $panel = $('#cbc-ai-chat-panel');
+        if ($panel.length && history.length > 0) {
+            history.forEach(function (item) {
+                // Use a version of addMsg that doesn't re-save to history
+                var $log = $panel.find('.cbc-ai-log');
+                var $convoLabel = $panel.find('.cbc-ai-convo-label');
+                var $div = $('<div/>').addClass('cbc-ai-msg ' + (item.who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
+                if (item.who === 'user') {
+                    $div.text(item.text);
+                } else {
+                    $div.html(item.text);
+                }
+                $log.append($div);
+                $log.removeClass('hidden').addClass('block flex');
+                $convoLabel.removeClass('hidden').addClass('block');
+            });
+            var $log = $panel.find('.cbc-ai-log');
+            $log.scrollTop($log[0].scrollHeight);
+        }
     }
 
     // Backdrop helpers (mobile)
@@ -150,6 +213,14 @@
                 $toggle.trigger('click');
             }
         });
+
+        // Clear history button
+        $panel.on('click', '.cbc-ai-clear-history', function(e){
+            e.preventDefault();
+            if (confirm('Are you sure you want to clear the conversation history?')) {
+                clearHistory();
+            }
+        });
     }
 
     function updateIcons($toggle, isCollapsed) {
@@ -195,6 +266,8 @@
             }
         } catch (e) {
         }
+        // Restore chat history
+        restoreHistory();
     }
 
     // Form submission

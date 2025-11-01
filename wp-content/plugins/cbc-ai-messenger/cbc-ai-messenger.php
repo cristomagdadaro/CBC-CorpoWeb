@@ -300,6 +300,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
         <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-l-md flex flex-col">
             <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
                 <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
+                <button type="button" class="cbc-ai-clear-history text-xs" title="Clear conversation history">Clear</button>
             </div>
             <div class="cbc-ai-body p-4 flex flex-col gap-2">
                 <div class="cbc-ai-user-info w-full mb-1 hidden text-sm text-gray-700"></div>
@@ -316,7 +317,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
                     </div>
                     <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
                 </form>
-                <div class="cbc-ai-note text-xs text-gray-500 mt-1">Answers are limited to DA-CBC and posts within this website.</div>
+                <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our Terms and Conditions and Privacy Policy.</div>
             </div>
         </div>
     </div>
