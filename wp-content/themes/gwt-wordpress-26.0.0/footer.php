@@ -275,13 +275,11 @@
 <style>
     /* Floating sidebar styles - slide animation */
     #floating-sidebar-container {
-        /* widths can be adjusted if you change the panel or toggle sizes */
         --panel-width: 320px;
         --toggle-width: 44px;
         position: fixed;
         right: 0;
         top: 40%;
-        /* translateY to center vertically; translateX controls slide (0 = visible) */
         transform: translateY(-50%) translateX(0);
         z-index: 9999;
         display: flex;
@@ -389,41 +387,7 @@
 </style>
 
 <script>
-    (function(){
-        var container = document.getElementById('floating-sidebar-container');
-        var toggle = document.getElementById('floating-sidebar-toggle');
-        var panel = document.getElementById('floating-sidebar');
-        if (!container || !toggle || !panel) return;
 
-        var iconExpanded = toggle.querySelector('.floating-sidebar-icon-expanded');
-        var iconCollapsed = toggle.querySelector('.floating-sidebar-icon-collapsed');
-        function setIcons(isCollapsed){
-            if (!iconExpanded || !iconCollapsed) return;
-            if (isCollapsed){
-                iconExpanded.classList.add('hidden');
-                iconCollapsed.classList.remove('hidden');
-            } else {
-                iconCollapsed.classList.add('hidden');
-                iconExpanded.classList.remove('hidden');
-            }
-        }
-
-        // Remember state in localStorage
-        var stateKey = 'gwt_floating_sidebar_collapsed';
-        var collapsed = localStorage.getItem(stateKey) === '1';
-        if (collapsed) container.classList.add('collapsed');
-        toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-        setIcons(collapsed);
-
-        toggle.addEventListener('click', function(e){
-            e.preventDefault();
-            container.classList.toggle('collapsed');
-            var isCollapsed = container.classList.contains('collapsed');
-            localStorage.setItem(stateKey, isCollapsed ? '1' : '0');
-            toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-            setIcons(isCollapsed);
-        });
-    })();
 </script>
 
 <div><a href="#page" id="back-to-top" style="display: inline;"><i class="fa fa-arrow-circle-up fa-2x"></i></a></div>

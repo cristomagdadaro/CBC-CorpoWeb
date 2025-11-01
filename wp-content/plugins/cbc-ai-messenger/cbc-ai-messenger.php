@@ -283,7 +283,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div id="cbc-ai-chat-container" class="cbc-ai-chat-container" aria-hidden="false">
+    <div id="cbc-ai-chat-container" aria-hidden="false">
         <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
             <span class="cbc-ai-icon-expanded" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -297,7 +297,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
             </span>
             <span class="sr-only">Toggle AI Chat</span>
         </button>
-        <div id="cbc-ai-chat-panel" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-l-md flex flex-col">
+        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-l-md flex flex-col">
             <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
                 <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
                 <button type="button" class="cbc-ai-clear-history text-xs" title="Clear conversation history">Clear</button>

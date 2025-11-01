@@ -29,8 +29,8 @@ function createCookie(name, value, days) {
   cookie += `; HttpOnly`;
   // Set an HTTP cookie
   document.cookie = cookie;
-  console.log(document.cookie);
-  console.log(cookie);
+  //console.log(document.cookie);
+  //console.log(cookie);
 }
 
 function readCookie(name) {
@@ -91,6 +91,7 @@ function eraseCookie(name) {
   };
 
   Foundation.Orbit.prototype.controlPause = function () {
+      if (!this.timer) return;
     this.timer.restart();
     this.timer.pause();
     this.$wrapper = this.$element.find("." + this.options.controlClass);
@@ -108,6 +109,7 @@ function eraseCookie(name) {
   };
 
   Foundation.Orbit.prototype.controlPlay = function () {
+      if (!this.timer) return;
     this.timer.restart();
     this.timer.start();
     this.$wrapper = this.$element.find("." + this.options.controlClass);
