@@ -66,7 +66,7 @@ echo "<p>Running as: <strong>" . htmlspecialchars($currentUser) . "</strong></p>
 
 // 🧠 Check if running under the correct user
 if (strtoupper($currentUser) !== strtoupper($expectedUser)) {
-	echo "<p style='color:red; font-weight:bold;'>⚠️ Warning: PHP is running as <strong>$currentUser</strong> instead of <strong>$expectedUser</strong>.<br>
+	echo "<p style='color:red; font-weight:bold;'>Warning: PHP is running as <strong>$currentUser</strong> instead of <strong>$expectedUser</strong>.<br>
     Please restart PHP using <code>C:\\php\\restart-php-cgi.bat</code>.</p>";
 } else {
 	echo "<p style='color:green; font-weight:bold;'>✅ PHP is running under the correct user ($expectedUser).</p>";
