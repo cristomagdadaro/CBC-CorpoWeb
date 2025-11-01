@@ -714,11 +714,24 @@ class BRM_Plugin {
 
         $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d' );
 
+        // Reset WordPress error state
+        $wpdb->last_error = '';
+
         if ( $id ) {
-            $wpdb->update( $this->table, $data, array( 'id' => $id ), $format, array( '%d' ) );
+            $result = $wpdb->update( $this->table, $data, array( 'id' => $id ), $format, array( '%d' ) );
         } else {
-            $wpdb->insert( $this->table, $data, $format );
-            $id = $wpdb->insert_id;
+            $result = $wpdb->insert( $this->table, $data, $format );
+            if ($result) {
+                $id = $wpdb->insert_id;
+            }
+        }
+
+        // After the database operation, check for errors.
+        if ( $result === false || ! empty( $wpdb->last_error ) ) {
+            // There was a database error.
+            $db_error = $wpdb->last_error;
+            error_log( 'BRM Plugin DB Error: ' . $db_error ); // Log the error
+            wp_send_json_error( array( 'message' => 'A database error occurred. Please check the server logs.' ) );
         }
 
         // --- QR Code Generation ---

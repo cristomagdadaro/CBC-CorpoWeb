@@ -23,7 +23,7 @@
 define( 'DB_NAME', 'da-cbc' );
 
 /** Database username */
-define( 'DB_USER', 'CBC-CRISNB' );
+define( 'DB_USER', 'CBC-CRISTOREY' );
 
 /** Database password */
 define( 'DB_PASSWORD', 'AO26@2021' );
@@ -38,7 +38,7 @@ define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
 if ( !defined('WP_CLI') ) {
-	$_SERVER['REQUEST_SCHEME'] = 'http';
+	$_SERVER['REQUEST_SCHEME'] = 'https';
 	define( 'WP_SITEURL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
 	define( 'WP_HOME',    $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
 }
@@ -87,12 +87,12 @@ $table_prefix = 'wp_';
  *
  * @link https://wordpress.org/documentation/article/debugging-in-wordpress/
  */
-define( 'WP_DEBUG', true);
+define( 'WP_DEBUG', false);
 
 /* Add any custom values between this line and the "stop editing" line. */
-
-
-
+set_time_limit(300);
+define('CBC_AI_RECAPTCHA_SITE_KEY', '6LeeNP4rAAAAAFMRR66j025aflgqj2YaTkjbKLSw');
+define('CBC_AI_RECAPTCHA_SECRET', '6LeeNP4rAAAAAMQqqlWPUrqmKJLKQJD12PhjcxR1');
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
