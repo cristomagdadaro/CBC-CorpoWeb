@@ -16,10 +16,11 @@ register_activation_hook(__FILE__, 'cbc_newsletter_activate');
 
 function cbc_newsletter_activate() {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'newsletter_subscribers';
+	$table_name_subscribers = $wpdb->prefix . 'newsletter_subscribers';
+	$table_name_templates = $wpdb->prefix . 'newsletter_templates';
 	$charset_collate = $wpdb->get_charset_collate();
 
-	$sql = "CREATE TABLE $table_name (
+	$sql_subscribers = "CREATE TABLE $table_name_subscribers (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         email varchar(255) NOT NULL,
         subscribed_at datetime DEFAULT CURRENT_TIMESTAMP,
@@ -27,8 +28,17 @@ function cbc_newsletter_activate() {
         UNIQUE KEY email (email)
     ) $charset_collate;";
 
+	$sql_templates = "CREATE TABLE $table_name_templates (
+		id mediumint(9) NOT NULL AUTO_INCREMENT,
+		name varchar(255) NOT NULL,
+		content text NOT NULL,
+		created_at datetime DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	) $charset_collate;";
+
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	dbDelta($sql);
+	dbDelta($sql_subscribers);
+	dbDelta($sql_templates);
 }
 
 // Deactivation hook (optional)
@@ -50,6 +60,7 @@ function cbc_newsletter_subscribe_form() {
 
 	ob_start();
 	?>
+	<div id="cbc-newsletter-message"></div>
 	<style>
         /* Simple styling for form alignment and button */
         .cbc-newsletter-form {
@@ -79,8 +90,7 @@ function cbc_newsletter_subscribe_form() {
         }
 	</style>
 	<div class="cbc-newsletter-form">
-		<?php echo $message; ?>
-		<form method="post" action="">
+		<form id="cbc-newsletter-subscribe-form" method="post" action="">
 			<?php
 				wp_nonce_field('cbc_newsletter_subscribe_action', 'cbc_newsletter_nonce');
 			?>
@@ -90,40 +100,77 @@ function cbc_newsletter_subscribe_form() {
 			<input type="submit" name="newsletter_subscribe" value="Subscribe">
 		</form>
 	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const form = document.getElementById('cbc-newsletter-subscribe-form');
+		const messageDiv = document.getElementById('cbc-newsletter-message');
+
+		form.addEventListener('submit', function(e) {
+			e.preventDefault();
+
+			const formData = new FormData(form);
+			formData.append('action', 'cbc_subscribe_newsletter');
+
+			fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+				method: 'POST',
+				body: formData
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					messageDiv.innerHTML = '<p style="color: green;">' + data.data.message + '</p>';
+					form.reset();
+				} else {
+					messageDiv.innerHTML = '<p style="color: red;">' + data.data.message + '</p>';
+				}
+			})
+			.catch(error => {
+				messageDiv.innerHTML = '<p style="color: red;">An unexpected error occurred.</p>';
+			});
+		});
+	});
+	</script>
 	<?php
 	return ob_get_clean();
 }
 
-// Handle subscription
-add_action('init', 'cbc_newsletter_handle_subscription');
+// Handle subscription via AJAX
+add_action('wp_ajax_nopriv_cbc_subscribe_newsletter', 'cbc_newsletter_handle_ajax_subscription');
+add_action('wp_ajax_cbc_subscribe_newsletter', 'cbc_newsletter_handle_ajax_subscription');
 
-function cbc_newsletter_handle_subscription() {
-	if (isset($_POST['newsletter_subscribe']) && check_admin_referer('cbc_newsletter_subscribe_action', 'cbc_newsletter_nonce')) {
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'newsletter_subscribers';
-		// Sanitize and validate
-		$email = sanitize_email($_POST['newsletter_email']);
+function cbc_newsletter_handle_ajax_subscription() {
+	if (!check_ajax_referer('cbc_newsletter_subscribe_action', 'cbc_newsletter_nonce', false)) {
+		wp_send_json_error(['message' => 'Security check failed.'], 403);
+		return;
+	}
 
-		if (is_email($email)) {
-			// Check if email already exists to prevent duplicate entries
-			$exists = $wpdb->get_var($wpdb->prepare("SELECT email FROM $table_name WHERE email = %s", $email));
+	if (!isset($_POST['newsletter_email'])) {
+		wp_send_json_error(['message' => 'Email is required.'], 400);
+		return;
+	}
 
-			if (!$exists) {
-				// Insert the new subscriber
-				$inserted = $wpdb->insert($table_name, array('email' => $email));
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'newsletter_subscribers';
+	$email = sanitize_email($_POST['newsletter_email']);
 
-				if ($inserted) {
-					// Redirect to the same page with a success flag after successful subscription
-					wp_redirect(add_query_arg('cbc_subscribed', '1', wp_get_referer()));
-					exit;
-				}
-			} else {
-				// Optional: Redirect with a 'already subscribed' message
-				// For simplicity, we'll just redirect to the success message for now
-				wp_redirect(add_query_arg('cbc_subscribed', '1', wp_get_referer()));
-				exit;
-			}
-		}
+	if (!is_email($email)) {
+		wp_send_json_error(['message' => 'Invalid email address provided.'], 400);
+		return;
+	}
+
+	$exists = $wpdb->get_var($wpdb->prepare("SELECT email FROM $table_name WHERE email = %s", $email));
+
+	if ($exists) {
+		wp_send_json_success(['message' => 'You are already subscribed. Thank you!']);
+		return;
+	}
+
+	$inserted = $wpdb->insert($table_name, ['email' => $email]);
+
+	if ($inserted) {
+		wp_send_json_success(['message' => 'Thank you for subscribing!']);
+	} else {
+		wp_send_json_error(['message' => 'Could not subscribe. Please try again.'], 500);
 	}
 }
 
@@ -146,6 +193,24 @@ function cbc_newsletter_admin_page_router() {
 		cbc_newsletter_delete_subscriber($_GET['id']);
 	}
 
+	// Handle template actions
+	if ($current_tab === 'templates') {
+		if (isset($_POST['save_template']) && check_admin_referer('cbc_save_template_nonce')) {
+			$template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
+			$name = sanitize_text_field($_POST['template_name']);
+			$content = wp_kses_post($_POST['template_content']);
+			cbc_newsletter_save_template($template_id, $name, $content);
+			// Redirect to avoid form resubmission
+			wp_redirect(admin_url('admin.php?page=cbc-newsletter&tab=templates&template_saved=1'));
+			exit;
+		}
+		if (isset($_GET['action']) && $_GET['action'] === 'delete_template' && isset($_GET['template_id']) && check_admin_referer('cbc_delete_template_' . $_GET['template_id'])) {
+			cbc_newsletter_delete_template(intval($_GET['template_id']));
+			wp_redirect(admin_url('admin.php?page=cbc-newsletter&tab=templates&template_deleted=1'));
+			exit;
+		}
+	}
+
 	?>
 	<div class="wrap">
 		<h1>CBC Newsletter Management</h1>
@@ -154,6 +219,7 @@ function cbc_newsletter_admin_page_router() {
 		echo '<h2 class="nav-tab-wrapper">';
 		echo '<a href="?page=cbc-newsletter&tab=send" class="nav-tab ' . ($current_tab == 'send' ? 'nav-tab-active' : '') . '">Send Newsletter</a>';
 		echo '<a href="?page=cbc-newsletter&tab=manage" class="nav-tab ' . ($current_tab == 'manage' ? 'nav-tab-active' : '') . '">Manage Subscribers</a>';
+		echo '<a href="?page=cbc-newsletter&tab=templates" class="nav-tab ' . ($current_tab == 'templates' ? 'nav-tab-active' : '') . '">Templates</a>';
 		echo '</h2>';
 
 		// Content based on tab
@@ -161,6 +227,8 @@ function cbc_newsletter_admin_page_router() {
 			cbc_newsletter_admin_send_page();
 		} elseif ($current_tab == 'manage') {
 			cbc_newsletter_admin_manage_page();
+		} elseif ($current_tab == 'templates') {
+			cbc_newsletter_admin_templates_page();
 		}
 		?>
 	</div>
@@ -172,43 +240,160 @@ function cbc_newsletter_admin_send_page() {
 	if (isset($_POST['send_newsletter'])) {
 		// Basic nonce check for form submission security
 		if (wp_verify_nonce($_POST['_wpnonce'], 'cbc_send_newsletter_nonce')) {
-			cbc_newsletter_send_emails(sanitize_text_field($_POST['subject']), wp_kses_post($_POST['message'])); // Sanitize for email
+			$subject = sanitize_text_field($_POST['subject']);
+			$message = wp_kses_post($_POST['message']);
+
+			// Set content type to HTML
+			add_filter('wp_mail_content_type', function() {
+				return 'text/html';
+			});
+
+			cbc_newsletter_send_emails($subject, $message);
+
+			// Reset content type to avoid conflicts
+			remove_filter('wp_mail_content_type', 'wpautop');
+
 			echo '<div class="notice notice-success"><p>Newsletter sent to all subscribers!</p></div>';
 		} else {
 			echo '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
 		}
 	}
+
+	global $wpdb;
+	$templates_table = $wpdb->prefix . 'newsletter_templates';
+	$templates = $wpdb->get_results("SELECT id, name FROM $templates_table ORDER BY name ASC");
+
 	?>
 	<h2>Send Email Update</h2>
 	<form method="post" action="?page=cbc-newsletter&tab=send">
 		<?php wp_nonce_field('cbc_send_newsletter_nonce'); ?>
 		<table class="form-table">
 			<tr>
+				<th scope="row"><label for="template_select">Choose a Template:</label></th>
+				<td>
+					<select name="template_select" id="template_select">
+						<option value="">-- Select a Template --</option>
+						<?php foreach ($templates as $template): ?>
+							<option value="<?php echo esc_attr($template->id); ?>"><?php echo esc_html($template->name); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<p class="description">Selecting a template will load its content into the message box below.</p>
+				</td>
+			</tr>
+			<tr>
 				<th scope="row"><label for="subject">Subject:</label></th>
 				<td><input type="text" name="subject" id="subject" required class="regular-text"></td>
 			</tr>
 			<tr>
 				<th scope="row"><label for="message">Message:</label></th>
-				<td><textarea name="message" id="message" rows="10" class="large-text" style="width: 100%;" required></textarea></td>
+				<td>
+					<?php wp_editor('', 'message', ['textarea_rows' => 15, 'media_buttons' => true]); ?>
+				</td>
 			</tr>
 		</table>
 		<p class="submit">
 			<input type="submit" name="send_newsletter" value="Send Newsletter" class="button button-primary button-large">
 		</p>
 	</form>
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const templateSelect = document.getElementById('template_select');
+		templateSelect.addEventListener('change', function() {
+			const templateId = this.value;
+			if (!templateId) {
+				if (wp.editor.get('message')) {
+					wp.editor.get('message').setContent('');
+				}
+				return;
+			}
+
+			// Fetch template content via AJAX
+			const formData = new FormData();
+			formData.append('action', 'cbc_get_template_content');
+			formData.append('template_id', templateId);
+			formData.append('_ajax_nonce', '<?php echo wp_create_nonce('cbc_get_template_content_nonce'); ?>');
+
+			fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+				method: 'POST',
+				body: formData
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success && wp.editor.get('message')) {
+					wp.editor.get('message').setContent(data.data.content);
+				} else {
+					alert('Could not load template content.');
+				}
+			});
+		});
+	});
+	</script>
 	<?php
 }
+
+// AJAX handler to get template content
+add_action('wp_ajax_cbc_get_template_content', function() {
+	check_ajax_referer('cbc_get_template_content_nonce');
+
+	$template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
+	if (!$template_id) {
+		wp_send_json_error(null, 400);
+	}
+
+	global $wpdb;
+	$templates_table = $wpdb->prefix . 'newsletter_templates';
+	$content = $wpdb->get_var($wpdb->prepare("SELECT content FROM $templates_table WHERE id = %d", $template_id));
+
+	if ($content !== null) {
+		wp_send_json_success(['content' => $content]);
+	} else {
+		wp_send_json_error(null, 404);
+	}
+});
+
 
 function cbc_newsletter_send_emails($subject, $message) {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'newsletter_subscribers';
-	// Retrieve only the email column
 	$subscribers = $wpdb->get_results("SELECT email FROM $table_name");
 
-	foreach ($subscribers as $subscriber) {
-		// Send email
-		wp_mail($subscriber->email, $subject, $message);
+	// Get the site logo to prepend to the email
+	$logo_html = '';
+	if (function_exists('get_custom_logo') && has_custom_logo()) {
+		$custom_logo_id = get_theme_mod('custom_logo');
+		$logo_image_data = wp_get_attachment_image_src($custom_logo_id, 'full');
+		if ($logo_image_data) {
+			$logo_url = $logo_image_data[0];
+			$logo_html = '<div style="text-align:center; padding: 20px 0;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-width:150px; height:auto;"></div>';
+		}
 	}
+
+	// Combine the logo, message
+	$full_message = $logo_html . $message;
+
+	// Set the From Name and From Email to make emails look professional
+	$website_name = get_bloginfo('name');
+	$domain = wp_parse_url(get_home_url(), PHP_URL_HOST);
+	$from_email = 'noreply@' . $domain;
+
+	$from_name_filter = function() use ($website_name) {
+		return $website_name;
+	};
+	$from_email_filter = function() use ($from_email) {
+		return $from_email;
+	};
+
+	add_filter('wp_mail_from_name', $from_name_filter);
+	add_filter('wp_mail_from', $from_email_filter);
+
+	foreach ($subscribers as $subscriber) {
+		wp_mail($subscriber->email, $subject, $full_message);
+	}
+
+	// Remove the filters immediately after sending to avoid conflicts
+	remove_filter('wp_mail_from_name', $from_name_filter);
+	remove_filter('wp_mail_from', $from_email_filter);
 }
 
 // --- Subscriber Management Page ---
@@ -279,4 +464,104 @@ function cbc_newsletter_delete_subscriber($id) {
 		exit;
 	}
 }
+
+// --- Template Management Functions ---
+
+function cbc_newsletter_admin_templates_page() {
+	global $wpdb;
+	$templates_table = $wpdb->prefix . 'newsletter_templates';
+
+	$edit_template = null;
+	if (isset($_GET['action']) && $_GET['action'] === 'edit_template' && isset($_GET['template_id'])) {
+		$template_id = intval($_GET['template_id']);
+		$edit_template = $wpdb->get_row($wpdb->prepare("SELECT * FROM $templates_table WHERE id = %d", $template_id));
+	}
+
+	$templates = $wpdb->get_results("SELECT * FROM $templates_table ORDER BY name ASC");
+	?>
+	<div class="wrap">
+		<h2>Email Templates</h2>
+
+		<div id="col-container" class="wp-clearfix">
+			<div id="col-left">
+				<div class="col-wrap">
+					<h3><?php echo $edit_template ? 'Edit Template' : 'Add New Template'; ?></h3>
+					<form method="post" action="?page=cbc-newsletter&tab=templates">
+						<?php wp_nonce_field('cbc_save_template_nonce'); ?>
+						<input type="hidden" name="template_id" value="<?php echo $edit_template ? esc_attr($edit_template->id) : '0'; ?>">
+
+						<div class="form-field">
+							<label for="template_name">Template Name</label>
+							<input type="text" name="template_name" id="template_name" value="<?php echo $edit_template ? esc_attr($edit_template->name) : ''; ?>" required>
+						</div>
+
+						<div class="form-field">
+							<label for="template_content">Template Content</label>
+							<?php wp_editor($edit_template ? $edit_template->content : '', 'template_content', ['textarea_rows' => 20]); ?>
+						</div>
+
+						<p class="submit">
+							<input type="submit" name="save_template" class="button button-primary" value="<?php echo $edit_template ? 'Update Template' : 'Add Template'; ?>">
+							<?php if ($edit_template): ?>
+								<a href="?page=cbc-newsletter&tab=templates" class="button">Cancel Edit</a>
+							<?php endif; ?>
+						</p>
+					</form>
+				</div>
+			</div>
+			<div id="col-right">
+				<div class="col-wrap">
+					<h3>Existing Templates</h3>
+					<table class="wp-list-table widefat striped">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ($templates): ?>
+								<?php foreach ($templates as $template): ?>
+									<tr>
+										<td><?php echo esc_html($template->name); ?></td>
+										<td>
+											<a href="?page=cbc-newsletter&tab=templates&action=edit_template&template_id=<?php echo $template->id; ?>">Edit</a> |
+											<a href="<?php echo wp_nonce_url('?page=cbc-newsletter&tab=templates&action=delete_template&template_id=' . $template->id, 'cbc_delete_template_' . $template->id); ?>" onclick="return confirm('Are you sure?');" style="color: red;">Delete</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php else: ?>
+								<tr>
+									<td colspan="2">No templates found.</td>
+								</tr>
+							<?php endif; ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+function cbc_newsletter_save_template($id, $name, $content) {
+	global $wpdb;
+	$templates_table = $wpdb->prefix . 'newsletter_templates';
+
+	$data = ['name' => $name, 'content' => $content];
+	$format = ['%s', '%s'];
+
+	if ($id > 0) {
+		$wpdb->update($templates_table, $data, ['id' => $id], $format, ['%d']);
+	} else {
+		$wpdb->insert($templates_table, $data, $format);
+	}
+}
+
+function cbc_newsletter_delete_template($id) {
+	global $wpdb;
+	$templates_table = $wpdb->prefix . 'newsletter_templates';
+	$wpdb->delete($templates_table, ['id' => $id], ['%d']);
+}
 ?>
+
