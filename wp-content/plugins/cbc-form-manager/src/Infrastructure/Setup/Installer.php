@@ -13,8 +13,8 @@ class Installer
     private function registerPostType(): void
     {
         $labels = [
-            'name' => __('Form Submissions', 'cbc-form-manager'),
-            'singular_name' => __('Form Submission', 'cbc-form-manager'),
+            'name' => __('Form Manager', 'cbc-form-manager'),
+            'singular_name' => __('Form Manager', 'cbc-form-manager'),
         ];
 
         register_post_type('cbc_form_submission', [

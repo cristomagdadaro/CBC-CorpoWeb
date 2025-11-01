@@ -15,7 +15,13 @@ if ( ! defined( 'WPINC' ) ) {
  * Add the Google reCAPTCHA script to the head section of the site.
  */
 add_action('wp_head', function() {
-    echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' . "\n";
+	if ( !defined('CBC_AI_RECAPTCHA_SITE_KEY') ) {
+		return false;
+	}
+
+	$site_key = CBC_AI_RECAPTCHA_SITE_KEY;
+
+    echo '<script src="https://www.google.com/recaptcha/api.js?render="' . $site_key . ' async defer></script>' . "\n";
 });
 
 /**
