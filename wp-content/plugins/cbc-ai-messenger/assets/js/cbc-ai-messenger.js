@@ -171,11 +171,20 @@
         } catch (e) {
         }
 
-        var collapsed = false;
+        var collapsed;
         try {
-            collapsed = localStorage.getItem(stateKey) === '1';
+            var storedState = localStorage.getItem(stateKey);
+            if (storedState === null) {
+                // Default to collapsed if no state is saved
+                collapsed = true;
+            } else {
+                collapsed = storedState === '1';
+            }
         } catch (e) {
+            // Default to collapsed on error
+            collapsed = true;
         }
+
         if (collapsed) {
             $container.addClass('collapsed');
             $toggle.attr('aria-expanded', 'false');

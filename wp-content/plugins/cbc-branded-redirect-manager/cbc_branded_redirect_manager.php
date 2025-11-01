@@ -36,8 +36,9 @@ class BRM_Plugin {
         // Admin actions
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
-        add_action( 'admin_post_brm_save_link', array( $this, 'handle_save_link' ) );
-        add_action( 'admin_post_nopriv_brm_save_link', array( $this, 'handle_save_link' ) );
+        add_action( 'wp_ajax_brm_save_link', array( $this, 'handle_ajax_save_link' ) );
+        add_action( 'wp_ajax_nopriv_brm_save_link', array( $this, 'handle_ajax_save_link' ) );
+        add_action( 'wp_ajax_brm_regenerate_qr', array( $this, 'handle_ajax_regenerate_qr' ) );
         add_action( 'admin_post_brm_delete_link', array( $this, 'admin_delete_link' ) );
 
         // Assets
@@ -338,25 +339,44 @@ class BRM_Plugin {
         }
 
         // 1. Enqueue CSS
-        wp_enqueue_style( 'brm-admin-style', plugins_url( 'brm-admin.css', __FILE__ ), array(), '1.0' );
+        wp_enqueue_style( 'brm-admin-style', plugins_url( 'brm-admin.css', __FILE__ ), array(), '1.1' );
 
         // 2. Enqueue JavaScript for Admin functionality (Copy button, etc.)
         wp_enqueue_script(
                 'brm-admin-script',
                 plugins_url( 'brm-admin-script.js', __FILE__ ),
                 array( 'jquery' ),
-                '1.0',
+                '1.1',
                 true
         );
 
-        // 3. Enqueue JavaScript for form functionality (Slug generation/preview)
-        // We reuse the same form script for admin and frontend for better reusability
+        // 3. Enqueue JavaScript for AJAX form functionality
         wp_enqueue_script(
-                'brm-form-script',
-                plugins_url( 'brm-form-script.js', __FILE__ ),
-                array(),
-                '1.0',
-                true
+            'brm-ajax-form-script',
+            plugins_url( 'brm-ajax-form-script.js', __FILE__ ),
+            array( 'jquery' ),
+            '1.0',
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script(
+            'brm-ajax-form-script',
+            'brm_ajax',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'brm_save' ),
+                'base_url' => site_url('/go/'),
+            )
+        );
+
+        wp_localize_script(
+            'brm-admin-script',
+            'brm_admin_ajax',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'brm_regenerate_qr' ),
+            )
         );
     }
 
@@ -364,16 +384,27 @@ class BRM_Plugin {
      * Enqueue Frontend CSS and JS files.
      */
     public function frontend_assets() {
-        // 1. Enqueue CSS for the form (optional, if you want specific form styling)
-        wp_enqueue_style( 'brm-frontend-style', plugins_url( 'brm-frontend.css', __FILE__ ), array(), '1.0' );
+        // 1. Enqueue CSS for the form
+        wp_enqueue_style( 'brm-frontend-style', plugins_url( 'brm-frontend.css', __FILE__ ), array(), '1.1' );
 
-        // 2. Enqueue JavaScript for form functionality (Slug generation/preview)
+        // 2. Enqueue JavaScript for AJAX form functionality
         wp_enqueue_script(
-                'brm-form-script',
-                plugins_url( 'brm-form-script.js', __FILE__ ),
-                array(),
-                '1.0',
-                true
+            'brm-ajax-form-script',
+            plugins_url( 'brm-ajax-form-script.js', __FILE__ ),
+            array( 'jquery' ),
+            '1.0',
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script(
+            'brm-ajax-form-script',
+            'brm_ajax',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'brm_save' ),
+                'base_url' => site_url('/go/'),
+            )
         );
     }
 
@@ -430,6 +461,8 @@ class BRM_Plugin {
                             <a href="<?php echo $short_url; ?>" target="_blank" class="brm-action-visit">Visit</a>
                             |
                             <a href="<?php echo admin_url( 'admin.php?page=brm_add&edit=' . intval( $r->id ) ); ?>" class="brm-action-edit">Edit</a>
+                            |
+                            <button class="button-link brm-action-regenerate-qr" data-id="<?php echo intval($r->id); ?>">Regenerate QR</button>
                             |
                             <form class="brm-delete-form" method="post"
                                   action="<?php echo admin_url( 'admin-post.php' ); ?>">
@@ -493,31 +526,30 @@ class BRM_Plugin {
 
         $is_edit  = $edit !== null;
         $title    = $is_edit ? 'Edit Redirect' : 'GoLink';
-        $submit_btn_text = $is_edit ? 'Update Redirect' : 'Create Redirect';
-
-        $form_action = esc_url( admin_url( 'admin-post.php' ) );
-        $nonce_action = 'brm_save';
+        $submit_btn_text = $is_edit ? 'Update GoLink' : 'Create GoLink';
 
         ob_start();
         ?>
         <div class="wrap brm-form-wrap <?php echo $is_admin ? 'brm-admin-form' : 'brm-public-form'; ?>">
             <h1><?php echo esc_html( $title ); ?></h1>
             <p>Shorten and customize your link using this service.</p>
+
+            <div id="brm-form-feedback"></div>
+
             <?php if ( ! $is_admin && $current_user_is_logged_in ) : ?>
                 <div class="brm-alert brm-alert-info">
                     **Note:** As a logged-in user, you are using the public form. Your link will be marked as a public submission.
                 </div>
             <?php endif; ?>
 
-            <form method="post" action="<?php echo $form_action; ?>" class="brm-form">
-                <?php wp_nonce_field( $nonce_action ); ?>
+            <form id="brm-link-form" class="brm-form">
                 <input type="hidden" name="action" value="brm_save_link"/>
                 <input type="hidden" name="id" value="<?php echo $is_edit ? intval( $edit->id ) : ''; ?>"/>
                 <input type="hidden" name="is_public_submission" value="<?php echo $is_admin ? 0 : 1; ?>" />
 
                 <table class="form-table">
                     <tr>
-                        <th scope="row"><label for="target_url">Target URL <span class="brm-required">*</span></label></th>
+                        <th scope="row"><label for="target_url">Target URL <span class="brm-required text-red-500">*</span></label></th>
                         <td>
                             <input name="target_url" type="url" id="target_url"
                                    value="<?php echo $is_edit ? esc_attr( $edit->target_url ) : ''; ?>"
@@ -612,17 +644,17 @@ class BRM_Plugin {
     }
 
     /**
-     * Unified handler for saving link from both Admin and Public forms. (No change to logic)
+     * Unified AJAX handler for saving a link.
      */
-    public function handle_save_link() {
+    public function handle_ajax_save_link() {
+        check_ajax_referer( 'brm_save', 'nonce' );
+
         $is_admin_submission = current_user_can( 'manage_options' );
         $is_public_submission_flag = ! empty( $_POST['is_public_submission'] ) ? intval( $_POST['is_public_submission'] ) : 0;
         $is_public_access_allowed = get_option( 'brm_public_access', 'private' ) === 'public';
 
-        check_admin_referer( 'brm_save' );
-
         if ( ! $is_admin_submission && ! $is_public_access_allowed ) {
-            wp_die( 'Public link creation is currently disabled.' );
+            wp_send_json_error( array( 'message' => 'Public link creation is currently disabled.' ) );
         }
 
         global $wpdb;
@@ -630,15 +662,20 @@ class BRM_Plugin {
         $slug    = sanitize_title_with_dashes( wp_unslash( $_POST['slug'] ?? '' ) );
         $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ?? '' ) ) );
 
-        $expires = $is_admin_submission && ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
-        $status  = $is_admin_submission && isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
-        $og_title = $is_admin_submission ? sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ) : '';
-        $og_description = $is_admin_submission ? sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ) : '';
-        $og_image = $is_admin_submission ? esc_url_raw( trim( wp_unslash( $_POST['og_image'] ?? '' ) ) ) : '';
+        if ( empty( $target ) ) {
+            wp_send_json_error( array( 'message' => 'Target URL is required.' ) );
+        }
 
-        $is_public = $is_public_submission_flag;
-        if ( $is_admin_submission && $is_public_submission_flag === 0 ) {
-            $is_public = 0;
+        $allowed_protocols = array( 'http', 'https' );
+        $parsed = wp_parse_url( $target );
+        if ( ! $parsed || empty( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], $allowed_protocols ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid target URL protocol. Use http or https.' ) );
+        }
+
+        $site_host   = wp_parse_url( home_url(), PHP_URL_HOST );
+        $target_host = wp_parse_url( $target, PHP_URL_HOST );
+        if ( $target_host && $site_host && strtolower( $site_host ) === strtolower( $target_host ) ) {
+            wp_send_json_error( array( 'message' => 'Target URL must point to an external host.' ) );
         }
 
         if ( empty( $id ) && empty( $slug ) ) {
@@ -648,35 +685,31 @@ class BRM_Plugin {
             } while ( ! $is_slug_unique );
         }
 
-        if ( empty( $slug ) || empty( $target ) ) {
-            wp_die( 'Slug and target URL are required.' );
+        if ( empty( $slug ) ) {
+            wp_send_json_error( array( 'message' => 'Slug is required.' ) );
         }
 
-        $is_slug_unique = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table} WHERE slug = %s AND id != %d", $slug, $id ) );
-        if ( $is_slug_unique > 0 ) {
-            wp_die( 'Slug already exists. Please choose a different one or auto-generate.' );
+        $existing_slug = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$this->table} WHERE slug = %s AND id != %d", $slug, $id ) );
+        if ( $existing_slug ) {
+            wp_send_json_error( array( 'message' => 'This slug is already in use. Please choose another.' ) );
         }
 
-        $allowed_protocols = array( 'http', 'https' );
-        $parsed            = wp_parse_url( $target );
-        if ( ! $parsed || empty( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], $allowed_protocols ) ) {
-            wp_die( 'Invalid target URL protocol. Use http or https.' );
-        }
-        $site_host   = wp_parse_url( home_url(), PHP_URL_HOST );
-        $target_host = wp_parse_url( $target, PHP_URL_HOST );
-        if ( $target_host && $site_host && strtolower( $site_host ) === strtolower( $target_host ) ) {
-            wp_die( 'Target URL must point to an external host.' );
-        }
+        $expires = $is_admin_submission && ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
+        $status  = $is_admin_submission && isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
+        $og_title = $is_admin_submission ? sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ) : '';
+        $og_description = $is_admin_submission ? sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ) : '';
+        $og_image = $is_admin_submission ? esc_url_raw( trim( wp_unslash( $_POST['og_image'] ?? '' ) ) ) : '';
+        $is_public = $is_public_submission_flag && ! $is_admin_submission ? 1 : 0;
 
         $data = array(
-                'slug'           => $slug,
-                'target_url'     => $target,
-                'expires'        => $expires,
-                'status'         => $status,
-                'og_title'       => $og_title,
-                'og_description' => $og_description,
-                'og_image'       => $og_image,
-                'is_public'      => $is_public,
+            'slug'           => $slug,
+            'target_url'     => $target,
+            'expires'        => $expires,
+            'status'         => $status,
+            'og_title'       => $og_title,
+            'og_description' => $og_description,
+            'og_image'       => $og_image,
+            'is_public'      => $is_public,
         );
 
         $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d' );
@@ -688,7 +721,55 @@ class BRM_Plugin {
             $id = $wpdb->insert_id;
         }
 
-        // --- Start QR Code Generation and Saving ---
+        // --- QR Code Generation ---
+        $qr_url_path = $this->generate_and_save_qr_code( $slug, $id );
+        if ( $qr_url_path ) {
+            $data['qr_code'] = $qr_url_path;
+        }
+
+        $redirect_url = $is_admin_submission ? admin_url( 'admin.php?page=brm_redirects' ) : site_url( '/go/' . $slug );
+
+        wp_send_json_success( array(
+            'message' => 'Link saved successfully!',
+            'redirect' => $redirect_url,
+            'slug' => $slug,
+            'full_url' => site_url('/go/' . $slug),
+            'qr_code' => $qr_url_path,
+        ) );
+    }
+
+    public function handle_ajax_regenerate_qr() {
+        check_ajax_referer( 'brm_regenerate_qr', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permission denied.' ) );
+        }
+
+        $id = ! empty( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+        if ( ! $id ) {
+            wp_send_json_error( array( 'message' => 'Invalid ID.' ) );
+        }
+
+        global $wpdb;
+        $slug = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM {$this->table} WHERE id = %d", $id ) );
+
+        if ( ! $slug ) {
+            wp_send_json_error( array( 'message' => 'Link not found.' ) );
+        }
+
+        $qr_url_path = $this->generate_and_save_qr_code( $slug, $id );
+
+        if ( $qr_url_path ) {
+            wp_send_json_success( array(
+                'message' => 'QR Code regenerated successfully.',
+                'qr_code' => $qr_url_path,
+            ) );
+        } else {
+            wp_send_json_error( array( 'message' => 'Failed to generate QR code.' ) );
+        }
+    }
+
+    private function generate_and_save_qr_code( $slug, $id ) {
         $qr_url = site_url('/go/' . $slug);
         $upload_dir = wp_upload_dir();
         $qr_base_dir = trailingslashit($upload_dir['basedir']) . 'qr';
@@ -702,25 +783,18 @@ class BRM_Plugin {
         $qr_path = trailingslashit($qr_base_dir) . $qr_file;
         $qr_url_path = trailingslashit($qr_base_url) . $qr_file;
 
-        $qr_image = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
-
-        $response = wp_remote_get( $qr_image, array( 'timeout' => 15, 'sslverify' => false ) );
+        $qr_image_url = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
+        $response = wp_remote_get( $qr_image_url, array( 'timeout' => 15, 'sslverify' => false ) );
 
         if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
             $image_data = wp_remote_retrieve_body( $response );
-            if ( $image_data ) {
-                file_put_contents($qr_path, $image_data);
+            if ( $image_data && file_put_contents( $qr_path, $image_data ) ) {
+                global $wpdb;
                 $wpdb->update( $this->table, array('qr_code' => $qr_url_path), array('id' => $id), array('%s'), array('%d') );
+                return $qr_url_path;
             }
         }
-        // --- End QR Code Generation and Saving ---
-
-        if ( $is_admin_submission ) {
-            wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
-        } else {
-            wp_redirect( esc_url( home_url( '/go/' . $slug ) ) );
-        }
-        exit;
+        return false;
     }
 
     /* Delete link handler (No change needed) */
@@ -741,3 +815,4 @@ class BRM_Plugin {
 
 // Instantiate the class
 BRM_Plugin::instance();
+

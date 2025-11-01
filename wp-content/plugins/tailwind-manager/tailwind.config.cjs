@@ -381,6 +381,7 @@ module.exports = {
         'h-[300px]',
         'shadow-inner',
         'drop-shadow-md',
+        '!text-xs',
         // Arbitrary Variants & Child Styling
         '[&>li]:flex',
         '[&>figure>img]:md:w-full',

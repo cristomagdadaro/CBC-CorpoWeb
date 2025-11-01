@@ -60,12 +60,12 @@ function cbc_newsletter_subscribe_form() {
 
 	ob_start();
 	?>
-	<div id="cbc-newsletter-message"></div>
+	<div id="cbc-newsletter-message" class="text-center"></div>
 	<style>
         /* Simple styling for form alignment and button */
         .cbc-newsletter-form {
             max-width: 400px;
-            padding: 15px;
+            padding: 0 15px;
             border-radius: 5px;
         }
         .cbc-newsletter-form label {

@@ -19,7 +19,7 @@
             $spacer_height = '5rem'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
             <div class="widget widget_block">
-                <div style="height: 15px" aria-hidden="true" class="wp-block-spacer"></div>
+                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
             </div>
             <!-- Left Content (Text + Video) -->
             <div class="grid grid-cols-1 md:grid-cols-2 relative gap-6">

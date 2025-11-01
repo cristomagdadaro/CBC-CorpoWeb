@@ -317,7 +317,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
                     </div>
                     <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
                 </form>
-                <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our Terms and Conditions and Privacy Policy.</div>
+                <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our <a href="/about-us/terms-and-conditions/">Terms and Conditions</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
             </div>
         </div>
     </div>
