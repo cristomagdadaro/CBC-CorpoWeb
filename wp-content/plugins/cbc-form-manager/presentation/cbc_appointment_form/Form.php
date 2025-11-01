@@ -44,6 +44,7 @@ class Form implements FormModuleInterface
         ob_start();
         ?>
         <form class="cbc-form cbc-appointment-form" method="post" action="<?php echo esc_url($action); ?>">
+	        <h2>CBC  Form Manager</h2>
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
             <?php wp_nonce_field($nonce_action, $nonce_name); ?>
 
