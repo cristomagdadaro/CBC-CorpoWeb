@@ -66,27 +66,120 @@ CbcFormManager\Presentation\<form_key>\Form
 
 …that implements `CbcFormManager\Application\FormModuleInterface` is automatically discovered and registered on `init`.
 
-## Creating a New Form
+## Creating a New Form (Starter Template)
 
-1. Create a folder `presentation/your_form_key/`.
-2. Add `Form.php` implementing `FormModuleInterface` methods:
-   - `key()` → returns `your_form_key`
-   - `shortcode()` → returns a unique shortcode tag (e.g., `your_form_key`)
-   - `title()` → human-readable title
-   - `fields()` → define field schema (labels, type, required, options for select)
-   - `enqueue_assets()` → enqueue CSS/JS
-   - `render(array $view)` → return HTML for the form
-3. Optionally add `assets/style.css` and `assets/script.js`.
-4. The plugin will auto-discover and register it.
-
-Alternatively, register via filter (e.g., from a theme or another plugin):
+Create the folder `presentation/your_form_key/` and add `Form.php` with this structure:
 
 ```php
-add_filter('cbc_form_manager/forms', function ($forms) {
-    $forms[] = new \CbcFormManager\Presentation\your_form_key\Form();
-    return $forms;
-});
+<?php
+namespace CbcFormManager\Presentation\your_form_key;
+
+use CbcFormManager\Application\FormModuleInterface;
+
+class Form implements FormModuleInterface
+{
+    public function key(): string { return 'your_form_key'; }
+    public function shortcode(): string { return 'your_form_key'; }
+    public function title(): string { return __('Your Form Title', 'cbc-form-manager'); }
+
+    public function fields(): array
+    {
+        return [
+            'name'  => ['label' => __('Name', 'cbc-form-manager'),  'type' => 'text',  'required' => true],
+            'email' => ['label' => __('Email', 'cbc-form-manager'), 'type' => 'email', 'required' => true],
+            'message' => ['label' => __('Message', 'cbc-form-manager'), 'type' => 'textarea', 'required' => false],
+        ];
+    }
+
+    public function enqueue_assets(): void
+    {
+        wp_enqueue_style('your-form-key', CBC_FM_PLUGIN_URL . 'presentation/your_form_key/assets/style.css', [], '1.0.0');
+        wp_enqueue_script('your-form-key', CBC_FM_PLUGIN_URL . 'presentation/your_form_key/assets/script.js', ['jquery'], '1.0.0', true);
+    }
+
+    public function render(array $view = []): string
+    {
+        $fields = $this->fields();
+        $errors = $view['errors'] ?? [];
+        $old = $view['old'] ?? [];
+        $success = $view['success'] ?? null;
+        $action = $view['action'] ?? '';
+        $nonce_action = $view['nonce_action'] ?? '';
+        $nonce_name = $view['nonce_name'] ?? '_cbc_form_nonce';
+
+        ob_start();
+        ?>
+        <form class="cbc-form your-form-key" method="post" action="<?php echo esc_url($action); ?>">
+            <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
+            <?php wp_nonce_field($nonce_action, $nonce_name); ?>
+
+            <?php if (!empty($errors['_global'])): ?>
+                <div class="cbc-form-alert cbc-form-alert-danger"><?php echo esc_html($errors['_global']); ?></div>
+            <?php endif; ?>
+
+            <?php if ($success): ?>
+                <div class="cbc-form-alert cbc-form-alert-success"><?php echo esc_html($success); ?></div>
+            <?php endif; ?>
+
+            <div class="cbc-form-row">
+                <label><?php echo esc_html($fields['name']['label']); ?> *</label>
+                <input type="text" name="name" value="<?php echo esc_attr($old['name'] ?? ''); ?>" />
+                <?php if (!empty($errors['name'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['name']); ?></div><?php endif; ?>
+            </div>
+
+            <div class="cbc-form-row">
+                <label><?php echo esc_html($fields['email']['label']); ?> *</label>
+                <input type="email" name="email" value="<?php echo esc_attr($old['email'] ?? ''); ?>" />
+                <?php if (!empty($errors['email'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['email']); ?></div><?php endif; ?>
+            </div>
+
+            <div class="cbc-form-row">
+                <label><?php echo esc_html($fields['message']['label']); ?></label>
+                <textarea name="message" rows="5"><?php echo esc_textarea($old['message'] ?? ''); ?></textarea>
+                <?php if (!empty($errors['message'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['message']); ?></div><?php endif; ?>
+            </div>
+
+            <div class="cbc-form-actions">
+                <button type="submit" class="button"><?php echo esc_html__('Submit', 'cbc-form-manager'); ?></button>
+            </div>
+        </form>
+        <?php
+        return (string)ob_get_clean();
+    }
+}
 ```
+
+Also add:
+
+- `presentation/your_form_key/assets/style.css` (basic styling)  
+- `presentation/your_form_key/assets/script.js` (optional JS)  
+- `presentation/your_form_key/index.php` and `presentation/your_form_key/assets/index.php` (prevent directory listing)
+
+The plugin will auto-discover and register your new form.
+
+## Optional: Form Generator Script
+
+A tiny CLI script is included to scaffold a new form quickly.
+
+Usage on Windows (cmd.exe) from your WordPress root:
+
+```bat
+cd D:\CBC-Apps\CBC-CorpoWeb
+php wp-content\plugins\cbc-form-manager\tools\generate-form.php cbc_survey_form "CBC Survey Form" cbc_survey_form
+```
+
+Arguments:
+- 1) form key (required): must start with a letter; use lowercase letters, numbers, underscores (e.g., `cbc_survey_form`)
+- 2) title (optional): human-readable title (defaults to derived from key)
+- 3) shortcode (optional): must start with a letter; defaults to the form key
+
+This will create:
+- `presentation/<key>/Form.php`
+- `presentation/<key>/assets/style.css`
+- `presentation/<key>/assets/script.js`
+- `presentation/<key>/index.php` and `assets/index.php`
+
+Then edit `fields()` and `render()` in the generated `Form.php` as needed. The plugin will auto-register it.
 
 ## Field Types and Validation
 
@@ -164,4 +257,3 @@ This project follows the license of the host WordPress site. If you need a speci
 ## Support
 
 For questions or improvements, open an internal ticket or extend via hooks/filters described above.
-
