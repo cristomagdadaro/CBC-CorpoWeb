@@ -55,26 +55,39 @@ echo <<<HTML
     <div class="container">
         <h1>Deployment Status</h1>
 HTML;
-echo "<p>Running as: " . get_current_user() . "</p>";
-
-$timestamp = date( 'Y-m-d H:i:s' );
-echo "<p class='timestamp'>Last updated: " . htmlspecialchars( $timestamp ) . "</p>";
+$timestamp = date('Y-m-d H:i:s');
+echo "<p class='timestamp'>Last updated: " . htmlspecialchars($timestamp) . "</p>";
 
 $repoPath = 'C:/nginx-1.24.0/vhost/cbccorpo';
-chdir( $repoPath );
+$expectedUser = 'CBC-REY'; // ✅ change if your Windows username differs
 
-shell_exec( "git config --add safe.directory " . escapeshellarg( $repoPath ) );
+$currentUser = get_current_user();
+echo "<p>Running as: <strong>" . htmlspecialchars($currentUser) . "</strong></p>";
 
-// Run git pull
+// 🧠 Check if running under the correct user
+if (strtoupper($currentUser) !== strtoupper($expectedUser)) {
+	echo "<p style='color:red; font-weight:bold;'>⚠️ Warning: PHP is running as <strong>$currentUser</strong> instead of <strong>$expectedUser</strong>.<br>
+    Please restart PHP using <code>C:\\php\\restart-php-cgi.bat</code>.</p>";
+} else {
+	echo "<p style='color:green; font-weight:bold;'>✅ PHP is running under the correct user ($expectedUser).</p>";
+}
+
+// 🗂 Change to repository directory
+chdir($repoPath);
+
+// 🛡 Add safe directory (just in case)
+shell_exec("git config --add safe.directory " . escapeshellarg($repoPath));
+
+// 🚀 Run git pull
 $command = 'git pull 2>&1';
-$output  = shell_exec( $command );
+$output = shell_exec($command);
 
-// Log results
-file_put_contents( $repoPath . '/deploy_log.txt', $timestamp . "\n" . $output . "\n\n", FILE_APPEND );
+// 📝 Log the result
+file_put_contents($repoPath . '/deploy_log.txt', $timestamp . "\n" . $output . "\n\n", FILE_APPEND);
 
-// Display output
+// 🖥 Display Git output
 echo "<h2>Git Output:</h2>";
-echo "<pre>" . htmlspecialchars( $output ) . "</pre>";
+echo "<pre>" . htmlspecialchars($output) . "</pre>";
 
 
 echo <<<HTML
