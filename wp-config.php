@@ -94,7 +94,8 @@ define( 'WP_DEBUG', true);
 
 /* Add any custom values between this line and the "stop editing" line. */
 
-
+define('CBC_AI_RECAPTCHA_SITE_KEY', '6LeeNP4rAAAAAFMRR66j025aflgqj2YaTkjbKLSw');
+define('CBC_AI_RECAPTCHA_SECRET', '6LeeNP4rAAAAAMQqqlWPUrqmKJLKQJD12PhjcxR1');
 
 /* That's all, stop editing! Happy publishing. */
 
