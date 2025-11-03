@@ -1226,7 +1226,9 @@ if (!function_exists('govph_displayoptions')) {
 				}
 				if ( $ctr == 4 ) {
 					$val = 'large-3 columns';
-				}
+				}else {
+                    $val = 'columns';
+                }
 
 				echo $val;
 				break;

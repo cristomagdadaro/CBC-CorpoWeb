@@ -20,9 +20,9 @@
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
             <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
             <!-- Left Content (Text + Video) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 relative gap-3 md:gap-6 items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 relative gap-3 md:gap-6 items-start ">
                 <!-- Video Wrapper -->
-                <div class="relative w-full mt-4 md:mt-0 px-4 md:p-0">
+                <div class="relative w-full">
                     <div class="block md:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center leading-tight !font-spartan my-3">
                         <span>DA-CROP BIOTECHNOLOGY CENTER</span>
                     </div>
@@ -42,7 +42,7 @@
                 </div>
 
                 <!-- Text Section -->
-                <div class="flex flex-col justify-center bg-white/80 px-4 md:p-0 rounded-md">
+                <div class="flex flex-col justify-center bg-white/80 rounded-md">
                     <div class="hidden md:block text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3">
                         DA-CROP BIOTECHNOLOGY CENTER
                     </div>
@@ -55,37 +55,16 @@
                 </div>
             </div>
 
-
             <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
 
             <?php echo govph_section_header('Core Programs', ['id' => 'core_programs_header']); ?>
-
             <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
-
-
-            <?php /*echo govph_section_header('News & Updates', ['id' => 'news_updates_header']); */?>
-            <!--<h1 class="text-[#1f5d2b] font-extrabold p-1 md:p-2 bg-gradient-to-r text-center px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
-                News & Updates
-            </h1>
-
-            <div class="widget widget_block">
-                <div style="height: 10px" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
-
-            --><?php
-/*            echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="20" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
-            */?>
 
             <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
 
             <?php echo govph_section_header('Priority Commodities', ['id' => 'priority_commodity_header']); ?>
-
             <?php echo do_shortcode('[priority_commodities_carousel max_display="5" center_scale="1.30" auto_advance="true" auto_interval="2500" show_arrows="true" enable_blur="true"]'); ?>
 
-            <!--<div class="widget widget_block">
-                <div style="height: <?php /*echo $spacer_height;*/?>" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
--->
             <?php dynamic_sidebar( 'panel-top-1' ); ?>
         </aside>
         <?php endif; ?>
