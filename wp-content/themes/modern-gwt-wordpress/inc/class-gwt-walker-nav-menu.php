@@ -37,8 +37,8 @@ if ( ! class_exists( 'GWT_Walker_Nav_Menu' ) ) :
 			$indent = str_repeat("\t", $depth);
 
 			// Classes
-			$base_li_classes = 'relative group'; // Each item with submenu becomes a "group" container
-			$link_base = 'block w-full px-3 py-2 text-sm whitespace-nowrap rounded-md flex items-center transition-colors duration-150 ease-in-out';
+			$base_li_classes = 'relative group rounded-md '; // Each item with submenu becomes a "group" container
+			$link_base = 'block w-full px-3 py-2 text-sm whitespace-nowrap flex items-center transition-colors duration-150 ease-in-out';
 
 			if ( $depth === 0 ) {
 				$li_class = "{$base_li_classes} flex items-center hover:bg-[#a2b917]";
