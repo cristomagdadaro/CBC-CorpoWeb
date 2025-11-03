@@ -1,96 +1,109 @@
 <?php
-/**
- * Custom GWT Walker Nav Menu
- * Outputs Tailwind-style markup similar to the provided reference element.
- */
-
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 if ( ! class_exists( 'GWT_Walker_Nav_Menu' ) ) :
-class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
-	/**
-	 * Starts the list of nested sub-items.
-	 */
-	public function start_lvl( &$output, $depth = 0, $args = null ) {
-		$indent = str_repeat( "\t", max( 0, (int) $depth ) );
-		if ( $depth === 0 ) {
-			$output .= "\n{$indent}<div class=\"absolute left-0 top-full hidden group-hover:flex flex-col bg-[#ffffff] z-[999] shadow-md p-1 rounded-md text-subtitle\">\n";
-		} else {
-			$output .= "\n{$indent}<div class=\"hidden group-hover:flex flex-col bg-[#ffffff] shadow-md p-1 rounded-md text-subtitle\">\n";
+
+	class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
+
+		/**
+		 * Start the submenu level.
+		 */
+		public function start_lvl( &$output, $depth = 0, $args = null ) {
+			$indent = str_repeat("\t", $depth);
+			$is_top = ($depth === 0);
+
+			// Positioning for top-level dropdown vs. flyout submenu
+			$pos_class = $is_top ? "left-0 top-full" : "left-full top-0";
+
+			// submenu is hidden by default; only shown when parent group is hovered/focused
+			$output .= "\n{$indent}<ul class=\"absolute {$pos_class} hidden list-none group-hover:flex group-focus-within:flex flex-col bg-white shadow-lg z-[999] p-1 rounded-md min-w-[180px]\">\n";
 		}
-	}
 
-	/**
-	 * Ends the list of nested sub-items.
-	 */
-	public function end_lvl( &$output, $depth = 0, $args = null ) {
-		$indent = str_repeat( "\t", max( 0, (int) $depth ) );
-		$output .= "{$indent}</div>\n";
-	}
+		/**
+		 * End the submenu level.
+		 */
+		public function end_lvl( &$output, $depth = 0, $args = null ) {
+			$indent = str_repeat("\t", $depth);
+			$output .= "{$indent}</ul>\n";
+		}
 
-	/**
-	 * Starts the element output.
-	 */
-	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
-		$args = is_array( $args ) ? (object) $args : $args;
-		$has_children = ! empty( $args->has_children );
+		/**
+		 * Start each menu item.
+		 */
+		public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
+			$args = is_array( $args ) ? (object) $args : $args;
+			$has_children = ! empty( $args->has_children );
 
-		// Compute attributes for anchor
-		$atts = [];
-		$atts['title']  = ! empty( $item->attr_title ) ? $item->attr_title : '';
-		$atts['target'] = ! empty( $item->target ) ? $item->target : '';
-		$atts['rel']    = ! empty( $item->xfn ) ? $item->xfn : '';
-		$atts['href']   = ! empty( $item->url ) ? $item->url : '';
+			$indent = str_repeat("\t", $depth);
 
-		if ( $depth === 0 ) {
-			// Top-level item
-			$li_classes = 'relative flex items-center hover:bg-[#a2b917] group duration-100 ease-in-out';
-			$output .= '<li class="' . $li_classes . '">';
-			$output .= '<div class="flex flex-col gap-2">'; // inner wrapper
+			// Classes
+			$base_li_classes = 'relative group'; // Each item with submenu becomes a "group" container
+			$link_base = 'block w-full px-3 py-2 text-sm whitespace-nowrap rounded-md flex items-center transition-colors duration-150 ease-in-out';
 
-			if ( $has_children ) {
-				$output .= '<div class="fixed w-full h-full top-0 left-0 z-[1]"></div>';
+			if ( $depth === 0 ) {
+				$li_class = "{$base_li_classes} flex items-center hover:bg-[#a2b917]";
+				$link_class = "{$link_base} text-white font-medium hover:text-white";
+			} else {
+				$li_class = "{$base_li_classes} hover:bg-[#a2b917]";
+				$link_class = "{$link_base} text-[#1f5d2b] hover:text-white";
 			}
 
-			$output .= '<div class="z-[100]">';
+			$output .= "{$indent}<li class=\"{$li_class}\">";
 
-			$atts['class'] = 'px-3 py-1 text-[#ffffff] whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-100 ease-in-out';
-			$attr = '';
-			foreach ( $atts as $an => $av ) {
-				if ( ! empty( $av ) ) { $attr .= ' ' . $an . '="' . esc_attr( $av ) . '"'; }
+			// Build link attributes
+			$atts = [
+				'title'  => ! empty( $item->attr_title ) ? $item->attr_title : '',
+				'target' => ! empty( $item->target ) ? $item->target : '',
+				'rel'    => ! empty( $item->xfn ) ? $item->xfn : '',
+				'href'   => ! empty( $item->url ) ? $item->url : '',
+				'class'  => $link_class,
+			];
+
+			$attr_str = '';
+			foreach ( $atts as $attr => $value ) {
+				if ( ! empty( $value ) ) {
+					$attr_str .= ' ' . $attr . '="' . esc_attr( $value ) . '"';
+				}
 			}
 
 			$title = apply_filters( 'the_title', $item->title, $item->ID );
-			$output .= '<a' . $attr . '>' . esc_html( $title );
+			$output .= '<a' . $attr_str . '>' . esc_html( $title );
+
+			// Dropdown arrows
 			if ( $has_children ) {
-				$output .= ' <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>';
+				if ( $depth === 0 ) {
+					$output .= ' <svg class="ml-2 h-4 w-4 text-[#000000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>';
+				} else {
+					$output .= ' <svg class="ml-2 h-4 w-4 text-[#1f5d2b]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>';
+				}
 			}
+
 			$output .= '</a>';
-			$output .= '</div>'; // .z-[100]
+		}
 
-			// Submenu container is output in start_lvl when children exist
-		} else {
-			// Submenu items rendered as rows inside the submenu container
-			$output .= '<div class="flex items-center hover:bg-[#a2b917] duration-100 rounded-md hover:shadow ease-in-out text-[#1f5d2b] hover:text-[#ffffff] w-full">';
-			$atts['class'] = 'px-3 py-1 whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-100 ease-in-out hover:text-[#ffffff]';
-			$attr = '';
-			foreach ( $atts as $an => $av ) {
-				if ( ! empty( $av ) ) { $attr .= ' ' . $an . '="' . esc_attr( $av ) . '"'; }
+		/**
+		 * End each menu item.
+		 */
+		public function end_el( &$output, $item, $depth = 0, $args = null ) {
+			$output .= "</li>\n";
+		}
+
+		/**
+		 * Properly set has_children and enforce depth limit.
+		 */
+		public function display_element( $element, &$children_elements, $max_depth, $depth = 0, $args = [], &$output = '' ) {
+			if ( ! $element ) return;
+
+			$id_field = $this->db_fields['id'];
+			if ( is_array( $args ) && isset( $args[0] ) && is_object( $args[0] ) ) {
+				$args[0]->has_children = ! empty( $children_elements[ $element->$id_field ] );
 			}
-			$title = apply_filters( 'the_title', $item->title, $item->ID );
-			$output .= '<a' . $attr . '>' . esc_html( $title ) . '</a>';
-			$output .= '</div>';
+
+			// Cap depth to 10
+			if ( $depth > 10 ) return;
+
+			parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
 		}
 	}
 
-	/**
-	 * Ends the element output.
-	 */
-	public function end_el( &$output, $item, $depth = 0, $args = null ) {
-		if ( $depth === 0 ) {
-			$output .= '</div>'; // closes inner wrapper
-			$output .= '</li>';
-		}
-	}
-}
 endif;
