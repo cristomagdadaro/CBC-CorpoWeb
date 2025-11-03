@@ -352,6 +352,7 @@ module.exports = {
         'sm:grid-cols-2',
         'backdrop-blur-md',
         'hover:bg-[#a2b917]',
+        'text-[#1f5d2b]',
         'hover:text-[#1f5d2b]',
         // Typography
         'text-[0.7rem]',
