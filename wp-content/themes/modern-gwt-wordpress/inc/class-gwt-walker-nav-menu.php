@@ -15,8 +15,8 @@ if ( ! class_exists( 'GWT_Walker_Nav_Menu' ) ) :
 			// Positioning for top-level dropdown vs. flyout submenu
 			$pos_class = $is_top ? "left-0 top-full" : "left-full top-0";
 
-			// submenu is hidden by default; only shown when parent group is hovered/focused
-			$output .= "\n{$indent}<ul class=\"absolute {$pos_class} hidden list-none group-hover:flex group-focus-within:flex flex-col bg-white shadow-lg z-[999] p-1 rounded-md min-w-[180px]\">\n";
+			// submenu is hidden by default; visibility handled via CSS li:hover > ul
+			$output .= "\n{$indent}<ul class=\"absolute {$pos_class} hidden list-none flex-col bg-white shadow-lg z-[999] p-1 rounded-md min-w-[180px]\">\n";
 		}
 
 		/**
