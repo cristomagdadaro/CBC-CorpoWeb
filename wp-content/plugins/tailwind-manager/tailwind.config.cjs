@@ -412,6 +412,7 @@ module.exports = {
         'hover:shadow',
         'hover:scale-105',
         'transition',
+        'hover:text-[#ffffff]',
         'duration-100',
         'duration-200',
         'duration-300',

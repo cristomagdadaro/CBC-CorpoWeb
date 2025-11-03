@@ -460,7 +460,7 @@ li.current-menu-item:not(.has-form) {
 
 #offCanvasRight input[type="search"],
 .top-bar-right input[type="search"] {
-    height: 2.3125rem;
+    /*height: 2.3125rem;*/
     border-radius: 0;
     font-size: 0.875rem;
     margin-bottom: 0px;

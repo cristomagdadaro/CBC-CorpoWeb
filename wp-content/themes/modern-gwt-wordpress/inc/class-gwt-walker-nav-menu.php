@@ -14,9 +14,9 @@ class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
 	public function start_lvl( &$output, $depth = 0, $args = null ) {
 		$indent = str_repeat( "\t", max( 0, (int) $depth ) );
 		if ( $depth === 0 ) {
-			$output .= "\n{$indent}<div class=\"absolute left-0 top-full hidden group-hover:flex flex-col bg-[#ffffff] z-[46] shadow-md p-3 rounded-md text-subtitle pt-2\">\n";
+			$output .= "\n{$indent}<div class=\"absolute left-0 top-full hidden group-hover:flex flex-col bg-[#ffffff] z-[999] shadow-md p-1 rounded-md text-subtitle\">\n";
 		} else {
-			$output .= "\n{$indent}<div class=\"hidden group-hover:flex flex-col bg-[#ffffff] shadow-md p-2 rounded-md text-subtitle pt-2\">\n";
+			$output .= "\n{$indent}<div class=\"hidden group-hover:flex flex-col bg-[#ffffff] shadow-md p-1 rounded-md text-subtitle\">\n";
 		}
 	}
 
@@ -44,7 +44,7 @@ class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
 
 		if ( $depth === 0 ) {
 			// Top-level item
-			$li_classes = 'relative flex items-center hover:bg-[#a2b917] group duration-400 ease-in-out';
+			$li_classes = 'relative flex items-center hover:bg-[#a2b917] group duration-100 ease-in-out';
 			$output .= '<li class="' . $li_classes . '">';
 			$output .= '<div class="flex flex-col gap-2">'; // inner wrapper
 
@@ -54,7 +54,7 @@ class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
 
 			$output .= '<div class="z-[100]">';
 
-			$atts['class'] = 'px-3 py-1 text-[#ffffff] whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-150 ease-in-out';
+			$atts['class'] = 'px-3 py-1 text-[#ffffff] whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-100 ease-in-out';
 			$attr = '';
 			foreach ( $atts as $an => $av ) {
 				if ( ! empty( $av ) ) { $attr .= ' ' . $an . '="' . esc_attr( $av ) . '"'; }
@@ -71,8 +71,8 @@ class GWT_Walker_Nav_Menu extends Walker_Nav_Menu {
 			// Submenu container is output in start_lvl when children exist
 		} else {
 			// Submenu items rendered as rows inside the submenu container
-			$output .= '<div class="flex items-center hover:bg-[#a2b917] duration-400 rounded-md hover:shadow ease-in-out text-[#1f5d2b] hover:text-[#ffffff] w-full">';
-			$atts['class'] = 'px-3 py-1 whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-150 ease-in-out hover:text-[#ffffff]';
+			$output .= '<div class="flex items-center hover:bg-[#a2b917] duration-100 rounded-md hover:shadow ease-in-out text-[#1f5d2b] hover:text-[#ffffff] w-full">';
+			$atts['class'] = 'px-3 py-1 whitespace-nowrap text-normal inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 transition duration-100 ease-in-out hover:text-[#ffffff]';
 			$attr = '';
 			foreach ( $atts as $an => $av ) {
 				if ( ! empty( $av ) ) { $attr .= ' ' . $an . '="' . esc_attr( $av ) . '"'; }

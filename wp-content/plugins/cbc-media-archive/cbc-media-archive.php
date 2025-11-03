@@ -221,7 +221,7 @@ class CBC_Media_Archive {
         echo '<div class="cbc-photos-archive">';
         echo '<div class="flex justify-end gap-2 mb-3 hidden"><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="grid">Grid</button><button class="cbc-toggle-view px-3 py-1 border rounded" data-view="list">List</button></div>';
 
-        $container_class = $view === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3' : 'flex flex-col divide-y';
+        $container_class = $view === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 gap-3' : 'flex flex-col divide-y';
         echo '<div class="cbc-photos-container ' . esc_attr($container_class) . '" data-initial-view="' . esc_attr($view) . '">';
         if ($q->have_posts()) {
             while ($q->have_posts()) { $q->the_post();
@@ -271,7 +271,7 @@ class CBC_Media_Archive {
             buttons.forEach(function(btn){ btn.addEventListener("click", function(){
                 var view = btn.getAttribute("data-view");
                 if(view==="grid"){
-                    container.className = "cbc-photos-container grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3";
+                    container.className = "cbc-photos-container grid grid-cols-2 sm:grid-cols-3 gap-3";
                     root.querySelectorAll(".cbc-photo-item").forEach(function(it){ it.classList.remove("flex-row","gap-3"); it.classList.add("flex","flex-col"); });
                 } else {
                     container.className = "cbc-photos-container flex flex-col divide-y gap-3";
