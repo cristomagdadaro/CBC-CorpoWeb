@@ -22,10 +22,10 @@
             <!-- Left Content (Text + Video) -->
             <div class="grid grid-cols-1 md:grid-cols-2 relative gap-6">
                 <!-- Video Wrapper -->
-                <div class="flex sm:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center leading-tight !font-spartan mt-3 sm:mt-0 p-3">
-                    DA-CROP BIOTECHNOLOGY CENTER
-                </div>
                 <div class="relative w-full aspect-video h-full mt-4 md:mt-0 p-3 sm:p-0">
+                    <div class="block md:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center items-center leading-tight !font-spartan my-3 sm:mt-0">
+                        <span>DA-CROP BIOTECHNOLOGY CENTER</span>
+                    </div>
                     <iframe
                             title="Featured video"
                             class="w-full h-full border-none rounded-lg"
@@ -36,7 +36,7 @@
                 </div>
                 <!-- Text Section -->
                 <div class="flex flex-col justify-center relative bg-white/80 p-2 md:p-0 rounded-md">
-                    <div class="sm:flex hidden text-[#205F26] drop-shadow text-xl sm:text-2xl md:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3 sm:mt-0">
+                    <div class="md:block hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3 sm:mt-0">
                         DA-CROP BIOTECHNOLOGY CENTER
                     </div>
                     <p class="mt-2 text-justify md:text-left sm:leading-relaxed">
