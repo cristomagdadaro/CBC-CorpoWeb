@@ -154,6 +154,7 @@ module.exports = {
         'md:gap-5',
         'gap-5',
         'gap-6',
+        '!text-white',
         'list-none',
         'place-items-center',
         'content-center',

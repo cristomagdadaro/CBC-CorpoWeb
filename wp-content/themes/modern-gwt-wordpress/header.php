@@ -298,17 +298,11 @@ Press esc, or click the close the button to close this dialog box.
         <!-- off-canvas right menu -->
         <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]" style="z-index: 1001;">
             <div class="flex flex-row justify-between items-center px-1 w-full absolute top-0">
-            <?php
-                if (function_exists('the_custom_logo')) {
-                    echo "<div class='max-w-12'>";
-                    the_custom_logo();
-                    echo "</div>";
-                } else {
-                    // Fallback to site title if no logo is set
-                    echo '<h1>' . get_bloginfo('name') . '</h1>';
-                }
-                ?>
-                <a href="javascript:void(0)" class="closebtn" id="closeNav">&times;</a>
+                <a href="javascript:void(0)" class="closebtn mt-2 !text-white" id="closeNav">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                    </svg>
+                </a>
             </div>
             <div style="padding:10px;" class="list-item"><?php get_search_form(); ?></div>
             <ul class="!whitespace-nowrap overflow-hidden overflow-ellipsis" style="list-style: none; padding:10px;">
@@ -365,7 +359,11 @@ Press esc, or click the close the button to close this dialog box.
                 </div>
                 <div class="title-bar-right flex items-center justify-end h-full my-auto">
                     <span class="sr-only hidden">Menu</span>
-                    <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button"></button>
+                    <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>

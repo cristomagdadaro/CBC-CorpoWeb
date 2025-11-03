@@ -3,7 +3,8 @@
 (function () {
     // Device/adaptive helpers
     const isMobile = (() => {
-        try {
+        return false;
+        /*try {
             // Modern preferred check
             const mq = window.matchMedia?.('(pointer: coarse) and (max-width: 1024px)');
             if (mq?.matches) return true;
@@ -14,7 +15,7 @@
             return /mobile|android|iphone|ipad|ipod|tablet|touch/i.test(ua)
         } catch {
             return false;
-        }
+        }*/
     })();
 
 
