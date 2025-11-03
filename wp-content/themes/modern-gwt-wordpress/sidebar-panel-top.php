@@ -18,9 +18,7 @@
             <?php do_action( 'before_sidebar' );
             $spacer_height = '5rem'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
-            <div class="widget widget_block">
-                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
+            <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
             <!-- Left Content (Text + Video) -->
             <div class="grid grid-cols-1 md:grid-cols-2 relative gap-6">
                 <!-- Video Wrapper -->
@@ -47,9 +45,7 @@
                 </div>
             </div>
 
-            <div class="widget widget_block">
-                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
+            <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
 
             <?php echo govph_section_header('Core Programs', ['id' => 'core_programs_header']); ?>
 
@@ -69,9 +65,7 @@
 /*            echo do_shortcode('[gwt_latest_posts posts="5"  excerpt_length="20" show_date="1" show_image="1" image_size="medium" show_author="0" post_layout="grid"]');
             */?>
 
-            <div class="widget widget_block">
-                <div style="height: <?php echo $spacer_height;?>" aria-hidden="true" class="wp-block-spacer"></div>
-            </div>
+            <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
 
             <?php echo govph_section_header('Priority Commodities', ['id' => 'priority_commodity_header']); ?>
 

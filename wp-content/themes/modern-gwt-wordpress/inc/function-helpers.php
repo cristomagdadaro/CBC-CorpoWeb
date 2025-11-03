@@ -33,6 +33,24 @@ if ( ! function_exists( 'gwt_share_embed_shortcode' ) ) {
     add_shortcode( 'gwt_share_embed', 'gwt_share_embed_shortcode' );
 }
 
+
+if ( ! function_exists( 'cbc_spacer_shortcode' ) ) {
+	function cbc_spacer_shortcode( $atts ) {
+		$atts = shortcode_atts( array(
+			'class' => 'h-8 sm:h-12 lg:h-20', // Default responsive height
+		), $atts, 'cbc_spacer' );
+
+		$classes = esc_attr( $atts['class'] );
+
+		return "
+        <div class='widget widget_block'>
+            <div aria-hidden='true' class='wp-block-spacer {$classes}'></div>
+        </div>
+    ";
+	}
+	add_shortcode( 'cbc_spacer', 'cbc_spacer_shortcode' );
+}
+
 // -----------------------------------------------------------------------------
 // Shortcode: [gwt_latest_posts]
 // Uses the core latest-posts block renderer under the hood for consistent markup.
