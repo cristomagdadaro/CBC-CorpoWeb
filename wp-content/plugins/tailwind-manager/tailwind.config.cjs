@@ -157,6 +157,7 @@ module.exports = {
         'place-items-center',
         'content-center',
         'bg-gradient-to-r',
+        'text-wrap',
         'from-[#1f5d2b]',
         'to-[#a2b917]',
         'items-start',
@@ -164,6 +165,7 @@ module.exports = {
         'md:justify-start',
         // Sizing
         'w-[9rem]',
+        'overflow-x-auto',
         'h-[6rem]',
         'md:w-[12rem]',
         'md:h-[9rem]',

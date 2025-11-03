@@ -532,7 +532,7 @@ class BRM_Plugin {
 
         ob_start();
         ?>
-        <div class="wrap brm-form-wrap <?php echo $is_admin ? 'brm-admin-form' : 'brm-public-form'; ?>">
+        <div class="wrap brm-form-wrap overflow-x-auto <?php echo $is_admin ? 'brm-admin-form' : 'brm-public-form'; ?>">
             <h1><?php echo esc_html( $title ); ?></h1>
             <p>Shorten and customize your link using this service.</p>
 
@@ -577,7 +577,7 @@ class BRM_Plugin {
                     <tr>
                         <th scope="row"><label for="description">GoLink Generated</label></th>
                         <td class="description">
-                            <code><?php echo esc_html( site_url( '/go/' ) ); ?><span id="slug-preview" class="brm-slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>
+                            <code class="text-wrap"><?php echo esc_html( site_url( '/go/' ) ); ?><span id="slug-preview" class="brm-slug-preview"><?php echo $edit ? esc_html( $edit->slug ) : ''; ?></span></code>
                         </td>
                     </tr>
                     <?php if ( $is_admin ) : // Admin-only fields ?>
