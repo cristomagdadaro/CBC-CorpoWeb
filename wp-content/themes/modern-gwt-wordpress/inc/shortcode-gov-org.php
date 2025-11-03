@@ -20,7 +20,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
 				<?php if (!empty($section['heading'])):
                     echo '<h1 class="text-lg font-bold text-center text-[#1f5d2b] flex flex-col items-center my-2">
                             <span class="block mx-auto w-full h-[3px] mb-2 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]"></span>
-                            <span class="transition duration-700 ease-out will-change-transform opacity-100 translate-y-0 mt-3">' . $section['heading'] . '</span>
+                            <span id="' . sanitize_title( $section['heading'] ) . '" class="transition duration-700 ease-out will-change-transform opacity-100 translate-y-0 mt-3">' . $section['heading'] . '</span>
                           </h1>';
 					//echo govph_section_header( $section['heading'], [ 'id' => strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $section['heading']))) . '_header', 'classes' => 'text-sm font-extrabold  drop-shadow text-white p-2 bg-gradient-to-r text-center px-5' ] );
 				endif; ?>

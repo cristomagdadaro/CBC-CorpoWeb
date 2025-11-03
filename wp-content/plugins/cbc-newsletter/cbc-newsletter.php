@@ -64,7 +64,6 @@ function cbc_newsletter_subscribe_form() {
 	<style>
         /* Simple styling for form alignment and button */
         .cbc-newsletter-form {
-            max-width: 400px;
             padding: 0 15px;
             border-radius: 5px;
         }
