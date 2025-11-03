@@ -20,26 +20,33 @@
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
             <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
             <!-- Left Content (Text + Video) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 relative gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 relative gap-3 md:gap-6 items-start">
                 <!-- Video Wrapper -->
-                <div class="relative w-full aspect-video h-full mt-4 md:mt-0 p-3 sm:p-0">
-                    <div class="block md:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center items-center leading-tight !font-spartan my-3 sm:mt-0">
+                <div class="relative w-full mt-4 md:mt-0 px-4 md:p-0">
+                    <div class="block md:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center leading-tight !font-spartan my-3">
                         <span>DA-CROP BIOTECHNOLOGY CENTER</span>
                     </div>
-                    <iframe
-                            title="Featured video"
-                            class="w-full h-full border-none rounded-lg"
-                            src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4"
-                            allowfullscreen
-                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                    </iframe>
+
+                    <!-- Use responsive video container -->
+                    <div class="relative w-full overflow-hidden rounded-lg">
+                        <video
+                                class="w-full h-auto rounded-lg"
+                                controls
+                                playsinline
+                                preload="metadata"
+                        >
+                            <source src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
                 </div>
+
                 <!-- Text Section -->
-                <div class="flex flex-col justify-center relative bg-white/80 p-2 md:p-0 rounded-md">
-                    <div class="md:block hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3 sm:mt-0">
+                <div class="flex flex-col justify-center bg-white/80 px-4 md:p-0 rounded-md">
+                    <div class="hidden md:block text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3">
                         DA-CROP BIOTECHNOLOGY CENTER
                     </div>
-                    <p class="mt-2 text-justify md:text-left sm:leading-relaxed">
+                    <p class="mt-3 text-justify md:text-left leading-relaxed">
                         DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
                         Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
                         biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
@@ -47,6 +54,7 @@
                     </p>
                 </div>
             </div>
+
 
             <?php echo do_shortcode('[cbc_spacer class="h-10 sm:h-16 lg:h-24"]'); ?>
 

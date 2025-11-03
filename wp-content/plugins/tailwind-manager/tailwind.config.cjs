@@ -346,6 +346,7 @@ module.exports = {
         'text-red-500',
         'text-gray-500',
         '!text-white',
+        'md:gap-6',
         'opacity-50',
         'backdrop-blur-sm',
         'cursor-zoom-in',
