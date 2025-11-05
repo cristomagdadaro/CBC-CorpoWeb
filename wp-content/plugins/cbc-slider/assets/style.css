@@ -1,0 +1,107 @@
+/* Frontend styles for CBC Slider */
+.cbc-slider {
+  --cbc-slider-aspect: 16/9;
+  position: relative;
+  width: 100%;
+}
+
+.cbc-slider__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* Use native aspect-ratio by default */
+  aspect-ratio: var(--cbc-slider-aspect);
+}
+
+/* When custom height is set on root, fill height and disable aspect-ratio */
+.cbc-slider[style*="height:"] .cbc-slider__viewport {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.cbc-slider__track {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.cbc-slider__slide {
+  flex: 0 0 100%;
+  position: relative;
+  display: grid;
+  grid-template-areas: 'stack';
+  align-items: stretch;
+}
+.cbc-slider__slide > * { grid-area: stack; }
+
+.cbc-slider__mediaWrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.cbc-slider__img,
+.cbc-slider__video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-position: center center;
+}
+
+/* Overlay positioning */
+.cbc-slider__overlay {
+  color: #fff;
+  padding: 16px;
+  max-width: min(92%, 960px);
+}
+.cbc-slider__overlay a { color: #fff; text-decoration: underline; }
+.cbc-slider__overlay--top-left { align-self: start; justify-self: start; }
+.cbc-slider__overlay--top-right { align-self: start; justify-self: end; }
+.cbc-slider__overlay--bottom-left { align-self: end; justify-self: start; }
+.cbc-slider__overlay--bottom-right { align-self: end; justify-self: end; }
+.cbc-slider__overlay--center { align-self: center; justify-self: center; text-align: center; }
+
+/* Arrows */
+.cbc-slider__prev,
+.cbc-slider__next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.cbc-slider__prev { left: 8px; }
+.cbc-slider__next { right: 8px; }
+.cbc-slider__prev:hover,
+.cbc-slider__next:hover { background: rgba(0,0,0,0.7); }
+
+/* Dots */
+.cbc-slider__dots {
+  position: absolute;
+  left: 0; right: 0; bottom: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  z-index: 5;
+}
+.cbc-slider__dot {
+  width: 10px; height: 10px; border-radius: 999px; border: 0;
+  background: rgba(255,255,255,0.5);
+}
+.cbc-slider__dot.is-active { background: #fff; }
+
+.cbc-slider.is-dragging { cursor: grabbing; }
