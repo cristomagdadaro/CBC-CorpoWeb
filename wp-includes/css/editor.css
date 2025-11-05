@@ -1146,7 +1146,7 @@ i.mce-i-wp_code:before {
 }
 
 .js .tmce-active .wp-editor-area {
-	color: #fff;
+	color: #000;
 }
 
 .tmce-active .quicktags-toolbar {

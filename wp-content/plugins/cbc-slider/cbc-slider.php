@@ -95,6 +95,8 @@ function cbc_slider_admin_assets($hook) {
     global $post;
     if (($hook === 'post.php' || $hook === 'post-new.php') && isset($post) && $post->post_type === 'cbc_slider') {
         wp_enqueue_media();
+        // Enqueue classic editor (TinyMCE, QuickTags, media buttons) for overlay modal
+        if (function_exists('wp_enqueue_editor')) { wp_enqueue_editor(); }
         wp_enqueue_style('cbc-slider-admin', CBC_SLIDER_PLUGIN_URL . 'assets/admin.css', array(), CBC_SLIDER_VERSION);
         wp_enqueue_script('cbc-slider-admin', CBC_SLIDER_PLUGIN_URL . 'assets/admin.js', array('jquery'), CBC_SLIDER_VERSION, true);
     }
@@ -179,7 +181,6 @@ function cbc_slider_sanitize_payload($raw_json) {
             'id' => isset($s['id']) ? intval($s['id']) : 0,
             'url' => !empty($s['url']) ? esc_url_raw($s['url']) : '',
             'alt' => !empty($s['alt']) ? sanitize_text_field($s['alt']) : '',
-            'overlayPosition' => !empty($s['overlayPosition']) ? sanitize_html_class($s['overlayPosition']) : 'bottom-left',
             'overlayHtml' => !empty($s['overlayHtml']) ? cbc_slider_sanitize_overlay_html($s['overlayHtml']) : '',
             'linkUrl' => !empty($s['linkUrl']) ? esc_url_raw($s['linkUrl']) : '',
             'linkTargetBlank' => !empty($s['linkTargetBlank']) ? (bool)$s['linkTargetBlank'] : false,
@@ -289,7 +290,6 @@ function cbc_slider_sanitize_overlay_html($html) {
 function cbc_slider_build_slide_html($slide, $options, $index, $total) {
     $type = isset($slide['type']) ? $slide['type'] : 'image';
     $overlay = isset($slide['overlayHtml']) ? cbc_slider_sanitize_overlay_html($slide['overlayHtml']) : '';
-    $overlay_position = isset($slide['overlayPosition']) ? sanitize_html_class($slide['overlayPosition']) : 'bottom-left';
 
     $object_fit = !empty($options['objectFit']) ? esc_attr($options['objectFit']) : 'cover';
 
@@ -341,12 +341,13 @@ function cbc_slider_build_slide_html($slide, $options, $index, $total) {
         $media_html = '<a class="cbc-slider__link" href="' . esc_url($slide['linkUrl']) . '"' . $target . '>' . $media_html . '</a>';
     }
 
-    $overlay_html = $overlay ? '<div class="cbc-slider__overlay cbc-slider__overlay--' . $overlay_position . '">' . $overlay . '</div>' : '';
+    // Output overlay HTML directly so user can position/style via Tailwind
+    $overlay_html = $overlay ? $overlay : '';
 
-    return '<div class="cbc-slider__slide" role="group" aria-roledescription="slide" aria-label="' . esc_attr($index . ' ' . __('of', 'cbc-slider') . ' ' . $total) . '">
-        <div class="cbc-slider__mediaWrap">' . $media_html . '</div>
-        ' . $overlay_html . '
-    </div>';
+    return '<div class="cbc-slider__slide" role="group" aria-roledescription="slide" aria-label="' . esc_attr($index . ' ' . __('of', 'cbc-slider') . ' ' . $total) . '">' .
+        '<div class="cbc-slider__mediaWrap">' . $media_html . '</div>' .
+        $overlay_html .
+    '</div>';
 }
 
 /**

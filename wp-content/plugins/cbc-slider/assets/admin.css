@@ -19,11 +19,19 @@
 .cbc-slides { display: grid; gap: 12px; }
 .cbc-empty { padding: 12px; background: #f6f7f7; border: 1px dashed #dcdcde; color: #6c7781; }
 
-.cbc-slide { display: grid; grid-template-columns: 180px 1fr; gap: 12px; background: #fff; border: 1px solid #dcdcde; padding: 12px; }
-.cbc-slide__thumb { width: 180px; height: 110px; background: #111; display: grid; place-items: center; overflow: hidden; }
-.cbc-slide__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cbc-slide { display: grid; grid-template-columns: 40% 1fr; gap: 12px; background: #fff; border: 1px solid #dcdcde; padding: 12px; overflow-x: auto}
+.cbc-slide__thumb { width: 100%; background: transparent; display: grid; place-items: center; justify-content: center; overflow: hidden; }
+.cbc-slide__thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .cbc-slide__thumb--empty { color: #a0a5aa; font-size: 12px; }
 .cbc-slide__form { display: grid; gap: 8px; }
 .cbc-row { display: flex; gap: 8px; align-items: center; }
 .cbc-note { color: #2271b1; font-size: 12px; }
 
+/* Modal for Overlay Editor */
+.cbc-modal { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; }
+.cbc-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+.cbc-modal__content { position: relative; background: #fff; width: min(900px, 96vw); max-height: 90vh; display: grid; grid-template-rows: auto 1fr auto; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+.cbc-modal__header { padding: 12px 16px; border-bottom: 1px solid #dcdcde; }
+.cbc-modal__header h2 { margin: 0; font-size: 16px; }
+.cbc-modal__body { padding: 12px; overflow: auto; }
+.cbc-modal__footer { padding: 12px 16px; border-top: 1px solid #dcdcde; display: flex; gap: 8px; justify-content: flex-end; }
