@@ -36,6 +36,10 @@
 				objectFit: 'cover',
 				aspectRatio: '16/9',
 				height: '',
+				heightSm: '',
+				heightMd: '',
+				heightLg: '',
+				heightXl: '',
 				videoMuted: true,
 				videoLoop: false,
 				videoControls: false,
@@ -107,7 +111,9 @@
 						url: media.url || '',
 						alt: media.alt || '',
 						overlayHtml: '',
-						overlayPosition: 'bottom-left'
+						overlayPosition: 'bottom-left',
+						linkUrl: '',
+						linkTargetBlank: false
 					};
 					if (type === 'video') {
 						slide.posterId = 0;
@@ -162,10 +168,14 @@
 					</label>
 					<label>Aspect ratio
 						<select data-opt="aspectRatio">
-							${['16/9','4/3','1/1','21/9',''].map(v => `<option value="${v}" ${o.aspectRatio===v?'selected':''}>${v || 'Custom height'}</option>`).join('')}
+							${['16/9','4/3','1/1','21/9',''].map(v => `<option value="${v}" ${o.aspectRatio===v?'selected':''}>${v || 'Custom height(s)'}</option>`).join('')}
 						</select>
 					</label>
-					<label>Custom height <input type="text" placeholder="e.g., 480px or 60vh" data-opt="height" value="${escAttr(o.height||'')}"></label>
+					<label>Base height <input type="text" placeholder="e.g., 480px or 60vh" data-opt="height" value="${escAttr(o.height||'')}"></label>
+					<label>Small (≥640px) height <input type="text" data-opt="heightSm" value="${escAttr(o.heightSm||'')}"></label>
+					<label>Medium (≥768px) height <input type="text" data-opt="heightMd" value="${escAttr(o.heightMd||'')}"></label>
+					<label>Large (≥1024px) height <input type="text" data-opt="heightLg" value="${escAttr(o.heightLg||'')}"></label>
+					<label>XL (≥1280px) height <input type="text" data-opt="heightXl" value="${escAttr(o.heightXl||'')}"></label>
 					<label><input type="checkbox" data-opt="showArrows" ${o.showArrows ? 'checked' : ''}/> Show arrows</label>
 					<label><input type="checkbox" data-opt="showDots" ${o.showDots ? 'checked' : ''}/> Show dots</label>
 				</div>
@@ -214,6 +224,10 @@
 						<label>Overlay HTML
 							<textarea data-field="overlayHtml" rows="4">${escTextarea(slide.overlayHtml || '')}</textarea>
 						</label>
+						<div class="cbc-row">
+							<label style="flex:1">Link URL <input type="text" data-field="linkUrl" value="${escAttr(slide.linkUrl||'')}" placeholder="https://..."></label>
+							<label><input type="checkbox" data-field="linkTargetBlank" ${slide.linkTargetBlank ? 'checked' : ''}/> Open in new tab</label>
+						</div>
 					</div>
 				</div>
 			`;
@@ -258,7 +272,7 @@
 					el.addEventListener('change', function () {
 						const key = el.getAttribute('data-field');
 						const patch = {};
-						patch[key] = el.value;
+						if (el.type === 'checkbox') { patch[key] = !!el.checked; } else { patch[key] = el.value; }
 						updateSlide(idx, patch);
 					});
 				});

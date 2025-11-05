@@ -9,14 +9,26 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  /* Use native aspect-ratio by default */
+  /* Default: use aspect ratio */
   aspect-ratio: var(--cbc-slider-aspect);
 }
 
-/* When custom height is set on root, fill height and disable aspect-ratio */
-.cbc-slider[style*="height:"] .cbc-slider__viewport {
-  height: 100%;
+/* Custom-height mode: use CSS variables for heights and disable aspect-ratio */
+.cbc-slider--custom-height .cbc-slider__viewport {
   aspect-ratio: auto;
+  height: var(--cbc-h-base);
+}
+@media (min-width: 640px) {
+  .cbc-slider--custom-height .cbc-slider__viewport { height: var(--cbc-h-sm, var(--cbc-h-base)); }
+}
+@media (min-width: 768px) {
+  .cbc-slider--custom-height .cbc-slider__viewport { height: var(--cbc-h-md, var(--cbc-h-sm, var(--cbc-h-base))); }
+}
+@media (min-width: 1024px) {
+  .cbc-slider--custom-height .cbc-slider__viewport { height: var(--cbc-h-lg, var(--cbc-h-md, var(--cbc-h-sm, var(--cbc-h-base)))); }
+}
+@media (min-width: 1280px) {
+  .cbc-slider--custom-height .cbc-slider__viewport { height: var(--cbc-h-xl, var(--cbc-h-lg, var(--cbc-h-md, var(--cbc-h-sm, var(--cbc-h-base))))); }
 }
 
 .cbc-slider__track {
@@ -53,6 +65,9 @@
   display: block;
   object-position: center center;
 }
+
+.cbc-slider__link { display: block; height: 100%; }
+.cbc-slider__link:focus { outline: 2px solid #fff; outline-offset: -2px; }
 
 /* Overlay positioning */
 .cbc-slider__overlay {

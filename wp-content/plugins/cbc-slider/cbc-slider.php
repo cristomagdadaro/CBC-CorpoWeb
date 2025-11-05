@@ -120,11 +120,20 @@ function cbc_slider_metabox_render($post) {
                 'objectFit' => 'cover',
                 'aspectRatio' => '16/9',
                 'height' => '',
+                'heightSm' => '',
+                'heightMd' => '',
+                'heightLg' => '',
+                'heightXl' => '',
                 'videoMuted' => true,
                 'videoLoop' => false,
                 'videoControls' => false,
             ),
         );
+    } else {
+        // Backfill new responsive height options if missing
+        $defaults_new = array('heightSm' => '', 'heightMd' => '', 'heightLg' => '', 'heightXl' => '');
+        if (!isset($data['options']) || !is_array($data['options'])) $data['options'] = array();
+        $data['options'] = array_merge($defaults_new, $data['options']);
     }
     echo '<div id="cbc-slider-admin-root" data-state="' . esc_attr(wp_json_encode($data)) . '"></div>';
     echo '<textarea name="cbc_slider_json" id="cbc_slider_json" style="display:none;" aria-hidden="true">' . esc_textarea(wp_json_encode($data)) . '</textarea>';
@@ -151,6 +160,10 @@ function cbc_slider_sanitize_payload($raw_json) {
         'objectFit' => !empty($opts['objectFit']) ? sanitize_text_field($opts['objectFit']) : 'cover',
         'aspectRatio' => !empty($opts['aspectRatio']) ? sanitize_text_field($opts['aspectRatio']) : '16/9',
         'height' => !empty($opts['height']) ? sanitize_text_field($opts['height']) : '',
+        'heightSm' => !empty($opts['heightSm']) ? sanitize_text_field($opts['heightSm']) : '',
+        'heightMd' => !empty($opts['heightMd']) ? sanitize_text_field($opts['heightMd']) : '',
+        'heightLg' => !empty($opts['heightLg']) ? sanitize_text_field($opts['heightLg']) : '',
+        'heightXl' => !empty($opts['heightXl']) ? sanitize_text_field($opts['heightXl']) : '',
         'videoMuted' => isset($opts['videoMuted']) ? (bool)$opts['videoMuted'] : true,
         'videoLoop' => isset($opts['videoLoop']) ? (bool)$opts['videoLoop'] : false,
         'videoControls' => isset($opts['videoControls']) ? (bool)$opts['videoControls'] : false,
@@ -168,6 +181,8 @@ function cbc_slider_sanitize_payload($raw_json) {
             'alt' => !empty($s['alt']) ? sanitize_text_field($s['alt']) : '',
             'overlayPosition' => !empty($s['overlayPosition']) ? sanitize_html_class($s['overlayPosition']) : 'bottom-left',
             'overlayHtml' => !empty($s['overlayHtml']) ? cbc_slider_sanitize_overlay_html($s['overlayHtml']) : '',
+            'linkUrl' => !empty($s['linkUrl']) ? esc_url_raw($s['linkUrl']) : '',
+            'linkTargetBlank' => !empty($s['linkTargetBlank']) ? (bool)$s['linkTargetBlank'] : false,
         );
         if ($type === 'video') {
             $slide['posterId'] = isset($s['posterId']) ? intval($s['posterId']) : 0;
@@ -320,6 +335,12 @@ function cbc_slider_build_slide_html($slide, $options, $index, $total) {
         }
     }
 
+    // Wrap media with link if provided
+    if (!empty($slide['linkUrl'])) {
+        $target = !empty($slide['linkTargetBlank']) ? ' target="_blank" rel="noopener"' : '';
+        $media_html = '<a class="cbc-slider__link" href="' . esc_url($slide['linkUrl']) . '"' . $target . '>' . $media_html . '</a>';
+    }
+
     $overlay_html = $overlay ? '<div class="cbc-slider__overlay cbc-slider__overlay--' . $overlay_position . '">' . $overlay . '</div>' : '';
 
     return '<div class="cbc-slider__slide" role="group" aria-roledescription="slide" aria-label="' . esc_attr($index . ' ' . __('of', 'cbc-slider') . ' ' . $total) . '">
@@ -351,6 +372,10 @@ function cbc_slider_render_from_data($data) {
         'objectFit' => 'cover',
         'aspectRatio' => '16/9',
         'height' => '',
+        'heightSm' => '',
+        'heightMd' => '',
+        'heightLg' => '',
+        'heightXl' => '',
         'videoMuted' => true,
         'videoLoop' => false,
         'videoControls' => false,
@@ -367,10 +392,22 @@ function cbc_slider_render_from_data($data) {
         !empty($options['showDots']) ? '1' : '0'
     );
 
+    // Inline style vars and class for custom heights
     $style_inline = '';
-    if (!empty($options['height'])) {
-        $style_inline = ' style="--cbc-slider-aspect: initial; height:' . esc_attr($options['height']) . ';"';
-    } elseif (!empty($options['aspectRatio'])) {
+    $classes = 'cbc-slider';
+    $has_custom_height = !empty($options['height']) || !empty($options['heightSm']) || !empty($options['heightMd']) || !empty($options['heightLg']) || !empty($options['heightXl']);
+    if ($has_custom_height) {
+        $classes .= ' cbc-slider--custom-height';
+        $vars = array();
+        if (!empty($options['height'])) { $vars[] = '--cbc-h-base:' . esc_attr($options['height']); }
+        if (!empty($options['heightSm'])) { $vars[] = '--cbc-h-sm:' . esc_attr($options['heightSm']); }
+        if (!empty($options['heightMd'])) { $vars[] = '--cbc-h-md:' . esc_attr($options['heightMd']); }
+        if (!empty($options['heightLg'])) { $vars[] = '--cbc-h-lg:' . esc_attr($options['heightLg']); }
+        if (!empty($options['heightXl'])) { $vars[] = '--cbc-h-xl:' . esc_attr($options['heightXl']); }
+        if (!empty($vars)) {
+            $style_inline = ' style="' . implode(';', $vars) . '"';
+        }
+    } else if (!empty($options['aspectRatio'])) {
         $style_inline = ' style="--cbc-slider-aspect: ' . esc_attr($options['aspectRatio']) . ';"';
     }
 
@@ -385,7 +422,7 @@ function cbc_slider_render_from_data($data) {
                                              '<button class="cbc-slider__next" aria-label="' . esc_attr__('Next slide', 'cbc-slider') . '" type="button">&#10095;</button>' : '';
     $dots = !empty($options['showDots']) ? '<div class="cbc-slider__dots" role="tablist" aria-label="' . esc_attr__('Slide navigation', 'cbc-slider') . '"></div>' : '';
 
-    return '<div class="cbc-slider"' . $data_attrs . $style_inline . '>
+    return '<div class="' . esc_attr($classes) . '"' . $data_attrs . $style_inline . '>
         <div class="cbc-slider__viewport" tabindex="0" aria-roledescription="carousel" aria-label="' . esc_attr__('CBC Slider', 'cbc-slider') . '">
             <div class="cbc-slider__track">' . $slides_html . '</div>
         </div>
