@@ -338,25 +338,31 @@ class PM_Post_Metrics {
 			$meta = array();
 		}
 		$parts = explode( ',', $atts['show'] );
-		$out = '<div class="pm-metrics">';
+		$out = '<div class="pm-metrics flex items-center">';
 		foreach ( $parts as $p ) {
 			$p = trim( $p );
+			$icon = '';
 			$val = 0;
 			switch ( $p ) {
 				case 'views':
 					$val = intval( $meta['views'] ?? 0 );
+					$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 16 16"><path d="M4 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4m2.625.547a3 3 0 0 0-5.584.953H.5a.5.5 0 0 0 0 1h.541A3 3 0 0 0 7 8a1 1 0 0 1 2 0 3 3 0 0 0 5.959.5h.541a.5.5 0 0 0 0-1h-.541a3 3 0 0 0-5.584-.953A2 2 0 0 0 8 6c-.532 0-1.016.208-1.375.547M14 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"></path></svg>';
 					break;
 				case 'likes':
 					$val = intval( $meta['likes'] ?? 0 );
+					$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16"><path d="M8 15s-7-4.534-7-8.5A4.5 4.5 0 0 1 8 2.5a4.5 4.5 0 0 1 7 4c0 3.966-7 8.5-7 8.5z"/></svg>';
 					break;
 				case 'shares':
 					$val = intval( $meta['shares'] ?? 0 );
+					$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"><path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>';
 					break;
 				case 'engagements':
 					$val = intval( $meta['engagements'] ?? 0 );
+					$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-reception-3" viewBox="0 0 16 16"><path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/></svg>';
 					break;
 				case 'comments':
 					$val = intval( $meta['comments'] ?? 0 );
+					$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-blockquote-left" viewBox="0 0 16 16"><path d="M2.5 3a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1zm5 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-5 3a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1zm.79-5.373q.168-.117.444-.275L3.524 6q-.183.111-.452.287-.27.176-.51.428a2.4 2.4 0 0 0-.398.562Q2 7.587 2 7.969q0 .54.217.873.217.328.72.328.322 0 .504-.211a.7.7 0 0 0 .188-.463q0-.345-.211-.521-.205-.182-.568-.182h-.282q.036-.305.123-.498a1.4 1.4 0 0 1 .252-.37 2 2 0 0 1 .346-.298zm2.167 0q.17-.117.445-.275L5.692 6q-.183.111-.452.287-.27.176-.51.428a2.4 2.4 0 0 0-.398.562q-.165.31-.164.692 0 .54.217.873.217.328.72.328.322 0 .504-.211a.7.7 0 0 0 .188-.463q0-.345-.211-.521-.205-.182-.568-.182h-.282a1.8 1.8 0 0 1 .118-.492q.087-.194.257-.375a2 2 0 0 1 .346-.3z"/></svg>';
 					break;
 				default:
 					if ( isset( $meta['custom'][ $p ] ) ) {
@@ -364,7 +370,7 @@ class PM_Post_Metrics {
 					}
 					break;
 			}
-			$out .= '<span class="text-xs text-gray-400 pm-' . esc_attr( $p ) . '">' . esc_html( ucfirst( $p ) ) . ': <strong>' . esc_html( $val ) . '</strong></span> ';
+			$out .= '<span class="text-sm flex gap-1 items-center pm-' . esc_attr( $p ) . '"><strong>' . esc_html( $val ) . '</strong>' . $icon . ' </span> ';
 		}
 		$out .= '</div>';
 		return $out;
@@ -514,7 +520,7 @@ class PM_Post_Metrics {
 				if ( ! $title ) { $title = __( '(no title)' ); }
 				$score = intval( $row['score'] );
 				// Accessible label includes score.
-				$list .= '<li class="pm-popular-posts-item opacity-0 reveal-on-scroll-'.$count.'00"><span class="pm-popular-posts-score" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
+				$list .= '<li class="pm-popular-posts-item opacity-0 reveal-on-scroll-'.$count.'00"><span class="pm-popular-posts-score" title="Total Engagements: View, Likes, Shares, and Comments" aria-label="' . esc_attr__( 'Engagement score', 'post-metrics' ) . '">' . esc_html( $score ) . '</span> <a href="' . esc_url( get_permalink( $row['id'] ) ) . '">' . esc_html( $title ) . '</a></li>';
 				$count++;
 			}
 			$list .= '</ul>';
