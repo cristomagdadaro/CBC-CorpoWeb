@@ -42,7 +42,7 @@
                 </div>
 
                 <!-- Text Section -->
-                <div class="flex flex-col justify-center bg-white/80 rounded-md">
+                <div class="flex flex-col justify-center bg-white/80 h-full rounded-md relative">
                     <div class="hidden md:block text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan mt-3">
                         DA-CROP BIOTECHNOLOGY CENTER
                     </div>
@@ -52,6 +52,7 @@
                         biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
                         and foster a collaborative culture of knowledge-sharing to ensure a more food-secure and resilient Philippines.
                     </p>
+                    <div id="particles-js-helix" class="absolute top-0 left-0 w-full h-full"></div>
                 </div>
             </div>
 

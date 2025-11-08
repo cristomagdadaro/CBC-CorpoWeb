@@ -1,6 +1,6 @@
 <?php
 if ( is_home() || is_front_page() ):
-    echo do_shortcode('[cbc_slider id="3563"]');
+    echo do_shortcode('[cbc_slider id="3460"]');
 endif;
 
 $tempHeader = '';
