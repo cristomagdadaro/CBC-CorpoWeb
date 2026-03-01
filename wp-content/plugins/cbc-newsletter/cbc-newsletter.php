@@ -95,8 +95,11 @@ function cbc_newsletter_subscribe_form() {
 			?>
 			<p class="text-sm leading-none text-center">Receive email updates whenever we post new biotechnology updates</p>
 			<label class="text-sm" for="newsletter_email">Email:</label>
-			<input type="email" name="newsletter_email" id="newsletter_email" required>
-			<input type="submit" name="newsletter_subscribe" value="Subscribe">
+			<input type="email" name="newsletter_email" id="newsletter_email" required>		<?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
+			<div style="margin: 15px 0;">
+				<?php cbc_recaptcha_field(); ?>
+			</div>
+		<?php endif; ?>			<input type="submit" name="newsletter_subscribe" value="Subscribe">
 		</form>
 	</div>
 	<script>
@@ -141,6 +144,15 @@ function cbc_newsletter_handle_ajax_subscription() {
 	if (!check_ajax_referer('cbc_newsletter_subscribe_action', 'cbc_newsletter_nonce', false)) {
 		wp_send_json_error(['message' => 'Security check failed.'], 403);
 		return;
+	}
+
+	// reCAPTCHA verification
+	if (function_exists('cbc_recaptcha_verify')) {
+		$recaptcha_token = isset($_POST['g-recaptcha-response']) ? sanitize_text_field(wp_unslash($_POST['g-recaptcha-response'])) : '';
+		if (!cbc_recaptcha_verify($recaptcha_token)) {
+			wp_send_json_error(['message' => 'reCAPTCHA verification failed. Please try again.'], 403);
+			return;
+		}
 	}
 
 	if (!isset($_POST['newsletter_email'])) {

@@ -115,9 +115,11 @@ class PM_Post_Metrics {
 			return new WP_REST_Response( array( 'success' => false, 'message' => 'invalid event' ), 400 );
 		}
 
-		// Views and shares are handled by other functions, so we can ignore them here.
-		if ( in_array( $event, array( 'view', 'share' ), true ) ) {
-			return new WP_REST_Response( array( 'success' => true, 'message' => 'event handled by a different endpoint' ), 200 );
+		// Simple server-side rate limiting by IP for short intervals to avoid spammy repeated hits.
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0.0.0.0';
+		$transient_key = 'pm_track_' . md5( $event . '_' . $post_id . '_' . $ip );
+		if ( get_transient( $transient_key ) ) {
+			return new WP_REST_Response( array( 'success' => true, 'skipped' => true ), 200 );
 		}
 
 		// The permission callback `is_user_logged_in` already handles this, but this is a safeguard.
@@ -263,7 +265,7 @@ class PM_Post_Metrics {
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Post Metrics - Top Posts', 'post-metrics' ) . '</h1>';
 		echo '<p>' . esc_html__( 'Showing top posts by views. Adjust count or export CSV.', 'post-metrics' ) . '</p>';
-		echo '<p><a class="button" href="' . esc_url( add_query_arg( array( 'export' => '1' ) ) ) . '">' . esc_html__( 'Export CSV', 'post-metrics' ) . '</a> ';
+		echo '<p><a class="button" href="' . esc_url( wp_nonce_url( add_query_arg( array( 'export' => '1' ) ), 'pm_export_csv', '_pm_nonce' ) ) . '">' . esc_html__( 'Export CSV', 'post-metrics' ) . '</a> ';
 		echo '<form style="display:inline-block;margin-left:12px;" method="get">';
 		echo '<input type="hidden" name="page" value="pm-post-metrics" />';
 		echo '<label>' . esc_html__( 'Show top', 'post-metrics' ) . ' <input name="number" type="number" value="' . esc_attr( $show ) . '" style="width:80px;"/></label> <input type="submit" class="button" value="' . esc_attr__( 'Apply', 'post-metrics' ) . '" />';
@@ -301,6 +303,9 @@ class PM_Post_Metrics {
 
 	public static function maybe_export_csv() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
+		if ( ! isset( $_GET['_pm_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_pm_nonce'] ) ), 'pm_export_csv' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'post-metrics' ) );
+		}
 		// Gather same rows as admin_page
 		$args = array(
 			'post_type' => array( 'post', 'page' ),

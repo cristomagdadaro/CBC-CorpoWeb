@@ -92,11 +92,11 @@ function cbc_ca_db_has_any_data(){
 function cbc_ca_parse_lines($text){
     $lines = preg_split('/\r\n|\r|\n/', (string)$text);
     $out = array();
-    foreach($lines as $line){
-        $t = trim($line);
-        if ($t === '') continue;
-        $out[] = $t;
-    }
+    $out['announcements']    = isset($input['announcements']) ? sanitize_textarea_field($input['announcements']) : '';
+    $out['events']           = isset($input['events']) ? sanitize_textarea_field($input['events']) : '';
+    $out['holidays']         = isset($input['holidays']) ? sanitize_textarea_field($input['holidays']) : '';
+    $mode = isset($input['calendar_display']) ? (string)$input['calendar_display'] : 'grid';
+    $out['calendar_display'] = in_array($mode, array('grid','list'), true) ? $mode : 'grid';
     return $out;
 }
 

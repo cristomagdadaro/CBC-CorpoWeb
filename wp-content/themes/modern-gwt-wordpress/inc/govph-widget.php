@@ -52,7 +52,7 @@ class govph_widget_transparency extends WP_Widget {
 		// Widget output
 		echo $args['before_widget'];
 		if ( ! empty( $instance['url'] ) ) {
-			echo '<a href="'.$instance['url'].'"><img id="tp-seal" src="'. get_template_directory_uri() .'/images/transparency-seal-160x160.png" alt="transparency seal logo" title="Transparency Seal"></a>';
+			echo '<a href="'. esc_url( $instance['url'] ) .'"><img id="tp-seal" src="'. esc_url( get_template_directory_uri() .'/images/transparency-seal-160x160.png' ) .'" alt="transparency seal logo" title="Transparency Seal"></a>';
 		}
 		echo $args['after_widget'];
 	}
@@ -70,7 +70,7 @@ class govph_widget_transparency extends WP_Widget {
 		$url = ! empty( $instance['url'] ) ? $instance['url'] : __( 'http://domain.gov.ph/transparency' );
 		?>
 <p style="text-align:center;"><img id="tp-seal"
-        src="<?php echo get_template_directory_uri(); ?>/images/transparency-seal-160x160.png"
+        src="<?php echo esc_url( get_template_directory_uri() . '/images/transparency-seal-160x160.png' ); ?>"
         alt="transparency seal logo" title="Transparency Seal" /></p>
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'url' ) ); ?>"><?php _e( esc_attr( 'URL:' ) ); ?></label>
@@ -106,7 +106,7 @@ class govph_widget_foi extends WP_Widget {
 		// Widget output
 		echo $args['before_widget'];
 		if ( ! empty( $instance['url'] ) ) {
-			echo '<a href="'.$instance['url'].'"><img id="foi-logo" src="'. get_template_directory_uri() .'/images/foi-logo-160x160.png" alt="freedom of information logo" title="Freedom of Informstion"></a>';
+			echo '<a href="'. esc_url( $instance['url'] ) .'"><img id="foi-logo" src="'. esc_url( get_template_directory_uri() .'/images/foi-logo-160x160.png' ) .'" alt="freedom of information logo" title="Freedom of Information"></a>';
 		}
 		echo $args['after_widget'];
 	}
@@ -124,7 +124,7 @@ class govph_widget_foi extends WP_Widget {
 		$url = ! empty( $instance['url'] ) ? $instance['url'] : __( 'https://www.foi.gov.ph/' );
 		?>
 <p style="text-align:center;"><img id="foi-logo"
-        src="<?php echo get_template_directory_uri(); ?>/images/foi-logo-160x160.png" alt="freedom of information logo"
+        src="<?php echo esc_url( get_template_directory_uri() . '/images/foi-logo-160x160.png' ); ?>" alt="freedom of information logo"
         title="Freedom of Information" /></p>
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'url' ) ); ?>"><?php _e( esc_attr( 'URL:' ) ); ?></label>

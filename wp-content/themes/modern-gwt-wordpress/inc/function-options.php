@@ -222,7 +222,7 @@ jQuery(document).ready(function($) {
   
   public function register_settings_fields()
   {
-    register_setting('govph_options','govph_options');
+    register_setting('govph_options','govph_options', 'govph_sanitize_options');
     add_settings_section('govph_main_section', '', array($this, 'govph_main_section_cb'), __FILE__);
     add_settings_field('govph_general_section', '<h3>General Options<h3>', array($this, 'govph_general_section'), __FILE__, 'govph_main_section');
     add_settings_field('govph_disable_search', 'Search Disabled', array($this, 'govph_disable_search'), __FILE__, 'govph_main_section');
@@ -527,14 +527,14 @@ jQuery(document).ready(function($) {
   ?>
 <label for="upload_image">
     <input id="upload_image" type="text" size="36" name="govph_options[govph_logo]"
-        value="<?php echo $this->options['govph_logo']; ?>" />
+        value="<?php echo esc_attr( $this->options['govph_logo'] ); ?>" />
     <input id="upload_image_button" class="button" type="button" value="Upload Logo" />
     <br /><span class="description">Enter a URL or upload an image</span>
 </label>
 
 <?php
     if (!empty($this->options['govph_logo'])) {
-      echo '<br/><img src="'.$this->options['govph_logo'].'" height="100px" alt="" style="background: #ddd; padding: 10px;">';
+      echo '<br/><img src="'. esc_url( $this->options['govph_logo'] ) .'" height="100px" alt="" style="background: #ddd; padding: 10px;">';
     }
   }
 
@@ -559,7 +559,7 @@ jQuery(document).ready(function($) {
   {
     $value = $this->options['govph_agency_name'] ? $this->options['govph_agency_name'] : '';
   ?>
-<input type="text" name="govph_options[govph_agency_name]" value="<?php echo $value ?>" style="width: 400px;"><br />
+<input type="text" name="govph_options[govph_agency_name]" value="<?php echo esc_attr( $value ); ?>" style="width: 400px;"><br />
 <span class="description">The agency website name.</span>
 <?php
   }
@@ -568,7 +568,7 @@ jQuery(document).ready(function($) {
   {
     $value = $this->options['govph_agency_tagline'] ? $this->options['govph_agency_tagline'] : '';
   ?>
-<input type="text" name="govph_options[govph_agency_tagline]" value="<?php echo $value ?>" style="width: 400px;"><br />
+<input type="text" name="govph_options[govph_agency_tagline]" value="<?php echo esc_attr( $value ); ?>" style="width: 400px;"><br />
 <span class="description">The agency tagline.</span>
 <?php
   }
@@ -576,7 +576,7 @@ jQuery(document).ready(function($) {
   public function govph_header_color_setting()
   {
   ?>
-<input name="govph_options[govph_headercolor]" type="text" value="<?php echo $this->options['govph_headercolor']; ?>"
+<input name="govph_options[govph_headercolor]" type="text" value="<?php echo esc_attr( $this->options['govph_headercolor'] ); ?>"
     class="my-color-field" id="color-field-header-bg" data-default-color="#142745" />
 <?php
   }
@@ -585,7 +585,7 @@ jQuery(document).ready(function($) {
   {
     $header_font_color = !empty($this->options['govph_header_font_color']) ? $this->options['govph_header_font_color'] : '#000';
   ?>
-<input name="govph_options[govph_header_font_color]" type="text" value="<?php echo $header_font_color; ?>"
+<input name="govph_options[govph_header_font_color]" type="text" value="<?php echo esc_attr( $header_font_color ); ?>"
     class="my-color-field" id="color-field-header-font" data-default-color="#000" />
 <?php
   }
@@ -595,13 +595,13 @@ jQuery(document).ready(function($) {
   ?>
 <label for="header_image_background">
     <input id="header_image_background" type="text" size="36" name="govph_options[govph_headerimage]"
-        value="<?php echo $this->options['govph_headerimage']; ?>" />
+        value="<?php echo esc_attr( $this->options['govph_headerimage'] ); ?>" />
     <input id="header_image_background_button" class="button" type="button" value="Upload Image" />
     <br /><span class="description">Enter a URL or upload an image for header background.</span>
 </label>
 <?php
     if (!empty($this->options['govph_headerimage'])) {
-      echo '<br/><img src="'.$this->options['govph_headerimage'].'" height="100px" style="background: #ddd; padding: 10px;">';
+      echo '<br/><img src="'. esc_url( $this->options['govph_headerimage'] ) .'" height="100px" style="background: #ddd; padding: 10px;">';
     }
   }
 
@@ -618,7 +618,7 @@ jQuery(document).ready(function($) {
   public function govph_slider_color_setting()
   {
   ?>
-<input name="govph_options[govph_slidercolor]" type="text" value="<?php echo $this->options['govph_slidercolor']; ?>"
+<input name="govph_options[govph_slidercolor]" type="text" value="<?php echo esc_attr( $this->options['govph_slidercolor'] ); ?>"
     class="my-color-field" id="color-field-slider" data-default-color="#1f3a70" />
 <?php
   }
@@ -628,13 +628,13 @@ jQuery(document).ready(function($) {
   ?>
 <label for="slider_image_background">
     <input id="slider_image_background" type="text" size="36" name="govph_options[govph_sliderimage]"
-        value="<?php echo $this->options['govph_sliderimage']; ?>" />
+        value="<?php echo esc_attr( $this->options['govph_sliderimage'] ); ?>" />
     <input id="slider_image_background_button" class="button" type="button" value="Upload Image" />
     <br /><span class="description">Enter a URL or upload an image for header background</span>
 </label>
 <?php
     if (!empty($this->options['govph_sliderimage'])) {
-      echo '<br/><img src="'.$this->options['govph_sliderimage'].'" height="200px" alt="'.$this->options['govph_agency_name'].'" style="background: #ddd; padding: 10px;">';
+      echo '<br/><img src="'. esc_url( $this->options['govph_sliderimage'] ) .'" height="200px" alt="'. esc_attr( $this->options['govph_agency_name'] ) .'" style="background: #ddd; padding: 10px;">';
     }
   }
 
@@ -660,7 +660,7 @@ jQuery(document).ready(function($) {
   {
     $value = $this->options['govph_breadcrumbs_separator'] ? $this->options['govph_breadcrumbs_separator'] : ' › ';
   ?>
-<input type="text" name="govph_options[govph_breadcrumbs_separator]" value="<?php echo $value ?>"><br />
+<input type="text" name="govph_options[govph_breadcrumbs_separator]" value="<?php echo esc_attr( $value ); ?>"><br />
 <span class="description">Separator symbol in between breadcrumb links</span>
 <?php
   }
@@ -688,7 +688,7 @@ jQuery(document).ready(function($) {
   {
     $govph_custom_pst = !empty($this->options['govph_custom_pst']) ? $this->options['govph_custom_pst'] : '#ffffff';
   ?>
-<input name="govph_options[govph_custom_pst]" type="text" value="<?php echo $this->options['govph_custom_pst']; ?>"
+<input name="govph_options[govph_custom_pst]" type="text" value="<?php echo esc_attr( $this->options['govph_custom_pst'] ); ?>"
     class="my-color-field" id="color-field-pst" data-default-color="#ffffff" />
 <br><span class="description">Philippine Standard Time (PST) font customization</span>
 <?php
@@ -698,7 +698,7 @@ jQuery(document).ready(function($) {
   {
   ?>
 <input name="govph_options[govph_custom_anchorcolor]" type="text"
-    value="<?php echo $this->options['govph_custom_anchorcolor']; ?>" class="my-color-field" id="color-field-anchor"
+    value="<?php echo esc_attr( $this->options['govph_custom_anchorcolor'] ); ?>" class="my-color-field" id="color-field-anchor"
     data-default-color="#2ba6cb" />
 <br><span class="description">Change active links font color</span>
 <?php
@@ -708,7 +708,7 @@ jQuery(document).ready(function($) {
   {
   ?>
 <input name="govph_options[govph_custom_anchorcolor_hover]" type="text"
-    value="<?php echo $this->options['govph_custom_anchorcolor_hover']; ?>" class="my-color-field"
+    value="<?php echo esc_attr( $this->options['govph_custom_anchorcolor_hover'] ); ?>" class="my-color-field"
     id="color-field-anchor-hover" data-default-color="#258faf" />
 <br><span class="description">Change active links font color</span>
 <?php
@@ -719,7 +719,7 @@ jQuery(document).ready(function($) {
     $govph_custom_panel_top = !empty($this->options['govph_custom_panel_top']) ? $this->options['govph_custom_panel_top'] : '#fffff';
   ?>
 <input name="govph_options[govph_custom_panel_top]" type="text"
-    value="<?php echo $this->options['govph_custom_panel_top']; ?>" class="my-color-field" id="color-field-panel-top"
+    value="<?php echo esc_attr( $this->options['govph_custom_panel_top'] ); ?>" class="my-color-field" id="color-field-panel-top"
     data-default-color="#ffffff" />
 <br><span class="description">Background color for Panel Top section</span>
 <?php
@@ -730,7 +730,7 @@ jQuery(document).ready(function($) {
     $govph_custom_border_color = !empty($this->options['govph_custom_border_color']) ? $this->options['govph_custom_panel_bottom'] : '#fffff';
   ?>
 <input name="govph_options[govph_custom_panel_bottom]" type="text"
-    value="<?php echo $this->options['govph_custom_panel_bottom']; ?>" class="my-color-field"
+    value="<?php echo esc_attr( $this->options['govph_custom_panel_bottom'] ); ?>" class="my-color-field"
     id="color-field-panel-bottom" data-default-color="#fffff" />
 <br><span class="description">Background color for Panel Bottom section</span>
 <?php
@@ -795,7 +795,7 @@ jQuery(document).ready(function($) {
     $govph_custom_border_color = !empty($this->options['govph_custom_border_color']) ? $this->options['govph_custom_border_color'] : '#bfbfbf';
   ?>
 <input name="govph_options[govph_custom_border_color]" type="text"
-    value="<?php echo $this->options['govph_custom_border_color']; ?>" class="my-color-field"
+    value="<?php echo esc_attr( $this->options['govph_custom_border_color'] ); ?>" class="my-color-field"
     id="color-field-border-color" data-default-color="#bfbfbf" />
 <br><span class="description">Border color for widgets and main content area</span>
 <?php
@@ -806,7 +806,7 @@ jQuery(document).ready(function($) {
     $govph_custom_background_color = !empty($this->options['govph_custom_background_color']) ? $this->options['govph_custom_background_color'] : '#fcfcfc';
   ?>
 <input name="govph_options[govph_custom_background_color]" type="text"
-    value="<?php echo $this->options['govph_custom_background_color']; ?>" class="my-color-field"
+    value="<?php echo esc_attr( $this->options['govph_custom_background_color'] ); ?>" class="my-color-field"
     id="color-field-widget-bg" data-default-color="#fcfcfc" />
 <br><span class="description">Background color for widgets and main content area</span>
 <?php
@@ -884,7 +884,7 @@ jQuery(document).ready(function($) {
     $govph_custom_footer_background_color = !empty($this->options['govph_custom_footer_background_color']) ? $this->options['govph_custom_footer_background_color'] : '#002642';
   ?>
 <input name="govph_options[govph_custom_footer_background_color]" type="text"
-    value="<?php echo $this->options['govph_custom_footer_background_color']; ?>" class="my-color-field"
+    value="<?php echo esc_attr( $this->options['govph_custom_footer_background_color'] ); ?>" class="my-color-field"
     id="color-field-footer-bg" data-default-color="#002642" />
 <br><span class="description">Background color for agency footer section</span>
 <?php
@@ -911,7 +911,7 @@ jQuery(document).ready(function($) {
   public function govph_content_pub_date_lbl(){
     $default = !empty($this->options['govph_content_pub_date_lbl']) ? $this->options['govph_content_pub_date_lbl'] : 'Posted on';
   ?>
-<input type="text" name="govph_options[govph_content_pub_date_lbl]" value="<?php echo $default ?>"><br />
+<input type="text" name="govph_options[govph_content_pub_date_lbl]" value="<?php echo esc_attr( $default ); ?>"><br />
 <span class="description">Publish date display label</span>
 <?php
   }
@@ -927,7 +927,7 @@ jQuery(document).ready(function($) {
   public function govph_content_pub_author_lbl(){
     $default = !empty($this->options['govph_content_pub_author_lbl']) ? $this->options['govph_content_pub_author_lbl'] : 'by';
   ?>
-<input type="text" name="govph_options[govph_content_pub_author_lbl]" value="<?php echo $default ?>"><br />
+<input type="text" name="govph_options[govph_content_pub_author_lbl]" value="<?php echo esc_attr( $default ); ?>"><br />
 <span class="description">Publish author display label<br /></span>
 <?php
   }
@@ -960,7 +960,7 @@ jQuery(document).ready(function($) {
     $value = $this->options['govph_acc_link_statement'] ? $this->options['govph_acc_link_statement'] : '';
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
-<input type="text" name="govph_options[govph_acc_link_statement]" value="<?php echo $value ?>"><br />
+<input type="text" name="govph_options[govph_acc_link_statement]" value="<?php echo esc_attr( $value ); ?>"><br />
 <span class="description">Statement accessibility page</span>
 <?php
   }
@@ -970,7 +970,7 @@ jQuery(document).ready(function($) {
     $value = $this->options['govph_acc_link_home'] ? $this->options['govph_acc_link_home'] : '';
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
-<input type="text" name="govph_options[govph_acc_link_home]" value="<?php echo $value ?>"><br />
+<input type="text" name="govph_options[govph_acc_link_home]" value="<?php echo esc_attr( $value ); ?>"><br />
 <span class="description">The home page of the website<br />Default: blank</span>
 <?php
   }
@@ -980,7 +980,7 @@ jQuery(document).ready(function($) {
     $value = $this->options['govph_acc_link_main_content'] ? $this->options['govph_acc_link_main_content'] : '#main-content';
   ?>
 <span class="field-prefix">{current_url}/ </span>
-<input type="text" name="govph_options[govph_acc_link_main_content]" value="<?php echo $value ?>"><br />
+<input type="text" name="govph_options[govph_acc_link_main_content]" value="<?php echo esc_attr( $value ); ?>"><br />
 <span class="description">Default: #main-content</span>
 <?php
   }
@@ -990,7 +990,7 @@ jQuery(document).ready(function($) {
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
 <input type="text" name="govph_options[govph_acc_link_contact]"
-    value="<?php echo $this->options['govph_acc_link_contact'] ?>">
+    value="<?php echo esc_attr( $this->options['govph_acc_link_contact'] ); ?>">
 <?php
   }
 
@@ -999,7 +999,7 @@ jQuery(document).ready(function($) {
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
 <input type="text" name="govph_options[govph_acc_link_feedback]"
-    value="<?php echo $this->options['govph_acc_link_feedback'] ?>">
+    value="<?php echo esc_attr( $this->options['govph_acc_link_feedback'] ); ?>">
 <?php
   }
 
@@ -1007,7 +1007,7 @@ jQuery(document).ready(function($) {
   {
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
-<input type="text" name="govph_options[govph_acc_link_faq]" value="<?php echo $this->options['govph_acc_link_faq'] ?>">
+<input type="text" name="govph_options[govph_acc_link_faq]" value="<?php echo esc_attr( $this->options['govph_acc_link_faq'] ); ?>">
 <?php
   }
 
@@ -1016,7 +1016,7 @@ jQuery(document).ready(function($) {
     $value = $this->options['govph_acc_link_sitemap'] ? $this->options['govph_acc_link_sitemap'] : '#gwt-standard-footer';
   ?>
 <span class="field-prefix">{current_url}/ </span>
-<input type="text" name="govph_options[govph_acc_link_sitemap]" value="<?php echo $value ?>"><br />
+<input type="text" name="govph_options[govph_acc_link_sitemap]" value="<?php echo esc_attr( $value ); ?>"><br />
 <span class="description">Note: If the sitemap is a page, use the full URL of the website:
     <?php echo get_site_url(); ?>/{sitemap_page}<br />
     Default: #gwt-standard-footer</span>
@@ -1028,7 +1028,7 @@ jQuery(document).ready(function($) {
   ?>
 <span class="field-prefix"><?php echo get_site_url(); ?>/ </span>
 <input type="text" name="govph_options[govph_acc_link_search]"
-    value="<?php echo $this->options['govph_acc_link_search'] ?>"><br />
+    value="<?php echo esc_attr( $this->options['govph_acc_link_search'] ); ?>"><br />
 <span class="description">Note: Create a new page by going to "Pages" and click "Add New" button. <br />In the content
     area,
     click "Add
@@ -1039,6 +1039,57 @@ jQuery(document).ready(function($) {
 </span>
 <?php
   }
+}
+
+/**
+ * Sanitize callback for govph_options.
+ * Runs on every settings save to strip dangerous values.
+ */
+if (!function_exists('govph_sanitize_options')) {
+    function govph_sanitize_options( $input ) {
+        $color_fields = array(
+            'govph_headercolor','govph_header_font_color','govph_slidercolor',
+            'govph_custom_pst','govph_custom_anchorcolor','govph_custom_anchorcolor_hover',
+            'govph_custom_panel_top','govph_custom_panel_bottom','govph_custom_border_color',
+            'govph_custom_background_color','govph_custom_footer_background_color',
+        );
+        foreach ( $color_fields as $key ) {
+            if ( isset( $input[ $key ] ) ) {
+                $input[ $key ] = sanitize_hex_color( $input[ $key ] );
+            }
+        }
+
+        $url_fields = array(
+            'govph_logo','govph_headerimage','govph_sliderimage',
+            'govph_acc_link_home','govph_acc_link_contact','govph_acc_link_feedback',
+            'govph_acc_link_faq','govph_acc_link_search','govph_acc_link_statement',
+        );
+        foreach ( $url_fields as $key ) {
+            if ( isset( $input[ $key ] ) ) {
+                $input[ $key ] = esc_url_raw( $input[ $key ] );
+            }
+        }
+
+        $text_fields = array(
+            'govph_agency_name','govph_agency_tagline',
+            'govph_breadcrumbs_separator','govph_content_pub_date_lbl',
+            'govph_content_pub_author_lbl',
+        );
+        foreach ( $text_fields as $key ) {
+            if ( isset( $input[ $key ] ) ) {
+                $input[ $key ] = sanitize_text_field( $input[ $key ] );
+            }
+        }
+
+        $int_fields = array('govph_custom_border_width','govph_custom_border_radius');
+        foreach ( $int_fields as $key ) {
+            if ( isset( $input[ $key ] ) ) {
+                $input[ $key ] = intval( $input[ $key ] );
+            }
+        }
+
+        return $input;
+    }
 }
 
 add_action('admin_menu', 'govph_options_menu');
@@ -1076,12 +1127,12 @@ if (!function_exists('govph_displayoptions')) {
 				return ( ! empty( $option['govph_logo_enable'] ) && $option['govph_logo_enable'] == 1 );
 				break;
 			case 'govph_logo_setting':
-				$logoSetting = ( ! empty( $option['govph_header_font_color'] ) ? 'color:' . $option['govph_header_font_color'] . ';' : '' );
-				$logoSetting .= ( ! empty( $option['govph_logo_position'] ) ? 'text-align:' . $option['govph_logo_position'] . ';' : '' );
+				$logoSetting = ( ! empty( $option['govph_header_font_color'] ) ? 'color:' . sanitize_hex_color( $option['govph_header_font_color'] ) . ';' : '' );
+				$logoSetting .= ( ! empty( $option['govph_logo_position'] ) ? 'text-align:' . esc_attr( $option['govph_logo_position'] ) . ';' : '' );
 				echo $logoSetting;
 				break;
 			case 'govph_logo':
-				$logo_image = ( ! empty( $option['govph_logo'] ) ? $option['govph_logo'] : get_template_directory_uri() . '/images/logo-masthead-large.png' );
+				$logo_image = ( ! empty( $option['govph_logo'] ) ? esc_url( $option['govph_logo'] ) : esc_url( get_template_directory_uri() . '/images/logo-masthead-large.png' ) );
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
 					'<a rel="home" href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center">
                         <div class="gap-1 w-fit hidden md:block">
@@ -1091,27 +1142,28 @@ if (!function_exists('govph_displayoptions')) {
                             <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
                                 <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
-                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
-                                <img draggable="false" alt="' . ( $option['govph_agency_name'] ?? 'Company Name' ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" />
+                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit"> <!-- Added flex container class -->
+                                <img draggable="false" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" /> <!-- Added h-full class -->
                             </div>
                         </div>
-                         <div class="flex gap-1 relative md:hidden drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
-                            <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
-                            <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[20%] min-w-[2rem] mmx-0 md:mx-auto" /> 
-                            <img draggable="false" alt="' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
+                         <div class="flex gap-1 relative sm:hidden block drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
+                            <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" /> <!-- Added h-full class -->
+                            <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[20%] min-w-[2rem] mmx-0 md:mx-auto" /> <!-- Added h-full class -->
+                            <img draggable="false" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                         </div>
-                        <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white">
-                            <span id="agency-heading" class="sm:text-sm text-[0.5rem] uppercase !font-lato font-light !leading-tight">Department of Agriculture</span>
-                            <span id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] !font-spartan font-extrabold !leading-none">' .  ( $option['govph_agency_name'] ?? 'Company Name' ) . '</span>
-                            <span id="agency-tagline" class="text-[0.7rem] md:text-sm lg:text-lg  capitalize !font-lato font-light !leading-none">' . ( $option['govph_agency_tagline'] ?? 'Agency Tag Line' ) . '</span>
+                        <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white"> <!-- Added flex container class and padding -->
+                            <!--<div id="agency-heading">Republic of the Philippines</div>-->
+                            <p id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] capitalize m-0">Department of Agriculture</p>
+                            <p id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] drop-shadow-lg font-league font-bold m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
+                            <p id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize m-0">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
                         </div>
                     </a>';
 
 				echo $addLogo;
 				break;
 			case 'govph_header_setting':
-				$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . $option['govph_headercolor'] . ';' : '' );
-				$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . $option['govph_headerimage'] . '");' : '' );
+				$headerSetting = ( ! empty( $option['govph_headercolor'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_headercolor'] ) . ';' : '' );
+				$headerSetting .= ( ! empty( $option['govph_headerimage'] ) ? 'background-image:url("' . esc_url( $option['govph_headerimage'] ) . '");' : '' );
                 //set background color to transparent
 				//$headerSetting = 'background-color:transparent;';
 				echo $headerSetting;
@@ -1124,8 +1176,8 @@ if (!function_exists('govph_displayoptions')) {
 				echo $backgroundHeaderImageSizeSetting;
 				break;
 			case 'govph_slider_setting':
-				$sliderSetting = ( ! empty( $option['govph_sliderimage'] ) ? 'background-image:url("' . $option['govph_sliderimage'] . '");background-size:cover;' : '' );
-				$sliderSetting .= ( ! empty( $option['govph_slidercolor'] ) ? 'background-color:' . $option['govph_slidercolor'] . ';' : '' );
+				$sliderSetting = ( ! empty( $option['govph_sliderimage'] ) ? 'background-image:url("' . esc_url( $option['govph_sliderimage'] ) . '");background-size:cover;' : '' );
+				$sliderSetting .= ( ! empty( $option['govph_slidercolor'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_slidercolor'] ) . ';' : '' );
 				if ($option['govph_slider_fullwidth'] == 'true' ) {
 					$sliderSetting .= 'padding: 0;';
 					$sliderSetting .= 'border-top: none;';
@@ -1133,11 +1185,11 @@ if (!function_exists('govph_displayoptions')) {
 				echo $sliderSetting;
 				break;
 			case 'govph_anchorcolor':
-				$anchorColor = ( ! empty( $option['govph_custom_anchorcolor'] ) ? 'color:' . $option['govph_custom_anchorcolor'] . ' !important;' : '' );
+				$anchorColor = ( ! empty( $option['govph_custom_anchorcolor'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_anchorcolor'] ) . ' !important;' : '' );
 				echo $anchorColor;
 				break;
 			case 'govph_anchorcolor_hover':
-				$anchorColor = ( ! empty( $option['govph_custom_anchorcolor_hover'] ) ? 'color:' . $option['govph_custom_anchorcolor_hover'] . ' !important;' : '' );
+				$anchorColor = ( ! empty( $option['govph_custom_anchorcolor_hover'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_anchorcolor_hover'] ) . ' !important;' : '' );
 				echo $anchorColor;
 				break;
 			case 'govph_disable_search':
@@ -1398,58 +1450,62 @@ if (!function_exists('govph_displayoptions')) {
 				return isset( $option['govph_content_pub_author_lbl'] ) ? $option['govph_content_pub_author_lbl'] : '';
 				break;
 			case 'govph_custom_pst':
-				$bg = ( ! empty( $option['govph_custom_pst'] ) ? 'color:' . $option['govph_custom_pst'] . ';' : '' );
+				$bg = ( ! empty( $option['govph_custom_pst'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_pst'] ) . ';' : '' );
 				echo $bg;
 				break;
 			case 'govph_custom_panel_top':
-				$bg = ( ! empty( $option['govph_custom_panel_top'] ) ? 'background-color:' . $option['govph_custom_panel_top'] . ';' : '' );
+				$bg = ( ! empty( $option['govph_custom_panel_top'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_custom_panel_top'] ) . ';' : '' );
 				echo $bg;
 				break;
 			case 'govph_custom_panel_bottom':
-				$bg = ( ! empty( $option['govph_custom_panel_bottom'] ) ? 'background-color:' . $option['govph_custom_panel_bottom'] . ';' : '' );
+				$bg = ( ! empty( $option['govph_custom_panel_bottom'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_custom_panel_bottom'] ) . ';' : '' );
 				echo $bg;
 				break;
 			case 'govph_widget_setting':
-				$widgetSetting = isset( $option['govph_custom_border_width'] ) ? 'border:' . $option['govph_custom_border_width'] . 'px solid' : '0';
-				$widgetSetting .= ( ! empty( $option['govph_custom_border_color'] ) ? ' ' . $option['govph_custom_border_color'] . ';' : '' );
-				$widgetSetting .= isset( $option['govph_custom_border_radius'] ) ? 'border-radius:' . $option['govph_custom_border_radius'] . 'px ;' : '0';
-				$widgetSetting .= ( ! empty( $option['govph_custom_background_color'] ) ? 'background-color:' . $option['govph_custom_background_color'] . ';' : '' );
+				$widgetSetting = isset( $option['govph_custom_border_width'] ) ? 'border:' . intval( $option['govph_custom_border_width'] ) . 'px solid' : '0';
+				$widgetSetting .= ( ! empty( $option['govph_custom_border_color'] ) ? ' ' . sanitize_hex_color( $option['govph_custom_border_color'] ) . ';' : '' );
+				$widgetSetting .= isset( $option['govph_custom_border_radius'] ) ? 'border-radius:' . intval( $option['govph_custom_border_radius'] ) . 'px ;' : '0';
+				$widgetSetting .= ( ! empty( $option['govph_custom_background_color'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_custom_background_color'] ) . ';' : '' );
 				echo $widgetSetting;
 				break;
 			case 'govph_menu_color_setting':
 				$menuSetting = '';
-				$menuSetting .= ( ! empty( $option['govph_custom_menu_color'] ) ? 'background-color:' . $option['govph_custom_menu_color'] . ';' : '' );
+				$menuSetting .= ( ! empty( $option['govph_custom_menu_color'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_custom_menu_color'] ) . ';' : '' );
 				echo $menuSetting;
 				break;
 			case 'govph_menu_font_setting':
 				$menuFontSetting = '';
-				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . $option['govph_custom_menu_font_color'] . ';' : '' );
-				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'border-color:' . $option['govph_custom_menu_font_color'] . ' ' . 'transparent;' : '' );
+				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_menu_font_color'] ) . ';' : '' );
+				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'border-color:' . sanitize_hex_color( $option['govph_custom_menu_font_color'] ) . ' ' . 'transparent;' : '' );
 				echo $menuFontSetting;
 				break;
 			// $menuFontSetting .= (!empty($option['govph_custom_menu_font_color']) ? 'border-color:'.$option['govph_custom_menu_font_color'].' '.'transparent;' : '');
 			case 'govph_menu_font_hover_setting':
 				$menuFontHoverSetting = '';
-				$menuFontHoverSetting .= ( ! empty( $option['govph_custom_menu_font_color_hover'] ) ? 'color:' . $option['govph_custom_menu_font_color_hover'] . ';' : '' );
+				$menuFontHoverSetting .= ( ! empty( $option['govph_custom_menu_font_color_hover'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_menu_font_color_hover'] ) . ';' : '' );
 				echo $menuFontHoverSetting;
 				break;
 			case 'govph_menu_font_accessibility_setting':
 				$menuFontSetting = '';
-				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . $option['govph_custom_menu_font_color'] . ';' : '' );
+				$menuFontSetting .= ( ! empty( $option['govph_custom_menu_font_color'] ) ? 'color:' . sanitize_hex_color( $option['govph_custom_menu_font_color'] ) . ';' : '' );
 				echo $menuFontSetting;
 				break;
 			case 'govph_headings_setting':
-				$headings = ( ! empty( $option['govph_custom_headings_text'] ) ? 'text-transform:' . $option['govph_custom_headings_text'] . ';' : '' );
-				$headings .= ( ! empty( $option['govph_custom_headings_size'] ) ? 'font-size:' . $option['govph_custom_headings_size'] . 'em;' : '' );
+				$allowed_transforms = array('none','capitalize','uppercase','lowercase');
+				$transform_val = ! empty( $option['govph_custom_headings_text'] ) && in_array( $option['govph_custom_headings_text'], $allowed_transforms, true ) ? $option['govph_custom_headings_text'] : '';
+				$headings = $transform_val ? 'text-transform:' . $transform_val . ';' : '';
+				$headings .= ( ! empty( $option['govph_custom_headings_size'] ) ? 'font-size:' . floatval( $option['govph_custom_headings_size'] ) . 'em;' : '' );
 				echo $headings;
 				break;
 			case 'govph_inner_headings_setting':
-				$size = ( ! empty( $option['govph_custom_headings_inner_page_size'] ) ? 'font-size:' . $option['govph_custom_headings_inner_page_size'] . 'em;' : '' );
-				$size .= ( ! empty( $option['govph_custom_headings_text'] ) ? 'text-transform:' . $option['govph_custom_headings_text'] . ';' : '' );
+				$allowed_transforms = array('none','capitalize','uppercase','lowercase');
+				$size = ( ! empty( $option['govph_custom_headings_inner_page_size'] ) ? 'font-size:' . floatval( $option['govph_custom_headings_inner_page_size'] ) . 'em;' : '' );
+				$transform_val = ! empty( $option['govph_custom_headings_text'] ) && in_array( $option['govph_custom_headings_text'], $allowed_transforms, true ) ? $option['govph_custom_headings_text'] : '';
+				$size .= $transform_val ? 'text-transform:' . $transform_val . ';' : '';
 				echo $size;
 				break;
 			case 'govph_custom_footer_background_color':
-				$bg = ( ! empty( $option['govph_custom_footer_background_color'] ) ? 'background-color:' . $option['govph_custom_footer_background_color'] . ';' : '' );
+				$bg = ( ! empty( $option['govph_custom_footer_background_color'] ) ? 'background-color:' . sanitize_hex_color( $option['govph_custom_footer_background_color'] ) . ';' : '' );
 				echo $bg;
 				break;
 

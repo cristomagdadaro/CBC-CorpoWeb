@@ -4,15 +4,14 @@
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=League+Spartan:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Tailwind CDN removed for production (supply-chain risk + dev-only). Use a locally-compiled Tailwind CSS build instead. -->
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title><?php wp_title( '|', true, 'right' ); ?></title>
     <link rel="profile" href="http://gmpg.org/xfn/11">
     <?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
         <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 	<?php endif; ?>
-    <link rel="icon" href="<?php echo get_template_directory_uri() ?>/favicon.ico">
+    <link rel="icon" href="<?php echo esc_url( get_template_directory_uri() . '/favicon.ico' ); ?>">
 	<?php wp_head(); ?>
 
     <style>
@@ -208,7 +207,7 @@
         }
     </style>
     <script type="text/javascript" language="javascript">
-        var template_directory = '<?php echo get_template_directory_uri() ?>';
+        var template_directory = '<?php echo esc_js( get_template_directory_uri() ); ?>';
     </script>
 </head>
 <?php
@@ -221,25 +220,25 @@ error_log("FB_DEBUG UA: " . ($_SERVER['HTTP_USER_AGENT'] ?? '[none]') . " -- REQ
         <li><a href="#" class="skips toggle-statement" title="Toggle Accessibility Statement" accesskey="0"
                data-toggle="a11y-modal">Toggle Accessibility Statement</a></li>
 		<?php if ( $govph_acc_link_home = govph_displayoptions( 'govph_acc_link_home' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_home; ?>" accesskey="h">Home</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_home ); ?>" accesskey="h">Home</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_contact = govph_displayoptions( 'govph_acc_link_contact' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_contact; ?>" accesskey="c">Contacts</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_contact ); ?>" accesskey="c">Contacts</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_feedback = govph_displayoptions( 'govph_acc_link_feedback' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_feedback; ?>" accesskey="k">Feedback</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_feedback ); ?>" accesskey="k">Feedback</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_faq = govph_displayoptions( 'govph_acc_link_faq' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_faq; ?>" accesskey="q">FAQ</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_faq ); ?>" accesskey="q">FAQ</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_search = govph_displayoptions( 'govph_acc_link_search' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_search; ?>" accesskey="s">Search</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_search ); ?>" accesskey="s">Search</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_main_content = govph_displayoptions( 'govph_acc_link_main_content' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_main_content; ?>" accesskey="R">Skip to Main Content</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_main_content ); ?>" accesskey="R">Skip to Main Content</a></li>
 		<?php endif; ?>
 		<?php if ( $govph_acc_link_sitemap = govph_displayoptions( 'govph_acc_link_sitemap' ) ): ?>
-            <li><a href="<?php echo $govph_acc_link_sitemap; ?>" accesskey="M">Sitemap</a></li>
+            <li><a href="<?php echo esc_url( $govph_acc_link_sitemap ); ?>" accesskey="M">Sitemap</a></li>
 		<?php endif; ?>
     </ul>
 </div>
@@ -346,8 +345,8 @@ Press esc, or click the close the button to close this dialog box.
                     <!-- masthead -->
                     <header class="container-masthead border-none text-black w-full">
                         <div class="row p-0 mx-auto border-none w-full">
-                            <h1 class="<?php echo $name_slogan_class ?> select-none w-full" draggable="false">
-                                <a id="368" href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                            <h1 class="<?php echo esc_attr( $name_slogan_class ); ?> select-none w-full" draggable="false">
+                                <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
                                    draggable="false"
                                    title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
                                    rel="home" class="w-full flex"></a>
@@ -375,14 +374,16 @@ Press esc, or click the close the button to close this dialog box.
                         <!-- masthead -->
                         <header class="container-masthead">
                             <div class="row sm:py-0 py-2 mx-auto">
-                                <h1 class="<?php echo $name_slogan_class ?> columns select-none w-full" draggable="false">
-                                    <?php govph_displayoptions( 'govph_logo' ); ?>
+                                <h1 class="<?php echo esc_attr( $name_slogan_class ); ?> columns select-none w-full" draggable="false">
+                                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                       title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                                       rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
                                 </h1>
 
 				                <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
-                                    <div class="<?php echo $ear_content_class ?> columns">
-					                <?php do_action( 'before_sidebar' ); ?>
-					                <?php dynamic_sidebar( 'ear-content-1' ) ?>
+                                    <div class="<?php echo esc_attr( $ear_content_class ); ?> columns">
+						                <?php do_action( 'before_sidebar' ); ?>
+						                <?php dynamic_sidebar( 'ear-content-1' ) ?>
                                     </div>
 				                <?php endif; ?>
                             </div>
@@ -391,8 +392,8 @@ Press esc, or click the close the button to close this dialog box.
                     </nav>
                     <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1 my-auto">
                         <!-- Philippine Standard Timeewe -->
-			                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                            <div class="<?php echo $ear_content_2_class ?> m-0">
+		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
+                            <div class="<?php echo esc_attr( $ear_content_2_class ); ?> m-0">
 				                <?php do_action( 'before_sidebar' ); ?>
 				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
                             </div>
@@ -411,7 +412,7 @@ Press esc, or click the close the button to close this dialog box.
             </div>
             <div class="row hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
-                    <ul class="dropdown menu flex w-full flex-row justify-between" data-dropdown-menu>
+                    <ul class="dropdown menu flex w-full flex-row justify-between mt-2" data-dropdown-menu>
                        <!-- <li class=" nav-item">
                             <a href="https://www.gov.ph">GOVPH</a>
                         </li>-->

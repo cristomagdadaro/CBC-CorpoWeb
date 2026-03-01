@@ -126,7 +126,7 @@
                         </div>
                     </div>
                     <div class="text-center text-white py-1 text-xs">
-                        <a href="http://philrice.gov.ph/" target="_blank">Powered by Philippine Rice Research Institute (PhilRice)</a>
+                        Copyright &copy; Department of Agriculture - Crop Biotechnology Center <?php echo date('Y'); ?>. All rights reserved.
                     </div>
                 </div>
             </div>
@@ -220,13 +220,20 @@
 <!-- end scroll reveal -->
 
 <!-- standard footer script -->
+<!--
+  NOTE: SRI (Subresource Integrity) cannot be added to these gov.ph scripts because:
+  1. The PST script uses a cache-busting timestamp (?new Date().getTime()) which changes the URL each load.
+  2. The footer.js may be updated by iGovPhil without notice, breaking any pinned hash.
+  crossorigin="anonymous" is added for CORS compliance.
+-->
 <script type="text/javascript">
     (function (d, s, id) {
         var js, gjs = d.getElementById('gwt-standard-footer');
 
         js = d.createElement(s);
         js.id = id;
-        js.src = "//gwhs.i.gov.ph/gwt-footer/footer.js";
+        js.crossOrigin = 'anonymous';
+        js.src = "https://gwhs.i.gov.ph/gwt-footer/footer.js";
         gjs.parentNode.insertBefore(js, gjs);
     }(document, 'script', 'gwt-footer-jsdk'));
 </script>
@@ -237,7 +244,8 @@
         var js, gjs = d.getElementById(eId);
         js = d.createElement('script');
         js.id = 'gwt-pst-jsdk';
-        js.src = "//gwhs.i.gov.ph/pst/gwtpst.js?" + new Date().getTime();
+        js.crossOrigin = 'anonymous';
+        js.src = "https://gwhs.i.gov.ph/pst/gwtpst.js?" + new Date().getTime();
         gjs.parentNode.insertBefore(js, gjs);
     }(document, 'gwt-pst'));
 

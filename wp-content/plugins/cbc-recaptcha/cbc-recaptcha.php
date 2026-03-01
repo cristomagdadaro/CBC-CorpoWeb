@@ -12,60 +12,77 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Add the Google reCAPTCHA script to the head section of the site.
+ * Add the Google reCAPTCHA v2 Checkbox script to the head section of the site.
  */
 add_action('wp_head', function() {
-	if ( !defined('CBC_AI_RECAPTCHA_SITE_KEY') ) {
-		return false;
+	if ( ! defined('CBC_AI_RECAPTCHA_SITE_KEY') ) {
+		return;
 	}
 
 	$site_key = CBC_AI_RECAPTCHA_SITE_KEY;
 
-    echo '<script src="https://www.google.com/recaptcha/api.js?render="' . $site_key . ' async defer></script>' . "\n";
+    echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' . "\n";
 });
 
 /**
- * Verify the Google reCAPTCHA response.
+ * Verify the Google reCAPTCHA v2 response.
  *
  * This function can be called from any form processing logic to verify the reCAPTCHA token.
  *
  * Usage:
  * if ( isset( $_POST['g-recaptcha-response'] ) ) {
- *     if ( function_exists( 'cbc_recaptcha_verify' ) && cbc_recaptcha_verify( $_POST['g-recaptcha-response'] ) ) {
+ *     if ( function_exists( 'cbc_recaptcha_verify' ) && cbc_recaptcha_verify( sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) ) ) {
  *         // reCAPTCHA verification passed. Process the form.
  *     } else {
  *         // reCAPTCHA verification failed.
  *     }
  * }
  *
- * @param string $token The reCAPTCHA token from the form submission (e.g., $_POST['g-recaptcha-response']).
- * @return boolean True if the verification is successful, false otherwise.
+ * @param string $token The reCAPTCHA token from the form submission.
+ * @return boolean True if verification successful, false otherwise.
  */
 function cbc_recaptcha_verify( $token ) {
-    if ( !defined('CBC_AI_RECAPTCHA_SECRET') ) {
+    // Validate token is not empty
+    if ( empty( $token ) || ! is_string( $token ) ) {
+        return false;
+    }
+
+    if ( ! defined('CBC_AI_RECAPTCHA_SECRET') ) {
+        error_log('reCAPTCHA secret key not defined');
         return false;
     }
 
     $secret_key = CBC_AI_RECAPTCHA_SECRET;
 
-    $response = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', [
-        'body' => [
+    // Sanitize remote IP
+    $remote_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+
+    $response = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
+        'body'    => array(
             'secret'   => $secret_key,
             'response' => $token,
-            'remoteip' => $_SERVER['REMOTE_ADDR'],
-        ],
-    ]);
+            'remoteip' => $remote_ip,
+        ),
+        'timeout' => 5,
+        'sslverify' => true,
+    ) );
 
     if ( is_wp_error( $response ) ) {
-        error_log('reCAPTCHA verification request failed: ' . $response->get_error_message());
+        error_log('reCAPTCHA API error: ' . $response->get_error_message());
         return false;
     }
 
     $body = wp_remote_retrieve_body( $response );
     $result = json_decode( $body, true );
 
+    // Check for successful verification
     if ( isset( $result['success'] ) && $result['success'] === true ) {
         return true;
+    }
+
+    // Log failed verification details for debugging
+    if ( isset( $result['error-codes'] ) ) {
+        error_log('reCAPTCHA verification failed: ' . implode(', ', $result['error-codes']));
     }
 
     return false;

@@ -112,9 +112,8 @@ function cbc_ai_sanitize_settings($input): array {
     if (!is_array($input)) { $input = array(); }
     $out = cbc_ai_get_settings();
     $prov = $input['provider'] ?? '';
-    $out['provider'] = in_array($prov, array('openai','openrouter','lmstudio'), true) ? $prov : $out['provider'];
-    $out['api_key'] = trim((string)($input['api_key'] ?? $out['api_key']));
-    $out['api_url'] = esc_url_raw($input['api_url'] ?? $out['api_url']);
+    $out['provider'] = in_array($prov, array('openai','openrouter'), true) ? $prov : $out['provider'];
+    $out['api_key'] = sanitize_text_field(trim((string)($input['api_key'] ?? $out['api_key'])));
     $out['openai_org'] = sanitize_text_field($input['openai_org'] ?? $out['openai_org']);
     $out['model'] = sanitize_text_field($input['model'] ?? $out['model']);
     $out['temperature'] = is_numeric($input['temperature'] ?? null) ? max(0, min(2, floatval($input['temperature']))) : $out['temperature'];
@@ -152,9 +151,9 @@ function cbc_ai_render_settings_page(): void {
 function cbc_ai_field_provider($args): void {
     $opts = array('openai' => 'OpenAI', 'openrouter' => 'OpenRouter', 'lmstudio' => 'LM Studio');
     $val = cbc_ai_get_settings()['provider'] ?? '';
-    $html = "<select id='{$args['label_for']}' name='" . CBC_AI_OPT . "[provider]'>";
+    $html = "<select id='" . esc_attr($args['label_for']) . "' name='" . esc_attr(CBC_AI_OPT) . "[provider]'>";
     foreach ($opts as $k => $v) {
-        $html .= "<option value='{$k}'" . selected($val, $k, false) . ">{$v}</option>";
+        $html .= "<option value='" . esc_attr($k) . "'" . selected($val, $k, false) . ">" . esc_html($v) . "</option>";
     }
     $html .= "</select>";
     echo $html;
@@ -419,7 +418,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     }
 
     // Simple rate limit: 1 request per 10 seconds per IP
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0.0.0.0';
     $key = 'cbc_ai_last_' . md5($ip);
     $last = get_transient($key);
     if ($last && (time() - intval($last) < 10)) { return new WP_REST_Response(array('error' => 'Please wait a few seconds before asking another question.'), 429); }

@@ -7,7 +7,7 @@
  */
 
 get_header();
-include_once('inc/banner.php');
+include_once( get_template_directory() . '/inc/banner.php' );
 ?>
 <?php govph_displayoptions( 'govph_panel_top' ); ?>
 

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Configuration
 wp-config.php
 /wp-config.php
@@ -5,3 +6,41 @@ wp-content/cache/
 /wp-content/cache
 deploy_log.txt
 /deploy_log.txt
+=======
+# Database dumps
+*.sql
+*.sql.gz
+*.sql.bak
+
+# Environment & secrets
+.env
+.env.*
+wp-config-local.php
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Logs
+*.log
+debug.log
+error_log
+
+# Uploads (optional — uncomment if not tracking media)
+# wp-content/uploads/
+
+# Node / build tools
+node_modules/
+package-lock.json

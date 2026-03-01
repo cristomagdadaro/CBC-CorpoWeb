@@ -37,7 +37,7 @@ class BRM_Plugin {
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
         add_action( 'wp_ajax_brm_save_link', array( $this, 'handle_ajax_save_link' ) );
-        add_action( 'wp_ajax_nopriv_brm_save_link', array( $this, 'handle_ajax_save_link' ) );
+        // NOTE: wp_ajax_nopriv intentionally removed - only authenticated users + admin can create links
         add_action( 'wp_ajax_brm_regenerate_qr', array( $this, 'handle_ajax_regenerate_qr' ) );
         add_action( 'admin_post_brm_delete_link', array( $this, 'admin_delete_link' ) );
 
@@ -50,13 +50,13 @@ class BRM_Plugin {
     }
 
     /**
-     * Helper function to generate a random slug.
+     * Helper function to generate a cryptographically secure random slug.
      */
     private function generate_random_slug( $length = 9 ) {
         $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         $result = "";
         for ( $i = 0; $i < $length; $i ++ ) {
-            $result .= $chars[ rand( 0, strlen( $chars ) - 1 ) ];
+            $result .= $chars[ wp_rand( 0, strlen( $chars ) - 1 ) ];
         }
         return $result;
     }
@@ -111,7 +111,16 @@ class BRM_Plugin {
         }
 
         global $wpdb;
-        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE slug = %s AND status = 1", $slug ) );
+        // Try to get from cache first (1 hour TTL for performance)
+        $cache_key = 'brm_redirect_' . md5( $slug );
+        $row = get_transient( $cache_key );
+        
+        if ( $row === false ) {
+            $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE slug = %s AND status = 1", $slug ) );
+            if ( $row ) {
+                set_transient( $cache_key, $row, HOUR_IN_SECONDS );
+            }
+        }
         if ( ! $row ) {
             wp_redirect( home_url() );
             exit;
@@ -192,8 +201,16 @@ class BRM_Plugin {
             exit;
         }
 
-        // Increment click count
-        $wpdb->query( $wpdb->prepare( "UPDATE {$this->table} SET clicks = clicks + 1 WHERE id = %d", $row->id ) );
+        // Increment click count asynchronously via transient (batch updates - flush every 50 clicks for performance)
+        $click_counter_key = 'brm_clicks_batch_' . $row->id;
+        $click_batch = ( get_transient( $click_counter_key ) ?: 0 ) + 1;
+        set_transient( $click_counter_key, $click_batch, 3600 );
+        
+        // Flush batch to DB when threshold reached
+        if ( $click_batch >= 50 ) {
+            $wpdb->query( $wpdb->prepare( "UPDATE {$this->table} SET clicks = clicks + %d WHERE id = %d", $click_batch, $row->id ) );
+            delete_transient( $click_counter_key );
+        }
 
         // Prevent indexing
         header( 'X-Robots-Tag: noindex, nofollow', true );
@@ -201,7 +218,7 @@ class BRM_Plugin {
         // --- Custom OG Meta ---
         $og_title       = ! empty( $row->og_title ) ? $row->og_title : 'Redirecting | DA-Crop Biotechnology Center';
         $og_description = ! empty( $row->og_description ) ? $row->og_description : 'Redirecting to a verified DA-CBC resource.';
-        $og_image       = ! empty( $row->og_image ) ? $row->og_image : esc_html( $logo_image );
+        $og_image       = ! empty( $row->og_image ) ? $row->og_image : esc_url( $logo_image );
 
         status_header( 200 );
         echo '<!doctype html>
@@ -415,7 +432,17 @@ class BRM_Plugin {
         }
 
         global $wpdb;
-        $rows = $wpdb->get_results( "SELECT * FROM {$this->table} ORDER BY created DESC" );
+        // Pagination: 50 links per page
+        $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
+        $per_page = 50;
+        $offset = ( $paged - 1 ) * $per_page;
+        
+        // Total count for pagination
+        $total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table}" ) );
+        $total_pages = max( 1, ceil( $total / $per_page ) );
+        
+        // Fetch paginated results
+        $rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->table} ORDER BY created DESC LIMIT %d OFFSET %d", $per_page, $offset ) );
 
         $base_url = site_url( '/go/' );
         ?>
@@ -483,6 +510,24 @@ class BRM_Plugin {
                 <?php endif; ?>
                 </tbody>
             </table>
+            
+            <?php if ( $total_pages > 1 ): ?>
+                <div class="tablenav bottom">
+                    <div class="tablenav-pages">
+                        <?php
+                        echo paginate_links( array(
+                            'base'      => add_query_arg( 'paged', '%#%' ),
+                            'format'    => '',
+                            'prev_text' => esc_html__( '&laquo; Previous', 'brm' ),
+                            'next_text' => esc_html__( 'Next &raquo;', 'brm' ),
+                            'total'     => $total_pages,
+                            'current'   => $paged,
+                        ) );
+                        echo ' <span class="displaying-num">' . sprintf( esc_html__( '%d–%d of %d', 'brm' ), $offset + 1, min( $offset + $per_page, $total ), $total ) . '</span>';
+                        ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
         // JS is handled by brm-admin-script.js
@@ -548,6 +593,7 @@ class BRM_Plugin {
                 <input type="hidden" name="action" value="brm_save_link"/>
                 <input type="hidden" name="id" value="<?php echo $is_edit ? intval( $edit->id ) : ''; ?>"/>
                 <input type="hidden" name="is_public_submission" value="<?php echo $is_admin ? 0 : 1; ?>" />
+                <?php wp_nonce_field( 'brm_save_link_nonce', 'brm_nonce' ); ?>
 
                 <table class="form-table">
                     <tr>
@@ -632,6 +678,12 @@ class BRM_Plugin {
 
                 </table>
 
+                <?php if ( ! $is_admin && function_exists( 'cbc_recaptcha_field' ) ) : ?>
+                    <div style="margin: 20px 0; padding: 10px;">
+                        <?php cbc_recaptcha_field(); ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php submit_button( $submit_btn_text, 'primary large brm-submit-button' ); ?>
             </form>
         </div>
@@ -646,14 +698,36 @@ class BRM_Plugin {
     }
 
     /**
-     * Unified AJAX handler for saving a link.
+     * Unified AJAX handler for saving a link with rate limiting and nonce validation.
      */
     public function handle_ajax_save_link() {
-        check_ajax_referer( 'brm_save', 'nonce' );
+        // Validate nonce
+        if ( ! isset( $_POST['brm_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['brm_nonce'] ) ), 'brm_save_link_nonce' ) ) {
+            wp_send_json_error( array( 'message' => 'Security verification failed. Please refresh and try again.' ) );
+        }
 
         $is_admin_submission = current_user_can( 'manage_options' );
         $is_public_submission_flag = ! empty( $_POST['is_public_submission'] ) ? intval( $_POST['is_public_submission'] ) : 0;
         $is_public_access_allowed = get_option( 'brm_public_access', 'private' ) === 'public';
+
+        // reCAPTCHA verification for public submissions
+        if ( ! $is_admin_submission && $is_public_submission_flag && function_exists( 'cbc_recaptcha_verify' ) ) {
+            $recaptcha_token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) : '';
+            if ( ! cbc_recaptcha_verify( $recaptcha_token ) ) {
+                wp_send_json_error( array( 'message' => 'reCAPTCHA verification failed. Please try again.' ) );
+            }
+        }
+
+        // Rate limiting for public submissions (5 links per hour per user)
+        if ( ! $is_admin_submission && is_user_logged_in() ) {
+            $user_id = get_current_user_id();
+            $rate_limit_key = 'brm_public_rate_' . $user_id;
+            $rate_count = get_transient( $rate_limit_key );
+            if ( $rate_count >= 5 ) {
+                wp_send_json_error( array( 'message' => 'Rate limit reached. You can create 5 links per hour.' ) );
+            }
+            set_transient( $rate_limit_key, ( $rate_count ?: 0 ) + 1, HOUR_IN_SECONDS );
+        }
 
         if ( ! $is_admin_submission && ! $is_public_access_allowed ) {
             wp_send_json_error( array( 'message' => 'Public link creation is currently disabled.' ) );
