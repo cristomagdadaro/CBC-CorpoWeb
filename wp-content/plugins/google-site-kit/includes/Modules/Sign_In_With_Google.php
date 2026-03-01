@@ -499,6 +499,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$attributes = array(
 			// HTML class attribute should be a string.
 			'class' => implode( ' ', $classes ),
+			'style' => 'position: relative; display: flex; flex-flow: row; justify-content: center;',
 		);
 
 		$data_attributes = array( 'shape', 'text', 'theme' );
@@ -515,7 +516,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$attribute_strings[] = sprintf( '%s="%s"', $key, esc_attr( $value ) );
 		}
 
-		echo '<div ' . implode( ' ', $attribute_strings ) . ' style="position: relative; display: flex; flex-flow: row; justify-content: center;"></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<div ' . implode( ' ', $attribute_strings ) . '></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
