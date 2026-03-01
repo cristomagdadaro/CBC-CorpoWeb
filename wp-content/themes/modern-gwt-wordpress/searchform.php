@@ -6,7 +6,7 @@
  * @since Government Website Template 2.0
  */
 ?>
-<form role="search" method="get" class="search-form flex items-center bg-white rounded-full overflow-hidden w-full active:border-green-600 focus:border-green-600 shadow-md hover:scale-x-110 duration-200 ease-in-out transition-all h-10" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+<form role="search" method="get" class="search-form flex items-center bg-white rounded-full overflow-hidden w-full active:border-green-600 focus:border-green-600 hover:scale-x-110 duration-200 ease-in-out transition-all h-10" action="<?php echo esc_url( home_url( '/' ) ); ?>">
     <input type="search" class="search-field w-full pl-5 truncate m-0"
         placeholder="<?php echo esc_attr_x( 'Search &hellip;', 'placeholder', 'gwt_wp' ); ?>"
         value="<?php echo esc_attr( get_search_query() ); ?>" name="s"

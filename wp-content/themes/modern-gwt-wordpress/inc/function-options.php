@@ -1136,26 +1136,26 @@ if (!function_exists('govph_displayoptions')) {
 				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150px" width="150px" src="' . $logo_image . '" />' :
 					'<a rel="home" href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center">
                         <div class="gap-1 w-fit hidden md:block">
-                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
+                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(0,0,0,0.3)] w-fit !hidden">
                                 <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
                             <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
                                 <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[50%] mx-auto" />
                             </div>
-                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit"> <!-- Added flex container class -->
+                            <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(0,0,0,0.3)] w-fit"> <!-- Added flex container class -->
                                 <img draggable="false" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[50%] mx-auto" /> <!-- Added h-full class -->
                             </div>
                         </div>
                          <div class="flex gap-1 relative sm:hidden block drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]">
-                            <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" /> <!-- Added h-full class -->
+                            <img draggable="false" alt="Bagong-Pilipinas Official Logo" src="/wp-content/uploads/2025/09/Bagong-Pilipinas-300x278.png" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto !hidden" /> <!-- Added h-full class -->
                             <img draggable="false" alt="Department of Agriculture Official Logo" src="/wp-content/uploads/2025/09/DA-logo__white-300x300.png" class="h-full md:w-full w-[20%] min-w-[2rem] mmx-0 md:mx-auto" /> <!-- Added h-full class -->
                             <img draggable="false" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $logo_image . '" class="h-full md:w-full w-[20%] min-w-[2rem] mx-0 md:mx-auto" />
                         </div>
                         <div id="textlogo-inner-wrapper" class="flex flex-col whitespace-nowrap justify-center sm:mt-2 mt-0 mx-auto text-white"> <!-- Added flex container class and padding -->
                             <!--<div id="agency-heading">Republic of the Philippines</div>-->
-                            <p id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] capitalize m-0">Department of Agriculture</p>
-                            <p id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] drop-shadow-lg font-league font-bold m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
-                            <p id="agency-tagline" class="sm:text-sm text-[0.5rem] capitalize m-0">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
+                            <p id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] m-0 !font-lato leading-none">Department of Agriculture</p>
+                            <p id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] !font-lato font-bold m-0 leading-none">' . esc_html( $option['govph_agency_name'] ) . '</p>
+                            <p id="agency-tagline" class="sm:text-sm text-[0.5rem] m-0 leading-none !font-lato">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
                         </div>
                     </a>';
 

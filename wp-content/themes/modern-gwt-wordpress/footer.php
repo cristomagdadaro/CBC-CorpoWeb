@@ -47,7 +47,7 @@
             <div class="bg-[#006837] w-full sm:py-0 py-2">
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 sm:my-5 my-2">
-                        <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border !font-lato font-extrabold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
+                        <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border !font-spartan uppercase font-extrabold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
                         <div class="flex flex-row gap-1 items-center justify-center">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"
@@ -70,20 +70,21 @@
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/about-us/organizational-structure/">Directory</a></li>
                                 <li><a href="/stories">Stories</a></li>
-                                <li><a href="/about-us/privacy-policy-2/">Privacy Prolicy</a></li>
+                                <li><a href="/about-us/privacy-policy/">Privacy Prolicy</a></li>
                                 <li><a href="/about-us/terms-and-conditions/">T&C</a></li>
                                 <li><a href="/faqs">FAQs</a></li>
                                 <li><a href="/sitemap">Sitemap</a></li>
-                                <li><a href="/developers-documentation/">Developer Docs</a></li>
                             </ul>
                         </div>
                         <div>
                             <h4 class="font-semibold m-4 p-1">Services</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
-                                <li><a href="#">Lab Use Request Form</a></li>
-                                <li><a href="#">Event Hall Booking Form</a></li>
-                                <li><a href="http://192.168.36.71:5000/">BioNAS</a></li>
-                                <li><a href="http://192.168.36.10/">Apps Center</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/forms/event">Events</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/forms/request-to-use">FES Request Form</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/laboratory/equipments">Laboratory Logger</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/inventory/outgoing">Supplies Checkout</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/rental/vehicle">Vehicle Rental</a></li>
+                                <li><a href="https://dacbc.philrice.gov.ph/rental/venue">Event Hall Booking</a></li>
                                 <li><a href="/golink/">GoLink Generator</a></li>
                             </ul>
                         </div>
@@ -91,8 +92,9 @@
                             <h4 class="font-semibold m-4 p-1">Apps</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="https://cbc360tour.philrice.gov.ph/">360 Virtual Tour</a></li>
-                                <li><a href="/projects/breedersmap-db">Plant Breeders' Map Database</a></li>
-                                <li><a href="/projects/twg-db">Biotech TWG Database</a></li>
+                                <li><a href="https://pin.philrice.gov.ph/projects/breedersmap-db">Plant Breeders' Map Database</a></li>
+                                <li><a href="https://pin.philrice.gov.ph/projects/twg-db">Biotech TWG Database</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/">OneCBC Portal</a></li>
                             </ul>
                         </div>
                         <div>
@@ -106,13 +108,27 @@
                         <div class="col-span-2 md:col-span-1">
                             <h4 class="font-semibold m-4 p-1">Contact Us</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917] [&>li>span]:mr-1">
-                                <li>
-                                    <span class="text-white opacity-50 select-none">Telephone:</span>
-                                    (+63) 908 889 7135
+                                <li class="flex items-center gap-2 justify-between group">
+                                    <div class="flex items-center">
+                                        <span class="text-white opacity-50 select-none">Telephone:</span>
+                                        <span class="copy-text">(+63) 908 889 7135</span>
+                                    </div>
+                                    <button class="copy-btn group-hover:opacity-100 transition-opacity duration-200 text-white" data-copy="(+63) 908 889 7135" title="Copy telephone">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                                        </svg>
+                                    </button>
                                 </li>
-                                <li>
-                                    <span class="text-white opacity-50 select-none">Email:</span>
-                                    cropbiotechcenter@gmail.com
+                                <li class="flex items-center gap-2 justify-between group">
+                                    <div class="flex items-center">
+                                        <span class="text-white opacity-50 select-none">Email:</span>
+                                        <span class="copy-text">cropbiotechcenter@gmail.com</span>
+                                    </div>
+                                    <button class="copy-btn group-hover:opacity-100 transition-opacity duration-200 text-white" data-copy="cropbiotechcenter@gmail.com" title="Copy email">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                                        </svg>
+                                    </button>
                                 </li>
                                 <li>
                                     <span class="text-white opacity-50 select-none">Facebook:</span>
@@ -139,6 +155,30 @@
 </div><!-- #off-canvass-wrapper -->
 
 <script>
+    // Copy to clipboard functionality
+    document.querySelectorAll('.copy-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var textToCopy = this.getAttribute('data-copy');
+            var btn = this;
+            
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                // Show success feedback
+                var originalSvg = btn.innerHTML;
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ffffff" class="bi bi-check" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/></svg>';
+                btn.style.opacity = '1';
+                
+                // Restore original icon after 2 seconds
+                setTimeout(function() {
+                    btn.innerHTML = originalSvg;
+                    btn.style.opacity = '';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Failed to copy:', err);
+            });
+        });
+    });
+
     var acc = document.getElementsByClassName("accordion");
     var i;
 
@@ -274,40 +314,40 @@
     </button>
     <div id="floating-sidebar" role="complementary" class="items-center gap-2 grid grid-cols-1">
         <div class="flex flex-col gap-1 items-start">
-            <div class="flex gap-3 items-center justify-center w-full border-b-2 border-[#1f5d2b] pb-2 mb-2">
-                <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank" class="flex justify-center gap-2 items-center">
-                    <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+            <div class="flex gap-3 items-center justify-center w-full border-b-2 border-[#a2b917] pb-2 mb-2">
+                <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                    <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
                     </svg>
                     <span class="hidden sr-only">FB Page</span>
                 </a>
-                <a href="tel:09088897135" target="_blank" class="flex justify-center gap-2 items-center">
-                    <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+                <a href="tel:09088897135" target="_blank" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                    <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
                     </svg>
                     <span class="hidden sr-only">(+63) 908 889 7135</span>
                 </a>
-                <a href="mailto:cropbiotechcenter@gmail.com" target="_blank" class="flex justify-center gap-2 items-center">
-                    <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+                <a href="mailto:cropbiotechcenter@gmail.com" target="_blank" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                    <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
                     </svg>
                     <span class="hidden sr-only">Email</span>
                 </a>
             </div>
-            <a href="/appointment-booking/" class="flex justify-center gap-2 items-center">
-                <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+            <a href="/appointment-booking/" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2m-5.146-5.146-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
                 </svg>
                 <span>Appointment</span>
             </a>
-            <a href="/feedback-form/" class="flex justify-center gap-2 items-center">
-                <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+            <a href="/feedback-form/" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"/>
                 </svg>
                 <span>Feedback Form</span>
             </a>
-            <a href="/internship-application/" class="flex justify-center gap-2 items-center">
-                <svg class="text-[#1f5d2b] h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
+            <a href="/internship-application/" class="flex justify-center gap-2 items-center text-[#a2b917]">
+                <svg class="h-auto w-6" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/>
                     <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/>
                 </svg>
@@ -344,7 +384,7 @@
     }
 
     #floating-sidebar-toggle {
-        background: #006837;
+        background: #a2b917;
         color: #fff;
         border: none;
         padding: 0.5rem 0.6rem;
@@ -436,6 +476,27 @@
 
     /* Minimal styles for widgets inside floating sidebar */
     #floating-sidebar .widget .widget-title { margin-top: 0; }
+
+    /* Copy button styles */
+    .copy-btn {
+        background: none;
+        border: none;
+        color: #ffffff;
+        cursor: pointer;
+        padding: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .copy-btn:hover {
+        color: #ffffff;
+    }
+
+    .copy-btn svg {
+        width: 13px;
+        height: 13px;
+    }
 </style>
 
 <script>

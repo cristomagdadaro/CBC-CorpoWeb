@@ -151,7 +151,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
                 ),
             ),
 			array(
-				'heading' => 'CBC Experts',
+				'heading' => 'Experts',
 				'items' => array(
 					array(
 						'name' => 'Nonawin L. Agustin, PhD',

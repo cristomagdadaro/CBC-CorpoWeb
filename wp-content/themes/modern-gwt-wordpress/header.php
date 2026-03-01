@@ -412,7 +412,7 @@ Press esc, or click the close the button to close this dialog box.
             </div>
             <div class="row hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
-                    <ul class="dropdown menu flex w-full flex-row justify-between mt-2" data-dropdown-menu>
+                    <ul class="dropdown menu flex w-full flex-row justify-between !mt-2" data-dropdown-menu>
                        <!-- <li class=" nav-item">
                             <a href="https://www.gov.ph">GOVPH</a>
                         </li>-->

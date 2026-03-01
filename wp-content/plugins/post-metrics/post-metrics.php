@@ -18,6 +18,7 @@ class PM_Post_Metrics {
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 		add_action( 'init', array( __CLASS__, 'register_dashboard_widgets' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+		add_action( 'admin_init', array( __CLASS__, 'handle_csv_export' ) ); // Handle CSV export early, before output
 		add_action( 'wp_head', array( __CLASS__, 'track_post_view' ) );
 
 		// AJAX handler for public share tracking
@@ -194,11 +195,6 @@ class PM_Post_Metrics {
 			wp_die( esc_html__( 'Insufficient permissions', 'post-metrics' ) );
 		}
 
-		// Export CSV when requested
-		if ( isset( $_GET['export'] ) && $_GET['export'] ) {
-			self::maybe_export_csv();
-		}
-
 		$show = isset( $_GET['number'] ) ? intval( $_GET['number'] ) : 50;
 		if ( $show <= 0 ) $show = 50;
 
@@ -301,8 +297,16 @@ class PM_Post_Metrics {
 		echo '</div>';
 	}
 
-	public static function maybe_export_csv() {
-		if ( ! current_user_can( 'manage_options' ) ) return;
+	public static function handle_csv_export() {
+		// Handle CSV export on admin_init (before any output)
+		if ( ! isset( $_GET['export'] ) || ! $_GET['export'] ) {
+			return; // Export not requested
+		}
+
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return; // Not admin or insufficient permissions
+		}
+
 		if ( ! isset( $_GET['_pm_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_pm_nonce'] ) ), 'pm_export_csv' ) ) {
 			wp_die( esc_html__( 'Security check failed.', 'post-metrics' ) );
 		}
@@ -324,6 +328,7 @@ class PM_Post_Metrics {
 		}
 		usort( $rows, function( $a, $b ) { return $b['views'] <=> $a['views']; } );
 
+		// Send CSV headers and output
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename=post-metrics.csv' );
 		$out = fopen( 'php://output', 'w' );
@@ -332,7 +337,7 @@ class PM_Post_Metrics {
 			fputcsv( $out, array( $r['ID'], $r['title'], $r['views'], $r['likes'], $r['shares'], $r['engagements'] ) );
 		}
 		fclose( $out );
-		exit;
+		wp_die();
 	}
 
 	public static function shortcode_metrics( $atts ) {
@@ -596,11 +601,11 @@ class PM_Post_Metrics {
 			$markup .= '</div></div>';
 			if ( $show_excerpt ) {
 				$raw_excerpt = get_the_excerpt( $post );
-				$trimmed = wp_trim_words( $raw_excerpt, $excerpt_length, '… <a href="' . esc_url( $link ) . '" rel="noopener noreferrer">' . esc_html__( 'Read more', 'post-metrics' ) . '<span class="screen-reader-text">: ' . esc_html( $title ) . '</span></a>' );
+				$trimmed = wp_trim_words( $raw_excerpt, $excerpt_length, '… <a href="' . esc_url( $link ) . '" rel="noopener noreferrer">' . esc_html__( 'Read more', 'post-metrics' ) . '<span class="screen-reader-text !font-spartan">: ' . esc_html( $title ) . '</span></a>' );
 				if ( post_password_required( $post ) ) {
 					$trimmed = esc_html__( 'This content is password protected.' );
 				}
-				$markup .= '<div class="wp-block-latest-posts__post-excerpt entry-content block md:leading-[1.1rem] leading-[0.9rem] md:text-sm text-xs block">' . $trimmed . '</div>';
+				$markup .= '<div class="wp-block-latest-posts__post-excerpt entry-content block !font-spartan md:leading-[1.1rem] leading-[0.9rem] md:text-sm text-xs block">' . $trimmed . '</div>';
 			}
 			$markup .= '</div></div>';
 			return $markup;
