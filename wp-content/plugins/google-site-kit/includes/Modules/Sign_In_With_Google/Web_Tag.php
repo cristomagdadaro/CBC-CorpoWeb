@@ -174,27 +174,12 @@ class Web_Tag extends Module_Web_Tag {
 		library_name: 'Site-Kit'
 	} );
 
-	<?php if ( $this->is_wp_login ) : ?>
-	const loginWrapper = document.getElementById( 'login' );
-	const loginForm = document.getElementById( 'loginform' );
-
-	if ( loginWrapper && loginForm ) {
+	<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		const buttonDivToAddToLoginForm = document.createElement( 'div' );
-		
-		// Add your class and styles
 		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
-		
-		Object.assign(buttonDivToAddToLoginForm.style, {
-			position: 'relative',
-			display: 'flex',
-			flexFlow: 'row',
-			justifyContent: 'center',
-		});
 
-		// Inject the button
-		loginWrapper.insertBefore( buttonDivToAddToLoginForm, loginForm );
-	}
-	<?php endif; ?>
+		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
