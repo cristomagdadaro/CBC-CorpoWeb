@@ -432,6 +432,31 @@ function cbc_slider_render_from_data($data) {
 }
 
 /**
+ * Resolve a default slider ID. Prefers an overrideable option/filter, otherwise the latest published slider.
+ */
+function cbc_slider_get_default_id() {
+    $explicit = (int) apply_filters('cbc_slider_default_id', (int) get_option('cbc_slider_default_id', 0));
+    if ($explicit) {
+        return $explicit;
+    }
+
+    $query = new WP_Query(array(
+        'post_type' => 'cbc_slider',
+        'post_status' => 'publish',
+        'posts_per_page' => 1,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'no_found_rows' => true,
+        'fields' => 'ids',
+    ));
+
+    $id = $query->have_posts() ? (int) $query->posts[0] : 0;
+    wp_reset_postdata();
+
+    return $id;
+}
+
+/**
  * Shortcode: [cbc_slider id="123"]
  */
 function cbc_slider_shortcode($atts) {
@@ -445,14 +470,43 @@ function cbc_slider_shortcode($atts) {
 add_shortcode('cbc_slider', 'cbc_slider_shortcode');
 
 /**
+ * Shortcode: [cbc_slider_latest] renders the configured default slider or latest published.
+ */
+function cbc_slider_shortcode_latest($atts) {
+    $post_id = cbc_slider_get_default_id();
+    if (!$post_id) return '';
+    return cbc_slider_render_by_id($post_id);
+}
+add_shortcode('cbc_slider_latest', 'cbc_slider_shortcode_latest');
+
+/**
  * Template tag to render a slider by ID.
  */
 function cbc_slider_render($post_id) {
     echo cbc_slider_render_by_id($post_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 function cbc_slider_render_by_id($post_id) {
-    $data = get_post_meta(intval($post_id), '_cbc_slider_data', true);
+    $post_id = intval($post_id);
+    if (!$post_id) {
+        return '';
+    }
+    $data = get_post_meta($post_id, '_cbc_slider_data', true);
     return cbc_slider_render_from_data($data);
+}
+
+/**
+ * Template tag + helper to render the default/last slider without hardcoding IDs.
+ */
+function cbc_slider_render_default() {
+    echo cbc_slider_render_default_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+function cbc_slider_render_default_html() {
+    $post_id = cbc_slider_get_default_id();
+    if (!$post_id) {
+        return '';
+    }
+    return cbc_slider_render_by_id($post_id);
 }
 
 /**
@@ -483,4 +537,165 @@ function cbc_slider_admin_columns_content($column, $post_id) {
     }
 }
 add_action('manage_cbc_slider_posts_custom_column', 'cbc_slider_admin_columns_content', 10, 2);
+
+// ================= Plugin Usage Instructions =================
+
+/**
+ * Add "Usage Guide" link to plugin action links on plugins page.
+ */
+function cbc_slider_plugin_action_links($links) {
+    $usage_link = '<a href="' . esc_url(admin_url('admin.php?page=cbc-slider-usage')) . '">' . __('Usage Guide', 'cbc-slider') . '</a>';
+    array_unshift($links, $usage_link);
+    return $links;
+}
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'cbc_slider_plugin_action_links');
+
+/**
+ * Register admin menu page for usage guide.
+ */
+function cbc_slider_register_usage_page() {
+    add_submenu_page(
+        'edit.php?post_type=cbc_slider',
+        __('CBC Slider - Usage Guide', 'cbc-slider'),
+        __('How to Use', 'cbc-slider'),
+        'manage_options',
+        'cbc-slider-usage',
+        'cbc_slider_render_usage_page'
+    );
+}
+add_action('admin_menu', 'cbc_slider_register_usage_page');
+
+/**
+ * Render the usage guide page.
+ */
+function cbc_slider_render_usage_page() {
+    if (!current_user_can('manage_options')) {
+        wp_die(__('You do not have permission to access this page.', 'cbc-slider'));
+    }
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html__('CBC Slider - Usage Guide', 'cbc-slider'); ?></h1>
+        
+        <div style="max-width: 800px; margin: 20px 0; background: #f1f1f1; padding: 20px; border-radius: 5px;">
+            <h2><?php echo esc_html__('Quick Start', 'cbc-slider'); ?></h2>
+            <ol>
+                <li><strong><?php echo esc_html__('Create a Slider', 'cbc-slider'); ?>:</strong> Go to <a href="<?php echo esc_url(admin_url('post-new.php?post_type=cbc_slider')); ?>">CBC Slider → Add New</a></li>
+                <li><strong><?php echo esc_html__('Add Slides', 'cbc-slider'); ?>:</strong> Click "Add Slide" to add images or videos from your media library</li>
+                <li><strong><?php echo esc_html__('Configure Options', 'cbc-slider'); ?>:</strong> Set autoplay, animation delay, navigation, and responsive heights</li>
+                <li><strong><?php echo esc_html__('Add Overlays', 'cbc-slider'); ?>:</strong> Optionally add custom HTML text, buttons, or content on top of slides</li>
+                <li><strong><?php echo esc_html__('Publish & Embed', 'cbc-slider'); ?>:</strong> Publish your slider and use the shortcode shown in the list</li>
+            </ol>
+        </div>
+
+        <h2><?php echo esc_html__('How to Use on Your Site', 'cbc-slider'); ?></h2>
+        <p><?php echo esc_html__('Once you have created and published a slider, you can embed it in two ways:', 'cbc-slider'); ?></p>
+
+        <h3><?php echo esc_html__('Option 1: Using the Shortcode', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Copy the shortcode for any slider from the CBC Slider list and paste it into any page or post:', 'cbc-slider'); ?></p>
+        <pre style="background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 3px; overflow-x: auto;"><code>[cbc_slider id="123"]</code></pre>
+        <p><em><?php echo esc_html__('Replace "123" with your slider\'s ID.', 'cbc-slider'); ?></em></p>
+
+        <h3><?php echo esc_html__('Option 2: Using the Latest Slider Shortcode', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('This shortcode will automatically display your most recently published slider:', 'cbc-slider'); ?></p>
+        <pre style="background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 3px; overflow-x: auto;"><code>[cbc_slider_latest]</code></pre>
+
+        <h3><?php echo esc_html__('Option 3: Using in Theme Templates', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Add this code to your theme template files (e.g., front-page.php, index.php):', 'cbc-slider'); ?></p>
+        <pre style="background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 3px; overflow-x: auto;"><code>&lt;?php cbc_slider_render(123); ?&gt;</code></pre>
+        <p><em><?php echo esc_html__('Or use the default slider:', 'cbc-slider'); ?></em></p>
+        <pre style="background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 3px; overflow-x: auto;"><code>&lt;?php cbc_slider_render_default(); ?&gt;</code></pre>
+
+        <h2><?php echo esc_html__('Slider Configuration Options', 'cbc-slider'); ?></h2>
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+            <tr style="background: #e9ecef;">
+                <th style="border: 1px solid #ddd; padding: 10px; text-align: left;"><strong><?php echo esc_html__('Option', 'cbc-slider'); ?></strong></th>
+                <th style="border: 1px solid #ddd; padding: 10px; text-align: left;"><strong><?php echo esc_html__('Description', 'cbc-slider'); ?></strong></th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Autoplay', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Enable automatic slide transitions', 'cbc-slider'); ?></td>
+            </tr>
+            <tr style="background: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Delay', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Time between slides in milliseconds (default: 5000ms = 5 seconds)', 'cbc-slider'); ?></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Loop', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Slider repeats after the last slide', 'cbc-slider'); ?></td>
+            </tr>
+            <tr style="background: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Pause on Hover', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Autoplay pauses when user hovers over the slider', 'cbc-slider'); ?></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Show Arrows', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Display Previous/Next navigation buttons', 'cbc-slider'); ?></td>
+            </tr>
+            <tr style="background: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Show Dots', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Display slide indicator dots at the bottom', 'cbc-slider'); ?></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Object Fit', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('How media fills the slide (cover, contain, fill, etc.)', 'cbc-slider'); ?></td>
+            </tr>
+            <tr style="background: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Aspect Ratio', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Default slide dimensions (e.g., 16/9, 4/3, 1/1)', 'cbc-slider'); ?></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Responsive Heights', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Set custom heights for mobile (Sm), tablet (Md), desktop (Lg), and large screens (Xl)', 'cbc-slider'); ?></td>
+            </tr>
+            <tr style="background: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong><?php echo esc_html__('Video Settings', 'cbc-slider'); ?></strong></td>
+                <td style="border: 1px solid #ddd; padding: 10px;"><?php echo esc_html__('Muted, loop, and controls for video slides', 'cbc-slider'); ?></td>
+            </tr>
+        </table>
+
+        <h2><?php echo esc_html__('Slide Types', 'cbc-slider'); ?></h2>
+        <h3><?php echo esc_html__('Image Slides', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Upload images from your media library or direct URL. Supports responsive image formats.', 'cbc-slider'); ?></p>
+
+        <h3><?php echo esc_html__('Video Slides', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Embed videos from your media library. Optionally set a poster image to display before playback.', 'cbc-slider'); ?></p>
+
+        <h3><?php echo esc_html__('Slide Links', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Make slides clickable by adding a URL. Choose to open in the same window or new tab.', 'cbc-slider'); ?></p>
+
+        <h3><?php echo esc_html__('Overlay Content', 'cbc-slider'); ?></h3>
+        <p><?php echo esc_html__('Add custom HTML overlays to each slide for text, buttons, or interactive content using the built-in editor.', 'cbc-slider'); ?></p>
+
+        <h2><?php echo esc_html__('Tips & Best Practices', 'cbc-slider'); ?></h2>
+        <ul style="list-style-type: disc; margin-left: 20px;">
+            <li><?php echo esc_html__('Use high-quality images optimized for web (try Smush or similar plugins)', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('Set appropriate slide delays - too fast is distracting, too slow feels disconnected', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('Test responsive heights on mobile and tablet devices', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('For videos, always specify a poster image for better UX', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('Keep overlay text clear and readable with sufficient contrast', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('Use "object-fit: contain" for logos, "cover" for background photos', 'cbc-slider'); ?></li>
+            <li><?php echo esc_html__('Ensure slide links have proper SEO attributes and are accessible', 'cbc-slider'); ?></li>
+        </ul>
+
+        <h2><?php echo esc_html__('Support', 'cbc-slider'); ?></h2>
+        <p><?php echo esc_html__('For issues or feature requests, contact CBC support or visit the plugin documentation.', 'cbc-slider'); ?></p>
+
+        <p style="margin-top: 30px; text-align: center; color: #666;">
+            <em><?php echo esc_html__('CBC Slider v', 'cbc-slider') . esc_html(CBC_SLIDER_VERSION); ?></em>
+        </p>
+    </div>
+    <?php
+}
+
+/**
+ * Add "Usage Guide" row meta link on plugins page.
+ */
+function cbc_slider_plugin_row_meta($links, $file) {
+    if (plugin_basename(__FILE__) === $file) {
+        $usage_link = '<a href="' . esc_url(admin_url('admin.php?page=cbc-slider-usage')) . '" target="_blank">' . __('Documentation', 'cbc-slider') . '</a>';
+        $links[] = $usage_link;
+    }
+    return $links;
+}
+add_filter('plugin_row_meta', 'cbc_slider_plugin_row_meta', 10, 2);
 

@@ -251,16 +251,22 @@ add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
         'placeholder' => 'Ask about DA-CBC, biotechnology, agriculture, genetic engineering, or biology...',
         'floating' => '1',
-        'title' => 'DA-CBC Chatbot',
+        'title' => 'Chatbot',
     ), $atts, 'cbc_ai_messenger');
 
     // Enqueue small fallback CSS to ensure mobile fullscreen + scroll-lock behaviors
     wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.2.0');
+    
+    // Enqueue main messenger CSS
+    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.4.0');
 
     // Determine reCAPTCHA site key early so we can enqueue reCAPTCHA before the messenger script
+    // Skip reCAPTCHA entirely on local/development environments
     $recaptcha_site_key = '';
-    if (function_exists('cbc_ai_get_recaptcha_site_key')) {
-        $recaptcha_site_key = cbc_ai_get_recaptcha_site_key();
+    if (!cbc_ai_is_local_or_dev()) {
+        if (function_exists('cbc_ai_get_recaptcha_site_key')) {
+            $recaptcha_site_key = cbc_ai_get_recaptcha_site_key();
+        }
     }
     if ($recaptcha_site_key) {
         // Enqueue reCAPTCHA v3 loader with site key so grecaptcha becomes available
@@ -283,20 +289,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
     ob_start();
     ?>
     <div id="cbc-ai-chat-container" aria-hidden="false">
-        <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
-            <span class="cbc-ai-icon-expanded" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                </svg>
-            </span>
-            <span class="cbc-ai-icon-collapsed hidden" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
-                  <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-                </svg>
-            </span>
-            <span class="sr-only">Toggle AI Chat</span>
-        </button>
-        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-l-md flex flex-col">
+        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-md flex flex-col">
             <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
                 <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
                 <button type="button" class="cbc-ai-clear-history text-xs" title="Clear conversation history">Clear</button>
@@ -319,6 +312,19 @@ add_shortcode('cbc_ai_messenger', function($atts){
                 <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our <a href="/about-us/terms-and-conditions/">Terms and Conditions</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
             </div>
         </div>
+        <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
+            <span class="cbc-ai-icon-expanded" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </span>
+            <span class="cbc-ai-icon-collapsed hidden" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
+                  <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                </svg>
+            </span>
+            <span class="sr-only">Toggle AI Chat</span>
+        </button>
     </div>
     <?php
     return ob_get_clean();
@@ -337,6 +343,32 @@ add_action('rest_api_init', function(){
         )
     ));
 });
+
+/**
+ * Check if the site is running in local/development environment.
+ */
+function cbc_ai_is_local_or_dev(): bool {
+    // Check WordPress environment type (WordPress 5.5+)
+    if (function_exists('wp_get_environment_type')) {
+        $env = wp_get_environment_type();
+        if (in_array($env, array('local', 'development'), true)) {
+            return true;
+        }
+    }
+    
+    // Check WP_DEBUG constant
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        return true;
+    }
+    
+    // Check if localhost or 127.0.0.1
+    $host = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
+    if (stripos($host, 'localhost') !== false || stripos($host, '127.0.0.1') !== false) {
+        return true;
+    }
+    
+    return false;
+}
 
 function cbc_ai_is_contact_request($text, &$type): bool {
     $text = strtolower((string)$text);
@@ -370,12 +402,15 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     if ($message === '') { return new WP_REST_Response(array('error' => 'Empty message'), 400); }
 
     // --- reCAPTCHA verification (if secret configured) ---
-    $recaptcha_secret = function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '';
+    // Skip reCAPTCHA validation on local/development environments
+    $is_local = cbc_ai_is_local_or_dev();
+    $recaptcha_secret = ($is_local) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
     $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
     // Prepare admin-only debug info (will be injected into responses for admins)
     $admin_debug = array(
         'recaptcha_secret_configured' => $recaptcha_secret !== '',
         'recaptcha_token_provided' => $recaptcha_token !== '',
+        'is_local_dev' => $is_local,
     );
     if ($recaptcha_secret !== '') {
         if ($recaptcha_token === '') {

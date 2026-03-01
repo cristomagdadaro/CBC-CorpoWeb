@@ -295,6 +295,14 @@
 </script>
 <!-- end philippine standard time -->
 
+<div style="z-index: 999;">
+    <?php
+    if (shortcode_exists('cbc_ai_messenger')) {
+        echo do_shortcode('[cbc_ai_messenger]');
+    }
+    ?>
+</div>
+
 <?php wp_footer(); ?>
 
 <!-- Floating Sidebar (right side) -->
@@ -461,8 +469,8 @@
         /* Ensure the container is visible and doesn't block the toggle */
         #floating-sidebar-container {
             display: block !important;
-            position: fixed;
-            !important; right: 0 !important;
+            position: fixed !important; 
+            right: 0 !important;
             bottom: 0 !important;
             left: auto !important;
             top: auto !important;
@@ -536,7 +544,6 @@
         });
     })();
 </script>
-
 <div><a href="#page" id="back-to-top" style="display: inline;"><i class="fa fa-arrow-circle-up fa-2x"></i></a></div>
 </body>
 

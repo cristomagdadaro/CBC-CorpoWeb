@@ -1,6 +1,6 @@
 <?php
 if ( is_home() || is_front_page() ):
-    echo do_shortcode('[cbc_slider id="3460"]');
+    echo function_exists( 'cbc_slider_render_default_html' ) ? cbc_slider_render_default_html() : '';
 endif;
 
 $tempHeader = '';

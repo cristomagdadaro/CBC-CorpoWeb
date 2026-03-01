@@ -59,11 +59,24 @@
 
             mobile: {
                 ensureBackdrop: function () {
-                    if ($('#cbc-ai-backdrop').length) return;
+                    if ($('#cbc-ai-backdrop').length) {
+                        window.requestAnimationFrame(function () {
+                            $('#cbc-ai-backdrop').addClass('is-visible');
+                        });
+                        return;
+                    }
                     $('body').append('<div id="cbc-ai-backdrop" class="fixed inset-0 bg-black/50 z-[9998]"></div>');
+                    window.requestAnimationFrame(function () {
+                        $('#cbc-ai-backdrop').addClass('is-visible');
+                    });
                 },
                 removeBackdrop: function () {
-                    $('#cbc-ai-backdrop').remove();
+                    const $backdrop = $('#cbc-ai-backdrop');
+                    if (!$backdrop.length) return;
+                    $backdrop.removeClass('is-visible');
+                    setTimeout(function () {
+                        $('#cbc-ai-backdrop').remove();
+                    }, 240);
                 },
                 applyFullscreen: function () {
                     const { container } = CBCAIChat.elements;
@@ -213,6 +226,7 @@
                 e.preventDefault();
                 container.classList.toggle('collapsed');
                 const isCollapsed = container.classList.contains('collapsed');
+                const isMobileView = this.isMobile();
                 try {
                     localStorage.setItem('cbc_ai_chat_collapsed', isCollapsed ? '1' : '0');
                 } catch (e) { }
@@ -220,8 +234,16 @@
                 this.ui.updateIcons(isCollapsed);
 
                 if (isCollapsed) {
-                    this.ui.mobile.removeFullscreen();
-                } else if (this.isMobile()) {
+                    if (isMobileView && container.classList.contains('cbc-ai-mobile-open')) {
+                        container.classList.add('cbc-ai-mobile-closing');
+                        setTimeout(() => {
+                            this.ui.mobile.removeFullscreen();
+                            container.classList.remove('cbc-ai-mobile-closing');
+                        }, 240);
+                    } else {
+                        this.ui.mobile.removeFullscreen();
+                    }
+                } else if (isMobileView) {
                     this.ui.mobile.applyFullscreen();
                 }
             });

@@ -367,7 +367,7 @@ Press esc, or click the close the button to close this dialog box.
             </div>
         </div>
         <!-- "main-nav" top-bar menu for 'medium' and up -->
-        <div id="main-nav">
+        <div id="main-nav" class="shadow-lg">
             <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0">
                 <div class="row flex items-center md:p-3 py-0 w-full">
                     <nav class="top-bar-left sm:block hidden w-full">
@@ -412,7 +412,7 @@ Press esc, or click the close the button to close this dialog box.
             </div>
             <div class="row hidden lg:block md:block">
                 <div class="flex flex-row justify-between">
-                    <ul class="dropdown menu flex w-full flex-row justify-between !mt-2" data-dropdown-menu>
+                    <ul class="dropdown menu flex w-full flex-row justify-between !my-1" data-dropdown-menu>
                        <!-- <li class=" nav-item">
                             <a href="https://www.gov.ph">GOVPH</a>
                         </li>-->

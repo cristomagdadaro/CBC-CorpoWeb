@@ -146,7 +146,24 @@ class CBC_Security_Hardening {
 
 	/* ------------------------ reCAPTCHA (Login + Comments) ------------------------ */
 	private static function recaptcha_enabled() {
+		if ( self::is_dev_or_local() ) {
+			return false;
+		}
+
 		return defined( 'CBC_AI_RECAPTCHA_SITE_KEY' ) && CBC_AI_RECAPTCHA_SITE_KEY && defined( 'CBC_AI_RECAPTCHA_SECRET' ) && CBC_AI_RECAPTCHA_SECRET;
+	}
+
+	private static function is_dev_or_local() {
+		$env = function_exists( 'wp_get_environment_type' ) ? strtolower( wp_get_environment_type() ) : 'production';
+		if ( in_array( $env, array( 'development', 'local', 'dev' ), true ) ) {
+			return true;
+		}
+
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$ip   = self::client_ip();
+		$local_hosts = array( 'localhost', '127.0.0.1', '::1' );
+
+		return in_array( $host, $local_hosts, true ) || in_array( $ip, $local_hosts, true );
 	}
 
 	private static function recaptcha_script() {
