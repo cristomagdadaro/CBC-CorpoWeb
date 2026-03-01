@@ -51,6 +51,36 @@ class CBC_Security_Hardening {
 		set_exception_handler( array( __CLASS__, 'capture_exception' ) );
 		set_error_handler( array( __CLASS__, 'capture_error' ) );
 		register_shutdown_function( array( __CLASS__, 'capture_shutdown' ) );
+
+		// Login page branding
+		add_action( 'login_enqueue_scripts', array( __CLASS__, 'brand_login_logo' ) );
+		add_filter( 'login_headerurl', array( __CLASS__, 'login_logo_url' ) );
+		add_filter( 'login_headertext', array( __CLASS__, 'login_logo_title' ) );
+	}
+
+	/* ------------------------ LOGIN BRANDING ------------------------ */
+	public static function brand_login_logo() {
+		// Change URL below if you move the logo.
+		$logo_url = esc_url( home_url( '/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png' ) );
+
+                // Added filter: drop-shadow for a clean glow/shadow effect
+                $css = "#login h1 a { 
+                background-image: url('{$logo_url}'); 
+                background-size: contain; 
+                width: 260px; 
+                height: 120px; 
+                filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3)); 
+                }";
+
+                wp_add_inline_style( 'login', $css );
+	}
+
+	public static function login_logo_url( $url ) {
+		return home_url( '/' );
+	}
+
+	public static function login_logo_title( $text ) {
+		return get_bloginfo( 'name', 'display' );
 	}
 
 	/* ------------------------ SECURITY HEADERS ------------------------ */
