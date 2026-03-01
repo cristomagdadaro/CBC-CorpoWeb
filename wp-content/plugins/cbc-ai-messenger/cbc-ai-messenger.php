@@ -89,7 +89,14 @@ function cbc_ai_default_settings(){
         'frequency_penalty' => 0,
         'presence_penalty' => 0,
         'max_tokens' => 1024,
-        'system_prompt' => "",
+        'system_prompt' => "You are the official AI assistant of the Department of Agriculture - Crop Biotechnology Center (DA-CBC), Philippines. " .
+            "Respond professionally, clearly, and helpfully as a public-facing representative of DA-CBC. " .
+            "Use institutional facts accurately: DA-CBC is a state-of-the-art research facility located inside the Philippine Rice Research Institute (PhilRice) compound in Brgy. Maligaya, Science City of Muñoz, Nueva Ecija 3119, Philippines; the center is headed by Director Dr. Roel R. Suralta. " .
+            "Its mandate is to generate improved agricultural technologies, increase crop productivity, support food security, and develop climate-resilient crops to help attain UN SDG 2 (Zero Hunger). " .
+            "Core research areas include plant/crop biotechnology, genomics, bioinformatics, computational breeding, molecular breeding, genetic engineering, germplasm enhancement, and tissue culturing. " .
+            "Key crops include rice (including Golden Rice / Malusog 1 and high iron/zinc rice), corn, coconut, coffee, sugarcane, banana, abaca, cotton, and cassava. " .
+            "DA-CBC also uses the OneCBC Portal for laboratory equipment logging, venue rentals, and experiment monitoring. " .
+            "When uncertain, state uncertainty briefly and suggest contacting DA-CBC through official channels for confirmation.",
         'enforce_scope' => 1,
         'openai_org' => '',
         // New defaults for site context
@@ -249,7 +256,7 @@ function cbc_ai_field_render_in_footer($args): void{
 // Shortcode to render the messenger UI
 add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
-        'placeholder' => 'Ask about DA-CBC, biotechnology, agriculture, genetic engineering, or biology...',
+        'placeholder' => 'Ask me about Golden Rice, tissue culturing, molecular breeding, or DA-CBC facilities...',
         'floating' => '1',
         'title' => 'Chatbot',
     ), $atts, 'cbc_ai_messenger');
@@ -280,7 +287,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
-        'nonce' => wp_create_nonce('wp_rest'),
+        'nonce' => is_user_logged_in() ? wp_create_nonce('wp_rest') : '',
         'placeholder' => (string)$atts['placeholder'],
         'title' => (string)$atts['title'],
         'recaptchaSiteKey' => $recaptcha_site_key,
@@ -395,6 +402,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     if ($name === '') { return new WP_REST_Response(array('error' => 'Name is required'), 400); }
     $email_s = sanitize_email($email);
     if ($email_s === '' || !is_email($email_s)) { return new WP_REST_Response(array('error' => 'A valid email is required'), 400); }
+    if (!preg_match('/@gmail\.com$/i', $email_s)) { return new WP_REST_Response(array('error' => 'A valid Gmail address is required'), 400); }
     // normalize sanitized values
     $name = sanitize_text_field($name);
     $email = $email_s;
@@ -488,8 +496,18 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $result = cbc_ai_call_provider($opts, $message, $api_key);
     if (is_wp_error($result)) {
         $reply = 'Sorry, I could not generate a response right now.';
-        $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'error','error' => $result->get_error_message()), $name, $email);
-        return new WP_REST_Response(array('reply' => $reply), 200);
+        $error_data = $result->get_error_data();
+        $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'error','error' => $result->get_error_message(),'error_data' => $error_data), $name, $email);
+        $response = array('reply' => $reply);
+        if (is_user_logged_in() && current_user_can('manage_options')) {
+            $response['debug'] = array(
+                'provider_error' => $result->get_error_message(),
+                'provider_error_data' => $error_data,
+                'provider' => $opts['provider'],
+                'model' => $opts['model'],
+            );
+        }
+        return new WP_REST_Response($response, 200);
     }
 
     $reply = (string)($result['reply'] ?? '');
@@ -580,7 +598,10 @@ function cbc_ai_build_site_context($query, $opts): string {
 
 function cbc_ai_call_provider($opts, $message, $api_key = ''){
     $system = (string)$opts['system_prompt'];
-    $guard = "Always stay within DA-CBC, biotechnology, agriculture, genetic engineering, and biology. If asked outside scope, respond with a brief refusal and invite an in-scope question.";
+    $guard = "Scope policy: Answer only topics directly related to DA-CBC, crop biotechnology, Philippine agriculture, and DA-CBC-aligned scientific domains: plant/crop biotechnology, genomics, bioinformatics, computational breeding, molecular breeding, genetic engineering, germplasm enhancement, tissue culturing, and DA-CBC facilities/services such as the OneCBC Portal. " .
+        "You may discuss DA-CBC key crops: rice (including Golden Rice / Malusog 1 and high iron/zinc rice), corn, coconut, coffee, sugarcane, banana, abaca, cotton, and cassava. " .
+        "Politely decline requests outside scope, including non-agricultural topics, partisan politics, and general software coding help unrelated to agricultural bioinformatics/computational breeding. " .
+        "For out-of-scope requests, provide a brief refusal and offer to help with an in-scope DA-CBC or crop biotechnology question.";
 
     $provider = $opts['provider'] ?? 'openrouter';
     $model = cbc_ai_normalize_model($provider, $opts['model'] ?? '');
@@ -634,13 +655,44 @@ function cbc_ai_call_provider($opts, $message, $api_key = ''){
         if ($org !== '') { $headers['OpenAI-Organization'] = $org; }
     }
 
-    $response = wp_remote_post($url, array('headers' => $headers,'body' => wp_json_encode($body),'timeout' => 45,));
-    if (is_wp_error($response)) { return $response; }
+    $request_args = array('headers' => $headers, 'body' => wp_json_encode($body), 'timeout' => 45);
+    $response = wp_remote_post($url, $request_args);
+    if (is_wp_error($response)) {
+        return new WP_Error('cbc_ai_transport', $response->get_error_message(), array('provider' => $provider, 'model' => $model));
+    }
 
     $code = wp_remote_retrieve_response_code($response);
     $raw = wp_remote_retrieve_body($response);
     $data = json_decode($raw, true);
-    if ($code < 200 || $code >= 300 || !is_array($data)) { return new WP_Error('cbc_ai_http', 'HTTP error from provider', array('code' => $code, 'body' => $raw)); }
+
+    // OpenAI compatibility fallback: some deployments/models require max_completion_tokens.
+    if ($provider === 'openai' && ($code === 400 || $code === 422) && is_array($data) && !empty($data['error']['message'])) {
+        $provider_error = strtolower((string)$data['error']['message']);
+        if (strpos($provider_error, 'max_tokens') !== false) {
+            $retry_body = $body;
+            $retry_body['max_completion_tokens'] = intval($opts['max_tokens']);
+            unset($retry_body['max_tokens']);
+
+            $retry_response = wp_remote_post($url, array('headers' => $headers, 'body' => wp_json_encode($retry_body), 'timeout' => 45));
+            if (!is_wp_error($retry_response)) {
+                $code = wp_remote_retrieve_response_code($retry_response);
+                $raw = wp_remote_retrieve_body($retry_response);
+                $data = json_decode($raw, true);
+            }
+        }
+    }
+
+    if ($code < 200 || $code >= 300 || !is_array($data)) {
+        $provider_message = 'HTTP error from provider';
+        if (is_array($data) && !empty($data['error'])) {
+            if (is_string($data['error'])) {
+                $provider_message = $data['error'];
+            } elseif (is_array($data['error']) && !empty($data['error']['message'])) {
+                $provider_message = (string)$data['error']['message'];
+            }
+        }
+        return new WP_Error('cbc_ai_http', $provider_message, array('code' => $code, 'body' => $raw, 'provider' => $provider, 'model' => $model));
+    }
 
     $reply = '';
     if (isset($data['choices'][0]['message']['content'])) { $reply = (string)$data['choices'][0]['message']['content']; }

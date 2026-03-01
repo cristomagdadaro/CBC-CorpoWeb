@@ -275,14 +275,14 @@
 
                 const name = ($nameInput.val() || '').trim();
                 const email = ($emailInput.val() || '').trim();
-                const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+                const emailRegex = /^[^@\s]+@gmail\.com$/i;
                 let invalid = false;
                 if (!name) {
                     this.ui.showFieldError('Please enter your name.');
                     invalid = true;
                 }
                 if (!email || !emailRegex.test(email)) {
-                    this.ui.showFieldError('Please enter a valid email address.');
+                    this.ui.showFieldError('Please enter a valid Gmail address.');
                     invalid = true;
                 }
                 if (invalid) return;
@@ -293,9 +293,14 @@
                 const oldText = $btn.text();
                 $btn.prop('disabled', true).text('Thinking…');
 
+                const headers = { 'Content-Type': 'application/json' };
+                if (CBCAI && CBCAI.nonce) {
+                    headers['X-WP-Nonce'] = CBCAI.nonce;
+                }
+
                 fetch(CBCAI.restUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': CBCAI.nonce },
+                    headers: headers,
                     body: JSON.stringify({ message: msg, name: name, email: email })
                 })
                 .then(r => r.json())

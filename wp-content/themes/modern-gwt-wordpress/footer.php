@@ -295,14 +295,6 @@
 </script>
 <!-- end philippine standard time -->
 
-<div style="z-index: 999;">
-    <?php
-    if (shortcode_exists('cbc_ai_messenger')) {
-        echo do_shortcode('[cbc_ai_messenger]');
-    }
-    ?>
-</div>
-
 <?php wp_footer(); ?>
 
 <!-- Floating Sidebar (right side) -->
