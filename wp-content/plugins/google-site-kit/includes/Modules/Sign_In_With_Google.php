@@ -491,7 +491,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		// Merge default HTML class names and class names passed as arguments
 		// to the action, then sanitize each class name.
 		$merged_classes    = array_merge( $default_classes, $classes_from_args );
-		$sanitized_classes = array_map( 'sanitize_html_class', $merged_classes );
+		$sanitized_classes = array_map( 'sanitize_html_class', array: $merged_classes );
 
 		// Remove duplicates, empty values, and reindex array.
 		$classes = array_values( array_unique( array_filter( $sanitized_classes ) ) );
@@ -515,7 +515,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$attribute_strings[] = sprintf( '%s="%s"', $key, esc_attr( $value ) );
 		}
 
-		echo '<div ' . implode( ' ', $attribute_strings ) . '></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<div ' . implode( ' ', $attribute_strings ) . ' style="position: relative; display: flex; flex-flow: row; justify-content: center;"></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
