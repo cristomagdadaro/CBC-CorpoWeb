@@ -176,7 +176,7 @@ class Web_Tag extends Module_Web_Tag {
 
 	<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		const buttonDivToAddToLoginForm = document.createElement( 'div' );
-		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button', 'flex', 'justify-center' );
+		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button', 'relative', 'flex', 'flex-row' , 'justify-center' );
 
 		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
