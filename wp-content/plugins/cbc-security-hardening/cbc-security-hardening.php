@@ -130,7 +130,7 @@ class CBC_Security_Hardening {
 			return;
 		}
 		self::recaptcha_script();
-		echo '<div class="g-recaptcha" data-sitekey="' . esc_attr( CBC_AI_RECAPTCHA_SITE_KEY ) . '"></div>';
+		echo cbc_recaptcha_field(); // Use the function from cbc-recaptcha plugin to render the field
 	}
 
 	public static function verify_login_recaptcha( $user, $username, $password ) {
@@ -154,7 +154,9 @@ class CBC_Security_Hardening {
 			return;
 		}
 		self::recaptcha_script();
-		echo '<p class="comment-form-recaptcha"><label>' . esc_html__( 'Anti-spam check', 'cbc' ) . '</label><div class="g-recaptcha" data-sitekey="' . esc_attr( CBC_AI_RECAPTCHA_SITE_KEY ) . '"></div></p>';
+		echo '<p class="comment-form-recaptcha"><label>' . esc_html__( 'Anti-spam check', 'cbc' ) . '</label>';
+		cbc_recaptcha_field(); // Use the function from cbc-recaptcha plugin to render the field
+		echo '</p>';
 	}
 
 	public static function verify_comment_recaptcha( $commentdata ) {
