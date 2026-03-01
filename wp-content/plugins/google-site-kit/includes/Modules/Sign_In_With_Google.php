@@ -482,7 +482,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$args = array();
 		}
 
-		$default_classes   = array( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+		$default_classes   = array( 'googlesitekit-sign-in-with-google__frontend-output-button flex justify-center' );
 		$classes_from_args = array();
 		if ( ! empty( $args['class'] ) ) {
 			$classes_from_args = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
