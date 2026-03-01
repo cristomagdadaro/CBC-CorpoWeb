@@ -42,7 +42,17 @@ jQuery(document).ready(function($) {
 
         $.post(brm_ajax.ajax_url, data, function(response) {
             if (response.success) {
-                $feedback.addClass('brm-alert brm-alert-success').html('<strong>Success!</strong> ' + response.data.message + '<br>Your link is: <code>' + response.data.full_url + '</code>').show();
+                let successHtml = '<strong>Success!</strong> ' + response.data.message + '<br>Your link is: <code>' + response.data.full_url + '</code>';
+
+                if (response.data.qr_code) {
+                    successHtml += '<div class="brm-public-qr-wrap">';
+                    successHtml += '<div><strong>QR Code</strong></div>';
+                    successHtml += '<img src="' + response.data.qr_code + '" alt="GoLink QR Code" class="brm-qr-image">';
+                    successHtml += '<a href="' + response.data.qr_code + '" download class="brm-download-qr">Download QR</a>';
+                    successHtml += '</div>';
+                }
+
+                $feedback.addClass('brm-alert brm-alert-success').html(successHtml).show();
                 $form.hide();
 
                 // Optional: Redirect after a delay

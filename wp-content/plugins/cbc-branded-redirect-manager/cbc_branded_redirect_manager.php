@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: CBC Branded Redirect Manager
+ * Plugin Name: CBC GoLink
  * Description: Create and manage branded short links that redirect to external URLs and log clicks. Adds shortlinks at /go/{slug} and an admin UI to create/manage links.
  * Version: 1.4
  * Author: Cristo Rey C. Magdadaro
- * Text Domain: branded-redirect-manager
+ * Text Domain: cbc-golink
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -297,7 +297,7 @@ class BRM_Plugin {
 
     /* Admin menu, pages, and settings */
     public function admin_menu() {
-        add_menu_page( 'Redirect Manager', 'Redirect Manager', 'manage_options', 'brm_redirects', array(
+        add_menu_page( 'GoLink Manager', 'GoLink Manager', 'manage_options', 'brm_redirects', array(
                 $this,
                 'admin_page_list'
         ), 'dashicons-admin-links', 58 );
@@ -313,11 +313,15 @@ class BRM_Plugin {
 
     public function register_settings() {
         register_setting( 'brm_options_group', 'brm_public_access' );
-        add_settings_section( 'brm_general_section', 'General Settings', null, 'brm_settings_page' );
+        add_settings_section( 'brm_general_section', 'General Settings', array( $this, 'general_settings_section_callback' ), 'brm_settings_page' );
         add_settings_field( 'brm_public_access_field', 'Public Link Creation', array(
                 $this,
                 'public_access_field_callback'
         ), 'brm_settings_page', 'brm_general_section' );
+    }
+
+    public function general_settings_section_callback() {
+        echo '<p class="description">Configure GoLink access behavior for public users.</p>';
     }
 
     public function public_access_field_callback() {
@@ -334,7 +338,7 @@ class BRM_Plugin {
     public function admin_page_settings() {
         ?>
         <div class="wrap">
-            <h1>Redirect Manager Settings</h1>
+            <h1>GoLink Manager Settings</h1>
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'brm_options_group' );
@@ -447,7 +451,7 @@ class BRM_Plugin {
         $base_url = site_url( '/go/' );
         ?>
         <div class="wrap brm-admin-list">
-            <h1>Redirect Manager
+            <h1>GoLink Manager
                 <a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>"
                    class="page-title-action brm-add-button">
                     Add New
@@ -478,7 +482,7 @@ class BRM_Plugin {
                         <td data-colname="QR Code" class="brm-qr-cell">
                             <?php if ( ! empty( $r->qr_code ) ): ?>
                                 <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" class="brm-qr-image">
-                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="button button-small brm-download-qr">Download</a>
+                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="brm-download-qr">Download</a>
                             <?php else: ?>
                                 -
                             <?php endif; ?>

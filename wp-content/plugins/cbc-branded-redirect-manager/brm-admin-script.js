@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Clear previous content and add new QR
                         qrCell.innerHTML = `
                             <img src="${result.data.qr_code}" alt="QR Code" class="brm-qr-image">
-                            <a href="${result.data.qr_code}" download class="button button-small brm-download-qr">Download</a>
+                            <a href="${result.data.qr_code}" download class="brm-download-qr">Download</a>
                         `;
                     }
                 } else {
