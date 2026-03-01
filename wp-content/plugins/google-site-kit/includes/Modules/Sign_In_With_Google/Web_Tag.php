@@ -174,17 +174,27 @@ class Web_Tag extends Module_Web_Tag {
 		library_name: 'Site-Kit'
 	} );
 
-	<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $this->is_wp_login ) : ?>
+	const loginWrapper = document.getElementById( 'login' );
+	const loginForm = document.getElementById( 'loginform' );
+
+	if ( loginWrapper && loginForm ) {
 		const buttonDivToAddToLoginForm = document.createElement( 'div' );
-		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button');
-		buttonDivToAddToLoginForm.style.position = "relative";
-		buttonDivToAddToLoginForm.style.display = "flex";
-		buttonDivToAddToLoginForm.style.flexFlow = "row";
-		buttonDivToAddToLoginForm.style.justifyContent = "center";
-		buttonDivToAddToLoginForm.style.width = "100%"; // Ensures it takes up the full form width
-		buttonDivToAddToLoginForm.style.marginTop = "1rem"; // Space it away from the password field
-		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		
+		// Add your class and styles
+		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+		
+		Object.assign(buttonDivToAddToLoginForm.style, {
+			position: 'relative',
+			display: 'flex',
+			flexFlow: 'row',
+			justifyContent: 'center',
+		});
+
+		// Inject the button
+		loginWrapper.insertBefore( buttonDivToAddToLoginForm, loginForm );
+	}
+	<?php endif; ?>
 
 	<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
