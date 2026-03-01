@@ -63,7 +63,10 @@ class PM_Post_Metrics {
 				$meta['views'] = intval( $meta['views'] ?? 0 ) + 1;
 				if ( ! $has_cookie ) {
 					$meta['viewers'] = intval( $meta['viewers'] ?? 0 ) + 1;
-					setcookie( $cookie_name, '1', time() + DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/' );
+					// Only set cookie if headers haven't been sent yet
+					if ( ! headers_sent() ) {
+						setcookie( $cookie_name, '1', time() + DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/' );
+					}
 				}
 				break;
 			case 'like':
