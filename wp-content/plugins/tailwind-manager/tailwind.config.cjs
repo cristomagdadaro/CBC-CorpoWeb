@@ -506,12 +506,62 @@ module.exports = {
         '[&>p]:text-gray-600',
         '[&>img]:rounded-lg',
         '[&>div>ul>li]:text-[11.2px]',
+        // Design system interaction classes used by JS
+        'cbc-is-scrolled',
+        'is-visible',
         // Pattern for Gradient Detection
         { pattern: /bg-gradient-to-(r|l|t|b|tr|tl|br|bl)/ },
     ],
     theme: {
         extend: {
-            colors: extendedColors,
+            colors: Object.assign({}, extendedColors, {
+                'biotech-primary': '#2e7d32',
+                'biotech-dark': '#1b5e20',
+                'biotech-light': '#4caf50',
+                'biotech-accent': '#76ff03',
+                'biotech-dark-bg': '#212121',
+                'biotech-slate': '#64748b'
+            }),
+            spacing: {
+                'shell-x-sm': '1rem',
+                'shell-x-md': '1.5rem',
+                'shell-x-lg': '3rem',
+                'shell-x-xl': '5rem',
+                'section-y-sm': '3.5rem',
+                'section-y-lg': '5rem'
+            },
+            borderRadius: {
+                xl: 'calc(var(--radius) + 4px)',
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)',
+                xs: 'calc(var(--radius) - 6px)'
+            },
+            boxShadow: {
+                xs: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                card: '0 10px 24px rgba(0, 0, 0, 0.10)',
+                cardHover: '0 18px 40px rgba(0, 0, 0, 0.16)',
+                glow: '0 0 20px rgba(118, 255, 3, 0.3)'
+            },
+            keyframes: {
+                shimmer: {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' }
+                },
+                'fade-in': {
+                    from: { opacity: '0' },
+                    to: { opacity: '1' }
+                },
+                'slide-up': {
+                    from: { opacity: '0', transform: 'translateY(20px)' },
+                    to: { opacity: '1', transform: 'translateY(0)' }
+                }
+            },
+            animation: {
+                shimmer: 'shimmer 1.5s linear infinite',
+                'fade-in': 'fade-in 0.5s ease-out forwards',
+                'slide-up': 'slide-up 0.6s ease-out forwards'
+            },
             fontFamily: {
                 dancing: ['"Dancing Script"', 'cursive'],
                 lato: ['Lato', 'sans-serif'],
