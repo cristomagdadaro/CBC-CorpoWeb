@@ -3,7 +3,7 @@
  * Plugin Name: CBC Security Hardening
  * Description: Security headers, login protections, reCAPTCHA, basic monitoring endpoint, and optional Sentry/Rollbar forwarding.
  * Version: 1.0.0
- * Author: CBC
+ * Author: Cristo Rey C. Magdadaro
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

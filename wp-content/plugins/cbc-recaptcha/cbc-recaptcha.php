@@ -3,7 +3,7 @@
  * Plugin Name:       CBC Google reCAPTCHA
  * Description:       A simple plugin to add Google reCAPTCHA v2 (checkbox) to the site and provide a verification function.
  * Version:           1.1.0
- * Author:            GitHub Copilot
+ * Author:            Cristo Rey C. Magdadaro
  */
 
 // If this file is called directly, abort.
@@ -107,5 +107,5 @@ function cbc_recaptcha_field() {
 
     $site_key = CBC_AI_RECAPTCHA_SITE_KEY;
 
-    echo '<div class="g-recaptcha flex justify-center" data-sitekey="' . esc_attr($site_key) . '"></div>';
+    echo '<div class="g-recaptcha" data-sitekey="' . esc_attr($site_key) . '"></div>';
 }
