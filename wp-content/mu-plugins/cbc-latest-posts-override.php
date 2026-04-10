@@ -185,9 +185,9 @@ function cbc_render_latest_posts( $attributes, $content = '', $block = null ) {
 			$list_items_markup .= '</div><div id="' . esc_attr( $right_list_id ) . '" class="' . esc_attr( $right_list_class ) . '">';
 		}
 
-		$img_wrapper_first      = '<div class="left-images overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
-		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
-		$img_wrapper_later_list = '<div class="overflow-hidden rounded-md shrink-0 w-[9rem] h-full min-h-[60rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+		$img_wrapper_first      = '<div class="left-images overflow-hidden rounded-md shrink-0 w-[9rem] h-[6rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
+		$img_wrapper_later_grid = '<div class="overflow-hidden shrink-0 w-[9rem] h-[6rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem] block md:hidden">%s</div>';
+		$img_wrapper_later_list = '<div class="overflow-hidden rounded-md shrink-0 w-[9rem] h-[6rem] md:w-[12rem] md:h-[9rem] lg:w-[15rem] lg:h-[12rem]">%s</div>';
 
 		$is_first_group = $count < $maxCount;
 		$base_container = '';
