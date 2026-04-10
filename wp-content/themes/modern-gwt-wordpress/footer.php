@@ -79,12 +79,12 @@
                         <div>
                             <h4 class="font-semibold m-4 p-1">Services</h4>
                             <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
-                                <li><a href="https://dacbc.philrice.gov.ph/forms/event">Events</a></li>
-                                <li><a href="https://dacbc.philrice.gov.ph/forms/request-to-use">FES Request Form</a></li>
-                                <li><a href="https://dacbc.philrice.gov.ph/laboratory/equipments">Laboratory Logger</a></li>
-                                <li><a href="https://dacbc.philrice.gov.ph/inventory/outgoing">Supplies Checkout</a></li>
-                                <li><a href="https://dacbc.philrice.gov.ph/rental/vehicle">Vehicle Rental</a></li>
-                                <li><a href="https://dacbc.philrice.gov.ph/rental/venue">Event Hall Booking</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/forms/event">Events</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/forms/request-to-use">FES Request Form</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/laboratory/equipments">Laboratory Logger</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/inventory/outgoing">Supplies Checkout</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/rental/vehicle">Vehicle Rental</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/rental/venue">Event Hall Booking</a></li>
                                 <li><a href="/golink/">GoLink Generator</a></li>
                             </ul>
                         </div>
@@ -259,20 +259,19 @@
 
 <!-- end scroll reveal -->
 
+<?php
+$cbc_footer_host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( (string) wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+$cbc_footer_host = preg_replace( '/:\d+$/', '', $cbc_footer_host );
+$cbc_skip_remote_govph = in_array( $cbc_footer_host, array( 'localhost', '127.0.0.1', '::1' ), true );
+?>
+<?php if ( ! $cbc_skip_remote_govph ) : ?>
 <!-- standard footer script -->
-<!--
-  NOTE: SRI (Subresource Integrity) cannot be added to these gov.ph scripts because:
-  1. The PST script uses a cache-busting timestamp (?new Date().getTime()) which changes the URL each load.
-  2. The footer.js may be updated by iGovPhil without notice, breaking any pinned hash.
-  crossorigin="anonymous" is added for CORS compliance.
--->
 <script type="text/javascript">
     (function (d, s, id) {
         var js, gjs = d.getElementById('gwt-standard-footer');
 
         js = d.createElement(s);
         js.id = id;
-        js.crossOrigin = 'anonymous';
         js.src = "https://gwhs.i.gov.ph/gwt-footer/footer.js";
         gjs.parentNode.insertBefore(js, gjs);
     }(document, 'script', 'gwt-footer-jsdk'));
@@ -284,7 +283,6 @@
         var js, gjs = d.getElementById(eId);
         js = d.createElement('script');
         js.id = 'gwt-pst-jsdk';
-        js.crossOrigin = 'anonymous';
         js.src = "https://gwhs.i.gov.ph/pst/gwtpst.js?" + new Date().getTime();
         gjs.parentNode.insertBefore(js, gjs);
     }(document, 'gwt-pst'));
@@ -294,6 +292,7 @@
     }
 </script>
 <!-- end philippine standard time -->
+<?php endif; ?>
 
 <?php wp_footer(); ?>
 

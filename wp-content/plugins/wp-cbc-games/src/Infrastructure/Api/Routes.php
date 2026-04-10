@@ -19,26 +19,26 @@ class Routes
         register_rest_route('cbc-games/v1', '/quiz', [
             'methods' => 'GET',
             'callback' => [$this, 'getQuiz'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [$this, 'allowPublicRead'],
         ]);
 
         register_rest_route('cbc-games/v1', '/scramble', [
             'methods' => 'GET',
             'callback' => [$this, 'getScramble'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [$this, 'allowPublicRead'],
         ]);
 
         register_rest_route('cbc-games/v1', '/memory', [
             'methods' => 'GET',
             'callback' => [$this, 'getMemory'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [$this, 'allowPublicRead'],
         ]);
 
         // Leaderboard routes
         register_rest_route('cbc-games/v1', '/leaderboard/(?P<game>[a-zA-Z0-9_-]+)', [
             'methods' => 'GET',
             'callback' => [$this, 'getLeaderboard'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [$this, 'allowPublicRead'],
             'args' => [
                 'game' => ['required' => true],
                 'limit' => ['required' => false],
@@ -47,9 +47,39 @@ class Routes
         register_rest_route('cbc-games/v1', '/leaderboard/(?P<game>[a-zA-Z0-9_-]+)', [
             'methods' => 'POST',
             'callback' => [$this, 'postLeaderboard'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [$this, 'allowLeaderboardWrite'],
             'args' => [ 'game' => ['required' => true] ],
         ]);
+    }
+
+    public function allowPublicRead($request)
+    {
+        return true;
+    }
+
+    public function allowLeaderboardWrite($request)
+    {
+        $game = sanitize_key($request['game'] ?? '');
+        if (!in_array($game, $this->allowedGames, true)) {
+            return new \WP_Error('invalid_game', 'Invalid game', ['status' => 400]);
+        }
+
+        $nonce = (string) $request->get_header('X-CBC-Nonce');
+        if ($nonce === '' || !wp_verify_nonce($nonce, 'cbc_games_nonce')) {
+            return new \WP_Error('invalid_nonce', 'Invalid gameplay nonce', ['status' => 403]);
+        }
+
+        $params = $request->get_json_params();
+        if (!is_array($params)) {
+            $params = [];
+        }
+
+        $token = isset($params['submission_token']) ? sanitize_text_field((string) $params['submission_token']) : '';
+        if (!$this->validateSubmissionToken($token, $game)) {
+            return new \WP_Error('invalid_submission_token', 'Invalid or expired gameplay token.', ['status' => 403]);
+        }
+
+        return true;
     }
 
     public function getQuiz($request)
@@ -64,21 +94,30 @@ class Routes
                 'answer'  => $q->answer(),
             ];
         }
-        return rest_ensure_response(['questions' => $data]);
+        return rest_ensure_response([
+            'questions' => $data,
+            'submissionToken' => $this->issueSubmissionToken('quiz'),
+        ]);
     }
 
     public function getScramble($request)
     {
         $service = new ScrambleService(new InMemoryWordRepository());
         $words = $service->pick(5);
-        return rest_ensure_response(['words' => $words]);
+        return rest_ensure_response([
+            'words' => $words,
+            'submissionToken' => $this->issueSubmissionToken('scramble'),
+        ]);
     }
 
     public function getMemory($request)
     {
         $repo = new PluginAssetImageRepository();
         $images = $repo->all();
-        return rest_ensure_response(['images' => $images]);
+        return rest_ensure_response([
+            'images' => $images,
+            'submissionToken' => $this->issueSubmissionToken('memory'),
+        ]);
     }
 
     public function getLeaderboard($request)
@@ -106,6 +145,11 @@ class Routes
         $hp = isset($params['hp']) ? trim((string)$params['hp']) : '';
         if ($hp !== '') {
             return new \WP_Error('forbidden', 'Spam detected', ['status' => 403]);
+        }
+
+        $rate = $this->checkLeaderboardRateLimit($game);
+        if (is_wp_error($rate)) {
+            return $rate;
         }
 
         $name = trim(sanitize_text_field($params['name'] ?? ''));
@@ -157,5 +201,106 @@ class Routes
         // Return updated top 10
         $top = $repo->top($game, 10);
         return rest_ensure_response(['saved' => $saved, 'leaderboard' => $top]);
+    }
+
+    private function clientIp(): string
+    {
+        $candidates = [
+            $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+            $_SERVER['HTTP_CLIENT_IP'] ?? '',
+            $_SERVER['REMOTE_ADDR'] ?? '',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (!$candidate) {
+                continue;
+            }
+
+            foreach (array_map('trim', explode(',', (string) $candidate)) as $ip) {
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return '0.0.0.0';
+    }
+
+    private function issueSubmissionToken(string $game): string
+    {
+        $payload = [
+            'game' => $game,
+            'exp' => time() + (15 * MINUTE_IN_SECONDS),
+            'ip' => $this->clientIp(),
+            'ua' => substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 120),
+        ];
+        $encoded = rtrim(strtr(base64_encode(wp_json_encode($payload)), '+/', '-_'), '=');
+        $signature = hash_hmac('sha256', $encoded, wp_salt('auth'));
+
+        return $encoded . '.' . $signature;
+    }
+
+    private function validateSubmissionToken(string $token, string $game): bool
+    {
+        if ($token === '' || strpos($token, '.') === false) {
+            return false;
+        }
+
+        [$encoded, $signature] = explode('.', $token, 2);
+        $expected = hash_hmac('sha256', $encoded, wp_salt('auth'));
+        if (!hash_equals($expected, $signature)) {
+            return false;
+        }
+
+        $normalized = strtr($encoded, '-_', '+/');
+        $padding = strlen($normalized) % 4;
+        if ($padding > 0) {
+            $normalized .= str_repeat('=', 4 - $padding);
+        }
+
+        $payloadJson = base64_decode($normalized, true);
+        $payload = json_decode((string) $payloadJson, true);
+        if (!is_array($payload)) {
+            return false;
+        }
+
+        if (($payload['game'] ?? '') !== $game) {
+            return false;
+        }
+
+        if ((int) ($payload['exp'] ?? 0) < time()) {
+            return false;
+        }
+
+        if (($payload['ip'] ?? '') !== $this->clientIp()) {
+            return false;
+        }
+
+        $ua = substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 120);
+
+        return hash_equals((string) ($payload['ua'] ?? ''), $ua);
+    }
+
+    private function checkLeaderboardRateLimit(string $game)
+    {
+        $ipHash = md5($this->clientIp() . '|' . $game);
+        $minuteKey = 'cbc_games_lb_min_' . $ipHash;
+        $hourKey = 'cbc_games_lb_hour_' . $ipHash;
+
+        $minuteCount = (int) get_transient($minuteKey);
+        $hourCount = (int) get_transient($hourKey);
+
+        if ($minuteCount >= 3) {
+            return new \WP_Error('rate_limited', 'Too many score submissions. Please wait a minute before trying again.', ['status' => 429]);
+        }
+
+        if ($hourCount >= 15) {
+            return new \WP_Error('rate_limited_hour', 'Too many score submissions from this connection. Please try again later.', ['status' => 429]);
+        }
+
+        set_transient($minuteKey, $minuteCount + 1, MINUTE_IN_SECONDS);
+        set_transient($hourKey, $hourCount + 1, HOUR_IN_SECONDS);
+
+        return true;
     }
 }

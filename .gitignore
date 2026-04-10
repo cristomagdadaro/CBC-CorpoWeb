@@ -15,6 +15,8 @@ deploy_log.txt
 .env
 .env.*
 wp-config-local.php
+google_credentials.json
+client_secret_*.json
 
 # IDE
 .idea/
@@ -43,5 +45,7 @@ wp-content/uploads/
 # Node / build tools
 node_modules/
 package-lock.json
+wp-content/plugins/tailwind-manager/node_modules/
+wp-content/plugins/tailwind-manager/package-lock.json
 
 wp-content/plugins/tailwind-manager/dist/

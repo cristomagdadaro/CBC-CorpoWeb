@@ -16,6 +16,7 @@
         const resultMessage = root.querySelector('#result-message');
         const feedbackText = root.querySelector('#feedback');
         const leaderboardForm = document.getElementById('quiz-leaderboard-form');
+        let submissionToken = '';
         const leaderboardBody = document.getElementById('quiz-leaderboard-body');
 
         // Audio controls
@@ -153,10 +154,14 @@
                 return;
             }
             const time_ms = quizEndMs ?? Math.round(performance.now() - (quizStartAt || performance.now()));
+            if (!submissionToken) {
+                alert('Please start a new quiz before submitting your score.');
+                return;
+            }
             fetch((window.cbcGames.apiBase || '') + 'leaderboard/quiz', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CBC-Nonce': (window.cbcGames?.nonce || '')},
-                body: JSON.stringify({name, agency, age, score, time_ms, played_at: playedAt, hp})
+                body: JSON.stringify({name, agency, age, score, time_ms, played_at: playedAt, hp, submission_token: submissionToken})
             })
                 .then(async r => {
                     const data = await r.json();
@@ -196,6 +201,7 @@
             fetch((window.cbcGames.apiBase || '') + 'quiz')
                 .then(r => r.json())
                 .then(data => {
+                    submissionToken = data.submissionToken || '';
                     currentQuestions = Array.isArray(data.questions) ? data.questions : [];
                     // Safety shuffle
                     shuffleArray(currentQuestions);

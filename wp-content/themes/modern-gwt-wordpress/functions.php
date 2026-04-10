@@ -110,10 +110,6 @@ require get_template_directory() . '/inc/shortcode-core-programs.php';
  */
 // require get_template_directory() . '/inc/custom-post-types.php';
 
-/**
- * Custom template tags for this theme.
- */
-require get_template_directory() . '/inc/template-tags.php';
 
 /**
  * Customizer additions.

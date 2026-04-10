@@ -1,12 +1,15 @@
 <?php
 namespace CbcFormManager\Infrastructure\Setup;
 
+use CbcFormManager\Infrastructure\Storage\PrivateUploadManager;
+
 if (!defined('ABSPATH')) { exit; }
 
 class Installer
 {
     public function register(): void
     {
+        PrivateUploadManager::registerCapabilities();
         $this->registerPostType();
     }
 
@@ -25,8 +28,8 @@ class Installer
             'menu_position' => 25,
             'menu_icon' => 'dashicons-feedback',
             'supports' => ['title'],
-            'capability_type' => 'post',
-            'map_meta_cap' => true,
+            'capabilities' => PrivateUploadManager::postTypeCapabilities(),
+            'map_meta_cap' => false,
         ]);
     }
 }

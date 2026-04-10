@@ -16,6 +16,7 @@ class CBC_Client_Engagement {
     const INTERNSHIP_POST_TYPE  = 'cbc_internship';
 
     public function __construct() {
+        add_action('init', [$this, 'register_capabilities'], 5);
         // Register post types
         add_action('init', [$this, 'register_post_types']);
 
@@ -23,10 +24,12 @@ class CBC_Client_Engagement {
         register_activation_hook(__FILE__, [$this, 'activate']);
         register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
-        // Shortcodes
-        add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
-        add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
-        add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
+        // Legacy shortcodes are disabled by default so cbc-form-manager can be the canonical form owner.
+        if ($this->legacy_form_shortcodes_enabled()) {
+            add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
+            add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
+            add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
+        }
         // Combined page shortcode (renders all forms)
         add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
         // Events listing shortcodes
@@ -42,6 +45,7 @@ class CBC_Client_Engagement {
         add_action('admin_post_cbc_submit_feedback',           [$this, 'handle_submit_feedback']);
         add_action('admin_post_nopriv_cbc_submit_internship',  [$this, 'handle_submit_internship']);
         add_action('admin_post_cbc_submit_internship',         [$this, 'handle_submit_internship']);
+        add_action('admin_post_cbc_download_internship_file',  [$this, 'handle_download_internship_file']);
 
         // Admin menu
         add_action('admin_menu', [$this, 'register_admin_menu']);
@@ -72,6 +76,7 @@ class CBC_Client_Engagement {
     }
 
     public function activate() {
+        $this->register_capabilities();
         $this->register_post_types();
         flush_rewrite_rules();
         // Ensure default event types exist
@@ -94,6 +99,45 @@ class CBC_Client_Engagement {
         flush_rewrite_rules();
     }
 
+    private function legacy_form_shortcodes_enabled(): bool {
+        if (!class_exists('\\CbcFormManager\\Application\\FormService')) {
+            return true;
+        }
+
+        return (bool) apply_filters('cbc_client_engagement/enable_legacy_form_shortcodes', false);
+    }
+
+    private function submission_capabilities(): array {
+        return [
+            'edit_post'              => 'cbc_manage_client_engagement',
+            'read_post'              => 'cbc_manage_client_engagement',
+            'delete_post'            => 'cbc_manage_client_engagement',
+            'edit_posts'             => 'cbc_manage_client_engagement',
+            'edit_others_posts'      => 'cbc_manage_client_engagement',
+            'publish_posts'          => 'cbc_manage_client_engagement',
+            'read_private_posts'     => 'cbc_manage_client_engagement',
+            'delete_posts'           => 'cbc_manage_client_engagement',
+            'delete_private_posts'   => 'cbc_manage_client_engagement',
+            'delete_published_posts' => 'cbc_manage_client_engagement',
+            'delete_others_posts'    => 'cbc_manage_client_engagement',
+            'edit_private_posts'     => 'cbc_manage_client_engagement',
+            'edit_published_posts'   => 'cbc_manage_client_engagement',
+            'create_posts'           => 'cbc_manage_client_engagement',
+        ];
+    }
+
+    public function register_capabilities(): void {
+        $role = get_role('administrator');
+
+        if (!$role) {
+            return;
+        }
+
+        foreach (array_unique(array_values($this->submission_capabilities())) as $cap) {
+            $role->add_cap($cap);
+        }
+    }
+
     public function register_post_types() {
         // Appointments
         register_post_type(self::APPOINTMENT_POST_TYPE, [
@@ -111,8 +155,8 @@ class CBC_Client_Engagement {
             'public'             => false,
             'show_ui'            => true,
             'show_in_menu'       => false, // We will attach under our custom top-level menu
-            'capability_type'    => 'post',
-            'map_meta_cap'       => true,
+            'capabilities'       => $this->submission_capabilities(),
+            'map_meta_cap'       => false,
             'supports'           => ['title'],
         ]);
 
@@ -132,8 +176,8 @@ class CBC_Client_Engagement {
             'public'             => false,
             'show_ui'            => true,
             'show_in_menu'       => false,
-            'capability_type'    => 'post',
-            'map_meta_cap'       => true,
+            'capabilities'       => $this->submission_capabilities(),
+            'map_meta_cap'       => false,
             'supports'           => ['title'],
         ]);
 
@@ -153,8 +197,8 @@ class CBC_Client_Engagement {
             'public'             => false,
             'show_ui'            => true,
             'show_in_menu'       => false,
-            'capability_type'    => 'post',
-            'map_meta_cap'       => true,
+            'capabilities'       => $this->submission_capabilities(),
+            'map_meta_cap'       => false,
             'supports'           => ['title'],
         ]);
 
@@ -196,7 +240,7 @@ class CBC_Client_Engagement {
     }
 
     public function register_admin_menu() {
-        $cap = 'edit_posts';
+        $cap = 'cbc_manage_client_engagement';
         add_menu_page(
             __('Client Engagement', 'cbc'),
             __('Client Engagement', 'cbc'),
@@ -257,7 +301,7 @@ class CBC_Client_Engagement {
     }
 
     public function render_dashboard_page() {
-        if (!current_user_can('edit_posts')) {
+        if (!current_user_can('cbc_manage_client_engagement')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         $appt_count = wp_count_posts(self::APPOINTMENT_POST_TYPE);
@@ -665,7 +709,7 @@ class CBC_Client_Engagement {
         $post_id = wp_insert_post([
             'post_type'   => self::APPOINTMENT_POST_TYPE,
             'post_title'  => $name . ' - ' . $date . ' ' . $time,
-            'post_status' => 'publish',
+            'post_status' => 'private',
         ], true);
 
         if (is_wp_error($post_id)) {
@@ -710,7 +754,7 @@ class CBC_Client_Engagement {
         $post_id = wp_insert_post([
             'post_type'   => self::FEEDBACK_POST_TYPE,
             'post_title'  => $name . ' - Rating: ' . $rating,
-            'post_status' => 'publish',
+            'post_status' => 'private',
         ], true);
 
         if (is_wp_error($post_id)) {
@@ -777,41 +821,21 @@ class CBC_Client_Engagement {
             $this->redirect_with_message('File content does not match an allowed type (PDF/DOC/DOCX).', false);
         }
 
-        // Handle upload
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        $overrides = ['test_form' => false];
-        $uploaded = wp_handle_upload($file, $overrides);
-        if (isset($uploaded['error'])) {
-            $this->redirect_with_message('Upload failed: ' . $uploaded['error'], false);
+        $stored_file = $this->store_private_file($file, 'internship');
+        if (is_wp_error($stored_file)) {
+            $this->redirect_with_message($stored_file->get_error_message(), false);
         }
 
         $title = $name . ' - ' . $school . ' (' . $program . ')';
         $post_id = wp_insert_post([
             'post_type'   => self::INTERNSHIP_POST_TYPE,
             'post_title'  => $title,
-            'post_status' => 'publish',
+            'post_status' => 'private',
         ], true);
 
         if (is_wp_error($post_id)) {
-            // Cleanup uploaded file if post creation failed
-            @unlink($uploaded['file']);
+            @unlink($stored_file['path']);
             $this->redirect_with_message('Could not save your application. Please try again later.', false);
-        }
-
-        // Insert as attachment to media library and attach to this post
-        $filetype = wp_check_filetype(basename($uploaded['file']), null);
-        $attachment = [
-            'guid'           => $uploaded['url'],
-            'post_mime_type' => $filetype['type'],
-            'post_title'     => sanitize_file_name(basename($uploaded['file'])),
-            'post_content'   => '',
-            'post_status'    => 'inherit'
-        ];
-        $attach_id = wp_insert_attachment($attachment, $uploaded['file'], $post_id);
-        if (!is_wp_error($attach_id)) {
-            require_once ABSPATH . 'wp-admin/includes/image.php';
-            $attach_data = wp_generate_attachment_metadata($attach_id, $uploaded['file']);
-            wp_update_attachment_metadata($attach_id, $attach_data);
         }
 
         update_post_meta($post_id, 'cbc_name', $name);
@@ -820,12 +844,107 @@ class CBC_Client_Engagement {
         update_post_meta($post_id, 'cbc_school', $school);
         update_post_meta($post_id, 'cbc_program', $program);
         update_post_meta($post_id, 'cbc_year_level', $year_level);
-        if (!is_wp_error($attach_id)) {
-            update_post_meta($post_id, 'cbc_letter_file_id', intval($attach_id));
-            update_post_meta($post_id, 'cbc_letter_file_url', esc_url_raw($uploaded['url']));
-        }
+        update_post_meta($post_id, 'cbc_letter_private_file', $stored_file);
+        delete_post_meta($post_id, 'cbc_letter_file_id');
+        delete_post_meta($post_id, 'cbc_letter_file_url');
 
         $this->redirect_with_message('Thank you! Your internship application has been submitted.', true);
+    }
+
+    private function get_private_upload_root(): string {
+        return rtrim(dirname(untrailingslashit(ABSPATH)), '/\\') . DIRECTORY_SEPARATOR . 'cbc-private-uploads' . DIRECTORY_SEPARATOR . 'client-engagement';
+    }
+
+    private function ensure_private_upload_dir(string $subdir = '') {
+        $path = $this->get_private_upload_root();
+
+        if ($subdir !== '') {
+            $path .= DIRECTORY_SEPARATOR . sanitize_key($subdir);
+        }
+
+        if (!is_dir($path) && !wp_mkdir_p($path)) {
+            return new WP_Error('cbc_private_upload_dir', __('Could not prepare secure document storage.', 'cbc'));
+        }
+
+        return $path;
+    }
+
+    private function store_private_file(array $file, string $subdir = '') {
+        $dir = $this->ensure_private_upload_dir($subdir);
+
+        if (is_wp_error($dir)) {
+            return $dir;
+        }
+
+        $original_name = sanitize_file_name(wp_basename($file['name'] ?? 'document'));
+        $stored_name = wp_generate_password(20, false, false) . '-' . $original_name;
+        $target = trailingslashit($dir) . $stored_name;
+
+        if (!move_uploaded_file($file['tmp_name'], $target)) {
+            return new WP_Error('cbc_private_upload_move', __('Could not store the uploaded document securely.', 'cbc'));
+        }
+
+        if (function_exists('chmod')) {
+            @chmod($target, 0600);
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = $finfo ? (string) finfo_file($finfo, $target) : 'application/octet-stream';
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+
+        return [
+            'path' => $target,
+            'original_name' => $original_name,
+            'stored_name' => $stored_name,
+            'mime' => sanitize_text_field($mime),
+            'size' => (int) filesize($target),
+        ];
+    }
+
+    private function get_internship_download_url(int $post_id): string {
+        return wp_nonce_url(
+            add_query_arg([
+                'action' => 'cbc_download_internship_file',
+                'post_id' => $post_id,
+            ], admin_url('admin-post.php')),
+            'cbc_download_internship_file_' . $post_id
+        );
+    }
+
+    public function handle_download_internship_file(): void {
+        $post_id = isset($_GET['post_id']) ? absint($_GET['post_id']) : 0;
+
+        if (!$post_id || !current_user_can('cbc_manage_client_engagement')) {
+            wp_die(__('You are not allowed to access this file.', 'cbc'), 403);
+        }
+
+        check_admin_referer('cbc_download_internship_file_' . $post_id);
+
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== self::INTERNSHIP_POST_TYPE) {
+            wp_die(__('Invalid internship application.', 'cbc'), 404);
+        }
+
+        $file = get_post_meta($post_id, 'cbc_letter_private_file', true);
+        if (!is_array($file) || empty($file['path']) || !file_exists($file['path'])) {
+            wp_die(__('The requested file is no longer available.', 'cbc'), 404);
+        }
+
+        $base = realpath($this->get_private_upload_root());
+        $real = realpath($file['path']);
+        if (!$base || !$real || strpos($real, $base) !== 0) {
+            wp_die(__('Invalid secure file path.', 'cbc'), 403);
+        }
+
+        nocache_headers();
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . sanitize_text_field($file['mime'] ?? 'application/octet-stream'));
+        header('Content-Disposition: attachment; filename="' . rawurlencode($file['original_name'] ?? basename($real)) . '"');
+        header('Content-Length: ' . filesize($real));
+        readfile($real);
+        exit;
     }
 
     private function redirect_with_message($message, $success) {
@@ -982,11 +1101,17 @@ class CBC_Client_Engagement {
             echo '<tr><th style="width:150px;">' . esc_html($label) . '</th><td>' . nl2br(esc_html($val)) . '</td></tr>';
         }
         // Letter of Intent (file, backward compatible)
+        $private_file = get_post_meta($post->ID, 'cbc_letter_private_file', true);
         $file_url = get_post_meta($post->ID, 'cbc_letter_file_url', true);
         $file_id  = intval(get_post_meta($post->ID, 'cbc_letter_file_id', true));
         $legacy_text = get_post_meta($post->ID, 'cbc_letter', true);
         echo '<tr><th style="width:150px;">Letter of Intent</th><td>';
-        if ($file_url) {
+        if (is_array($private_file) && !empty($private_file['path']) && file_exists($private_file['path'])) {
+            echo '<a href="' . esc_url($this->get_internship_download_url($post->ID)) . '">' . esc_html($private_file['original_name'] ?? basename($private_file['path'])) . '</a>';
+            if (!empty($private_file['size'])) {
+                echo ' (' . size_format((int) $private_file['size']) . ')';
+            }
+        } elseif ($file_url) {
             $filename = basename(parse_url($file_url, PHP_URL_PATH));
             echo '<a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
             if ($file_id) {

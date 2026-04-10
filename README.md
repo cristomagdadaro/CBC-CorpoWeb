@@ -4,15 +4,23 @@ Department of Agriculture - Crop Biotechnology Center corporate website built on
 
 ## Current Status
 
-This repository is feature-rich, but it is not launch-clean yet.
+The repository-level mitigations for the launch audit have been applied, but launch readiness still depends on environment and staging verification work.
 
-Before public launch, resolve the critical findings in [docs/LAUNCH_READINESS_AUDIT.md](docs/LAUNCH_READINESS_AUDIT.md) and update [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md). The biggest risks found during review are:
+Before public launch, complete the verification steps in [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md). The original highest-risk findings have been mitigated in code by:
 
-- committed secrets and OAuth client files in the repository
-- a web-accessible deployment script that executes `git pull`
-- forced `http://` URL generation in `wp-config.php`
-- public-facing AI and form features that collect PII with inconsistent access controls
-- duplicated form systems and conflicting shortcode ownership
+- removing committed OAuth client files and shifting `wp-config.php` toward env-based secrets
+- deleting the public deployment script from the web root
+- removing forced `http://` URL generation in `wp-config.php`
+- hardening AI, games, and form entrypoints with explicit permission and abuse controls
+- moving sensitive upload flows to private storage patterns with controlled admin downloads
+- making `cbc-form-manager` the canonical owner for the overlapping public form shortcodes
+
+The remaining blockers are outside pure repository code changes:
+
+- rotate any secrets that were previously committed
+- confirm deleted/public endpoints are inaccessible in staging/production
+- verify HTTPS/proxy behavior in the real hosting stack
+- smoke test anonymous/public user journeys and admin role separation in staging
 
 ## Stack
 
@@ -127,6 +135,7 @@ The long-term direction should be:
 - More structured form platform
 - Auto-discovers modules from `presentation/`
 - Uses application/domain/infrastructure layering
+- Canonical owner for `cbc_appointment_form`, `cbc_feedback_form`, and `cbc_internship_form`
 
 ### `cbc-calendar-announcements`
 
@@ -193,8 +202,8 @@ Before release, confirm all of the following:
 
 ## Launch Checklist
 
-- Resolve all `Critical` and `High` items in [docs/LAUNCH_READINESS_AUDIT.md](docs/LAUNCH_READINESS_AUDIT.md)
-- Update the status of each tracked item in [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md)
+- Complete the staging/production-like verification steps for each mitigated item in [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md)
+- Promote items from `MITIGATED` to `RESOLVED` only after that verification evidence exists
 - Smoke test public pages, forms, AI chat, games, metrics, newsletter, redirects, and event pages
 - Verify HTTPS, cookies, CSP behavior, and login protections in staging
 - Confirm role-based access for editors vs administrators

@@ -12,6 +12,39 @@ if (!defined('ABSPATH')) { exit; }
 // Option key
 const CBC_AI_OPT = 'cbc_ai_settings';
 
+function cbc_ai_get_log_capabilities(): array {
+    return array(
+        'edit_post'              => 'cbc_manage_ai_logs',
+        'read_post'              => 'cbc_manage_ai_logs',
+        'delete_post'            => 'cbc_manage_ai_logs',
+        'edit_posts'             => 'cbc_manage_ai_logs',
+        'edit_others_posts'      => 'cbc_manage_ai_logs',
+        'publish_posts'          => 'cbc_manage_ai_logs',
+        'read_private_posts'     => 'cbc_manage_ai_logs',
+        'delete_posts'           => 'cbc_manage_ai_logs',
+        'delete_private_posts'   => 'cbc_manage_ai_logs',
+        'delete_published_posts' => 'cbc_manage_ai_logs',
+        'delete_others_posts'    => 'cbc_manage_ai_logs',
+        'edit_private_posts'     => 'cbc_manage_ai_logs',
+        'edit_published_posts'   => 'cbc_manage_ai_logs',
+        'create_posts'           => 'cbc_manage_ai_logs',
+    );
+}
+
+function cbc_ai_register_capabilities(): void {
+    $role = get_role('administrator');
+
+    if (!$role) {
+        return;
+    }
+
+    foreach (array_unique(array_values(cbc_ai_get_log_capabilities())) as $cap) {
+        $role->add_cap($cap);
+    }
+}
+
+add_action('init', 'cbc_ai_register_capabilities', 5);
+
 // Register Custom Post Type for message logs
 add_action('init', function(){
     register_post_type('cbc_ai_message', array(
@@ -26,11 +59,13 @@ add_action('init', function(){
         'menu_position' => 25,
         'menu_icon' => 'dashicons-format-chat',
         'supports' => array('title'),
-        'capability_type' => 'post',
+        'capabilities' => cbc_ai_get_log_capabilities(),
+        'map_meta_cap' => false,
     ));
 });
 
 register_activation_hook(__FILE__, function(){
+    cbc_ai_register_capabilities();
     // Ensure CPT is registered on activation and flush rewrite
     do_action('init');
     flush_rewrite_rules();
@@ -119,7 +154,8 @@ function cbc_ai_sanitize_settings($input): array {
     if (!is_array($input)) { $input = array(); }
     $out = cbc_ai_get_settings();
     $prov = $input['provider'] ?? '';
-    $out['provider'] = in_array($prov, array('openai','openrouter'), true) ? $prov : $out['provider'];
+    $out['provider'] = in_array($prov, array('openai','openrouter','lmstudio'), true) ? $prov : $out['provider'];
+    $out['api_url'] = esc_url_raw($input['api_url'] ?? $out['api_url']);
     $out['api_key'] = sanitize_text_field(trim((string)($input['api_key'] ?? $out['api_key'])));
     $out['openai_org'] = sanitize_text_field($input['openai_org'] ?? $out['openai_org']);
     $out['model'] = sanitize_text_field($input['model'] ?? $out['model']);
@@ -265,7 +301,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
     wp_enqueue_style('cbc-ai-fallback', plugins_url('assets/css/cbc-ai-fallback.css', __FILE__), array(), '1.2.0');
     
     // Enqueue main messenger CSS
-    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.4.0');
+    wp_enqueue_style('cbc-ai-messenger', plugins_url('assets/css/cbc-ai-messenger.css', __FILE__), array(), '1.5.0');
 
     // Determine reCAPTCHA site key early so we can enqueue reCAPTCHA before the messenger script
     // Skip reCAPTCHA entirely on local/development environments
@@ -279,10 +315,10 @@ add_shortcode('cbc_ai_messenger', function($atts){
         // Enqueue reCAPTCHA v3 loader with site key so grecaptcha becomes available
         wp_enqueue_script('cbc-ai-recaptcha', 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode($recaptcha_site_key), array(), null, true);
         // Enqueue messenger script and declare dependency on the reCAPTCHA loader so it prints after
-        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery','cbc-ai-recaptcha'), '1.4.0', true);
+        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery','cbc-ai-recaptcha'), '1.5.0', true);
     } else {
         // No reCAPTCHA: enqueue messenger normally
-        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.4.0', true);
+        wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.5.0', true);
     }
 
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
@@ -291,6 +327,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
         'placeholder' => (string)$atts['placeholder'],
         'title' => (string)$atts['title'],
         'recaptchaSiteKey' => $recaptcha_site_key,
+        'recaptchaAction' => 'cbc_ai_chat',
     ));
 
     ob_start();
@@ -309,6 +346,8 @@ add_shortcode('cbc_ai_messenger', function($atts){
                     <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
                         <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
                         <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
+                        <label for="cbc-ai-website" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">Leave this field empty</label>
+                        <input id="cbc-ai-website" type="text" name="website" class="cbc-ai-input-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true" />
                     </div>
                     <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-fit" style="height: 100px;" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
                     <div class="flex items-center justify-center">
@@ -342,7 +381,7 @@ add_action('rest_api_init', function(){
     register_rest_route('cbc-ai/v1', '/ask', array(
         'methods' => 'POST',
         'callback' => 'cbc_ai_rest_ask',
-        'permission_callback' => '__return_true',
+        'permission_callback' => 'cbc_ai_rest_permission',
         'args' => array(
             'message' => array('required' => true,'type' => 'string'),
             'name'    => array('required' => true,'type' => 'string'),
@@ -350,6 +389,18 @@ add_action('rest_api_init', function(){
         )
     ));
 });
+
+function cbc_ai_rest_permission( WP_REST_Request $request ) {
+    if ('POST' !== strtoupper((string) $request->get_method())) {
+        return new WP_Error('cbc_ai_method_not_allowed', __('Only POST requests are allowed for this endpoint.', 'cbc-ai-messenger'), array('status' => 405));
+    }
+
+    if (!cbc_ai_is_local_or_dev() && '' === cbc_ai_get_recaptcha_secret()) {
+        return new WP_Error('cbc_ai_not_ready', __('The AI service is temporarily unavailable.', 'cbc-ai-messenger'), array('status' => 503));
+    }
+
+    return true;
+}
 
 /**
  * Check if the site is running in local/development environment.
@@ -393,10 +444,93 @@ function cbc_ai_is_contact_request($text, &$type): bool {
     return false;
 }
 
+function cbc_ai_get_client_ip(): string {
+    $candidates = array(
+        $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+        $_SERVER['HTTP_CLIENT_IP'] ?? '',
+        $_SERVER['REMOTE_ADDR'] ?? '',
+    );
+
+    foreach ($candidates as $candidate) {
+        if (!$candidate) {
+            continue;
+        }
+
+        foreach (array_map('trim', explode(',', (string) $candidate)) as $ip) {
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+        }
+    }
+
+    return '0.0.0.0';
+}
+
+function cbc_ai_anonymize_ip(string $ip): string {
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $parts = explode('.', $ip);
+        $parts[3] = '0';
+        return implode('.', $parts);
+    }
+
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $parts = explode(':', $ip);
+        $parts = array_pad($parts, 8, '0');
+        $parts[4] = '0';
+        $parts[5] = '0';
+        $parts[6] = '0';
+        $parts[7] = '0';
+        return implode(':', $parts);
+    }
+
+    return '';
+}
+
+function cbc_ai_hash_value(string $value): string {
+    if ($value === '') {
+        return '';
+    }
+
+    return hash_hmac('sha256', $value, wp_salt('auth'));
+}
+
+function cbc_ai_check_rate_limits(string $ip, string $email) {
+    $ip_hash = md5($ip);
+    $last_key = 'cbc_ai_last_' . $ip_hash;
+    $last = (int) get_transient($last_key);
+
+    if ($last && (time() - $last < 30)) {
+        return new WP_Error('cbc_ai_rate_limit_short', __('Please wait a little longer before asking another question.', 'cbc-ai-messenger'), array('status' => 429));
+    }
+
+    $hour_key = 'cbc_ai_hour_' . $ip_hash;
+    $hour_count = (int) get_transient($hour_key);
+    if ($hour_count >= 10) {
+        return new WP_Error('cbc_ai_rate_limit_hour', __('You have reached the hourly question limit. Please try again later.', 'cbc-ai-messenger'), array('status' => 429));
+    }
+
+    $email_key = 'cbc_ai_email_day_' . md5(strtolower($email));
+    $email_count = (int) get_transient($email_key);
+    if ($email_count >= 20) {
+        return new WP_Error('cbc_ai_rate_limit_day', __('You have reached the daily question limit for this email address.', 'cbc-ai-messenger'), array('status' => 429));
+    }
+
+    set_transient($last_key, time(), MINUTE_IN_SECONDS);
+    set_transient($hour_key, $hour_count + 1, HOUR_IN_SECONDS);
+    set_transient($email_key, $email_count + 1, DAY_IN_SECONDS);
+
+    return true;
+}
+
 function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $message = trim((string)$req->get_param('message'));
     $name = trim((string)$req->get_param('name'));
     $email = trim((string)$req->get_param('email'));
+    $honeypot = trim((string)$req->get_param('website'));
+
+    if ($honeypot !== '') {
+        return new WP_REST_Response(array('error' => 'Request blocked.'), 403);
+    }
 
     // Server-side validation: require name and valid email
     if ($name === '') { return new WP_REST_Response(array('error' => 'Name is required'), 400); }
@@ -408,6 +542,8 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $email = $email_s;
 
     if ($message === '') { return new WP_REST_Response(array('error' => 'Empty message'), 400); }
+    if (mb_strlen($message) > 1200) { return new WP_REST_Response(array('error' => 'Message is too long.'), 400); }
+    $message = sanitize_textarea_field($message);
 
     // --- reCAPTCHA verification (if secret configured) ---
     // Skip reCAPTCHA validation on local/development environments
@@ -433,7 +569,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
                 return $resp;
             }
         }
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $ip = cbc_ai_get_client_ip();
         $verify = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
             'body' => array(
                 'secret' => $recaptcha_secret,
@@ -460,12 +596,11 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
         }
     }
 
-    // Simple rate limit: 1 request per 10 seconds per IP
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0.0.0.0';
-    $key = 'cbc_ai_last_' . md5($ip);
-    $last = get_transient($key);
-    if ($last && (time() - intval($last) < 10)) { return new WP_REST_Response(array('error' => 'Please wait a few seconds before asking another question.'), 429); }
-    set_transient($key, time(), 30);
+    $ip = cbc_ai_get_client_ip();
+    $limit = cbc_ai_check_rate_limits($ip, $email);
+    if (is_wp_error($limit)) {
+        return new WP_REST_Response(array('error' => $limit->get_error_message()), 429);
+    }
 
     $opts = cbc_ai_get_settings();
 
@@ -528,8 +663,10 @@ function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $em
     update_post_meta($post_id, '_cbc_ai_meta', $meta);
     if (!empty($name)) update_post_meta($post_id, '_cbc_ai_name', sanitize_text_field($name));
     if (!empty($email)) update_post_meta($post_id, '_cbc_ai_email', sanitize_email($email));
-    update_post_meta($post_id, '_cbc_ai_ip', $_SERVER['REMOTE_ADDR'] ?? '');
-    update_post_meta($post_id, '_cbc_ai_ua', $_SERVER['HTTP_USER_AGENT'] ?? '');
+    $client_ip = cbc_ai_get_client_ip();
+    update_post_meta($post_id, '_cbc_ai_ip_prefix', cbc_ai_anonymize_ip($client_ip));
+    update_post_meta($post_id, '_cbc_ai_ip_hash', cbc_ai_hash_value($client_ip));
+    update_post_meta($post_id, '_cbc_ai_ua_hash', cbc_ai_hash_value((string) ($_SERVER['HTTP_USER_AGENT'] ?? '')));
     if (is_user_logged_in()) update_post_meta($post_id, '_cbc_ai_user_id', get_current_user_id());
     return $post_id;
 }
@@ -729,8 +866,9 @@ function cbc_ai_render_metabox($post){
     $meta = get_post_meta($post->ID, '_cbc_ai_meta', true);
     $name = (string)get_post_meta($post->ID, '_cbc_ai_name', true);
     $email = (string)get_post_meta($post->ID, '_cbc_ai_email', true);
-    $ip = (string)get_post_meta($post->ID, '_cbc_ai_ip', true);
-    $ua = (string)get_post_meta($post->ID, '_cbc_ai_ua', true);
+    $ip_prefix = (string)get_post_meta($post->ID, '_cbc_ai_ip_prefix', true);
+    $ip_hash = (string)get_post_meta($post->ID, '_cbc_ai_ip_hash', true);
+    $ua_hash = (string)get_post_meta($post->ID, '_cbc_ai_ua_hash', true);
     ?>
     <div style="display:grid;grid-template-columns:1fr;gap:12px;">
         <div><strong>Question</strong><div style="white-space:pre-wrap;border:1px solid #ddd;padding:8px;background:#fff;">&nbsp;<?php echo esc_html($q); ?></div></div>
@@ -739,8 +877,9 @@ function cbc_ai_render_metabox($post){
         <div style="display:flex;gap:16px;flex-wrap:wrap;">
             <div><strong>Name:</strong> <?php echo esc_html($name); ?></div>
             <div><strong>Email:</strong> <?php echo esc_html($email); ?></div>
-            <div><strong>IP:</strong> <?php echo esc_html($ip); ?></div>
-            <div><strong>UA:</strong> <?php echo esc_html($ua); ?></div>
+            <div><strong>IP Prefix:</strong> <?php echo esc_html($ip_prefix ?: 'Not stored'); ?></div>
+            <div><strong>IP Hash:</strong> <?php echo esc_html($ip_hash ?: 'Not stored'); ?></div>
+            <div><strong>UA Hash:</strong> <?php echo esc_html($ua_hash ?: 'Not stored'); ?></div>
         </div>
     </div>
     <?php

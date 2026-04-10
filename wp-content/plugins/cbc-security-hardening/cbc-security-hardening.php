@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class CBC_Security_Hardening {
 	const LOGIN_LIMIT = 5; // attempts
 	const LOGIN_WINDOW = 15 * MINUTE_IN_SECONDS;
+	const MONITOR_CAPABILITY = 'manage_options';
 
 	public static function init() {
 		// Headers
@@ -36,7 +37,7 @@ class CBC_Security_Hardening {
 		add_action( 'rest_api_init', function() {
 			register_rest_route( 'cbc-monitor/v1', '/ping', array(
 				'methods'  => 'GET',
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( __CLASS__, 'monitor_permission' ),
 				'callback' => function() {
 					return array(
 						'status' => 'ok',
@@ -56,6 +57,18 @@ class CBC_Security_Hardening {
 		add_action( 'login_enqueue_scripts', array( __CLASS__, 'brand_login_logo' ) );
 		add_filter( 'login_headerurl', array( __CLASS__, 'login_logo_url' ) );
 		add_filter( 'login_headertext', array( __CLASS__, 'login_logo_title' ) );
+	}
+
+	public static function monitor_permission( $request ) {
+		if ( defined( 'CBC_MONITOR_PUBLIC_ENDPOINT' ) && CBC_MONITOR_PUBLIC_ENDPOINT ) {
+			return true;
+		}
+
+		if ( current_user_can( self::MONITOR_CAPABILITY ) ) {
+			return true;
+		}
+
+		return new WP_Error( 'cbc_monitor_forbidden', __( 'You are not allowed to access this monitoring endpoint.', 'cbc-security-hardening' ), array( 'status' => 403 ) );
 	}
 
 	/* ------------------------ LOGIN BRANDING ------------------------ */
@@ -85,8 +98,10 @@ class CBC_Security_Hardening {
 
 	/* ------------------------ SECURITY HEADERS ------------------------ */
 	public static function send_security_headers() {
+		$local_dev = self::is_dev_or_local();
+
 		// HSTS only on HTTPS
-		if ( is_ssl() ) {
+		if ( ! $local_dev && is_ssl() ) {
 			header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' );
 		}
 
@@ -96,15 +111,29 @@ class CBC_Security_Hardening {
 		header( 'Permissions-Policy: geolocation=(), microphone=(), camera=()' );
 		header( 'Cross-Origin-Opener-Policy: same-origin' );
 
-		// CSP (report-only by default to avoid breakage). Define CBC_CSP_ENFORCE=true to enforce.
-		$csp = "default-src 'self'; " .
-			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; " .
-			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
-			"img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; " .
-			"font-src 'self' https://fonts.gstatic.com data:; " .
-			"connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; " .
-			"frame-src 'self' https://www.google.com https://www.youtube.com; " .
-			"object-src 'none'; base-uri 'self'; form-action 'self' https://www.google.com; upgrade-insecure-requests";
+		if ( $local_dev ) {
+			return;
+		}
+
+		$csp_parts = array(
+			"default-src 'self'",
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://gwhs.i.gov.ph https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com https://accounts.google.com",
+			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+			"img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com https:",
+			"font-src 'self' https://fonts.gstatic.com data:",
+			"connect-src 'self' https://api.openai.com https://openrouter.ai https://gwhs.i.gov.ph https://www.google-analytics.com https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://accounts.google.com",
+			"frame-src 'self' https://www.google.com https://www.youtube.com https://accounts.google.com",
+			"worker-src 'self' blob:",
+			"object-src 'none'",
+			"base-uri 'self'",
+			"form-action 'self' https://www.google.com https://accounts.google.com",
+		);
+
+		if ( defined( 'CBC_CSP_ENFORCE' ) && CBC_CSP_ENFORCE ) {
+			$csp_parts[] = 'upgrade-insecure-requests';
+		}
+
+		$csp = implode( '; ', $csp_parts );
 
 		if ( defined( 'CBC_CSP_ENFORCE' ) && CBC_CSP_ENFORCE ) {
 			header( 'Content-Security-Policy: ' . $csp );

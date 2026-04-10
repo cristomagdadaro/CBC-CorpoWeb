@@ -188,7 +188,9 @@ class TWM_Tailwind_Manager {
 		register_rest_route( 'tailwind-manager/v1', '/settings', [
 			'methods'  => 'GET',
 			'callback' => function() { return rest_ensure_response( self::get_settings() ); },
-			'permission_callback' => '__return_true'
+			'permission_callback' => function() {
+				return current_user_can( 'manage_options' );
+			}
 		] );
 	}
 

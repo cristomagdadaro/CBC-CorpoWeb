@@ -267,9 +267,9 @@
                 }
             });
 
-            this.elements.$form.on('submit', (e) => {
+            this.elements.$form.on('submit', async (e) => {
                 e.preventDefault();
-                const { $input, $nameInput, $emailInput } = this.elements;
+                const { $input, $nameInput, $emailInput, $websiteInput } = this.elements;
                 const msg = ($input.val() || '').trim();
                 if (!msg) return;
 
@@ -298,10 +298,36 @@
                     headers['X-WP-Nonce'] = CBCAI.nonce;
                 }
 
+                let recaptchaToken = '';
+                if (CBCAI && CBCAI.recaptchaSiteKey) {
+                    if (!(window.grecaptcha && typeof window.grecaptcha.execute === 'function')) {
+                        this.ui.addMsg('bot', 'Security validation is still loading. Please try again in a moment.');
+                        $btn.prop('disabled', false).text(oldText);
+                        return;
+                    }
+
+                    try {
+                        await new Promise((resolve) => window.grecaptcha.ready(resolve));
+                        recaptchaToken = await window.grecaptcha.execute(CBCAI.recaptchaSiteKey, {
+                            action: CBCAI.recaptchaAction || 'cbc_ai_chat'
+                        });
+                    } catch (error) {
+                        this.ui.addMsg('bot', 'Security validation failed. Please refresh the page and try again.');
+                        $btn.prop('disabled', false).text(oldText);
+                        return;
+                    }
+                }
+
                 fetch(CBCAI.restUrl, {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({ message: msg, name: name, email: email })
+                    body: JSON.stringify({
+                        message: msg,
+                        name: name,
+                        email: email,
+                        website: ($websiteInput.val() || '').trim(),
+                        recaptcha_token: recaptchaToken
+                    })
                 })
                 .then(r => r.json())
                 .then(data => {
@@ -354,6 +380,7 @@
                 $userInfo: $('.cbc-ai-user-info'),
                 $nameInput: $('.cbc-ai-input-name'),
                 $emailInput: $('.cbc-ai-input-email'),
+                $websiteInput: $('.cbc-ai-input-website'),
             };
 
             if (!this.elements.container) return;

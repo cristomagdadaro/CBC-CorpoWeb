@@ -1,6 +1,8 @@
 <?php
 namespace CbcFormManager\Infrastructure\Admin;
 
+use CbcFormManager\Infrastructure\Storage\PrivateUploadManager;
+
 if (!defined('ABSPATH')) { exit; }
 
 class AdminUi
@@ -53,7 +55,15 @@ class AdminUi
         foreach ($data as $key => $value) {
             echo '<tr>';
             echo '<th style="width:220px">' . esc_html($key) . '</th>';
-            if (is_array($value)) {
+            if (PrivateUploadManager::isPrivateFileMeta($value)) {
+                $label = $value['original_name'] ?? basename($value['private_path']);
+                echo '<td>';
+                echo '<a href="' . esc_url(PrivateUploadManager::buildDownloadUrl((int) $post->ID, (string) $key)) . '">' . esc_html($label) . '</a>';
+                if (!empty($value['size'])) {
+                    echo ' <span class="description">(' . esc_html(size_format((int) $value['size'])) . ')</span>';
+                }
+                echo '</td>';
+            } elseif (is_array($value)) {
                 echo '<td><pre>' . esc_html(wp_json_encode($value, JSON_PRETTY_PRINT)) . '</pre></td>';
             } else {
                 echo '<td>' . nl2br(esc_html((string)$value)) . '</td>';

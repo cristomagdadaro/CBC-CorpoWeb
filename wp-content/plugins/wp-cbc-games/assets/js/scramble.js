@@ -18,6 +18,7 @@
         const endMessage = root.querySelector('#end-message');
         const finalScoreDisplay = root.querySelector('#final-score');
         const leaderboardForm = document.getElementById('scramble-leaderboard-form');
+        let submissionToken = '';
         const leaderboardBody = document.getElementById('scramble-leaderboard-body');
 
         // Audio controls
@@ -138,6 +139,7 @@
             fetch((window.cbcGames.apiBase || '') + 'scramble')
                 .then(r => r.json())
                 .then(data => {
+                    submissionToken = data.submissionToken || '';
                     currentWords = Array.isArray(data.words) ? data.words : [];
                     currentWords = currentWords.slice(0, 5);
                     if (currentWords.length === 0) {
@@ -285,10 +287,14 @@
                 return;
             }
             const time_ms = scrambleEndMs ?? Math.round(performance.now() - (scrambleStartAt || performance.now()));
+            if (!submissionToken) {
+                alert('Please start a new scramble game before submitting your score.');
+                return;
+            }
             fetch((window.cbcGames.apiBase || '') + 'leaderboard/scramble', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CBC-Nonce': (window.cbcGames?.nonce || '')},
-                body: JSON.stringify({name, agency, age, score, time_ms, played_at: playedAt, hp})
+                body: JSON.stringify({name, agency, age, score, time_ms, played_at: playedAt, hp, submission_token: submissionToken})
             })
                 .then(async r => {
                     const data = await r.json();

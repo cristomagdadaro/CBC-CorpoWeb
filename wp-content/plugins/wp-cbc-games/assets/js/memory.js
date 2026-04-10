@@ -15,6 +15,7 @@
         const endMessage = root.querySelector('#end-message');
         const finalStats = root.querySelector('#final-stats');
         const leaderboardForm = document.getElementById('memory-leaderboard-form');
+        let submissionToken = '';
         const leaderboardBody = document.getElementById('memory-leaderboard-body');
 
         // Audio controls
@@ -256,6 +257,7 @@
             fetch((window.cbcGames.apiBase || '') + 'memory')
                 .then(r => r.json())
                 .then(data => {
+                    submissionToken = data.submissionToken || '';
                     const images = Array.isArray(data.images) ? data.images : [];
                     if (images.length < 8) {
                         gameGrid.innerHTML = '<p style="color:#DC2626;">Not enough images to play.</p>';
@@ -349,10 +351,14 @@
             // Use matchedPairs as score at time of submission
             const scoreToSubmit = matchedPairs;
             const time_ms = memoryEndMs ?? Math.round(performance.now() - (memoryStartAt || performance.now()));
+            if (!submissionToken) {
+                alert('Please start a new memory game before submitting your score.');
+                return;
+            }
             fetch((window.cbcGames.apiBase || '') + 'leaderboard/memory', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CBC-Nonce': (window.cbcGames?.nonce || '')},
-                body: JSON.stringify({name, agency, age, score: scoreToSubmit, time_ms, played_at: playedAt, hp})
+                body: JSON.stringify({name, agency, age, score: scoreToSubmit, time_ms, played_at: playedAt, hp, submission_token: submissionToken})
             })
                 .then(async r => {
                     const data = await r.json();

@@ -15,6 +15,8 @@ define('CBC_FM_PLUGIN_URL', plugin_dir_url(__FILE__));
 require_once CBC_FM_PLUGIN_DIR . 'src/Autoloader.php';
 \CbcFormManager\Autoloader::register();
 
+add_action('admin_post_cbc_fm_download_private_file', ['\\CbcFormManager\\Infrastructure\\Storage\\PrivateUploadManager', 'handleDownload']);
+
 // Load translations
 add_action('plugins_loaded', function () {
     load_plugin_textdomain('cbc-form-manager', false, dirname(plugin_basename(__FILE__)) . '/languages');

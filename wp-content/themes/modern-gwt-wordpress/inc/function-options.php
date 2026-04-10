@@ -1142,8 +1142,8 @@ if (!function_exists('govph_displayoptions')) {
 				$agency_logo_thumbnail = ( $agency_logo_attachment_id && function_exists( 'wp_get_attachment_image_url' ) ) ? wp_get_attachment_image_url( $agency_logo_attachment_id, 'thumbnail' ) : '';
 				$agency_logo_render = ! empty( $agency_logo_thumbnail ) ? esc_url( $agency_logo_thumbnail ) : $logo_image;
 
-				$addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150" width="150" loading="eager" decoding="async" src="' . $agency_logo_render . '" />' :
-          '<a rel="home" SAS href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center gap-2 w-full justify-center sm:justify-start">
+        $addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150" width="150" loading="eager" decoding="async" src="' . $agency_logo_render . '" />' :
+      '<a rel="home" href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center gap-2 w-full justify-center sm:justify-start">
               <div class="gap-1 w-fit hidden md:block">
                   <div id="textlogo-image" class="flex items-center justify-center drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)] w-fit">
                       <img draggable="false" loading="eager" decoding="async" width="120" height="120" alt="Department of Agriculture Official Logo" src="' . $da_logo_render . '" class="h-full md:w-full w-[50%] mx-auto" />
