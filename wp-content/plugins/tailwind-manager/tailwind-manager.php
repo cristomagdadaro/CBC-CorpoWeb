@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class TWM_Tailwind_Manager {
 	const OPTION_KEY = 'twm_tailwind_settings';
 	const CONFIG_FILE = 'tailwind-custom.json';
+	const MANAGE_CAPABILITY = 'manage_options';
 
 	public static function init() {
 		add_action( 'admin_menu', [ __CLASS__, 'admin_menu' ] );
@@ -32,17 +33,23 @@ class TWM_Tailwind_Manager {
     }
 
     public static function tailwind_manager_enqueue_block_editor_assets(): void {
+	$css_path = plugin_dir_path( __FILE__ ) . 'dist/tailwind.css';
+	if ( ! file_exists( $css_path ) ) {
+	  return;
+	}
+
         wp_enqueue_style(
                 'tailwind-manager-editor-styles',
                 plugins_url( 'dist/tailwind.css', __FILE__ ),
                 array(),
-                filemtime( plugin_dir_path( __FILE__ ) . 'dist/tailwind.css' )
+				filemtime( $css_path )
         );
     }
 
 
     public static function plugin_dir() { return plugin_dir_path( __FILE__ ); }
 	public static function plugin_url() { return plugin_dir_url( __FILE__ ); }
+	protected static function can_manage() : bool { return current_user_can( self::MANAGE_CAPABILITY ); }
 
 	public static function activate() { self::maybe_create_default_config(); self::ensure_config_files(); }
 
@@ -62,6 +69,10 @@ class TWM_Tailwind_Manager {
 	}
 
 	public static function maybe_create_default_config() {
+		if ( is_admin() && ! self::can_manage() ) {
+			return;
+		}
+
 		$path = self::plugin_dir() . self::CONFIG_FILE;
 		if ( ! file_exists( $path ) ) {
 			self::write_config_file( self::get_settings() );
@@ -78,7 +89,12 @@ class TWM_Tailwind_Manager {
 			'darkMode'  => (bool) $settings['darkMode'],
 			'fontFamily'=> $settings['fontFamily'],
 		];
-		return (bool) file_put_contents( self::plugin_dir() . self::CONFIG_FILE, wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		$json = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+		if ( false === $json ) {
+			return false;
+		}
+
+		return false !== file_put_contents( self::plugin_dir() . self::CONFIG_FILE, $json, LOCK_EX );
 	}
 
 	public static function admin_menu() {
@@ -139,14 +155,14 @@ class TWM_Tailwind_Manager {
 	}
 
 	public static function handle_save() {
-		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'forbidden' );
+		if ( ! self::can_manage() ) wp_die( 'forbidden' );
 		check_admin_referer( 'twm_save' );
 		$settings = [
-			'primary'   => self::sanitize_color( $_POST['primary'] ?? '' ),
-			'secondary' => self::sanitize_color( $_POST['secondary'] ?? '' ),
-			'accent'    => self::sanitize_color( $_POST['accent'] ?? '' ),
+			'primary'   => self::sanitize_color( wp_unslash( $_POST['primary'] ?? '' ) ),
+			'secondary' => self::sanitize_color( wp_unslash( $_POST['secondary'] ?? '' ) ),
+			'accent'    => self::sanitize_color( wp_unslash( $_POST['accent'] ?? '' ) ),
 			'darkMode'  => isset( $_POST['darkMode'] ) ? 1 : 0,
-			'fontFamily'=> sanitize_text_field( $_POST['fontFamily'] ?? 'Inter, system-ui, sans-serif' )
+			'fontFamily'=> sanitize_text_field( wp_unslash( $_POST['fontFamily'] ?? 'Inter, system-ui, sans-serif' ) )
 		];
 		update_option( self::OPTION_KEY, $settings );
 		self::write_config_file( $settings );
@@ -187,9 +203,12 @@ class TWM_Tailwind_Manager {
 	public static function register_rest() {
 		register_rest_route( 'tailwind-manager/v1', '/settings', [
 			'methods'  => 'GET',
-			'callback' => function() { return rest_ensure_response( self::get_settings() ); },
+			'callback' => function() {
+				nocache_headers();
+				return rest_ensure_response( self::get_settings() );
+			},
 			'permission_callback' => function() {
-				return current_user_can( 'manage_options' );
+				return self::can_manage();
 			}
 		] );
 	}
@@ -206,6 +225,10 @@ class TWM_Tailwind_Manager {
 	}
 
 	public static function ensure_config_files() {
+		if ( is_admin() && ! self::can_manage() ) {
+			return;
+		}
+
 		$base = self::plugin_dir();
 		// tailwind.config.cjs
 		$cfg = $base . 'tailwind.config.cjs';

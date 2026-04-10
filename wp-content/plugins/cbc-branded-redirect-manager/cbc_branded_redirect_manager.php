@@ -110,6 +110,10 @@ class BRM_Plugin {
             return;
         }
 
+        nocache_headers();
+        header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0', true );
+        header( 'Pragma: no-cache', true );
+
         global $wpdb;
         // Try to get from cache first (1 hour TTL for performance)
         $cache_key = 'brm_redirect_' . md5( $slug );
@@ -122,7 +126,7 @@ class BRM_Plugin {
             }
         }
         if ( ! $row ) {
-            wp_redirect( home_url() );
+            wp_safe_redirect( home_url() );
             exit;
         }
 
@@ -815,6 +819,10 @@ class BRM_Plugin {
         $slug    = sanitize_title_with_dashes( wp_unslash( $_POST['slug'] ?? '' ) );
         $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ?? '' ) ) );
 
+        if ( ! $is_admin_submission && $id > 0 ) {
+            wp_send_json_error( array( 'message' => 'Only administrators can update existing links.' ) );
+        }
+
         if ( empty( $target ) ) {
             wp_send_json_error( array( 'message' => 'Target URL is required.' ) );
         }
@@ -882,9 +890,13 @@ class BRM_Plugin {
         // After the database operation, check for errors.
         if ( $result === false || ! empty( $wpdb->last_error ) ) {
             // There was a database error.
-            $db_error = $wpdb->last_error;
-            error_log( 'BRM Plugin DB Error: ' . $db_error ); // Log the error
+            error_log( 'BRM Plugin DB Error: save_link_failed' );
             wp_send_json_error( array( 'message' => 'A database error occurred. Please check the server logs.' ) );
+        }
+
+        delete_transient( 'brm_redirect_' . md5( $slug ) );
+        if ( $id ) {
+            delete_transient( 'brm_clicks_batch_' . $id );
         }
 
         // --- QR Code Generation ---
@@ -950,7 +962,7 @@ class BRM_Plugin {
         $qr_url_path = trailingslashit($qr_base_url) . $qr_file;
 
         $qr_image_url = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
-        $response = wp_remote_get( $qr_image_url, array( 'timeout' => 15, 'sslverify' => false ) );
+        $response = wp_remote_get( $qr_image_url, array( 'timeout' => 15 ) );
 
         if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
             $image_data = wp_remote_retrieve_body( $response );
@@ -972,9 +984,14 @@ class BRM_Plugin {
         check_admin_referer( 'brm_delete_' . $id );
         if ( $id ) {
             global $wpdb;
+            $slug = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM {$this->table} WHERE id = %d", $id ) );
             $wpdb->delete( $this->table, array( 'id' => $id ), array( '%d' ) );
+            if ( $slug ) {
+                delete_transient( 'brm_redirect_' . md5( $slug ) );
+            }
+            delete_transient( 'brm_clicks_batch_' . $id );
         }
-        wp_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
         exit;
     }
 }

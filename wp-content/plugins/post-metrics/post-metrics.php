@@ -35,6 +35,14 @@ class PM_Post_Metrics {
 			wp_send_json_error( array( 'message' => 'invalid post_id' ), 400 );
 		}
 
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0.0.0.0';
+		$transient_key = 'pm_share_' . md5( $post_id . '_' . $ip );
+		if ( get_transient( $transient_key ) ) {
+			wp_send_json_success( array( 'metrics' => get_post_meta( $post_id, 'pm_metrics', true ), 'skipped' => true ) );
+		}
+
+		set_transient( $transient_key, 1, MINUTE_IN_SECONDS );
+
 		self::increment_metric( $post_id, 'share' );
 
 		wp_send_json_success( array( 'metrics' => get_post_meta( $post_id, 'pm_metrics', true ) ) );
@@ -132,6 +140,7 @@ class PM_Post_Metrics {
 		}
 
 		self::increment_metric( $post_id, $event, $label );
+		set_transient( $transient_key, 1, MINUTE_IN_SECONDS );
 
 		// The monthly update logic can be centralized in increment_metric if you want to keep it.
 		// For now, I'll leave it out of the REST handler to avoid duplication.
@@ -148,7 +157,9 @@ class PM_Post_Metrics {
 		wp_localize_script( 'pm-tracker', 'PM_TRACKER', array(
 			'rest_url' => esc_url_raw( rest_url( 'post-metrics/v1/track' ) ),
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'share_url' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 			'post_id'  => intval( $post->ID ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
 			'share_nonce' => wp_create_nonce( 'pm-share-nonce' ),
 			'is_logged_in' => is_user_logged_in(),
 			'login_url' => wp_login_url( get_permalink( $post->ID ) ),
@@ -310,6 +321,11 @@ class PM_Post_Metrics {
 			return; // Not admin or insufficient permissions
 		}
 
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+		if ( 'pm-post-metrics' !== $page ) {
+			return;
+		}
+
 		if ( ! isset( $_GET['_pm_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_pm_nonce'] ) ), 'pm_export_csv' ) ) {
 			wp_die( esc_html__( 'Security check failed.', 'post-metrics' ) );
 		}
@@ -332,6 +348,10 @@ class PM_Post_Metrics {
 		usort( $rows, function( $a, $b ) { return $b['views'] <=> $a['views']; } );
 
 		// Send CSV headers and output
+		nocache_headers();
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0' );
+		header( 'Pragma: no-cache' );
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename=post-metrics.csv' );
 		$out = fopen( 'php://output', 'w' );

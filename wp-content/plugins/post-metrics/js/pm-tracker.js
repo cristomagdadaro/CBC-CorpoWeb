@@ -1,74 +1,70 @@
 (function(){
-    if (!window.PM_TRACKER) return;
+    if (!window.PM_TRACKER) {
+        return;
+    }
+
     var restUrl = window.PM_TRACKER.rest_url;
-    var shareUrl = window.PM_TRACKER.share_url;
+    var shareUrl = window.PM_TRACKER.share_url || window.PM_TRACKER.ajax_url;
     var postId = window.PM_TRACKER.post_id;
     var nonce = window.PM_TRACKER.nonce || '';
+    var shareNonce = window.PM_TRACKER.share_nonce || '';
 
-    function sendEvent(event, label) {
-        // If no post ID is provided, try to find it from the element's data attributes
+    function sendEvent(eventName, label, sourceEl) {
         var targetPostId = postId;
-        if (event.target && event.target.dataset.postId) {
-            targetPostId = event.target.dataset.postId;
+        if (sourceEl && sourceEl.dataset && sourceEl.dataset.postId) {
+            targetPostId = sourceEl.dataset.postId;
         }
 
-        // Do not send 'view' events from the frontend anymore
-        if (event === 'view') {
+        if (eventName === 'view' || !targetPostId) {
             return;
         }
 
-        var endpoint = (event === 'share') ? shareUrl : restUrl;
-        var headers = {
-            'Content-Type': 'application/json'
-        };
-
-        // Only add the nonce for authenticated endpoints
-        if (event !== 'share') {
-            headers['X-WP-Nonce'] = nonce;
-        }
-
         try {
-            fetch(endpoint, {
+            if (eventName === 'share') {
+                var shareBody = new URLSearchParams();
+                shareBody.append('action', 'pm_share');
+                shareBody.append('nonce', shareNonce);
+                shareBody.append('post_id', String(targetPostId));
+
+                fetch(shareUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    },
+                    body: shareBody.toString()
+                }).catch(function(){});
+                return;
+            }
+
+            fetch(restUrl, {
                 method: 'POST',
                 credentials: 'same-origin',
-                headers: headers,
-                body: JSON.stringify({ post_id: targetPostId, event: event, label: label })
-            }).then(function(resp) {
-                // log only for debugging; remove in production
-                console.log('Event sent:', event, label, resp.status);
-                return resp.json().catch(function(){ return null; });
-            }).then(function(data){
-                // optional: handle skipped responses
-                if (data && data.skipped) {
-                    // skipped due to rate-limit
-                }
-                console.log(data);
-            }).catch(function(e){
-                // network or server error
-                console.error(e);
-            });
-        } catch(e) { }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': nonce
+                },
+                body: JSON.stringify({ post_id: targetPostId, event: eventName, label: label })
+            }).catch(function(){});
+        } catch (e) {}
     }
 
-    // Example: Track clicks on elements with data-pm-event attribute
     document.addEventListener('click', function(e){
         var el = e.target;
-        while(el && el !== document) {
+        while (el && el !== document) {
             if (el.dataset && el.dataset.pmEvent) {
-                sendEvent(el.dataset.pmEvent, el.dataset.pmLabel || '');
+                sendEvent(el.dataset.pmEvent, el.dataset.pmLabel || '', el);
                 break;
             }
             el = el.parentNode;
         }
     }, false);
 
-    // Track clicks on share buttons
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listener for share buttons
-        var shareButtons = document.querySelectorAll('.share-button'); // Adjust this selector to match your share buttons
+        var shareButtons = document.querySelectorAll('.share-button');
         shareButtons.forEach(function(button) {
             button.addEventListener('click', function() {
-                sendEvent('share', 'share-button-click');
+                sendEvent('share', 'share-button-click', button);
             });
         });
     });
