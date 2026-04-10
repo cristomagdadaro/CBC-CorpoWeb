@@ -19,26 +19,26 @@ class Routes
         register_rest_route('cbc-games/v1', '/quiz', [
             'methods' => 'GET',
             'callback' => [$this, 'getQuiz'],
-            'permission_callback' => [$this, 'allowPublicRead'],
+            'permission_callback' => [$this, 'allowAuthenticatedRead'],
         ]);
 
         register_rest_route('cbc-games/v1', '/scramble', [
             'methods' => 'GET',
             'callback' => [$this, 'getScramble'],
-            'permission_callback' => [$this, 'allowPublicRead'],
+            'permission_callback' => [$this, 'allowAuthenticatedRead'],
         ]);
 
         register_rest_route('cbc-games/v1', '/memory', [
             'methods' => 'GET',
             'callback' => [$this, 'getMemory'],
-            'permission_callback' => [$this, 'allowPublicRead'],
+            'permission_callback' => [$this, 'allowAuthenticatedRead'],
         ]);
 
         // Leaderboard routes
         register_rest_route('cbc-games/v1', '/leaderboard/(?P<game>[a-zA-Z0-9_-]+)', [
             'methods' => 'GET',
             'callback' => [$this, 'getLeaderboard'],
-            'permission_callback' => [$this, 'allowPublicRead'],
+            'permission_callback' => [$this, 'allowAuthenticatedRead'],
             'args' => [
                 'game' => ['required' => true],
                 'limit' => ['required' => false],
@@ -52,13 +52,21 @@ class Routes
         ]);
     }
 
-    public function allowPublicRead($request)
+    public function allowAuthenticatedRead($request)
     {
+        if (!is_user_logged_in()) {
+            return new \WP_Error('cbc_games_login_required', 'This game is available only to logged-in users.', ['status' => 401]);
+        }
+
         return true;
     }
 
     public function allowLeaderboardWrite($request)
     {
+        if (!is_user_logged_in()) {
+            return new \WP_Error('cbc_games_login_required', 'This game is available only to logged-in users.', ['status' => 401]);
+        }
+
         $game = sanitize_key($request['game'] ?? '');
         if (!in_array($game, $this->allowedGames, true)) {
             return new \WP_Error('invalid_game', 'Invalid game', ['status' => 400]);

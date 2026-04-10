@@ -53,7 +53,7 @@ class Form implements FormModuleInterface
 
         ob_start();
         ?>
-        <form class="cbc-form cbc-appointment-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>">
+        <form class="cbc-form cbc-appointment-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>" data-cbc-form-manager="1">
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
             <?php wp_nonce_field($nonce_action, $nonce_name); ?>
 
@@ -70,7 +70,7 @@ class Form implements FormModuleInterface
             <?php endif; ?>
 
             <!-- Name -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('name')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['name']['label']); ?> *
                 </label>
@@ -82,7 +82,7 @@ class Form implements FormModuleInterface
             </div>
 
             <!-- Email -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('email')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['email']['label']); ?> *
                 </label>
@@ -94,7 +94,7 @@ class Form implements FormModuleInterface
             </div>
 
             <!-- Phone -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('phone')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['phone']['label']); ?>
                 </label>
@@ -106,7 +106,7 @@ class Form implements FormModuleInterface
             </div>
 
             <!-- Preferred Date -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('preferred_date')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['preferred_date']['label']); ?> *
                 </label>
@@ -118,7 +118,7 @@ class Form implements FormModuleInterface
             </div>
 
             <!-- Preferred Time -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('preferred_time')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['preferred_time']['label']); ?> *
                 </label>
@@ -130,7 +130,7 @@ class Form implements FormModuleInterface
             </div>
 
             <!-- Message -->
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('message')); ?>" class="block text-gray-700 font-medium mb-1">
                     <?php echo esc_html($fields['message']['label']); ?>
                 </label>
@@ -140,6 +140,17 @@ class Form implements FormModuleInterface
                     <p class="text-sm text-red-600 mt-1"><?php echo esc_html($errors['message']); ?></p>
                 <?php endif; ?>
             </div>
+
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <label for="<?php echo esc_attr($id('website_url')); ?>"><?php echo esc_html__('Website', 'cbc-form-manager'); ?></label>
+                <input id="<?php echo esc_attr($id('website_url')); ?>" type="text" name="cbc_website_url" value="" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
+                <div class="cbc-form-row" style="margin: 15px 0;">
+                    <?php cbc_recaptcha_field(); ?>
+                </div>
+            <?php endif; ?>
 
             <!-- Actions -->
             <div class="pt-4 cbc-form-actions">

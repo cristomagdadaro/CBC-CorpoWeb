@@ -216,7 +216,7 @@ class FormService
             ];
         }
 
-        $stored = PrivateUploadManager::storeUploadedFile($fileArr, $module->key());
+        $stored = PrivateUploadManager::storeUploadedFile($fileArr, $module->key(), $def);
         if (is_wp_error($stored)) {
             return [
                 'error' => sprintf(__('Failed to upload %s: %s', 'cbc-form-manager'), $def['label'] ?? $name, $stored->get_error_message()),

@@ -46,7 +46,7 @@ class Form implements FormModuleInterface {
                 ],
                 'feedback' => [ 'label'    => __( 'Feedback Message', 'cbc-form-manager' ),
                                 'type'     => 'textarea',
-                                'required' => true
+                                'required' => false
                 ],
         ];
     }
@@ -72,7 +72,7 @@ class Form implements FormModuleInterface {
         ob_start();
         ?>
         <form class="cbc-form cbc-feedback-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post"
-              action="<?php echo esc_url( $action ); ?>">
+              action="<?php echo esc_url( $action ); ?>" data-cbc-form-manager="1">
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr( $this->key() ); ?>"/>
             <?php wp_nonce_field( $nonce_action, $nonce_name ); ?>
 
@@ -84,7 +84,7 @@ class Form implements FormModuleInterface {
                 <div class="p-3 bg-green-100 text-green-700 rounded-lg text-sm"><?php echo esc_html( $success ); ?></div>
             <?php endif; ?>
 
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr( $id( 'name' ) ); ?>"
                        class="block text-sm font-medium text-gray-700 mb-1">
                     <?php echo esc_html( $fields['name']['label'] ); ?> *
@@ -101,7 +101,7 @@ class Form implements FormModuleInterface {
                 <?php endif; ?>
             </div>
 
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr( $id( 'email' ) ); ?>"
                        class="block text-sm font-medium text-gray-700 mb-1">
                     <?php echo esc_html( $fields['email']['label'] ); ?> *
@@ -118,7 +118,7 @@ class Form implements FormModuleInterface {
                 <?php endif; ?>
             </div>
 
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr( $id( 'rating' ) ); ?>"
                        class="block text-sm font-medium text-gray-700 mb-1">
                     <?php echo esc_html( $fields['rating']['label'] ); ?> *
@@ -140,7 +140,7 @@ class Form implements FormModuleInterface {
                 <?php endif; ?>
             </div>
 
-            <div>
+            <div class="cbc-form-row">
                 <label for="<?php echo esc_attr( $id( 'feedback' ) ); ?>"
                        class="block text-sm font-medium text-gray-700 mb-1">
                     <?php echo esc_html( $fields['feedback']['label'] ); ?> *
@@ -155,6 +155,17 @@ class Form implements FormModuleInterface {
                     <p class="text-red-600 text-sm mt-1"><?php echo esc_html( $errors['feedback'] ); ?></p>
                 <?php endif; ?>
             </div>
+
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <label for="<?php echo esc_attr( $id( 'website_url' ) ); ?>"><?php echo esc_html__( 'Website', 'cbc-form-manager' ); ?></label>
+                <input id="<?php echo esc_attr( $id( 'website_url' ) ); ?>" type="text" name="cbc_website_url" value="" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
+                <div class="cbc-form-row" style="margin: 15px 0;">
+                    <?php cbc_recaptcha_field(); ?>
+                </div>
+            <?php endif; ?>
 
             <div class="pt-3 cbc-form-actions">
                 <button type="submit" class="w-full bg-[#1f5d2b] hover:bg-[#a2b917] text-white font-semibold py-2.5 px-4 rounded-md transition duration-150 ease-in-out">

@@ -162,6 +162,28 @@ class BRM_Plugin {
                     padding: 32px 28px;
                     animation: fadeIn 0.6s ease;
                 }
+                .cbc-redirect-loader {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    margin: 18px 0 14px;
+                }
+                .cbc-loader-spinner {
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 50%;
+                    border: 4px solid rgba(26, 78, 19, 0.18);
+                    border-top-color: #1a4e13;
+                    animation: brmSpin 0.9s linear infinite;
+                }
+                .cbc-loader-text {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #1a4e13;
+                    margin: 0;
+                }
                 .cbc-logo {
                     max-width: 120px;
                     margin-bottom: 16px;
@@ -187,12 +209,20 @@ class BRM_Plugin {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
+                @keyframes brmSpin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
             </style>
         </head>
         <body>
             <div class="cbc-card">
                 <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
                 <h2>Link Expired</h2>
+                <div class="cbc-redirect-loader" aria-live="polite" aria-label="Redirect in progress">
+                    <span class="cbc-loader-spinner" aria-hidden="true"></span>
+                    <p class="cbc-loader-text">Redirecting in a few moments…</p>
+                </div>
                 <p>Sorry, this redirect link is no longer active.</p>
                 <p>You can return to the <a href="' . esc_url( home_url() ) . '">main website</a>.</p>
             </div>
@@ -254,6 +284,28 @@ class BRM_Plugin {
                     padding: 32px 28px;
                     animation: fadeIn 0.6s ease;
                 }
+                .cbc-redirect-loader {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    margin: 18px 0 14px;
+                }
+                .cbc-loader-spinner {
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 50%;
+                    border: 4px solid rgba(26, 78, 19, 0.18);
+                    border-top-color: #1a4e13;
+                    animation: brmSpin 0.9s linear infinite;
+                }
+                .cbc-loader-text {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #1a4e13;
+                    margin: 0;
+                }
                 .cbc-logo {
                     max-width: 120px;
                     margin-bottom: 16px;
@@ -279,12 +331,20 @@ class BRM_Plugin {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
+                @keyframes brmSpin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
             </style>
         </head>
         <body>
             <div class="cbc-card">
                 <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
                 <h2>Redirecting to External Link</h2>
+                <div class="cbc-redirect-loader" aria-live="polite" aria-label="Redirect in progress">
+                    <span class="cbc-loader-spinner" aria-hidden="true"></span>
+                    <p class="cbc-loader-text">Redirecting in a few moments…</p>
+                </div>
                 <p>If you’re not redirected, <a href="' . esc_url( $row->target_url ) . '">click here</a>.</p>
                 <p>' . number_format_i18n( $row->clicks ) . ' link visits</p>
             </div>
@@ -359,6 +419,8 @@ class BRM_Plugin {
             return;
         }
 
+        wp_enqueue_media();
+
         // 1. Enqueue CSS
         wp_enqueue_style( 'brm-admin-style', plugins_url( 'brm-admin.css', __FILE__ ), array(), '1.1' );
 
@@ -398,6 +460,12 @@ class BRM_Plugin {
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'brm_regenerate_qr' ),
             )
+        );
+
+        wp_add_inline_script(
+            'brm-admin-script',
+            "jQuery(function($){\n\tvar frame;\n\tvar imageField = $('#og_image');\n\tvar previewWrap = $('#brm-og-image-preview');\n\tvar previewImg = $('#brm-og-image-preview img');\n\tfunction setPreview(url){\n\t\tif (!previewWrap.length) { return; }\n\t\tif (url) {\n\t\t\tpreviewImg.attr('src', url);\n\t\t\tpreviewWrap.removeClass('hidden').show();\n\t\t} else {\n\t\t\tpreviewImg.attr('src', '');\n\t\t\tpreviewWrap.addClass('hidden').hide();\n\t\t}\n\t}\n\t$(document).on('click', '#brm-og-image-select', function(e){\n\t\te.preventDefault();\n\t\tif (frame) {\n\t\t\tframe.open();\n\t\t\treturn;\n\t\t}\n\t\tframe = wp.media({\n\t\t\ttitle: 'Select OG Image',\n\t\t\tbutton: { text: 'Use this image' },\n\t\t\tmultiple: false,\n\t\t\tlibrary: { type: 'image' }\n\t\t});\n\t\tframe.on('select', function(){\n\t\t\tvar attachment = frame.state().get('selection').first().toJSON();\n\t\t\tif (attachment && attachment.url) {\n\t\t\t\timageField.val(attachment.url).trigger('change');\n\t\t\t\tsetPreview(attachment.url);\n\t\t\t}\n\t\t});\n\t\tframe.open();\n\t});\n\t$(document).on('click', '#brm-og-image-clear', function(e){\n\t\te.preventDefault();\n\t\timageField.val('').trigger('change');\n\t\tsetPreview('');\n\t});\n\tif (imageField.length) {\n\t\tsetPreview(imageField.val());\n\t\timageField.on('input change', function(){ setPreview($(this).val()); });\n\t}\n});",
+            'after'
         );
     }
 
@@ -674,7 +742,12 @@ class BRM_Plugin {
                             <td>
                                 <input type="text" name="og_image" id="og_image"
                                        value="<?php echo esc_url( $edit->og_image ?? '' ); ?>" class="regular-text brm-input-image-url">
-                                <p class="description">Paste full image URL (e.g., for social media sharing).</p>
+                                <button type="button" class="button" id="brm-og-image-select">Select Image</button>
+                                <button type="button" class="button" id="brm-og-image-clear">Clear</button>
+                                <p class="description">Choose an image from the Media Library or paste a full image URL for social sharing.</p>
+                                <div id="brm-og-image-preview" style="margin-top:12px;<?php echo empty( $edit->og_image ) ? 'display:none;' : ''; ?>">
+                                    <img src="<?php echo esc_url( $edit->og_image ?? '' ); ?>" alt="OG image preview" style="max-width:180px;height:auto;border:1px solid #ddd;padding:4px;background:#fff;">
+                                </div>
                             </td>
                         </tr>
 

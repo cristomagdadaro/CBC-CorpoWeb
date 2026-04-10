@@ -1,5 +1,5 @@
 (function($){
-    // Generic AJAX submit for all CBC forms
+    // Generic AJAX submit for CBC Form Manager forms only.
     $(function(){
         var ns = window.cbcFormAjax || {};
         var ajaxUrl = ns.ajax_url || (window.ajaxurl || '/wp-admin/admin-ajax.php');
@@ -25,6 +25,12 @@
 
         $(document).on('submit', '.cbc-form', function(e){
             var $form = $(this);
+            var isManagedForm = $form.is('[data-cbc-form-manager="1"]') || $form.find('input[name="_cbc_form_key"]').length > 0;
+
+            if (!isManagedForm) {
+                return;
+            }
+
             if ($form.attr('data-cbc-ajax') === 'off') {
                 return; // opt-out
             }
@@ -77,7 +83,10 @@
                             var msg = data.errors[name];
                             var $field = $form.find('[name="' + name.replace(/"/g,'\\"') + '"]');
                             if ($field.length) {
-                                var $row = $field.closest('.cbc-form-row');
+                                var $row = $field.closest('.cbc-form-row, .cbc-row');
+                                if (!$row.length) {
+                                    $row = $field.parent();
+                                }
                                 var $err = ensureFieldError($row);
                                 $err.text(msg).show();
                             }

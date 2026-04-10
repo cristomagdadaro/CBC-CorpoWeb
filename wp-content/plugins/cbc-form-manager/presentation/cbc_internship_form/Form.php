@@ -27,7 +27,18 @@ class Form implements FormModuleInterface
                 '5' => __('5th Year', 'cbc-form-manager'),
                 'G' => __('Graduate', 'cbc-form-manager'),
             ]],
-            'letter_of_intent' => ['label' => __('Letter of Intent (PDF)', 'cbc-form-manager'), 'type' => 'file', 'required' => true],
+            'letter_of_intent' => [
+                'label' => __('Letter of Intent (PDF, DOC, or DOCX)', 'cbc-form-manager'),
+                'type' => 'file',
+                'required' => true,
+                'allowed_extensions' => ['pdf', 'doc', 'docx'],
+                'allowed_mime_types' => [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                ],
+                'max_size' => 10 * 1024 * 1024,
+            ],
         ];
     }
 
@@ -52,7 +63,7 @@ class Form implements FormModuleInterface
 
         ob_start();
         ?>
-        <form class="cbc-form cbc-internship-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>" <?php echo $hasFile ? 'enctype="multipart/form-data"' : ''; ?>>
+        <form class="cbc-form cbc-internship-form max-w-lg mx-auto border rounded-md p-8 space-y-6" method="post" action="<?php echo esc_url($action); ?>" data-cbc-form-manager="1" <?php echo $hasFile ? 'enctype="multipart/form-data"' : ''; ?>>
             <input type="hidden" name="_cbc_form_key" value="<?php echo esc_attr($this->key()); ?>" />
             <?php wp_nonce_field($nonce_action, $nonce_name); ?>
 
@@ -107,9 +118,20 @@ class Form implements FormModuleInterface
 
             <div class="cbc-form-row">
                 <label for="<?php echo esc_attr($id('letter_of_intent')); ?>"><?php echo esc_html($fields['letter_of_intent']['label']); ?> *</label>
-                <input id="<?php echo esc_attr($id('letter_of_intent')); ?>" type="file" name="letter_of_intent" accept="application/pdf" />
+                <input id="<?php echo esc_attr($id('letter_of_intent')); ?>" type="file" name="letter_of_intent" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                 <?php if (!empty($errors['letter_of_intent'])): ?><div class="cbc-form-error"><?php echo esc_html($errors['letter_of_intent']); ?></div><?php endif; ?>
             </div>
+
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <label for="<?php echo esc_attr($id('website_url')); ?>"><?php echo esc_html__('Website', 'cbc-form-manager'); ?></label>
+                <input id="<?php echo esc_attr($id('website_url')); ?>" type="text" name="cbc_website_url" value="" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
+                <div class="cbc-form-row" style="margin: 15px 0;">
+                    <?php cbc_recaptcha_field(); ?>
+                </div>
+            <?php endif; ?>
 
             <div class="cbc-form-actions">
                 <button type="submit" class="w-full bg-[#1f5d2b] hover:bg-[#a2b917] text-white font-semibold py-2.5 px-4 rounded-md transition duration-150 ease-in-out">

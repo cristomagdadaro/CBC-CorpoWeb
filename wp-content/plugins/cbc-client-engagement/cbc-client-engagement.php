@@ -19,24 +19,14 @@ class CBC_Client_Engagement {
         add_action('init', [$this, 'register_capabilities'], 5);
         // Register post types
         add_action('init', [$this, 'register_post_types']);
+        add_action('plugins_loaded', [$this, 'register_form_manager_bridge'], 20);
+        add_action('pre_get_posts', [$this, 'filter_form_manager_submission_list']);
 
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, [$this, 'activate']);
         register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
-        // Legacy shortcodes are disabled by default so cbc-form-manager can be the canonical form owner.
-        if ($this->legacy_form_shortcodes_enabled()) {
-            add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
-            add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
-            add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
-        }
-        // Combined page shortcode (renders all forms)
-        add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
-        // Events listing shortcodes
-        add_shortcode('cbc_events_list', [$this, 'render_events_list']);
-        add_shortcode('cbc_events_section', [$this, 'render_events_section']);
-    // Reusable section header (shortcode)
-    add_shortcode('govph_section_header', [$this, 'render_section_header_shortcode']);
+        add_action('plugins_loaded', [$this, 'register_shortcodes'], 30);
 
         // Form handlers (admin-post)
         add_action('admin_post_nopriv_cbc_submit_appointment', [$this, 'handle_submit_appointment']);
@@ -105,6 +95,119 @@ class CBC_Client_Engagement {
         }
 
         return (bool) apply_filters('cbc_client_engagement/enable_legacy_form_shortcodes', false);
+    }
+
+    public function register_shortcodes(): void {
+        // Legacy shortcodes are disabled by default so cbc-form-manager can be the canonical form owner.
+        if ($this->legacy_form_shortcodes_enabled()) {
+            add_shortcode('cbc_appointment_form', [$this, 'render_appointment_form']);
+            add_shortcode('cbc_feedback_form', [$this, 'render_feedback_form']);
+            add_shortcode('cbc_internship_form', [$this, 'render_internship_form']);
+        }
+
+        add_shortcode('cbc_client_engagement_page', [$this, 'render_client_engagement_page']);
+        add_shortcode('cbc_events_list', [$this, 'render_events_list']);
+        add_shortcode('cbc_events_section', [$this, 'render_events_section']);
+        add_shortcode('govph_section_header', [$this, 'render_section_header_shortcode']);
+    }
+
+    private function form_manager_active(): bool {
+        return class_exists('\\CbcFormManager\\Application\\FormService');
+    }
+
+    private function form_manager_admin_url(string $form_key = ''): string {
+        $url = admin_url('edit.php?post_type=cbc_form_submission');
+
+        if ($form_key !== '') {
+            $url = add_query_arg('cbc_form_key', $form_key, $url);
+        }
+
+        return $url;
+    }
+
+    private function count_form_manager_submissions(string $form_key): int {
+        if (!$this->form_manager_active()) {
+            return 0;
+        }
+
+        $query = new WP_Query([
+            'post_type' => 'cbc_form_submission',
+            'post_status' => 'private',
+            'posts_per_page' => 1,
+            'fields' => 'ids',
+            'no_found_rows' => false,
+            'meta_key' => '_cbc_form_key',
+            'meta_value' => $form_key,
+        ]);
+
+        return (int) $query->found_posts;
+    }
+
+    private function render_form_manager_shortcode(string $tag, array $atts = []): string {
+        $pairs = [];
+
+        foreach ($atts as $key => $value) {
+            if ($value === '' || $value === null) {
+                continue;
+            }
+
+            $pairs[] = sprintf('%s="%s"', sanitize_key($key), esc_attr((string) $value));
+        }
+
+        return do_shortcode(sprintf('[%s%s]', $tag, $pairs ? ' ' . implode(' ', $pairs) : ''));
+    }
+
+    public function register_form_manager_bridge(): void {
+        if (!$this->form_manager_active()) {
+            return;
+        }
+
+        add_filter('cbc_form_manager/validate/cbc_appointment_form', [$this, 'validate_form_manager_frontend_submission'], 10, 2);
+        add_filter('cbc_form_manager/validate/cbc_feedback_form', [$this, 'validate_form_manager_frontend_submission'], 10, 2);
+        add_filter('cbc_form_manager/validate/cbc_internship_form', [$this, 'validate_form_manager_frontend_submission'], 10, 2);
+    }
+
+    public function validate_form_manager_frontend_submission($validation, $module): array {
+        if (!is_array($validation)) {
+            $validation = ['errors' => [], 'data' => []];
+        }
+
+        $validation['errors'] = isset($validation['errors']) && is_array($validation['errors']) ? $validation['errors'] : [];
+        $validation['data'] = isset($validation['data']) && is_array($validation['data']) ? $validation['data'] : [];
+
+        $honeypot = isset($_POST['cbc_website_url']) ? trim((string) wp_unslash($_POST['cbc_website_url'])) : '';
+        if ($honeypot !== '') {
+            $validation['errors']['_global'] = __('Unable to process your submission. Please try again.', 'cbc');
+            return $validation;
+        }
+
+        if (function_exists('cbc_recaptcha_verify')) {
+            $recaptcha_token = isset($_POST['g-recaptcha-response']) ? sanitize_text_field(wp_unslash($_POST['g-recaptcha-response'])) : '';
+            if (!cbc_recaptcha_verify($recaptcha_token)) {
+                $validation['errors']['_global'] = __('reCAPTCHA verification failed. Please try again.', 'cbc');
+            }
+        }
+
+        return $validation;
+    }
+
+    public function filter_form_manager_submission_list($query): void {
+        if (!is_admin() || !$query instanceof WP_Query || !$query->is_main_query()) {
+            return;
+        }
+
+        if ($query->get('post_type') !== 'cbc_form_submission') {
+            return;
+        }
+
+        $form_key = isset($_GET['cbc_form_key']) ? sanitize_key(wp_unslash($_GET['cbc_form_key'])) : '';
+        $allowed_form_keys = ['cbc_appointment_form', 'cbc_feedback_form', 'cbc_internship_form'];
+        if ($form_key === '' || !in_array($form_key, $allowed_form_keys, true)) {
+            return;
+        }
+
+        $query->set('meta_key', '_cbc_form_key');
+        $query->set('meta_value', $form_key);
     }
 
     private function submission_capabilities(): array {
@@ -241,6 +344,10 @@ class CBC_Client_Engagement {
 
     public function register_admin_menu() {
         $cap = 'cbc_manage_client_engagement';
+        $appointment_menu_slug = $this->form_manager_active() ? $this->form_manager_admin_url('cbc_appointment_form') : 'edit.php?post_type=' . self::APPOINTMENT_POST_TYPE;
+        $feedback_menu_slug = $this->form_manager_active() ? $this->form_manager_admin_url('cbc_feedback_form') : 'edit.php?post_type=' . self::FEEDBACK_POST_TYPE;
+        $internship_menu_slug = $this->form_manager_active() ? $this->form_manager_admin_url('cbc_internship_form') : 'edit.php?post_type=' . self::INTERNSHIP_POST_TYPE;
+
         add_menu_page(
             __('Client Engagement', 'cbc'),
             __('Client Engagement', 'cbc'),
@@ -255,13 +362,13 @@ class CBC_Client_Engagement {
         add_submenu_page('cbc-client-engagement', __('Dashboard', 'cbc'), __('Dashboard', 'cbc'), $cap, 'cbc-client-engagement', [$this, 'render_dashboard_page']);
 
         // Submenu: Appointments (link to CPT list)
-        add_submenu_page('cbc-client-engagement', __('Appointments', 'cbc'), __('Appointments', 'cbc'), $cap, 'edit.php?post_type=' . self::APPOINTMENT_POST_TYPE);
+        add_submenu_page('cbc-client-engagement', __('Appointments', 'cbc'), __('Appointments', 'cbc'), $cap, $appointment_menu_slug);
 
         // Submenu: Feedback (link to CPT list)
-        add_submenu_page('cbc-client-engagement', __('Feedback', 'cbc'), __('Feedback', 'cbc'), $cap, 'edit.php?post_type=' . self::FEEDBACK_POST_TYPE);
+        add_submenu_page('cbc-client-engagement', __('Feedback', 'cbc'), __('Feedback', 'cbc'), $cap, $feedback_menu_slug);
 
         // Submenu: Internship Applications (link to CPT list)
-        add_submenu_page('cbc-client-engagement', __('Internship Applications', 'cbc'), __('Internship Applications', 'cbc'), $cap, 'edit.php?post_type=' . self::INTERNSHIP_POST_TYPE);
+        add_submenu_page('cbc-client-engagement', __('Internship Applications', 'cbc'), __('Internship Applications', 'cbc'), $cap, $internship_menu_slug);
 
         // Submenu: Events
         add_submenu_page('cbc-client-engagement', __('Events', 'cbc'), __('Events', 'cbc'), $cap, 'edit.php?post_type=cbc_event');
@@ -304,28 +411,35 @@ class CBC_Client_Engagement {
         if (!current_user_can('cbc_manage_client_engagement')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
-        $appt_count = wp_count_posts(self::APPOINTMENT_POST_TYPE);
-        $fb_count   = wp_count_posts(self::FEEDBACK_POST_TYPE);
-        $intern_count = wp_count_posts(self::INTERNSHIP_POST_TYPE);
+        $using_form_manager = $this->form_manager_active();
+        $appointment_total = $using_form_manager ? $this->count_form_manager_submissions('cbc_appointment_form') : intval((wp_count_posts(self::APPOINTMENT_POST_TYPE)->publish ?? 0) + (wp_count_posts(self::APPOINTMENT_POST_TYPE)->draft ?? 0) + (wp_count_posts(self::APPOINTMENT_POST_TYPE)->pending ?? 0) + (wp_count_posts(self::APPOINTMENT_POST_TYPE)->private ?? 0));
+        $feedback_total = $using_form_manager ? $this->count_form_manager_submissions('cbc_feedback_form') : intval((wp_count_posts(self::FEEDBACK_POST_TYPE)->publish ?? 0) + (wp_count_posts(self::FEEDBACK_POST_TYPE)->draft ?? 0) + (wp_count_posts(self::FEEDBACK_POST_TYPE)->pending ?? 0) + (wp_count_posts(self::FEEDBACK_POST_TYPE)->private ?? 0));
+        $internship_total = $using_form_manager ? $this->count_form_manager_submissions('cbc_internship_form') : intval((wp_count_posts(self::INTERNSHIP_POST_TYPE)->publish ?? 0) + (wp_count_posts(self::INTERNSHIP_POST_TYPE)->draft ?? 0) + (wp_count_posts(self::INTERNSHIP_POST_TYPE)->pending ?? 0) + (wp_count_posts(self::INTERNSHIP_POST_TYPE)->private ?? 0));
+        $appointment_url = $using_form_manager ? $this->form_manager_admin_url('cbc_appointment_form') : admin_url('edit.php?post_type=' . self::APPOINTMENT_POST_TYPE);
+        $feedback_url = $using_form_manager ? $this->form_manager_admin_url('cbc_feedback_form') : admin_url('edit.php?post_type=' . self::FEEDBACK_POST_TYPE);
+        $internship_url = $using_form_manager ? $this->form_manager_admin_url('cbc_internship_form') : admin_url('edit.php?post_type=' . self::INTERNSHIP_POST_TYPE);
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__('Client Engagement', 'cbc'); ?></h1>
             <p>Use the Appointments and Feedback submenus to manage entries. Below is a quick summary.</p>
+            <?php if ($using_form_manager) : ?>
+                <p><strong><?php echo esc_html__('Front-end form intake is currently owned by CBC Form Manager.', 'cbc'); ?></strong> <?php echo esc_html__('These links open the canonical saved submissions filtered by form type.', 'cbc'); ?></p>
+            <?php endif; ?>
             <div class="cbc-cards" style="display:flex; gap:20px; margin-top:20px;">
                 <div class="card" style="padding:16px; border:1px solid #ddd; background:#fff; width:280px;">
                     <h2>Appointments</h2>
-                    <p><strong>Total:</strong> <?php echo intval($appt_count->publish + $appt_count->draft + $appt_count->pending + $appt_count->private); ?></p>
-                    <p><a class="button button-primary" href="<?php echo esc_url( admin_url('edit.php?post_type=' . self::APPOINTMENT_POST_TYPE) ); ?>">Manage Appointments</a></p>
+                    <p><strong>Total:</strong> <?php echo intval($appointment_total); ?></p>
+                    <p><a class="button button-primary" href="<?php echo esc_url($appointment_url); ?>">Manage Appointments</a></p>
                 </div>
                 <div class="card" style="padding:16px; border:1px solid #ddd; background:#fff; width:280px;">
                     <h2>Feedback</h2>
-                    <p><strong>Total:</strong> <?php echo intval($fb_count->publish + $fb_count->draft + $fb_count->pending + $fb_count->private); ?></p>
-                    <p><a class="button button-primary" href="<?php echo esc_url( admin_url('edit.php?post_type=' . self::FEEDBACK_POST_TYPE) ); ?>">Manage Feedback</a></p>
+                    <p><strong>Total:</strong> <?php echo intval($feedback_total); ?></p>
+                    <p><a class="button button-primary" href="<?php echo esc_url($feedback_url); ?>">Manage Feedback</a></p>
                 </div>
                 <div class="card" style="padding:16px; border:1px solid #ddd; background:#fff; width:280px;">
                     <h2>Internships</h2>
-                    <p><strong>Total:</strong> <?php echo intval($intern_count->publish + $intern_count->draft + $intern_count->pending + $intern_count->private); ?></p>
-                    <p><a class="button button-primary" href="<?php echo esc_url( admin_url('edit.php?post_type=' . self::INTERNSHIP_POST_TYPE) ); ?>">Manage Interns</a></p>
+                    <p><strong>Total:</strong> <?php echo intval($internship_total); ?></p>
+                    <p><a class="button button-primary" href="<?php echo esc_url($internship_url); ?>">Manage Interns</a></p>
                 </div>
             </div>
             <p style="margin-top:20px;">Embed forms using these shortcodes: <code>[cbc_appointment_form]</code>, <code>[cbc_feedback_form]</code>, and <code>[cbc_internship_form]</code>. You can also use the combined shortcode <code>[cbc_client_engagement_page]</code> to render all forms on a single page.</p>
@@ -415,20 +529,24 @@ class CBC_Client_Engagement {
      */
     public function render_client_engagement_page($atts = []) {
         wp_enqueue_style('cbc-client-engagement');
+        $appointment_form = $this->form_manager_active() ? $this->render_form_manager_shortcode('cbc_appointment_form', (array) $atts) : $this->render_appointment_form($atts);
+        $feedback_form = $this->form_manager_active() ? $this->render_form_manager_shortcode('cbc_feedback_form', (array) $atts) : $this->render_feedback_form($atts);
+        $internship_form = $this->form_manager_active() ? $this->render_form_manager_shortcode('cbc_internship_form', (array) $atts) : $this->render_internship_form($atts);
+
         $out  = '<div class="cbc-client-engagement-page">';
         $out .= '<section class="cbc-section cbc-appointment">';
         $out .= '<h2>Book an Appointment</h2>';
-        $out .= $this->render_appointment_form($atts);
+        $out .= $appointment_form;
         $out .= '</section>';
 
         $out .= '<section class="cbc-section cbc-feedback">';
         $out .= '<h2>Send Feedback</h2>';
-        $out .= $this->render_feedback_form($atts);
+        $out .= $feedback_form;
         $out .= '</section>';
 
         $out .= '<section class="cbc-section cbc-internship">';
         $out .= '<h2>Internship Application</h2>';
-        $out .= $this->render_internship_form($atts);
+        $out .= $internship_form;
         $out .= '</section>';
 
         $out .= '</div>';

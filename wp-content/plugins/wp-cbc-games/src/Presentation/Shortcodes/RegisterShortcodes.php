@@ -5,6 +5,11 @@ if (!defined('ABSPATH')) { exit; }
 
 class RegisterShortcodes
 {
+    private function accessNotice(): string
+    {
+        return '<div class="cbc-games-access-notice" role="status">' . esc_html__('This game is available only to logged-in users.', 'cbc-games') . '</div>';
+    }
+
     public function register()
     {
         add_shortcode('cbc_quiz', [$this, 'renderQuiz']);
@@ -24,6 +29,10 @@ class RegisterShortcodes
 
     public function renderQuiz($atts = [], $content = '')
     {
+        if (!is_user_logged_in()) {
+            return $this->accessNotice();
+        }
+
         $this->enqueueCommon();
         wp_enqueue_script('cbc-quiz-js', CBC_GAMES_URL . 'assets/js/quiz.js', [], '1.0.0', true);
         ob_start();
@@ -33,6 +42,10 @@ class RegisterShortcodes
 
     public function renderMemory($atts = [], $content = '')
     {
+        if (!is_user_logged_in()) {
+            return $this->accessNotice();
+        }
+
         $this->enqueueCommon();
         wp_enqueue_script('cbc-memory-js', CBC_GAMES_URL . 'assets/js/memory.js', [], '1.0.0', true);
         ob_start();
@@ -42,6 +55,10 @@ class RegisterShortcodes
 
     public function renderScramble($atts = [], $content = '')
     {
+        if (!is_user_logged_in()) {
+            return $this->accessNotice();
+        }
+
         $this->enqueueCommon();
         wp_enqueue_script('cbc-scramble-js', CBC_GAMES_URL . 'assets/js/scramble.js', [], '1.0.0', true);
         ob_start();

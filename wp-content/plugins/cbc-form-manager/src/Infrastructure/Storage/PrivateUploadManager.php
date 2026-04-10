@@ -58,20 +58,24 @@ class PrivateUploadManager
         return $path;
     }
 
-    public static function storeUploadedFile(array $fileArr, string $formKey = '')
+    public static function storeUploadedFile(array $fileArr, string $formKey = '', array $fieldDef = [])
     {
         if (($fileArr['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             return new \WP_Error('cbc_fm_upload_error', __('The uploaded file could not be processed.', 'cbc-form-manager'));
         }
 
-        if (($fileArr['size'] ?? 0) > 10 * 1024 * 1024) {
-            return new \WP_Error('cbc_fm_upload_size', __('The uploaded file exceeds the 10 MB limit.', 'cbc-form-manager'));
+        $maxSize = isset($fieldDef['max_size']) ? (int) $fieldDef['max_size'] : 10 * 1024 * 1024;
+        if (($fileArr['size'] ?? 0) > $maxSize) {
+            return new \WP_Error('cbc_fm_upload_size', sprintf(__('The uploaded file exceeds the %s limit.', 'cbc-form-manager'), size_format($maxSize)));
         }
 
         $originalName = sanitize_file_name(wp_basename($fileArr['name'] ?? 'document.pdf'));
         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-        if ($extension !== 'pdf') {
-            return new \WP_Error('cbc_fm_upload_type', __('Uploaded documents must be PDF files.', 'cbc-form-manager'));
+        $allowedExtensions = isset($fieldDef['allowed_extensions']) && is_array($fieldDef['allowed_extensions'])
+            ? array_map('strtolower', array_map('sanitize_key', $fieldDef['allowed_extensions']))
+            : ['pdf'];
+        if (!in_array($extension, $allowedExtensions, true)) {
+            return new \WP_Error('cbc_fm_upload_type', sprintf(__('Uploaded documents must use one of these file types: %s.', 'cbc-form-manager'), strtoupper(implode(', ', $allowedExtensions))));
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -80,8 +84,11 @@ class PrivateUploadManager
             finfo_close($finfo);
         }
 
-        if ($mime !== 'application/pdf') {
-            return new \WP_Error('cbc_fm_upload_mime', __('Uploaded documents must be valid PDF files.', 'cbc-form-manager'));
+        $allowedMimeTypes = isset($fieldDef['allowed_mime_types']) && is_array($fieldDef['allowed_mime_types'])
+            ? array_map('sanitize_text_field', $fieldDef['allowed_mime_types'])
+            : ['application/pdf'];
+        if (!in_array($mime, $allowedMimeTypes, true)) {
+            return new \WP_Error('cbc_fm_upload_mime', __('Uploaded documents do not match an allowed file type.', 'cbc-form-manager'));
         }
 
         $directory = self::ensureDirectory($formKey);

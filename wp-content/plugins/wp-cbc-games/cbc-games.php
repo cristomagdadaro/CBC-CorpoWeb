@@ -124,8 +124,8 @@ add_filter('rest_authentication_errors', function($result){
     if (is_wp_error($result)) {
         $uri = $_SERVER['REQUEST_URI'] ?? '';
         $prefix = '/' . rest_get_url_prefix() . '/cbc-games/v1/';
-        if ($uri && strpos($uri, $prefix) !== false) {
-            // Clear the error for our endpoints only
+        if ($uri && strpos($uri, $prefix) !== false && is_user_logged_in()) {
+            // Allow authenticated users to reach the games namespace even if another layer blocks REST broadly.
             return null;
         }
     }
