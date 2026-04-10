@@ -322,8 +322,8 @@ function eraseCookie(name) {
 
     $("#openNav").click(function (event) {
       event.preventDefault();
-      document.getElementById("mySidenav").style.width = "60%";
-      document.getElementById("mySidenav").style.minWidth = "50%";
+      document.getElementById("mySidenav").style.width = "80%";
+      document.getElementById("mySidenav").style.minWidth = "70%";
       const closeBtnOverlay = document.getElementById("closeBtnOverlay");
       if (closeBtnOverlay) {
         closeBtnOverlay.classList.remove('hidden');

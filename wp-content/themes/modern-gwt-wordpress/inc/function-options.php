@@ -1144,9 +1144,9 @@ if (!function_exists('govph_displayoptions')) {
 
         $addLogo    = gettype($option) == "array" && array_key_exists('govph_logo_enable', $option) && ( $option['govph_logo_enable'] == 1 ) ? '<img height="150" width="150" loading="eager" decoding="async" src="' . $agency_logo_render . '" />' :
       '<a rel="home" href="' . esc_url( home_url( '/' ) ) . '" title="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" id="textlogo-wrapper" class="flex items-center gap-2 w-full justify-center sm:justify-start">
-              <div class="gap-1 w-fit flex md:block">
-                  <img id="textlogo-image"  draggable="false" loading="eager" decoding="async" width="120" height="120" alt="Department of Agriculture Official Logo" src="' . $da_logo_render . '" class="h-full md:w-full w-[50%] mx-auto drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" />
-                  <img id="textlogo-image" draggable="false" loading="eager" decoding="async" width="120" height="120" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $agency_logo_render . '" class="h-full md:w-full w-[50%] mx-auto drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" /> <!-- Added h-full class -->
+              <div class="gap-1 w-fit flex">
+                  <img id="textlogo-image"  draggable="false" loading="eager" decoding="async" alt="Department of Agriculture Official Logo" src="' . $da_logo_render . '" class="h-full md:w-20 w-12 drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" />
+                  <img id="textlogo-image" draggable="false" loading="eager" decoding="async" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $agency_logo_render . '" class="h-full md:w-20 w-12 drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" /> <!-- Added h-full class -->
               </div>
               <div id="textlogo-inner-wrapper" class="flex flex-col min-w-0 justify-center sm:mt-2 mt-0 mx-0 text-white">
                   <p id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] m-0 !font-lato leading-none">Department of Agriculture</p>

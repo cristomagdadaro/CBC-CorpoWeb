@@ -661,13 +661,13 @@ this is for mobile menus */
 
 /* End for mobile menus */
 
-/*masthead with text*/
+/*masthead with text
 #textlogo-image {
     height: auto;
     width: 70px;
     display: inline-block;
     vertical-align: middle;
-}
+}*/
 
 #textlogo-image img {
     object-fit: contain;
