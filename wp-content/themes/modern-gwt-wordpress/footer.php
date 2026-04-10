@@ -48,7 +48,7 @@
                 <div class="row lg:p-4 p-1">
                     <div class="flex flex-col gap-1 sm:my-5 my-2">
                         <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border !font-spartan uppercase font-extrabold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
-                        <div class="flex flex-row gap-1 items-center justify-center">
+                        <div class="flex flex-row gap-1 items-center justify-center my-5">
                             <a href="/" class="hover:scale-105 duration-200">
                                 <img draggable="false" src="/wp-content/uploads/2024/06/DA-CBC-Logo-white-DA.png"
                                      alt="logo" class="w-32 h-auto">
@@ -63,10 +63,10 @@
                             </a>
                         </div>
                     </div>
-                    <div class="grid md:grid-cols-5 grid-cols-2 grid-rows-2 md:grid-rows-1 !text-white text-sm [&>div>ul>li]:text-[11.2px]">
+                    <div class="grid md:grid-cols-5 grid-cols-2 grid-rows-3 md:grid-rows-1 !text-white text-sm [&>div>ul>li]:text-[11.2px] gap-5">
                         <div>
-                            <h4 class="font-semibold m-4 p-1">Quick Links</h4>
-                            <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
+                            <h4 class="font-semibold">Quick Links</h4>
+                            <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/about-us/organizational-structure/">Directory</a></li>
                                 <li><a href="/stories">Stories</a></li>
@@ -77,8 +77,8 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-4 p-1">Services</h4>
-                            <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
+                            <h4 class="font-semibold">Services</h4>
+                            <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="https://onecbc.philrice.gov.ph/forms/event">Events</a></li>
                                 <li><a href="https://onecbc.philrice.gov.ph/forms/request-to-use">FES Request Form</a></li>
                                 <li><a href="https://onecbc.philrice.gov.ph/laboratory/equipments">Laboratory Logger</a></li>
@@ -89,25 +89,25 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-4 p-1">Apps</h4>
-                            <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
-                                <li><a href="https://cbc360tour.philrice.gov.ph/">360 Virtual Tour</a></li>
-                                <li><a href="https://pin.philrice.gov.ph/projects/breedersmap-db">Plant Breeders' Map Database</a></li>
-                                <li><a href="https://pin.philrice.gov.ph/projects/twg-db">Biotech TWG Database</a></li>
-                                <li><a href="https://onecbc.philrice.gov.ph/">OneCBC Portal</a></li>
+                            <h4 class="font-semibold">Apps</h4>
+                            <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
+                                <li><a href="https://cbc360tour.philrice.gov.ph/" target="_blank" rel="noopener noreferrer">360 Virtual Tour</a></li>
+                                <li><a href="https://pin.philrice.gov.ph/projects/breedersmap-db" target="_blank" rel="noopener noreferrer">Plant Breeders' Map Database</a></li>
+                                <li><a href="https://pin.philrice.gov.ph/projects/twg-db" target="_blank" rel="noopener noreferrer">Biotech TWG Database</a></li>
+                                <li><a href="https://onecbc.philrice.gov.ph/" target="_blank" rel="noopener noreferrer">OneCBC Portal</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-semibold m-4 p-1">Games</h4>
-                            <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
+                            <h4 class="font-semibold">Games</h4>
+                            <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="/games/biotech-quiz-bee-game/">Biotech Quiz Bee</a></li>
                                 <li><a href="/games/scramble-game/">Biotech Scramble</a></li>
                                 <li><a href="/games/crop-memory-game/">Crop Biotech Memory</a></li>
                             </ul>
                         </div>
                         <div class="col-span-2 md:col-span-1">
-                            <h4 class="font-semibold m-4 p-1">Contact Us</h4>
-                            <ul class="list-none m-5 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917] [&>li>span]:mr-1">
+                            <h4 class="font-semibold">Contact Us</h4>
+                            <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917] [&>li>span]:mr-1">
                                 <li class="flex items-center gap-2 justify-between group">
                                     <div class="flex items-center">
                                         <span class="text-white opacity-50 select-none">Telephone:</span>
@@ -132,11 +132,11 @@
                                 </li>
                                 <li>
                                     <span class="text-white opacity-50 select-none">Facebook:</span>
-                                    <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank">DA-Crop Biotechnology Center</a>
+                                    <a href="https://www.facebook.com/DACropBiotechCenter" target="_blank" rel="noopener noreferrer">DA-Crop Biotechnology Center</a>
                                 </li>
                                 <li>
                                     <span class="text-white opacity-50 select-none">Headquarters:</span>
-                                    <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a>
+                                    <a href="https://maps.app.goo.gl/r4pxgNjVb2Lbwhui9" target="_blank" rel="noopener noreferrer">PhilRice, Maligaya, Muñoz, Nueva Ecija 3119, Philippines</a>
                                 </li>
                             </ul>
                         </div>
