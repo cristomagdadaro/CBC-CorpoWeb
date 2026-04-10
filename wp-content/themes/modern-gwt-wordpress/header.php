@@ -210,9 +210,6 @@
         var template_directory = '<?php echo esc_js( get_template_directory_uri() ); ?>';
     </script>
 </head>
-<?php
-error_log("FB_DEBUG UA: " . ($_SERVER['HTTP_USER_AGENT'] ?? '[none]') . " -- REQUEST: " . ($_SERVER['REQUEST_URI'] ?? '[none]'));
-?>
 <body <?php body_class(); ?>>
 
 <div id="accessibility-shortcuts">

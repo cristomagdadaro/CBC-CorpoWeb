@@ -18,6 +18,12 @@ class CBC_Security_Hardening {
 	public static function init() {
 		// Headers
 		add_action( 'send_headers', array( __CLASS__, 'send_security_headers' ) );
+		add_filter( 'wp_headers', array( __CLASS__, 'remove_pingback_headers' ) );
+
+		// XML-RPC hardening
+		add_action( 'init', array( __CLASS__, 'maybe_block_xmlrpc' ), 0 );
+		add_filter( 'xmlrpc_enabled', array( __CLASS__, 'filter_xmlrpc_enabled' ) );
+		add_filter( 'xmlrpc_methods', array( __CLASS__, 'filter_xmlrpc_methods' ) );
 
 		// Login rate limiting
 		add_filter( 'authenticate', array( __CLASS__, 'check_login_rate_limit' ), 1, 3 );
@@ -59,6 +65,96 @@ class CBC_Security_Hardening {
 		add_filter( 'login_headertext', array( __CLASS__, 'login_logo_title' ) );
 	}
 
+	private static function xmlrpc_allowed() {
+		return defined( 'CBC_ENABLE_XMLRPC' ) && CBC_ENABLE_XMLRPC;
+	}
+
+	private static function request_path() {
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$path        = $request_uri ? wp_parse_url( $request_uri, PHP_URL_PATH ) : '';
+
+		return is_string( $path ) ? $path : '';
+	}
+
+	private static function anonymize_for_logs( $value ) {
+		if ( '' === (string) $value ) {
+			return '';
+		}
+
+		return hash_hmac( 'sha256', (string) $value, wp_salt( 'auth' ) );
+	}
+
+	private static function sanitize_log_context( array $context ) {
+		$sanitized = array();
+
+		foreach ( $context as $key => $value ) {
+			$key = sanitize_key( (string) $key );
+
+			if ( is_scalar( $value ) || null === $value ) {
+				$sanitized[ $key ] = sanitize_text_field( (string) $value );
+			}
+		}
+
+		return $sanitized;
+	}
+
+	private static function log_security_event( $event, array $context = array(), $level = 'notice' ) {
+		if ( defined( 'CBC_DISABLE_SECURITY_EVENT_LOGS' ) && CBC_DISABLE_SECURITY_EVENT_LOGS ) {
+			return;
+		}
+
+		$payload = array(
+			'source' => 'cbc-security-hardening',
+			'event'  => sanitize_key( (string) $event ),
+			'level'  => sanitize_key( (string) $level ),
+			'time'   => gmdate( 'c' ),
+			'route'  => self::request_path(),
+			'ip_hash' => self::anonymize_for_logs( self::client_ip() ),
+			'context' => self::sanitize_log_context( $context ),
+		);
+
+		error_log( 'cbc_security_event ' . wp_json_encode( $payload ) );
+	}
+
+	public static function maybe_block_xmlrpc() {
+		if ( self::xmlrpc_allowed() ) {
+			return;
+		}
+
+		$path = self::request_path();
+		if ( '' === $path || 'xmlrpc.php' !== wp_basename( $path ) ) {
+			return;
+		}
+
+		self::log_security_event( 'xmlrpc_blocked', array( 'method' => isset( $_SERVER['REQUEST_METHOD'] ) ? wp_unslash( $_SERVER['REQUEST_METHOD'] ) : '' ), 'warning' );
+
+		status_header( 403 );
+		nocache_headers();
+		header( 'Content-Type: text/plain; charset=utf-8' );
+		echo esc_html__( 'XML-RPC is disabled on this site.', 'cbc-security-hardening' );
+		exit;
+	}
+
+	public static function filter_xmlrpc_enabled( $enabled ) {
+		return self::xmlrpc_allowed() ? $enabled : false;
+	}
+
+	public static function filter_xmlrpc_methods( $methods ) {
+		if ( self::xmlrpc_allowed() ) {
+			return $methods;
+		}
+
+		return array();
+	}
+
+	public static function remove_pingback_headers( $headers ) {
+		if ( isset( $headers['X-Pingback'] ) ) {
+			unset( $headers['X-Pingback'] );
+		}
+
+		return $headers;
+	}
+
 	public static function monitor_permission( $request ) {
 		if ( defined( 'CBC_MONITOR_PUBLIC_ENDPOINT' ) && CBC_MONITOR_PUBLIC_ENDPOINT ) {
 			return true;
@@ -67,6 +163,8 @@ class CBC_Security_Hardening {
 		if ( current_user_can( self::MONITOR_CAPABILITY ) ) {
 			return true;
 		}
+
+		self::log_security_event( 'monitor_access_denied', array( 'method' => $request instanceof WP_REST_Request ? $request->get_method() : '' ), 'warning' );
 
 		return new WP_Error( 'cbc_monitor_forbidden', __( 'You are not allowed to access this monitoring endpoint.', 'cbc-security-hardening' ), array( 'status' => 403 ) );
 	}
@@ -155,6 +253,7 @@ class CBC_Security_Hardening {
 		$ip = self::client_ip();
 		$failures = (int) get_transient( self::login_key( $ip ) );
 		if ( $failures >= self::LOGIN_LIMIT ) {
+			self::log_security_event( 'login_rate_limited', array( 'username_hash' => self::anonymize_for_logs( (string) $username ) ), 'warning' );
 			return new WP_Error( 'too_many_attempts', __( 'Too many failed login attempts. Please try again in a few minutes.' ) );
 		}
 		return $user;
@@ -166,6 +265,10 @@ class CBC_Security_Hardening {
 		$failures = (int) get_transient( $key );
 		$failures++;
 		set_transient( $key, $failures, self::LOGIN_WINDOW );
+
+		if ( $failures >= self::LOGIN_LIMIT ) {
+			self::log_security_event( 'login_lockout_threshold_reached', array( 'failures' => $failures ), 'warning' );
+		}
 	}
 
 	public static function clear_login_failures( $user_login, $user ) {
@@ -206,7 +309,7 @@ class CBC_Security_Hardening {
 			return;
 		}
 		self::recaptcha_script();
-		echo cbc_recaptcha_field(); // Use the function from cbc-recaptcha plugin to render the field
+		cbc_recaptcha_field(); // Use the function from cbc-recaptcha plugin to render the field
 	}
 
 	public static function verify_login_recaptcha( $user, $username, $password ) {

@@ -550,24 +550,9 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $is_local = cbc_ai_is_local_or_dev();
     $recaptcha_secret = ($is_local) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
     $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
-    // Prepare admin-only debug info (will be injected into responses for admins)
-    $admin_debug = array(
-        'recaptcha_secret_configured' => $recaptcha_secret !== '',
-        'recaptcha_token_provided' => $recaptcha_token !== '',
-        'is_local_dev' => $is_local,
-    );
     if ($recaptcha_secret !== '') {
         if ($recaptcha_token === '') {
-            // For debugging: allow administrators to bypass reCAPTCHA token requirement so they can test the flow.
-            if (is_user_logged_in() && current_user_can('manage_options')) {
-                error_log('cbc-ai-messenger: reCAPTCHA token missing but bypassed for admin ' . get_current_user_id());
-            } else {
-                $resp = new WP_REST_Response(array('error' => 'reCAPTCHA token missing'));
-                if (is_user_logged_in() && current_user_can('manage_options')) {
-                    $resp->set_data(array('error' => 'reCAPTCHA token missing', 'debug' => $admin_debug));
-                }
-                return $resp;
-            }
+            return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
         }
         $ip = cbc_ai_get_client_ip();
         $verify = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
@@ -584,15 +569,11 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
         $body = wp_remote_retrieve_body($verify);
         $data = json_decode($body, true);
         if (!is_array($data) || empty($data['success'])) {
-            $resp = new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
-            if (is_user_logged_in() && current_user_can('manage_options')) { $resp->set_data(array('error' => 'reCAPTCHA validation failed', 'debug' => $data)); }
-            return $resp;
+            return new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
         }
         // If v3, optionally check score threshold
         if (isset($data['score']) && floatval($data['score']) < 0.45) {
-            $resp = new WP_REST_Response(array('error' => 'reCAPTCHA score too low'), 403);
-            if (is_user_logged_in() && current_user_can('manage_options')) { $resp->set_data(array('error' => 'reCAPTCHA score too low', 'debug' => $data)); }
-            return $resp;
+            return new WP_REST_Response(array('error' => 'reCAPTCHA score too low'), 403);
         }
     }
 
@@ -631,27 +612,15 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     $result = cbc_ai_call_provider($opts, $message, $api_key);
     if (is_wp_error($result)) {
         $reply = 'Sorry, I could not generate a response right now.';
-        $error_data = $result->get_error_data();
-        $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'error','error' => $result->get_error_message(),'error_data' => $error_data), $name, $email);
-        $response = array('reply' => $reply);
-        if (is_user_logged_in() && current_user_can('manage_options')) {
-            $response['debug'] = array(
-                'provider_error' => $result->get_error_message(),
-                'provider_error_data' => $error_data,
-                'provider' => $opts['provider'],
-                'model' => $opts['model'],
-            );
-        }
-        return new WP_REST_Response($response, 200);
+        $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'error','error_code' => $result->get_error_code()), $name, $email);
+        return new WP_REST_Response(array('reply' => $reply), 200);
     }
 
     $reply = (string)($result['reply'] ?? '');
     if ($reply === '') { $reply = 'I do not have an answer at the moment.'; }
 
     $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'ok','usage' => $result['usage'] ?? array()), $name, $email);
-    $response_body = array('reply' => wp_kses_post($reply));
-    if (is_user_logged_in() && current_user_can('manage_options')) { $response_body['debug'] = $admin_debug; }
-    return new WP_REST_Response($response_body, 200);
+    return new WP_REST_Response(array('reply' => wp_kses_post($reply)), 200);
 }
 
 function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $email = ''): WP_Error|int {
