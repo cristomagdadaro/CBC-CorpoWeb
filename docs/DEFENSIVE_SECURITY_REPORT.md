@@ -210,7 +210,8 @@ Implemented:
 2. Patch nginx in deployment after validating vendor advisories.
 3. Ensure production server config actually denies `/xmlrpc.php`.
 4. Remove or block `readme.html` in production if currently reachable.
-5. Route server/app logs to centralized monitoring and alert on:
+5. Port the hardened deny rules from `nginx.conf` into the active Windows vhost as needed, including `server_tokens off;`, `readme.html` / `license.txt` denial, and sensitive file blocks for `wp-config-sample.php` and backup artifacts.
+6. Route server/app logs to centralized monitoring and alert on:
    - repeated login lockouts
    - blocked XML-RPC hits
    - AI abuse/rate-limit events
@@ -220,14 +221,24 @@ Implemented:
 
 This hardening pass focused on safe repository-level changes.
 
+Observed verification results from user-provided `curl.exe` checks against `https://dacbc.philrice.gov.ph` on `2026-04-10`:
+
+- `xmlrpc.php` returned `HTTP/1.1 403 Forbidden`, which is consistent with the intended XML-RPC hardening posture.
+- `wp-json/cbc-games/v1/quiz` returned a logged-out `401`, which is consistent with the private REST namespace restriction.
+- `wp-json/post-metrics/v1/track` returned a logged-out `401`, which is consistent with the private REST namespace restriction.
+- `readme.html` returned `HTTP/1.1 200 OK`, which means public version-disclosure exposure remains present on the live host.
+
 It does **not** by itself prove that production has:
 
 - upgraded nginx
 - upgraded WordPress core
-- denied `xmlrpc.php` at the active reverse proxy
-- removed publicly reachable version disclosure files from the live host
+- fully removed or blocked publicly reachable version disclosure files from the live host
 
 Those items require staging/production verification.
+
+Based on the current verification evidence, XML-RPC blocking and private REST rejection appear active on the target host, but operational hardening is still incomplete because `readme.html` remains reachable and the response headers still disclose `nginx/1.24.0`.
+
+Additional deployment evidence provided on `2026-04-11` showed the active Windows nginx vhost already includes the `/xmlrpc.php` deny, but it does not yet show an explicit `readme.html` / `license.txt` block or `server_tokens off;`. The repo `nginx.conf` now contains those directives as the deployment-aligned baseline to port into the live host before rerunning verification.
 
 ## Recommended Verification Commands
 
@@ -246,4 +257,17 @@ Expected directionally:
 - `readme.html` should not expose version info publicly
 - private namespaces should reject anonymous callers
 - public routes should expose only intentionally public behavior
+
+Current observed outcomes from the provided verification session:
+
+- `xmlrpc.php`: pass (`403 Forbidden`)
+- `cbc-games` private REST route: pass (`401 logged_out`)
+- `post-metrics` private REST route: pass (`401 logged_out`)
+- `readme.html`: fail (`200 OK`, still publicly reachable)
+
+Operational follow-up required:
+
+1. confirm the active production/staging virtual host or reverse proxy includes the intended block for `readme.html`
+2. verify whether a CDN, cache layer, or alternate server block is bypassing the hardened config in `nginx.conf`
+3. remove or deny public access to `readme.html` and then repeat the same `curl.exe -I` verification
 
