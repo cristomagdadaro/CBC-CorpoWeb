@@ -37,7 +37,7 @@
     "babel-eslint": "10.1.0",
     "braces": "3.0.3",
     "ejs": "^3.1.9",
-    "eslint": "6.8.0",
+    "eslint": "10.2.0",
     "eslint-plugin-vue": "6.2.2",
     "html-minifier": "^4.0.0",
     "ip": "^2.0.0",
