@@ -193,12 +193,12 @@ function cbc_render_latest_posts( $attributes, $content = '', $block = null ) {
 		$base_container = '';
 
 		if ( $count < $maxCount && $is_grid_layout ) {
-			$base_container .= 'flex flex-row md:flex-col h-full ';
+			$base_container .= 'flex flex-row md:flex-col ';
 		}
 
 		if ( $is_grid_layout ) {
 			if ( $is_first_group ) {
-				$img_wrapper_first = '<div class="overflow-hidden rounded-md w-[9rem] shrink-0 md:shrink-0 md:w-full h-full md:h-[9rem] lg:h-[12rem]">%s</div>';
+				$img_wrapper_first = '<div class="overflow-hidden rounded-md w-[9rem] h-[6rem] shrink-0 md:shrink-0 md:w-full md:h-[9rem] lg:h-[12rem]">%s</div>';
 				$container_classes = $base_container . 'flex items-center hover:border-[#1f5d2b] hover:shadow-lg ';
 				$list_items_markup .= $render_item( $post, $attributes, $container_classes, $img_wrapper_first, true );
 			} else {
