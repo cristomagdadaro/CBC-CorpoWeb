@@ -1261,7 +1261,7 @@ class CBC_Client_Engagement {
             'from'    => '#1f5d2b',
             'to'      => '#a2b917',
             'swap'    => '0',
-            'tag'     => 'h2',
+            'tag'     => 'div',
             'strong'  => '1',
             'id'      => '',
         ];
@@ -1288,7 +1288,7 @@ class CBC_Client_Engagement {
     public static function section_header_markup($title, $args = []) {
         $defaults = [
             'classes' => 'text-lg sm:text-xl font-extrabold  drop-shadow text-white p-2 md:text-2xl bg-gradient-to-r lg:text-3xl text-center px-5',
-            'tag'     => 'h2',
+            'tag'     => 'div',
             'strong'  => true,
             'id'      => '',
             // text-alignment: left|center|right (default: center)
@@ -1312,7 +1312,7 @@ class CBC_Client_Engagement {
         $args = wp_parse_args($args, $defaults);
         $tag = preg_replace('/[^a-z0-9_-]/i', '', $args['tag']);
         if (!$tag) {
-            $tag = 'h2';
+            $tag = 'div';
         }
         $classes = $args['classes'];
         // Handle gradient customization: remove any existing gradient tokens then append constructed gradient

@@ -66,6 +66,8 @@
             <?php echo govph_section_header('Priority Commodities', ['id' => 'priority_commodity_header']); ?>
             <?php echo do_shortcode('[priority_commodities_carousel max_display="5" center_scale="1.30" auto_advance="true" auto_interval="2500" show_arrows="true" enable_blur="true"]'); ?>
 
+            <?php echo do_shortcode('[our_impact map_svg_path="/wp-content/uploads/2026/04/phMap.png"]'); ?>
+
             <?php dynamic_sidebar( 'panel-top-1' ); ?>
         </aside>
         <?php endif; ?>

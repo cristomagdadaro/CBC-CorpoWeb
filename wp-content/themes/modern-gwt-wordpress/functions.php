@@ -106,6 +106,11 @@ require get_template_directory() . '/inc/shortcode-gov-org.php';
 require get_template_directory() . '/inc/shortcode-core-programs.php';
 
 /**
+ * Our Impact Shortcode
+ */
+require get_template_directory() . '/inc/shortcode-our-impact.php';
+
+/**
  * Custom Post Types
  */
 // require get_template_directory() . '/inc/custom-post-types.php';

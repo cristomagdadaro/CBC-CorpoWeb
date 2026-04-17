@@ -17,26 +17,26 @@ if (!function_exists('cbc_core_programs_shortcode')) {
 
         // Define core programs data
         $programs = array(
-            array(
-                'title' => 'Technology Development and Innovation',
-                'image' => '/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png',
-                'description' => 'Conduct cutting-edge research ',
-            ),
-            array(
-                'title' => 'R4D Biotechnology Capacity-Building Service',
-                'image' => '/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg',
-                'description' => 'Nationwide training and workshops',
-            ),
-            array(
-                'title' => 'Partnership and Fund Generation',
-                'image' => '/wp-content/uploads/2025/09/CBC04940-768x461.png',
-                'description' => 'Collaborators for growth and impact',
-            ),
-            array(
-                'title' => 'Technology Commercialization and Management',
-                'image' => '/wp-content/uploads/2025/09/CBC06408-768x432.png',
-                'description' => 'Bringing innovations to the Filipino people',
-            ),
+                array(
+                        'title' => 'Technology Development and Innovation',
+                        'image' => '/wp-content/uploads/2025/09/Screenshot-2025-09-05-150724-768x445.png',
+                        'description' => 'Pioneering advanced research to develop breakthrough technologies and innovative solutions that address critical challenges.',
+                ),
+                array(
+                        'title' => 'R4D Biotechnology Capacity-Building Service',
+                        'image' => '/wp-content/uploads/2025/09/IMG_20240522_085745-768x576.jpg',
+                        'description' => 'Empowering institutions nationwide through specialized training programs, hands-on workshops, and technical expertise development.',
+                ),
+                array(
+                        'title' => 'Partnership and Fund Generation',
+                        'image' => '/wp-content/uploads/2025/09/CBC04940-768x461.png',
+                        'description' => 'Building strategic alliances with industry leaders, government agencies, and investors to secure sustainable funding and maximize impact.',
+                ),
+                array(
+                        'title' => 'Technology Commercialization and Management',
+                        'image' => '/wp-content/uploads/2025/09/CBC06408-768x432.png',
+                        'description' => 'Transforming innovative research into accessible products and services that improve lives and drive economic growth across the Philippines.',
+                ),
         );
 
         // Allow filtering of programs data
