@@ -177,15 +177,15 @@
 
     html.cbc-preloader-active .off-canvas-wrapper {
       opacity: 0.72;
-      transform: scale(0.992) translateY(10px);
-      filter: saturate(0.92);
-      transition: transform 0.95s ease, opacity 0.95s ease, filter 0.95s ease;
-      will-change: transform, opacity;
+      transform: none;
+      filter: none;
+      transition: opacity 0.95s ease;
+      will-change: opacity;
     }
 
     html.cbc-preloader-complete .off-canvas-wrapper {
       opacity: 1;
-      transform: scale(1);
+      transform: none;
       filter: none;
     }
 
