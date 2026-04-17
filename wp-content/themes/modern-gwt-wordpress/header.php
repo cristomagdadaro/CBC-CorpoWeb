@@ -808,10 +808,24 @@ Press esc, or click the close the button to close this dialog box.
 <?php
   $has_custom_image_logo = govph_displayoptions( 'govph_logo_enable' );
   $has_header_search     = govph_displayoptions( 'govph_disable_search' );
+  $site_header_classes   = implode(
+    ' ',
+    array(
+      'site-header',
+      'fixed',
+      'top-0',
+      'left-0',
+      'right-0',
+      'z-50',
+      'transition-all',
+      'duration-500',
+      is_front_page() ? 'site-header--overlay' : 'site-header--with-offset',
+    )
+  );
 ?>
 <div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
-        <header id="site-header" class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+        <header id="site-header" class="<?php echo esc_attr( $site_header_classes ); ?>">
             <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
                 <div class="mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8 z-10">
                     <div id="header-gradient-bg" class="absolute inset-0 z-10 bg-gradient-to-b from-green-700 to-transparent w-full"></div>

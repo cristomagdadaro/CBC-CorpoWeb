@@ -59,17 +59,24 @@ function initResponsiveSiteHeader() {
   }
 
   const desktopBreakpoint = 1024;
+  const isOverlayHeader = header.classList.contains("site-header--overlay");
   let isTicking = false;
 
   const syncHeaderHeight = () => {
+    const expandedMobilePanelHeight =
+      window.innerWidth < desktopBreakpoint &&
+      header.classList.contains("mobile-menu-open")
+        ? mobileMenuPanel.offsetHeight
+        : 0;
+
     document.documentElement.style.setProperty(
       "--gwt-site-header-height",
-      `${headerBar.offsetHeight}px`
+      `${headerBar.offsetHeight + expandedMobilePanelHeight}px`
     );
   };
 
   const syncScrollState = () => {
-    header.classList.toggle("scrolled", window.scrollY > 50);
+    header.classList.toggle("scrolled", window.scrollY > (isOverlayHeader ? 50 : 12));
     syncHeaderHeight();
   };
 
@@ -77,6 +84,7 @@ function initResponsiveSiteHeader() {
     header.classList.remove("mobile-menu-open");
     mobileMenuButton.setAttribute("aria-expanded", "false");
     mobileMenuPanel.setAttribute("aria-hidden", "true");
+    syncHeaderHeight();
 
     if (returnFocus) {
       mobileMenuButton.focus();
@@ -87,6 +95,7 @@ function initResponsiveSiteHeader() {
     header.classList.add("mobile-menu-open");
     mobileMenuButton.setAttribute("aria-expanded", "true");
     mobileMenuPanel.setAttribute("aria-hidden", "false");
+    syncHeaderHeight();
   };
 
   const toggleMobileMenu = () => {
@@ -99,6 +108,15 @@ function initResponsiveSiteHeader() {
   };
 
   syncScrollState();
+
+  if (typeof ResizeObserver !== "undefined") {
+    const headerResizeObserver = new ResizeObserver(() => {
+      syncHeaderHeight();
+    });
+
+    headerResizeObserver.observe(headerBar);
+    headerResizeObserver.observe(mobileMenuPanel);
+  }
 
   mobileMenuButton.addEventListener("click", toggleMobileMenu);
 
@@ -126,6 +144,8 @@ function initResponsiveSiteHeader() {
       closeMobileMenu();
     }
   });
+
+  window.addEventListener("load", syncHeaderHeight, { once: true });
 
   document.addEventListener("click", (event) => {
     if (

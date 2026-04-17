@@ -75,7 +75,7 @@
 	pointer-events: none;
 	z-index: 0 !important;
 	opacity: 1;
-	transition: opacity 0.5s ease, visibility 0.5s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease, background 0.5s ease;
 }
 
 #textlogo-wrapper > :not(#header-gradient-bg) {
@@ -121,7 +121,7 @@ body.admin-bar .site-header {
   box-sizing: border-box;
 }
 
-.off-canvas-content {
+.site-header--with-offset + .off-canvas-content {
   padding-top: var(--gwt-site-header-height, 0px);
 }
 
@@ -133,9 +133,9 @@ body.admin-bar .site-header {
 }
 
 .site-header.scrolled .site-header-bar {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(148, 163, 184, 0.22);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  background: rgba(31, 93, 43, 0.96);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(8, 40, 18, 0.24);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
@@ -214,16 +214,17 @@ body.admin-bar .site-header {
 .site-header.scrolled .site-header__meta-panel p,
 .site-header.scrolled .site-header__meta-panel span,
 .site-header.scrolled .site-header__meta-panel div {
-  color: #64748b !important;
+  color: rgba(255, 255, 255, 0.84) !important;
 }
 
 .site-header.scrolled #agency-name {
-  color: #1f5d2b;
+  color: #ffffff;
 }
 
 .site-header.scrolled #header-gradient-bg {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
+  visibility: visible;
+  background: linear-gradient(180deg, #1f7a34 0%, #1f7a34 100%);
 }
 
 .site-header.scrolled #da-logo,
@@ -250,7 +251,7 @@ body.admin-bar .site-header {
 
 .site-header.scrolled .gwt-desktop-nav > ul > li > a,
 .site-header.scrolled .gwt-desktop-nav > ul > li > a svg {
-  color: #1f5d2b;
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .site-header .gwt-desktop-nav .absolute {
@@ -280,16 +281,16 @@ body.admin-bar .site-header {
 }
 
 .site-header.scrolled .site-mobile-menu-button {
-  border-color: rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.92);
-  color: #0f172a;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(8, 40, 18, 0.22);
 }
 
 .site-header.scrolled .site-mobile-menu-button:hover,
 .site-header.scrolled .site-mobile-menu-button:focus {
-  background: rgba(15, 23, 42, 0.06);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 .site-mobile-menu-panel {
