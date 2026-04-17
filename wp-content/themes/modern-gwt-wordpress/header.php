@@ -242,28 +242,24 @@
     ? sprintf( '%s Logo', $govph_preloader_options['govph_agency_name'] )
     : 'DA-Crop Biotechnology Center Logo';
   ?>
-  <script type="text/javascript">
-    try {
-      if ( window.sessionStorage && window.sessionStorage.getItem( 'cbcPreloaderSeen' ) === '1' ) {
-        document.documentElement.classList.add( 'cbc-preloader-skip' );
-      }
-    } catch ( error ) {
-      // Ignore storage access issues and fall back to showing the preloader.
-    }
-  </script>
 </head>
 <body <?php body_class(); ?>>
 
 <div id="preloader" role="status" aria-live="polite" aria-hidden="false">
   <div class="preloader-content">
-    <img src="<?php echo $preloader_logo_src; ?>"
-       alt="<?php echo esc_attr( $preloader_logo_alt ); ?>"
-       class="preloader-logo"
-       decoding="async"
-       fetchpriority="high">
+    <div class="preloader-logo-shell">
+      <img src="<?php echo $preloader_logo_src; ?>"
+         alt="<?php echo esc_attr( $preloader_logo_alt ); ?>"
+         class="preloader-logo"
+         decoding="async"
+         fetchpriority="high">
+    </div>
     <p class="preloader-tagline">BIOTECH FOR BETTER CROP FOR BETTER LIVES</p>
-    <div class="loading-bar" aria-hidden="true">
-      <div class="loading-progress"></div>
+    <div class="loading-dots" aria-hidden="true">
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
     </div>
   </div>
 </div>

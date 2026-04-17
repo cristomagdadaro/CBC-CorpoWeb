@@ -56,7 +56,7 @@ function initPreloader() {
   }
 
   const body = document.body;
-  const progress = preloader.querySelector(".loading-progress");
+  const loadingDots = Array.from(preloader.querySelectorAll(".loading-dot"));
   const prefersReducedMotion =
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -65,38 +65,22 @@ function initPreloader() {
   let currentProgress = 0;
   let isFinished = false;
 
-  const getStorage = () => {
-    try {
-      return window.sessionStorage;
-    } catch (error) {
-      return null;
-    }
-  };
-
-  const storage = getStorage();
-  const hasSeenPreloader =
-    document.documentElement.classList.contains("cbc-preloader-skip") ||
-    (storage && storage.getItem("cbcPreloaderSeen") === "1");
-
   const setProgress = (value) => {
-    if (!progress) {
-      return;
-    }
-
     currentProgress = Math.max(currentProgress, Math.min(100, value));
-    progress.style.width = `${currentProgress}%`;
-  };
 
-  const markSeen = () => {
-    if (!storage) {
+    if (!loadingDots.length) {
       return;
     }
 
-    try {
-      storage.setItem("cbcPreloaderSeen", "1");
-    } catch (error) {
-      // Ignore storage write issues.
-    }
+    const activeDots = Math.max(
+      1,
+      Math.min(loadingDots.length, Math.ceil((currentProgress / 100) * loadingDots.length))
+    );
+
+    loadingDots.forEach((dot, index) => {
+      dot.classList.toggle("is-active", index < activeDots);
+      dot.classList.toggle("is-complete", currentProgress >= 100);
+    });
   };
 
   const restoreFocus = () => {
@@ -142,7 +126,6 @@ function initPreloader() {
     body.classList.remove("cbc-preloader-active");
     body.classList.add("cbc-preloader-complete");
     body.setAttribute("aria-busy", "false");
-    markSeen();
     restoreFocus();
 
     window.setTimeout(() => {
@@ -150,14 +133,6 @@ function initPreloader() {
     }, fadeDuration);
   };
 
-  if (hasSeenPreloader) {
-    preloader.classList.add("hidden");
-    preloader.setAttribute("aria-hidden", "true");
-    preloader.style.display = "none";
-    body.classList.add("cbc-preloader-complete");
-    body.setAttribute("aria-busy", "false");
-    return;
-  }
 
   body.classList.add("cbc-preloader-active");
   body.setAttribute("aria-busy", "true");
