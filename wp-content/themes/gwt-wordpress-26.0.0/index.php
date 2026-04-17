@@ -161,6 +161,8 @@ include_once( get_template_directory() . '/inc/banner.php' );
 
             // Calendar: use shortcode for reusable, override-capable rendering
             echo do_shortcode('[gwt_calendar mode="auto" header="1" max="30"]');
+
+            echo do_shortcode( '[cbc_web_apps]' );
             ?>
         </div>
         <!-- start content -->

@@ -69,6 +69,7 @@ const walkerSafelist = [
     'pt-2',
     'mb-2',
     'ml-2',
+    'mb-[1rem]',
     '-mr-0.5'
 ];
 
@@ -234,6 +235,7 @@ const backgroundAndColorSafelist = [
     'bg-red-500',
     'bg-yellow-100',
     'bg-blue-100',
+    'bg-gray-500',
     'bg-indigo-600',
     'bg-opacity-50',
     'bg-gradient-to-r',
@@ -250,6 +252,9 @@ const backgroundAndColorSafelist = [
     'to-white/90',
     'to-[#a2b917]',
     'to-[#1f5d2b]',
+    'from-[#F7CE68]',
+    'via-[#57BAA6]',
+    'to-[#125E85]',
     'via-white/70',
     'text-white',
     '!text-white',
@@ -476,6 +481,9 @@ module.exports = {
             opacity: ['group-hover'],
             visibility: ['group-hover'],
             transform: ['group-hover'],
+        },
+        fontSize: {
+            'dynamic': 'clamp(1.75rem, 4vw, 2.5rem)',
         }
     },
     theme: {

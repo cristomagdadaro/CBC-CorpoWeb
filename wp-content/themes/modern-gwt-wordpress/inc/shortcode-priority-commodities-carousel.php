@@ -62,7 +62,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
             position: relative;
             width: 100%;
             overflow: visible;
-            padding: 2rem 0;
+            padding: 0;
         }
         .cbc-carousel {
             position: relative;
@@ -203,7 +203,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                  role="listbox"
                  aria-label="Priority Commodities Carousel"
                  tabindex="0">
-                <div id="particles-js-network" class="absolute top-0 left-0 w-full h-full"></div>
+                <div id="particles-js-network" class="pointer-events-none absolute top-0 left-0 w-full h-full"></div>
                 <div class="cbc-carousel-track">
                     <?php foreach ($commodities as $index => $commodity): ?>
                         <div class="cbc-carousel-item w-[12rem] h-[14rem] md:w-[22rem] md:h-[16rem] <?php echo $index === 0 ? 'active' : ''; ?>"

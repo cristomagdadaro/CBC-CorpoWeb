@@ -103,25 +103,22 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .our-impact-container {
-                max-width: 1200px;
+                max-width: 80rem;
                 margin: 0 auto;
             }
 
             .our-impact-header {
                 text-align: center;
-                margin-bottom: 2rem;
+                margin-bottom: 0;
             }
 
             .our-impact-title {
-                font-size: clamp(2rem, 4vw, 3rem);
+                font-size: clamp(1.875rem, 4vw, 2.5rem);
                 font-weight: 800;
                 text-transform: uppercase;
                 letter-spacing: -0.02em;
-                margin-bottom: 0.5rem;
-                background: linear-gradient(90deg, #1f5d2b 0%, #55A147 50%, #a2b917 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                margin: 0;
+                color: #1f5d2b;
             }
 
             /* Bento Grid Layout */
@@ -138,7 +135,17 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
             }
 
+            @media (min-width: 768px) {
+                .our-impact-section {
+                    padding: 4rem 1.5rem;
+                }
+            }
+
             @media (min-width: 1024px) {
+                .our-impact-section {
+                    padding: 6rem 2rem;
+                }
+
                 .impact-bento-grid {
                     grid-template-columns: repeat(3, 1fr);
                     grid-template-rows: auto auto;
@@ -297,8 +304,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 left: 50%;
                 transform: translateX(-50%);
                 text-align: center;
-                font-size: 0.75rem;
-                color: #64748b;
+                font-size: 0.875rem;
+                color: #404040;
                 background: rgba(255,255,255,0.9);
                 padding: 0.25rem 0.75rem;
             }
@@ -327,10 +334,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
             /* Mobile optimizations */
             @media (max-width: 639px) {
-                .our-impact-section {
-                    padding: 2rem 0.75rem;
-                }
-
                 .impact-card {
                     padding: 1rem;
                 }
@@ -353,12 +356,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         <section class="our-impact-section" aria-label="Our Impact Statistics">
             <div class="our-impact-container">
                 <div class="our-impact-header">
-                    <div class="our-impact-title">OUR IMPACT</div>
+                    <h2 class="our-impact-title section-title homepage-section-title text-center text-3xl lg:text-4xl font-extrabold text-[#1f5d2b]">OUR IMPACT</h2>
                 </div>
-
                 <div class="impact-bento-grid">
                     <!-- Map Card -->
-                    <div class="impact-card impact-map-card shadow-lg rounded-lg">
+                    <div class="impact-map-card rounded-lg">
                         <div class="impact-map-wrapper">
                             <?php
                             $map_path = get_template_directory() . $atts['map_svg_path'];
@@ -371,7 +373,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                             }
                             ?>
                         </div>
-                        <div class="impact-map-caption">Nationwide Impact</div>
+                        <div class="impact-map-caption uppercase">Nationwide Impact</div>
                     </div>
 
                     <!-- Stat Cards -->

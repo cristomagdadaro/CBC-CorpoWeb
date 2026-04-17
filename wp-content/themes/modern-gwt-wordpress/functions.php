@@ -111,6 +111,11 @@ require get_template_directory() . '/inc/shortcode-core-programs.php';
 require get_template_directory() . '/inc/shortcode-our-impact.php';
 
 /**
+ * Web Apps Shortcode
+ */
+require get_template_directory() . '/inc/shortcode_web_apps.php';
+
+/**
  * Custom Post Types
  */
 // require get_template_directory() . '/inc/custom-post-types.php';

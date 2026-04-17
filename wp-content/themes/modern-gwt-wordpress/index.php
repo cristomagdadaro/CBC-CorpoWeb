@@ -22,9 +22,6 @@ include_once( 'inc/banner.php' );
                  class="text-justify overflow-hidden gap-4 <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
                  style="display: flex; flex-direction: column; justify-content: space-between;"
                  role="main">
-                <div>
-                    <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
-                </div>
 
                 <div class="hidden grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-3 relative box-border">
                     <div>

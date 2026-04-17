@@ -304,7 +304,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
         ob_start();
         if ( $atts['header'] === '1' ) {
             if ( function_exists( 'govph_section_header' ) ) {
-				echo '<h1 class="text-white font-extrabold py-1 md:py-2 bg-[#1f5d2b] text-left px-5 text-lg sm:text-xl md:text-2xl lg:text-3xl">
+				echo '<h1 class="section-title">
                 ' . esc_html( $monthLabel ) . ' </h1>';
             } else {
                 echo '<h2 class="gwt-calendar-header">' . esc_html( 'Calendar ' . $monthLabel ) . '</h2>';
@@ -430,7 +430,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             }
 
             // Render as HTML table with colspan in day cells
-            echo '<table class="calendar-grid reveal-on-scroll-300 opacity-0" style="width:100%;border-collapse:separate;border-spacing:6px;margin-bottom: 0">';
+            echo '<table class="calendar-grid reveal-on-scroll-300 opacity-0 mb-[1rem]" style="width:100%;height:100%;border-collapse:separate;border-spacing:6px;margin-bottom: 0">';
 
             // Header row
             echo '<thead><tr>';

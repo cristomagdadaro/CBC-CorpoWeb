@@ -67,7 +67,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
             position: relative;
             width: 100%;
             overflow: visible;
-            padding: 2rem 0;
+            padding: 0;
         }
         .core-programs-carousel {
             position: relative;
@@ -208,7 +208,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
 
         <div id="core_programs_list">
             <!-- Grid layout for desktop (md and above) -->
-            <div class="core-programs-grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 py-6">
+            <div class="core-programs-grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 <?php foreach ($programs as $program): ?>
                 <div class="items-center bg-white reveal-on-scroll-100 opacity-0 rounded-md overflow-hidden shadow-lg flex flex-col h-auto w-full">
                     <div class="relative w-full h-32">
@@ -254,7 +254,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                                 <h3 class="core-programs-card-title">
                                     <?php echo esc_html(strtoupper($program['title'])); ?>
                                 </h3>
-                                <p class="hidden core-programs-card-description">
+                                <p class="core-programs-card-description">
                                     <?php echo esc_html($program['description']); ?>
                                 </p>
                             </div>
