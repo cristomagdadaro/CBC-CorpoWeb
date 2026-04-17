@@ -92,6 +92,347 @@
         };
     })();
 
+    function getFlyCrossingConfig() {
+        let particleCount = 100;
+        let targetFPS = 60;
+        let ellipseWidth = 180;
+        let ellipseHeight = 40;
+        let orbitSpeed = 0.4;
+        let particleSize = 3;
+        let randomness = 0.2;
+        let rotation1 = 45;  // degrees
+        let rotation2 = -45; // degrees (opposite direction)
+
+        // Android optimization
+        if (deviceInfo.isAndroid) {
+            if (perfProfile.isLowEnd) {
+                particleCount = 30;
+                targetFPS = 20;
+                ellipseWidth = 120;
+                ellipseHeight = 25;
+                orbitSpeed = 0.25;
+                particleSize = 2;
+                randomness = 0.15;
+            } else if (perfProfile.isMidRange) {
+                particleCount = 50;
+                targetFPS = 30;
+                ellipseWidth = 150;
+                ellipseHeight = 32;
+                orbitSpeed = 0.35;
+                particleSize = 2.5;
+                randomness = 0.18;
+            }
+        }
+        // iOS optimization
+        else if (deviceInfo.isIOS) {
+            if (perfProfile.isLowEnd) {
+                particleCount = 35;
+                targetFPS = 24;
+                ellipseWidth = 130;
+                ellipseHeight = 28;
+                orbitSpeed = 0.3;
+                particleSize = 2.5;
+                randomness = 0.15;
+            } else if (perfProfile.isMidRange) {
+                particleCount = 60;
+                targetFPS = 30;
+                ellipseWidth = 160;
+                ellipseHeight = 35;
+                orbitSpeed = 0.38;
+                particleSize = 3;
+                randomness = 0.18;
+            }
+        }
+        // MacOS optimization
+        else if (deviceInfo.isMac) {
+            if (perfProfile.isHighEnd) {
+                particleCount = 150;
+                targetFPS = 60;
+                ellipseWidth = 220;
+                ellipseHeight = 50;
+                orbitSpeed = 0.5;
+                particleSize = 4;
+                randomness = 0.25;
+            } else {
+                particleCount = 100;
+                targetFPS = 50;
+                ellipseWidth = 190;
+                ellipseHeight = 42;
+                orbitSpeed = 0.42;
+                particleSize = 3.5;
+                randomness = 0.2;
+            }
+        }
+        // Desktop/Laptop optimization
+        else {
+            if (perfProfile.isHighEnd) {
+                particleCount = 120;
+                targetFPS = 60;
+                ellipseWidth = 200;
+                ellipseHeight = 45;
+                orbitSpeed = 0.48;
+                particleSize = 4;
+                randomness = 0.22;
+            } else {
+                particleCount = 80;
+                targetFPS = 50;
+                ellipseWidth = 170;
+                ellipseHeight = 38;
+                orbitSpeed = 0.4;
+                particleSize = 3;
+                randomness = 0.2;
+            }
+        }
+
+        // Respect prefers-reduced-motion
+        if (deviceInfo.prefersReducedMotion) {
+            orbitSpeed *= 0.3;
+            particleCount = Math.floor(particleCount * 0.5);
+            randomness *= 0.5;
+        }
+
+        return {
+            particleCount,
+            targetFPS,
+            ellipseWidth,
+            ellipseHeight,
+            orbitSpeed,
+            particleSize,
+            randomness,
+            rotation1,
+            rotation2
+        };
+    }
+
+    function initFlyCrossing(elementId, options) {
+        const targetElement = document.getElementById(elementId);
+        if (!targetElement) return null;
+
+        const cfg = getFlyCrossingConfig();
+
+        // Merge options if provided
+        if (options && typeof options === "object") {
+            Object.assign(cfg, options);
+        }
+
+        // Create canvas overlay positioned over the element
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Style the canvas to overlay the element
+        canvas.style.position = "absolute";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.pointerEvents = "none";
+        canvas.style.zIndex = "1";
+
+        // Ensure target element has relative positioning
+        const computedStyle = window.getComputedStyle(targetElement);
+        if (computedStyle.position === "static") {
+            targetElement.style.position = "relative";
+        }
+        targetElement.appendChild(canvas);
+
+        let width, height, centerX, centerY;
+        let animationId;
+        let lastTime = 0;
+        const minFrameInterval = 1000 / cfg.targetFPS;
+
+        // Particle data - split between two ellipses
+        const particles = [];
+
+        function resize() {
+            const rect = targetElement.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            width = rect.width;
+            height = rect.height;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            ctx.scale(dpr, dpr);
+            centerX = width / 2;
+            centerY = height / 2;
+        }
+
+        function initParticles() {
+            particles.length = 0;
+            const halfCount = Math.floor(cfg.particleCount / 2);
+
+            // Ellipse 1 particles (rotated +45°)
+            for (let i = 0; i < halfCount; i++) {
+                particles.push({
+                    ellipse: 1,
+                    angle: (Math.PI * 2 * i) / halfCount + Math.random() * 0.3,
+                    speed: cfg.orbitSpeed * (0.8 + Math.random() * 0.4),
+                    size: cfg.particleSize * (0.7 + Math.random() * 0.6),
+                    color: "#1f5d2b",
+                    opacity: 0.4 + Math.random() * 0.4,
+                    wobble: Math.random() * Math.PI * 2,
+                    wobbleSpeed: 0.015 + Math.random() * 0.025
+                });
+            }
+
+            // Ellipse 2 particles (rotated -45°)
+            for (let i = 0; i < halfCount; i++) {
+                particles.push({
+                    ellipse: 2,
+                    angle: (Math.PI * 2 * i) / halfCount + Math.random() * 0.3,
+                    speed: cfg.orbitSpeed * (0.8 + Math.random() * 0.4),
+                    size: cfg.particleSize * (0.7 + Math.random() * 0.6),
+                    color: "#55A147",
+                    opacity: 0.4 + Math.random() * 0.4,
+                    wobble: Math.random() * Math.PI * 2,
+                    wobbleSpeed: 0.015 + Math.random() * 0.025
+                });
+            }
+        }
+
+        resize();
+        initParticles();
+        window.addEventListener("resize", () => { resize(); initParticles(); });
+
+        // Convert degrees to radians
+        const rad1 = (cfg.rotation1 * Math.PI) / 180;
+        const rad2 = (cfg.rotation2 * Math.PI) / 180;
+
+        // Color utilities
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        function drawParticle(x, y, radius, color, opacity) {
+            // Shadow
+            ctx.beginPath();
+            ctx.arc(x + 1, y + 1, radius, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(31, 93, 43, 0.08)";
+            ctx.fill();
+
+            // Main sphere with gradient
+            const gradient = ctx.createRadialGradient(
+                x - radius * 0.3, y - radius * 0.3, 0,
+                x, y, radius
+            );
+            gradient.addColorStop(0, lightenColor(color, 60));
+            gradient.addColorStop(0.5, color);
+            gradient.addColorStop(1, color);
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.globalAlpha = opacity;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Highlight
+            ctx.beginPath();
+            ctx.arc(x - radius * 0.25, y - radius * 0.25, radius * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+            ctx.fill();
+        }
+
+        function getEllipsePosition(angle, rotation, wobble) {
+            // Parametric ellipse equation
+            const x = Math.cos(angle) * cfg.ellipseWidth;
+            const y = Math.sin(angle) * cfg.ellipseHeight;
+
+            // Apply rotation
+            const cos = Math.cos(rotation);
+            const sin = Math.sin(rotation);
+
+            const rx = x * cos - y * sin;
+            const ry = x * sin + y * cos;
+
+            return {
+                x: rx + Math.sin(wobble) * cfg.randomness * 10,
+                y: ry + Math.cos(wobble) * cfg.randomness * 5
+            };
+        }
+
+        function animate(currentTime) {
+            animationId = requestAnimationFrame(animate);
+
+            const elapsed = currentTime - lastTime;
+            if (elapsed < minFrameInterval) return;
+            lastTime = currentTime - (elapsed % minFrameInterval);
+
+            ctx.clearRect(0, 0, width, height);
+
+            const time = currentTime / 1000;
+
+            // Calculate all particle positions
+            const particlePositions = particles.map((p) => {
+                const wobble = Math.sin(time * p.wobbleSpeed + p.wobble) * cfg.randomness;
+                const currentAngle = p.angle + time * p.speed + wobble;
+                const rotation = p.ellipse === 1 ? rad1 : rad2;
+
+                const pos = getEllipsePosition(currentAngle, rotation, wobble);
+
+                const x = centerX + pos.x;
+                const y = centerY + pos.y;
+
+                // Depth based on angle (front/back of ellipse)
+                const depth = (Math.sin(currentAngle) + 1) / 2;
+
+                return { x, y, depth, particle: p };
+            });
+
+            // Sort by depth (back to front)
+            particlePositions.sort((a, b) => a.depth - b.depth);
+
+            // Draw faint ellipse outlines (optional, very subtle)
+            ctx.globalAlpha = 0.03;
+            ctx.strokeStyle = "#1f5d2b";
+            ctx.lineWidth = 1;
+
+            // Ellipse 1 outline
+            ctx.beginPath();
+            for (let t = 0; t <= Math.PI * 2; t += 0.1) {
+                const pos = getEllipsePosition(t, rad1, 0);
+                if (t === 0) ctx.moveTo(centerX + pos.x, centerY + pos.y);
+                else ctx.lineTo(centerX + pos.x, centerY + pos.y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            // Ellipse 2 outline
+            ctx.beginPath();
+            for (let t = 0; t <= Math.PI * 2; t += 0.1) {
+                const pos = getEllipsePosition(t, rad2, 0);
+                if (t === 0) ctx.moveTo(centerX + pos.x, centerY + pos.y);
+                else ctx.lineTo(centerX + pos.x, centerY + pos.y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+
+            // Draw particles
+            particlePositions.forEach(({ x, y, depth, particle }) => {
+                const depthOpacity = 0.3 + depth * 0.7;
+                const finalOpacity = particle.opacity * depthOpacity;
+                const depthScale = 0.8 + depth * 0.2;
+                const finalSize = particle.size * depthScale;
+
+                drawParticle(x, y, finalSize, particle.color, finalOpacity);
+            });
+        }
+
+        animationId = requestAnimationFrame(animate);
+
+        return () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            window.removeEventListener("resize", resize);
+            if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+        };
+    }
+
     function getNetworkConfig() {
         let particleCount = 200;
         let speed = 1;
@@ -846,7 +1187,8 @@
         const initializers = {
             network: initNetwork,
             helix: initHelix,
-            flyAroundText: initFlyAroundText
+            flyAroundText: initFlyAroundText,
+            flyCrossing: initFlyCrossing
         };
 
         // Backward-compat IDs
@@ -858,6 +1200,9 @@
         }
         if (document.getElementById("particles-js-flyAroundText")) {
             initializers.flyAroundText("particles-js-flyAroundText");
+        }
+        if (document.getElementById("particles-js-flyCrossing")) {
+            initializers.flyCrossing("particles-js-flyCrossing");
         }
 
         // Data-attribute driven init: <div id="..." data-particles-type="network|helix"></div>

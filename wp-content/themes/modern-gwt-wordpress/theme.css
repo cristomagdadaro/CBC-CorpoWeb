@@ -78,9 +78,15 @@
   transition: opacity 0.5s ease, visibility 0.5s ease, background 0.5s ease;
 }
 
-#textlogo-wrapper > :not(#header-gradient-bg) {
-	position: relative;
-	z-index: 1;
+.site-header__chrome {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.site-header__bar-inner {
+  position: relative;
+  z-index: 1;
 }
 
 .large-12 .columns {
@@ -294,6 +300,9 @@ body.admin-bar .site-header {
 }
 
 .site-mobile-menu-panel {
+  position: relative;
+  z-index: 20;
+  background-color: #ffffff;
   pointer-events: none;
   transform: translateY(-0.85rem);
   visibility: hidden;

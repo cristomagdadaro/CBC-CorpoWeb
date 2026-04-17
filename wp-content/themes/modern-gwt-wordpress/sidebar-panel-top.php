@@ -46,7 +46,7 @@
                                 <span class="block md:hidden w-full md:w-5 h-0.5 bg-[#1A7A42]"></span>
                             </div>
 
-                            <h2 id="particles-js-flyAroundText" class="section-title text-center md:text-left">
+                            <h2 id="particles-js-flyAroundText" data-particles-type="flyAroundText" class="section-title text-center md:text-left">
                                 DA-Crop Biotechnology Center
                             </h2>
 

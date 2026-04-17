@@ -58,6 +58,12 @@ function initResponsiveSiteHeader() {
     return;
   }
 
+  if (header.dataset.mobileMenuInitialized === "true") {
+    return;
+  }
+
+  header.dataset.mobileMenuInitialized = "true";
+
   const desktopBreakpoint = 1024;
   const isOverlayHeader = header.classList.contains("site-header--overlay");
   let isTicking = false;
@@ -176,87 +182,109 @@ function initResponsiveSiteHeader() {
 }
 
 
+(function bootstrapResponsiveSiteHeader() {
+  const start = function () {
+    initResponsiveSiteHeader();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+    return;
+  }
+
+  start();
+})();
+
+
 (function (jQuery, Foundation) {
+  if (!jQuery) {
+    return;
+  }
+
   // Orbit Slider play/pause options
-  Foundation.Orbit.defaults.controls = true;
-  Foundation.Orbit.defaults.controlClass = "orbit-button-controls";
-  Foundation.Orbit.defaults.controlPauseText = "Pause";
-  Foundation.Orbit.defaults.controlPlayText = "Play";
+  if (Foundation && Foundation.Orbit && Foundation.Orbit.defaults) {
+    Foundation.Orbit.defaults.controls = true;
+    Foundation.Orbit.defaults.controlClass = "orbit-button-controls";
+    Foundation.Orbit.defaults.controlPauseText = "Pause";
+    Foundation.Orbit.defaults.controlPlayText = "Play";
+  }
 
-  Foundation.Orbit.prototype.initControls = function () {
-    var _this = this;
-    var statusElement = document.createElement("button");
-    var buttonControl = document.createElement("span");
-    if (this.options.accessible) {
-      var srText = document.createElement("span");
-      $(srText).addClass("show-for-sr").text(this.options.controlPauseText);
-      $(statusElement).append(srText);
-    }
-    $(buttonControl).addClass("orbit-button-text").html("&#10073;&#10073;");
-    $(statusElement)
-      .addClass(this.options.controlClass)
-      .append(buttonControl)
-      .attr("title", this.options.controlPlayText);
-    $(this.$element).prepend(statusElement);
-    if (this.options.autoPlay) {
-      this.controlPlay();
-    }
-
-    this.$button = this.$element.find("." + this.options.controlClass);
-
-    this.$button.on("click.zf.orbit", function () {
-      _this.options.pauseOnHover = false;
-      _this.$element.off("mouseenter.zf.orbit");
-      _this.$element.off("mouseleave.zf.orbit");
-      if (_this.options.autoPlay) {
-        _this.options.autoPlay = false;
-        _this.controlPause();
-      } else {
-        _this.options.autoPlay = true;
-        _this.controlPlay();
+  if (Foundation && Foundation.Orbit && Foundation.Orbit.prototype) {
+    Foundation.Orbit.prototype.initControls = function () {
+      var _this = this;
+      var statusElement = document.createElement("button");
+      var buttonControl = document.createElement("span");
+      if (this.options.accessible) {
+        var srText = document.createElement("span");
+        jQuery(srText).addClass("show-for-sr").text(this.options.controlPauseText);
+        jQuery(statusElement).append(srText);
       }
+      jQuery(buttonControl).addClass("orbit-button-text").html("&#10073;&#10073;");
+      jQuery(statusElement)
+        .addClass(this.options.controlClass)
+        .append(buttonControl)
+        .attr("title", this.options.controlPlayText);
+      jQuery(this.$element).prepend(statusElement);
+      if (this.options.autoPlay) {
+        this.controlPlay();
+      }
+
+      this.$button = this.$element.find("." + this.options.controlClass);
+
+      this.$button.on("click.zf.orbit", function () {
+        _this.options.pauseOnHover = false;
+        _this.$element.off("mouseenter.zf.orbit");
+        _this.$element.off("mouseleave.zf.orbit");
+        if (_this.options.autoPlay) {
+          _this.options.autoPlay = false;
+          _this.controlPause();
+        } else {
+          _this.options.autoPlay = true;
+          _this.controlPlay();
+        }
+      });
+    };
+
+    Foundation.Orbit.prototype.controlPause = function () {
+        if (!this.timer) return;
+      this.timer.restart();
+      this.timer.pause();
+      this.$wrapper = this.$element.find("." + this.options.controlClass);
+      this.$wrapper.attr("title", this.options.controlPlayText);
+      this.$buttonText = this.$element.find(
+        "." + this.options.controlClass + " .orbit-button-text"
+      );
+      this.$srText = this.$element.find(
+        "." + this.options.controlClass + " .show-for-sr"
+      );
+      if (this.options.accessible) {
+        jQuery(this.$srText).text(this.options.controlPlayText);
+      }
+      jQuery(this.$buttonText).html("<i class='fa fa-play' aria-hidden='true'></i>");
+    };
+
+    Foundation.Orbit.prototype.controlPlay = function () {
+        if (!this.timer) return;
+      this.timer.restart();
+      this.timer.start();
+      this.$wrapper = this.$element.find("." + this.options.controlClass);
+      this.$wrapper.attr("title", this.options.controlPauseText);
+      this.$buttonText = this.$element.find(
+        "." + this.options.controlClass + " .orbit-button-text"
+      );
+      this.$srText = this.$element.find(
+        "." + this.options.controlClass + " .show-for-sr"
+      );
+      if (this.options.accessible) {
+        jQuery(this.$srText).text(this.options.controlPauseText);
+      }
+      jQuery(this.$buttonText).html("<i class='fa fa-pause' aria-hidden='true'></i>");
+    };
+
+    jQuery("[data-orbit]").on("init.zf.orbit", function (e) {
+      jQuery(e.target).foundation("initControls");
     });
-  };
-
-  Foundation.Orbit.prototype.controlPause = function () {
-      if (!this.timer) return;
-    this.timer.restart();
-    this.timer.pause();
-    this.$wrapper = this.$element.find("." + this.options.controlClass);
-    this.$wrapper.attr("title", this.options.controlPlayText);
-    this.$buttonText = this.$element.find(
-      "." + this.options.controlClass + " .orbit-button-text"
-    );
-    this.$srText = this.$element.find(
-      "." + this.options.controlClass + " .show-for-sr"
-    );
-    if (this.options.accessible) {
-      $(this.$srText).text(this.options.controlPlayText);
-    }
-    $(this.$buttonText).html("<i class='fa fa-play' aria-hidden='true'></i>");
-  };
-
-  Foundation.Orbit.prototype.controlPlay = function () {
-      if (!this.timer) return;
-    this.timer.restart();
-    this.timer.start();
-    this.$wrapper = this.$element.find("." + this.options.controlClass);
-    this.$wrapper.attr("title", this.options.controlPauseText);
-    this.$buttonText = this.$element.find(
-      "." + this.options.controlClass + " .orbit-button-text"
-    );
-    this.$srText = this.$element.find(
-      "." + this.options.controlClass + " .show-for-sr"
-    );
-    if (this.options.accessible) {
-      $(this.$srText).text(this.options.controlPauseText);
-    }
-    $(this.$buttonText).html("<i class='fa fa-pause' aria-hidden='true'></i>");
-  };
-
-  $("[data-orbit]").on("init.zf.orbit", function (e) {
-    $(e.target).foundation("initControls");
-  });
+  }
 
   jQuery(document).ready(function ($) {
     // Transparency Seal
@@ -447,11 +475,14 @@ function initResponsiveSiteHeader() {
       });
     });
     // End for Adjust Text Sizing
-
-    initResponsiveSiteHeader();
-
-
     // End for Testing
   });
-})(jQuery, Foundation);
-$(document).foundation();
+})(window.jQuery, window.Foundation);
+
+if (
+  window.jQuery &&
+  window.jQuery.fn &&
+  typeof window.jQuery.fn.foundation === "function"
+) {
+  window.jQuery(document).foundation();
+}

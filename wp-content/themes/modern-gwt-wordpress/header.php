@@ -827,95 +827,115 @@ Press esc, or click the close the button to close this dialog box.
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <header id="site-header" class="<?php echo esc_attr( $site_header_classes ); ?>">
             <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
-                <div class="mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8 z-10">
-                    <div id="header-gradient-bg" class="absolute inset-0 z-10 bg-gradient-to-b from-green-700 to-transparent w-full"></div>
-                    <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
-                        <div class="min-w-0 flex-1">
-                            <div class="site-branding flex min-w-0 items-center">
-                                <?php if ( $has_custom_image_logo ) : ?>
-                                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                       class="inline-flex min-w-0 items-center"
-                                       draggable="false"
-                                       title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                       rel="home"
-                                       aria-label="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>">
+                <div class="site-header__chrome relative isolate overflow-hidden">
+                    <div id="header-gradient-bg" class="absolute inset-0 z-0 bg-gradient-to-b from-green-700 to-transparent w-full"></div>
+                    <div class="site-header__bar-inner relative z-10 mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8">
+                        <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
+                            <div class="min-w-0 flex-1">
+                                <div class="site-branding flex min-w-0 items-center">
+                                    <?php if ( $has_custom_image_logo ) : ?>
+                                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                           class="inline-flex min-w-0 items-center"
+                                           draggable="false"
+                                           title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
+                                           rel="home"
+                                           aria-label="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>">
+                                            <?php govph_displayoptions( 'govph_logo' ); ?>
+                                        </a>
+                                    <?php else : ?>
                                         <?php govph_displayoptions( 'govph_logo' ); ?>
-                                    </a>
-                                <?php else : ?>
-                                    <?php govph_displayoptions( 'govph_logo' ); ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4 xl:gap-6">
-                            <?php if ( is_active_sidebar( 'ear-content-1' ) ) : ?>
-                                <div class="site-header__meta-panel max-w-[16rem] xl:max-w-[18rem]">
-					                <?php do_action( 'before_sidebar' ); ?>
-					                <?php dynamic_sidebar( 'ear-content-1' ); ?>
+                                    <?php endif; ?>
                                 </div>
-                            <?php endif; ?>
+                            </div>
 
-                            <div class="site-header__meta-stack flex flex-col items-end gap-2 text-right">
-                                <?php if ( is_active_sidebar( 'ear-content-2' ) ) : ?>
+                            <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4 xl:gap-6">
+                                <?php if ( is_active_sidebar( 'ear-content-1' ) ) : ?>
                                     <div class="site-header__meta-panel max-w-[16rem] xl:max-w-[18rem]">
-					                    <?php do_action( 'before_sidebar' ); ?>
-					                    <?php dynamic_sidebar( 'ear-content-2' ); ?>
+			                    <?php do_action( 'before_sidebar' ); ?>
+			                    <?php dynamic_sidebar( 'ear-content-1' ); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <div id="pst-container" class="site-header__time text-xs font-medium tracking-[0.2em] uppercase" style="display: none; color: white !important; font-size: 0.7rem !important;">
-                                    <div>Philippine Standard Time</div>
-                                    <div id="pst-time" class="whitespace-nowrap tracking-normal"></div>
-                                </div>
+                                <div class="site-header__meta-stack flex flex-col items-end gap-2 text-right">
+                                    <?php if ( is_active_sidebar( 'ear-content-2' ) ) : ?>
+                                        <div class="site-header__meta-panel max-w-[16rem] xl:max-w-[18rem]">
+			                        <?php do_action( 'before_sidebar' ); ?>
+			                        <?php dynamic_sidebar( 'ear-content-2' ); ?>
+                                        </div>
+                                    <?php endif; ?>
 
-                                <?php if ( $has_header_search ) : ?>
-                                    <div class="site-header__search w-full max-w-xs xl:max-w-sm">
-                                        <?php get_search_form(); ?>
+                                    <div id="pst-container" class="site-header__time text-xs font-medium tracking-[0.2em] uppercase" style="display: none; color: white !important; font-size: 0.7rem !important;">
+                                        <div>Philippine Standard Time</div>
+                                        <div id="pst-time" class="whitespace-nowrap tracking-normal"></div>
                                     </div>
+
+                                    <?php if ( $has_header_search ) : ?>
+                                        <div class="site-header__search w-full max-w-xs xl:max-w-sm">
+                                            <?php get_search_form(); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <button id="site-mobile-menu-button"
+                                    class="site-mobile-menu-button inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 p-3 text-white transition-all duration-500 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-transparent lg:hidden"
+                                    type="button"
+                                    aria-expanded="false"
+                                    aria-controls="site-mobile-menu-panel"
+                                    aria-label="Toggle navigation menu">
+                                <span class="sr-only">Toggle navigation menu</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 transition-all duration-500 lg:flex z-10">
+                            <div class="flex min-w-0 flex-1 items-center gap-4 xl:gap-6">
+                                <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
+                                    <nav class="gwt-desktop-nav gwt-desktop-nav--primary min-w-0 flex-1" aria-label="Primary navigation">
+                                        <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
+                                            <?php
+                                            wp_nav_menu(
+                                                array(
+                                                    'theme_location' => 'topbar_left',
+                                                    'items_wrap'     => '%3$s',
+                                                    'container'      => false,
+                                                    'fallback_cb'    => false,
+                                                    'walker'         => new GWT_Walker_Nav_Menu()
+                                                )
+                                            );
+                                            ?>
+                                        </ul>
+                                    </nav>
+                                <?php endif; ?>
+
+                                <?php if ( has_nav_menu( 'aux_nav' ) ) : ?>
+                                    <nav class="gwt-desktop-nav gwt-desktop-nav--aux min-w-0" aria-label="Auxiliary navigation">
+                                        <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
+                                            <?php
+                                            wp_nav_menu(
+                                                array(
+                                                    'theme_location' => 'aux_nav',
+                                                    'items_wrap'     => '%3$s',
+                                                    'container'      => false,
+                                                    'fallback_cb'    => false,
+                                                    'walker'         => new GWT_Walker_Nav_Menu()
+                                                )
+                                            );
+                                            ?>
+                                        </ul>
+                                    </nav>
                                 <?php endif; ?>
                             </div>
-                        </div>
 
-                        <button id="site-mobile-menu-button"
-                                class="site-mobile-menu-button inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 p-3 text-white transition-all duration-500 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-transparent lg:hidden"
-                                type="button"
-                                aria-expanded="false"
-                                aria-controls="site-mobile-menu-panel"
-                                aria-label="Toggle navigation menu">
-                            <span class="sr-only">Toggle navigation menu</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 transition-all duration-500 lg:flex z-10">
-                        <div class="flex min-w-0 flex-1 items-center gap-4 xl:gap-6">
-                            <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
-                                <nav class="gwt-desktop-nav gwt-desktop-nav--primary min-w-0 flex-1" aria-label="Primary navigation">
-                                    <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
+                            <?php if ( has_nav_menu( 'topbar_right' ) ) : ?>
+                                <nav class="gwt-desktop-nav gwt-desktop-nav--utility shrink-0" aria-label="Contact navigation">
+                                    <ul class="dropdown menu flex flex-wrap items-center justify-end gap-1 !my-0" data-dropdown-menu>
                                         <?php
                                         wp_nav_menu(
                                             array(
-                                                'theme_location' => 'topbar_left',
-                                                'items_wrap'     => '%3$s',
-                                                'container'      => false,
-                                                'fallback_cb'    => false,
-                                                'walker'         => new GWT_Walker_Nav_Menu()
-                                            )
-                                        );
-                                        ?>
-                                    </ul>
-                                </nav>
-                            <?php endif; ?>
-
-                            <?php if ( has_nav_menu( 'aux_nav' ) ) : ?>
-                                <nav class="gwt-desktop-nav gwt-desktop-nav--aux min-w-0" aria-label="Auxiliary navigation">
-                                    <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
-                                        <?php
-                                        wp_nav_menu(
-                                            array(
-                                                'theme_location' => 'aux_nav',
+                                                'theme_location' => 'topbar_right',
                                                 'items_wrap'     => '%3$s',
                                                 'container'      => false,
                                                 'fallback_cb'    => false,
@@ -927,24 +947,6 @@ Press esc, or click the close the button to close this dialog box.
                                 </nav>
                             <?php endif; ?>
                         </div>
-
-                        <?php if ( has_nav_menu( 'topbar_right' ) ) : ?>
-                            <nav class="gwt-desktop-nav gwt-desktop-nav--utility shrink-0" aria-label="Contact navigation">
-                                <ul class="dropdown menu flex flex-wrap items-center justify-end gap-1 !my-0" data-dropdown-menu>
-                                    <?php
-                                    wp_nav_menu(
-                                        array(
-                                            'theme_location' => 'topbar_right',
-                                            'items_wrap'     => '%3$s',
-                                            'container'      => false,
-                                            'fallback_cb'    => false,
-                                            'walker'         => new GWT_Walker_Nav_Menu()
-                                        )
-                                    );
-                                    ?>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
