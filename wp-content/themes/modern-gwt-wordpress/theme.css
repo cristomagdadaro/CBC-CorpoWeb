@@ -65,6 +65,20 @@ Custom Header Styles
     gap: 1rem;
     align-items: center;
     width: fit-content;
+    position: relative;
+    isolation: isolate;
+}
+
+#header-gradient-bg {
+	pointer-events: none;
+	z-index: 0 !important;
+	opacity: 1;
+	transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#textlogo-wrapper > :not(#header-gradient-bg) {
+	position: relative;
+	z-index: 1;
 }
 
 .large-12 .columns {
@@ -194,6 +208,11 @@ body.admin-bar .site-header {
 
 .site-header.scrolled #agency-name {
   color: #1f5d2b;
+}
+
+.site-header.scrolled #header-gradient-bg {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .site-header.scrolled #da-logo,

@@ -80,12 +80,8 @@
                             <h4 class="font-semibold">Services</h4>
                             <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
                                 <li><a href="https://onecbc.philrice.gov.ph/forms/event">Events</a></li>
-                                <li><a href="https://onecbc.philrice.gov.ph/forms/request-to-use">FES Request Form</a></li>
-                                <li><a href="https://onecbc.philrice.gov.ph/laboratory/equipments">Laboratory Logger</a></li>
-                                <li><a href="https://onecbc.philrice.gov.ph/inventory/outgoing">Supplies Checkout</a></li>
                                 <li><a href="https://onecbc.philrice.gov.ph/rental/vehicle">Vehicle Rental</a></li>
                                 <li><a href="https://onecbc.philrice.gov.ph/rental/venue">Event Hall Booking</a></li>
-                                <li><a href="/golink/">GoLink Generator</a></li>
                             </ul>
                         </div>
                         <div>
@@ -161,13 +157,13 @@
             e.preventDefault();
             var textToCopy = this.getAttribute('data-copy');
             var btn = this;
-            
+
             navigator.clipboard.writeText(textToCopy).then(function() {
                 // Show success feedback
                 var originalSvg = btn.innerHTML;
                 btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ffffff" class="bi bi-check" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/></svg>';
                 btn.style.opacity = '1';
-                
+
                 // Restore original icon after 2 seconds
                 setTimeout(function() {
                     btn.innerHTML = originalSvg;
@@ -460,7 +456,7 @@ $cbc_skip_remote_govph = in_array( $cbc_footer_host, array( 'localhost', '127.0.
         /* Ensure the container is visible and doesn't block the toggle */
         #floating-sidebar-container {
             display: block !important;
-            position: fixed !important; 
+            position: fixed !important;
             right: 0 !important;
             bottom: 0 !important;
             left: auto !important;

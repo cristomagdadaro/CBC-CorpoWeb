@@ -281,6 +281,7 @@ Press esc, or click the close the button to close this dialog box.
         <header id="site-header" class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-500">
             <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
                 <div class="mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8">
+                    <div id="header-gradient-bg" class="absolute inset-0 z-10 bg-gradient-to-b from-green-700/80 to-transparent z-0 w-full"></div>
                     <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
                         <div class="min-w-0 flex-1">
                             <div class="site-branding flex min-w-0 items-center">
