@@ -45,7 +45,7 @@
             <?php endif; ?>
 
             <div class="bg-[#006837] w-full sm:py-0 py-2">
-                <div class="row lg:p-4 p-1">
+                <div class="row lg:p-4 py-2 px-4">
                     <div class="flex flex-col gap-1 sm:my-5 my-2">
                         <a href="https://bpo.da.gov.ph/" target="_blank" class="lg:text-2xl md:text-xl text-lg text-[#006837] w-full border !font-spartan uppercase font-extrabold border-white bg-white sm:p-3 p-1 rounded text-center">Centers under DA-Biotechnology Program Office</a>
                         <div class="flex flex-row gap-1 items-center justify-center my-5">
@@ -63,7 +63,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="grid md:grid-cols-5 grid-cols-2 grid-rows-3 md:grid-rows-1 !text-white text-sm [&>div>ul>li]:text-[11.2px] gap-5">
+                    <div class="grid md:grid-cols-5 grid-cols-2 gap-5 !text-white text-sm [&>div>ul>li]:text-[11.2px]">
                         <div>
                             <h4 class="font-semibold">Quick Links</h4>
                             <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917]">
@@ -105,7 +105,7 @@
                                 <li><a href="/games/crop-memory-game/">Crop Biotech Memory</a></li>
                             </ul>
                         </div>
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="col-span-2 md:col-span-1 border-t border-white/10 pt-4 md:border-none md:pt-0">
                             <h4 class="font-semibold">Contact Us</h4>
                             <ul class="list-none m-0 grid grid-cols-1 [&>li>a]:!text-white [&>li>a:hover]:!text-[#a2b917] [&>li>span]:mr-1">
                                 <li class="flex items-center gap-2 justify-between group">
