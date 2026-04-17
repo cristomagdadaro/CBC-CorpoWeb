@@ -98,7 +98,7 @@ function gwt_wp_setup() {
 	{
 		function start_lvl( &$output, $depth = 0, $args = array() ) {
 			$indent = str_repeat("\t", $depth);
-			$output .= "\n\t\t\t\t\t". $indent . "<ul class=\"vertical menu\">\n";
+			$output .= "\n\t\t\t\t\t" . $indent . "<ul class=\"gwt-mobile-submenu mt-1 space-y-1 border-l border-slate-200/70 pl-4\">\n";
 		}
 
 		function end_lvl( &$output, $depth = 0, $args = array() ) {
@@ -111,7 +111,7 @@ function gwt_wp_setup() {
 			$class_names = $value = '';
 			$classes = empty( $item->classes ) ? array() : (array) $item->classes;
 
-			$classes[] = 'menu-item-' . $item->ID;
+			$classes[] = 'gwt-mobile-menu-item menu-item-' . $item->ID;
 			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
 			$class_names = $class_names ? ' class="' . esc_attr( $class_names ) . '"' : '';
 
@@ -124,10 +124,13 @@ function gwt_wp_setup() {
 			$attributes .= ! empty( $item->target )     ? ' target="' . esc_attr( $item->target     ) .'"' : '';
 			$attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
 			$attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
+			$link_classes = $depth === 0
+				? 'gwt-mobile-menu-link block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-800 transition-colors duration-200 hover:bg-[#1f5d2b]/10 hover:text-[#1f5d2b] focus:outline-none focus:ring-2 focus:ring-[#1f5d2b]/25'
+				: 'gwt-mobile-menu-link block rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-100 hover:text-[#1f5d2b] focus:outline-none focus:ring-2 focus:ring-[#1f5d2b]/20';
 
 			// Check if $args is an array or an object
 			$item_output = is_array($args) ? $args['before'] : $args->before;
-			$item_output .= '<a style="color: white;"'. $attributes .'>';
+			$item_output .= '<a class="' . esc_attr( $link_classes ) . '"'. $attributes .'>';
 			$item_output .= (is_array($args) ? $args['link_before'] : $args->link_before) . apply_filters( 'the_title', $item->title, $item->ID ) . (is_array($args) ? $args['link_after'] : $args->link_after);
 			$item_output .= '</a>';
 			$item_output .= is_array($args) ? $args['after'] : $args->after;

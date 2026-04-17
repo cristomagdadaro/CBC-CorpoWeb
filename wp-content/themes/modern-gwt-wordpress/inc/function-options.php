@@ -1355,9 +1355,9 @@ if ( ! function_exists( 'govph_displayoptions' ) ) {
                             </div>
                         
                             <div id="textlogo-inner-wrapper" class="flex flex-col min-w-0 justify-center sm:mt-2 mt-0 text-white">
-                                <p id="agency-heading" class="sm:text-[0.7rem] text-[0.5rem] m-0 !font-lato leading-none whitespace-nowrap">Department of Agriculture</p>
-                                <p id="agency-name" class="uppercase sm:text-[1.7rem] text-[0.8rem] !font-lato font-bold m-0 leading-none whitespace-nowrap">' . esc_html( $option['govph_agency_name'] ) . '</p>
-                                <p id="agency-tagline" class="sm:text-sm text-[0.5rem] m-0 leading-none !font-lato whitespace-nowrap">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
+                                <p id="agency-heading" class="text-xs font-medium transition-colors uppercase font-display text-white/80">Department of Agriculture</p>
+                                <p id="agency-name" class="text-lg font-bold font-display transition-colors text-white m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
+                                <p id="agency-tagline" class="text-xs font-medium transition-colors uppercase font-display text-white/80">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
                             </div>
                         </a>';
                 echo $addLogo;

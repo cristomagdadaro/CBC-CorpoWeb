@@ -273,191 +273,210 @@ Press esc, or click the close the button to close this dialog box.
 </div>
 
 <?php
-	    $name_slogan_class   = 'large-12 ';
-	    $ear_content_class   = '';
-	    $ear_content_2_class = '';
-	    if ( is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class   = 'large-6 ';
-		    $ear_content_class   = 'large-3 ';
-		    $ear_content_2_class = 'large-3 ';
-	    } elseif ( is_active_sidebar( 'ear-content-1' ) && ! is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class = 'large-9 ';
-		    $ear_content_class = 'large-3 ';
-	    } elseif ( ! is_active_sidebar( 'ear-content-1' ) && is_active_sidebar( 'ear-content-2' ) ) {
-		    $name_slogan_class   = 'large-9 ';
-		    $ear_content_2_class = 'large-3 ';
-	    }
-	    ?>
-
+  $has_custom_image_logo = govph_displayoptions( 'govph_logo_enable' );
+  $has_header_search     = govph_displayoptions( 'govph_disable_search' );
+?>
 <div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
-        <!-- off-canvas right menu -->
-        <nav id="mySidenav" class="sidenav hide-for-large fixed top-0 left-0 z-[99] bg-[#006837]" style="z-index: 1001;">
-            <div class="flex flex-row justify-between items-center px-1 w-full absolute top-0">
-                <a href="javascript:void(0)" class="closebtn mt-2 !text-white" id="closeNav">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                    </svg>
-                </a>
-            </div>
-            <div style="padding:10px;" class="list-item"><?php get_search_form(); ?></div>
-            <ul class="!whitespace-nowrap overflow-hidden overflow-ellipsis" style="list-style: none; padding:10px;">
-				<?php wp_nav_menu( array(
-					'theme_location' => 'topbar_left',
-					'items_wrap'     => '%3$s',
-					'container'      => false,
-					'walker'         => new Off_Canvass_Menu()
-				) ); ?>
-				<?php if(has_nav_menu('aux_nav')): ?>
-                <li id="aux-offmenu" class="list-item">AUXILIARY MENU</li>
-				<?php wp_nav_menu( array(
-					'theme_location' => 'aux_nav',
-					'items_wrap'     => '%3$s',
-					'container'      => false,
-					'fallback_cb'    => false,
-					'walker'         => new Off_Canvass_Menu()
-				) ); ?>
-				<?php endif; ?>
-            </ul>
-            <ul class="flex items-center justify-evenly border-t p-2">
-                <li class="opacity-75 font-semibold text-gray-300">Contact Us</li>
-	            <?php wp_nav_menu( array(
-		            'theme_location' => 'topbar_right',
-		            'items_wrap'     => '%3$s',
-		            'container'      => false,
-		            'fallback_cb'    => false,
-		            'walker'         => new Off_Canvass_Menu()
-	            ) ); ?>
-            </ul>
-        </nav>
-
-        <div class="min-w-full min-h-screen fixed top-0 left-0 hidden backdrop-blur-sm z-10" id="closeBtnOverlay" style="z-index: 1000;"></div>
-
-
-        <!-- off-canvas title bar for 'small' screen -->
-        <div class="py-5 md:hidden lg:hidden"></div>
-        <div id="off-canvas-container" class="title-bar fixed top-0 columns md:hidden block py-1 bg-gradient-to-r from-[#1f5d2b] to-[#a2b917]">
-            <div class="flex justify-between w-full drop-shadow">
-                <div class="title-bar-left flex flex-row items-center w-full">
-                    <!-- masthead -->
-                    <header class="container-masthead border-none text-black w-full">
-                        <div class="row p-0 mx-auto border-none w-full">
-                            <h1 class="<?php echo esc_attr( $name_slogan_class ); ?> select-none w-full" draggable="false">
-                                <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
-                                   draggable="false"
-                                   title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                   rel="home" class="w-full flex"></a>
-                                <?php govph_displayoptions( 'govph_logo' ); ?>
-                            </h1>
-                        </div>
-                    </header>
-                    <!-- masthead -->
-                </div>
-                <div class="title-bar-right flex items-center justify-end h-full my-auto">
-                    <span class="sr-only hidden">Menu</span>
-                    <button style="cursor:pointer;" id="openNav" class="menu-icon text-white" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- "main-nav" top-bar menu for 'medium' and up -->
-        <div id="main-nav" class="shadow-lg">
-            <div class="bg-gradient-to-r from-[#1f5d2b] to-[#a2b917] drop-shadow lg:flex md:flex hidden px-2 md:px-0">
-                <div class="row flex items-center md:p-3 py-0 w-full">
-                    <nav class="top-bar-left sm:block hidden w-full">
-                        <!-- masthead -->
-                        <header class="container-masthead">
-                            <div class="row sm:py-0 py-2 mx-auto">
-                                <h1 class="<?php echo esc_attr( $name_slogan_class ); ?> columns select-none w-full" draggable="false">
+        <header id="site-header" class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+            <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
+                <div class="mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8">
+                    <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
+                        <div class="min-w-0 flex-1">
+                            <div class="site-branding flex min-w-0 items-center">
+                                <?php if ( $has_custom_image_logo ) : ?>
                                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                                       class="inline-flex min-w-0 items-center"
+                                       draggable="false"
                                        title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"
-                                       rel="home"><?php govph_displayoptions( 'govph_logo' ); ?></a>
-                                </h1>
+                                       rel="home"
+                                       aria-label="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>">
+                                        <?php govph_displayoptions( 'govph_logo' ); ?>
+                                    </a>
+                                <?php else : ?>
+                                    <?php govph_displayoptions( 'govph_logo' ); ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
 
-				                <?php if ( is_active_sidebar( 'ear-content-1' ) ): ?>
-                                    <div class="<?php echo esc_attr( $ear_content_class ); ?> columns">
-						                <?php do_action( 'before_sidebar' ); ?>
-						                <?php dynamic_sidebar( 'ear-content-1' ) ?>
+                        <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4 xl:gap-6">
+                            <?php if ( is_active_sidebar( 'ear-content-1' ) ) : ?>
+                                <div class="site-header__meta-panel max-w-[16rem] xl:max-w-[18rem]">
+					                <?php do_action( 'before_sidebar' ); ?>
+					                <?php dynamic_sidebar( 'ear-content-1' ); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="site-header__meta-stack flex flex-col items-end gap-2 text-right">
+                                <?php if ( is_active_sidebar( 'ear-content-2' ) ) : ?>
+                                    <div class="site-header__meta-panel max-w-[16rem] xl:max-w-[18rem]">
+					                    <?php do_action( 'before_sidebar' ); ?>
+					                    <?php dynamic_sidebar( 'ear-content-2' ); ?>
                                     </div>
-				                <?php endif; ?>
-                            </div>
-                        </header>
-                        <!-- masthead -->
-                    </nav>
-                    <nav class="top-bar-right sm:block hidden sm:flex sm:flex-col sm:gap-1 my-auto">
-                        <!-- Philippine Standard Timeewe -->
-		                <?php if ( is_active_sidebar( 'ear-content-2' ) ): ?>
-                            <div class="<?php echo esc_attr( $ear_content_2_class ); ?> m-0">
-				                <?php do_action( 'before_sidebar' ); ?>
-				                <?php dynamic_sidebar( 'ear-content-2' ) ?>
-                            </div>
-			                <?php endif; ?>
-                      <div id="pst-container" style="display: none; color: white !important; font-size: 0.7rem !important;">
-                            <div>Philippine Standard Time</div>
-                            <div id="pst-time" class="whitespace-nowrap"></div>
-                        </div>
-                        <div class="border-none">
-                            <?php if ( govph_displayoptions( 'govph_disable_search' ) ): ?>
-                                <div><?php get_search_form(); ?></div>
-                            <?php endif ?>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-            <div class="row hidden lg:block md:block">
-                <div class="flex flex-row justify-between">
-                    <ul class="dropdown menu flex w-full flex-row justify-between !my-1" data-dropdown-menu>
-                       <!-- <li class=" nav-item">
-                            <a href="https://www.gov.ph">GOVPH</a>
-                        </li>-->
+                                <?php endif; ?>
 
-                        <?php
-                        wp_nav_menu(
-                            array(
-                                'theme_location' => 'topbar_left',
-                                'items_wrap'     => '%3$s',
-                                'container'      => false,
-                                'fallback_cb'    => false,
-                                'walker'         => new GWT_Walker_Nav_Menu()
-                            )
-                        );
-                        ?>
-                    </ul>
-                    <ul class="dropdown menu flex flex-row justify-between" data-dropdown-menu>
-                        <?php wp_nav_menu( array(
-                            'theme_location' => 'topbar_right',
-                            'items_wrap'     => '%3$s',
-                            'container'      => false,
-                            'fallback_cb'    => false,
-                            'walker'         => new GWT_Walker_Nav_Menu()
-                        ) ); ?>
-                    </ul>
+                                <div id="pst-container" class="site-header__time text-xs font-medium tracking-[0.2em] uppercase" style="display: none; color: white !important; font-size: 0.7rem !important;">
+                                    <div>Philippine Standard Time</div>
+                                    <div id="pst-time" class="whitespace-nowrap tracking-normal"></div>
+                                </div>
+
+                                <?php if ( $has_header_search ) : ?>
+                                    <div class="site-header__search w-full max-w-xs xl:max-w-sm">
+                                        <?php get_search_form(); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <button id="site-mobile-menu-button"
+                                class="site-mobile-menu-button inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 p-3 text-white transition-all duration-500 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-transparent lg:hidden"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="site-mobile-menu-panel"
+                                aria-label="Toggle navigation menu">
+                            <span class="sr-only">Toggle navigation menu</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 pb-4 pt-3 transition-all duration-500 lg:flex">
+                        <div class="flex min-w-0 flex-1 items-center gap-4 xl:gap-6">
+                            <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
+                                <nav class="gwt-desktop-nav gwt-desktop-nav--primary min-w-0 flex-1" aria-label="Primary navigation">
+                                    <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
+                                        <?php
+                                        wp_nav_menu(
+                                            array(
+                                                'theme_location' => 'topbar_left',
+                                                'items_wrap'     => '%3$s',
+                                                'container'      => false,
+                                                'fallback_cb'    => false,
+                                                'walker'         => new GWT_Walker_Nav_Menu()
+                                            )
+                                        );
+                                        ?>
+                                    </ul>
+                                </nav>
+                            <?php endif; ?>
+
+                            <?php if ( has_nav_menu( 'aux_nav' ) ) : ?>
+                                <nav class="gwt-desktop-nav gwt-desktop-nav--aux min-w-0" aria-label="Auxiliary navigation">
+                                    <ul class="dropdown menu flex flex-wrap items-center gap-1 !my-0" data-dropdown-menu>
+                                        <?php
+                                        wp_nav_menu(
+                                            array(
+                                                'theme_location' => 'aux_nav',
+                                                'items_wrap'     => '%3$s',
+                                                'container'      => false,
+                                                'fallback_cb'    => false,
+                                                'walker'         => new GWT_Walker_Nav_Menu()
+                                            )
+                                        );
+                                        ?>
+                                    </ul>
+                                </nav>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if ( has_nav_menu( 'topbar_right' ) ) : ?>
+                            <nav class="gwt-desktop-nav gwt-desktop-nav--utility shrink-0" aria-label="Contact navigation">
+                                <ul class="dropdown menu flex flex-wrap items-center justify-end gap-1 !my-0" data-dropdown-menu>
+                                    <?php
+                                    wp_nav_menu(
+                                        array(
+                                            'theme_location' => 'topbar_right',
+                                            'items_wrap'     => '%3$s',
+                                            'container'      => false,
+                                            'fallback_cb'    => false,
+                                            'walker'         => new GWT_Walker_Nav_Menu()
+                                        )
+                                    );
+                                    ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="auxiliary" class="show-for-large">
-            <div class="row">
-                <div class="small-12 large-12 columns toplayer">
-                    <nav id="aux-main" class="nomargin show-for-medium-up" data-dropdown-content>
-                        <ul class="dropdown menu" data-dropdown-menu>
-						    <?php
-						    wp_nav_menu(
-							    array(
-						    	'theme_location'  => 'aux_nav',
-						    	'items_wrap' => '%3$s',
-						    	'container' => false,
-						    	'fallback_cb' => false,
-						    	'walker' => new GWT_Walker_Nav_Menu()
-						    )
-						    );
-						    ?>
-                        </ul>
-                    </nav>
+
+            <div id="site-mobile-menu-panel"
+                 class="site-mobile-menu-panel border-t border-slate-200/70 bg-white/95 opacity-0 shadow-lg backdrop-blur-xl transition-all duration-300 lg:hidden"
+                 aria-hidden="true">
+                <div class="mx-auto max-h-[calc(100vh-5rem)] w-full max-w-[1280px] overflow-y-auto px-4 pb-6 pt-4 sm:px-6">
+                    <?php if ( $has_header_search ) : ?>
+                        <div class="mb-4 rounded-[1.5rem] bg-slate-100/80 p-3">
+                            <?php get_search_form(); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="space-y-4">
+                        <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
+                            <nav aria-label="Mobile primary navigation" class="rounded-[1.75rem] border border-slate-200/70 bg-white px-2 py-2 shadow-sm">
+                                <p class="px-4 pb-2 pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Navigation</p>
+                                <ul class="site-mobile-menu-list space-y-1">
+                                    <?php wp_nav_menu( array(
+                                        'theme_location' => 'topbar_left',
+                                        'items_wrap'     => '%3$s',
+                                        'container'      => false,
+                                        'fallback_cb'    => false,
+                                        'walker'         => new Off_Canvass_Menu()
+                                    ) ); ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+
+                        <?php if ( has_nav_menu( 'aux_nav' ) ) : ?>
+                            <nav aria-label="Mobile auxiliary navigation" class="rounded-[1.75rem] border border-slate-200/70 bg-white px-2 py-2 shadow-sm">
+                                <p class="px-4 pb-2 pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Auxiliary</p>
+                                <ul class="site-mobile-menu-list space-y-1">
+                                    <?php wp_nav_menu( array(
+                                        'theme_location' => 'aux_nav',
+                                        'items_wrap'     => '%3$s',
+                                        'container'      => false,
+                                        'fallback_cb'    => false,
+                                        'walker'         => new Off_Canvass_Menu()
+                                    ) ); ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+
+                        <?php if ( has_nav_menu( 'topbar_right' ) ) : ?>
+                            <nav aria-label="Mobile contact navigation" class="rounded-[1.75rem] border border-slate-200/70 bg-white px-2 py-2 shadow-sm">
+                                <p class="px-4 pb-2 pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Contact</p>
+                                <ul class="site-mobile-menu-list space-y-1">
+                                    <?php wp_nav_menu( array(
+                                        'theme_location' => 'topbar_right',
+                                        'items_wrap'     => '%3$s',
+                                        'container'      => false,
+                                        'fallback_cb'    => false,
+                                        'walker'         => new Off_Canvass_Menu()
+                                    ) ); ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+
+                        <?php if ( is_active_sidebar( 'ear-content-1' ) || is_active_sidebar( 'ear-content-2' ) ) : ?>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <?php if ( is_active_sidebar( 'ear-content-1' ) ) : ?>
+                                    <div class="rounded-[1.75rem] border border-slate-200/70 bg-white p-4 shadow-sm">
+					                    <?php do_action( 'before_sidebar' ); ?>
+					                    <?php dynamic_sidebar( 'ear-content-1' ); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( is_active_sidebar( 'ear-content-2' ) ) : ?>
+                                    <div class="rounded-[1.75rem] border border-slate-200/70 bg-white p-4 shadow-sm">
+					                    <?php do_action( 'before_sidebar' ); ?>
+					                    <?php dynamic_sidebar( 'ear-content-2' ); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
-        </div>
+        </header>
         <!-- original content goes in this container -->
         <div class="off-canvas-content min-w-full" data-off-canvas-content>

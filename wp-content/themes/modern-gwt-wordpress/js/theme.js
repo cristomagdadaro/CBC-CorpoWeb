@@ -38,14 +38,121 @@ function readCookie(name) {
   var ca = document.cookie.split(";");
   for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
-    while (c.charAt(0) == " ") c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    while (c.charAt(0) === " ") c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
   }
   return null;
 }
 
 function eraseCookie(name) {
   createCookie(name, "");
+}
+
+function initResponsiveSiteHeader() {
+  const header = document.getElementById("site-header");
+  const headerBar = document.getElementById("site-header-bar");
+  const mobileMenuButton = document.getElementById("site-mobile-menu-button");
+  const mobileMenuPanel = document.getElementById("site-mobile-menu-panel");
+
+  if (!header || !headerBar || !mobileMenuButton || !mobileMenuPanel) {
+    return;
+  }
+
+  const desktopBreakpoint = 1024;
+  let isTicking = false;
+
+  const syncHeaderHeight = () => {
+    document.documentElement.style.setProperty(
+      "--gwt-site-header-height",
+      `${headerBar.offsetHeight}px`
+    );
+  };
+
+  const syncScrollState = () => {
+    header.classList.toggle("scrolled", window.scrollY > 50);
+    syncHeaderHeight();
+  };
+
+  const closeMobileMenu = (returnFocus = false) => {
+    header.classList.remove("mobile-menu-open");
+    mobileMenuButton.setAttribute("aria-expanded", "false");
+    mobileMenuPanel.setAttribute("aria-hidden", "true");
+
+    if (returnFocus) {
+      mobileMenuButton.focus();
+    }
+  };
+
+  const openMobileMenu = () => {
+    header.classList.add("mobile-menu-open");
+    mobileMenuButton.setAttribute("aria-expanded", "true");
+    mobileMenuPanel.setAttribute("aria-hidden", "false");
+  };
+
+  const toggleMobileMenu = () => {
+    if (header.classList.contains("mobile-menu-open")) {
+      closeMobileMenu();
+      return;
+    }
+
+    openMobileMenu();
+  };
+
+  syncScrollState();
+
+  mobileMenuButton.addEventListener("click", toggleMobileMenu);
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (isTicking) {
+        return;
+      }
+
+      isTicking = true;
+
+      window.requestAnimationFrame(() => {
+        syncScrollState();
+        isTicking = false;
+      });
+    },
+    { passive: true }
+  );
+
+  window.addEventListener("resize", () => {
+    syncHeaderHeight();
+
+    if (window.innerWidth >= desktopBreakpoint) {
+      closeMobileMenu();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      window.innerWidth >= desktopBreakpoint ||
+      !header.classList.contains("mobile-menu-open")
+    ) {
+      return;
+    }
+
+    if (!header.contains(event.target)) {
+      closeMobileMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && header.classList.contains("mobile-menu-open")) {
+      closeMobileMenu(true);
+    }
+  });
+
+  mobileMenuPanel.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (window.innerWidth < desktopBreakpoint) {
+        closeMobileMenu();
+      }
+    });
+  });
 }
 
 (function (jQuery, Foundation) {
@@ -320,25 +427,7 @@ function eraseCookie(name) {
     });
     // End for Adjust Text Sizing
 
-    $("#openNav").click(function (event) {
-      event.preventDefault();
-      document.getElementById("mySidenav").style.width = "80%";
-      document.getElementById("mySidenav").style.minWidth = "70%";
-      const closeBtnOverlay = document.getElementById("closeBtnOverlay");
-      if (closeBtnOverlay) {
-        closeBtnOverlay.classList.remove('hidden');
-      }
-    });
-
-    $("#closeNav, #closeBtnOverlay").click(function (event) {
-      event.preventDefault();
-      document.getElementById("mySidenav").style.minWidth = "0";
-      document.getElementById("mySidenav").style.width = "0";
-      const closeBtnOverlay = document.getElementById("closeBtnOverlay");
-      if (closeBtnOverlay) {
-        closeBtnOverlay.classList.add('hidden');
-      }
-    });
+    initResponsiveSiteHeader();
 
 
     // End for Testing

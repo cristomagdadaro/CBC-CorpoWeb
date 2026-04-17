@@ -79,6 +79,227 @@ Custom Header Styles
     justify-content: space-between;
 }
 
+.site-header {
+  z-index: 50;
+}
+
+body.admin-bar .site-header {
+  top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+  body.admin-bar .site-header {
+    top: 46px;
+  }
+}
+
+.site-header,
+.site-header *,
+.site-header *::before,
+.site-header *::after {
+  box-sizing: border-box;
+}
+
+.site-header-bar {
+  position: relative;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background-color 0.5s ease, box-shadow 0.5s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease, border-color 0.5s ease;
+}
+
+.site-header.scrolled .site-header-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.site-header__row {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  transition: padding 0.5s ease;
+}
+
+@media screen and (min-width: 1024px) {
+  .site-header__row {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
+.site-header.scrolled .site-header__row {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.site-header__desktop-nav {
+  transition: padding 0.5s ease, border-color 0.5s ease, opacity 0.5s ease;
+}
+
+.site-header.scrolled .site-header__desktop-nav {
+  border-color: rgba(148, 163, 184, 0.2);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.site-header #textlogo-wrapper,
+.site-header #textlogo-inner-wrapper,
+.site-header #agency-heading,
+.site-header #agency-name,
+.site-header #agency-tagline,
+.site-header #da-logo,
+.site-header #agency-logo,
+.site-header #pst-container,
+.site-header .site-header__meta-stack,
+.site-header .site-header__meta-panel,
+.site-header .site-header__meta-panel a,
+.site-header .site-header__meta-panel p,
+.site-header .site-header__meta-panel span,
+.site-header .site-header__meta-panel div {
+  transition: color 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+}
+
+.site-header #agency-heading,
+.site-header #agency-tagline,
+.site-header .site-header__meta-stack,
+.site-header .site-header__meta-panel,
+.site-header .site-header__meta-panel a,
+.site-header .site-header__meta-panel p,
+.site-header .site-header__meta-panel span,
+.site-header .site-header__meta-panel div {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.site-header #agency-name {
+  color: #ffffff;
+}
+
+.site-header #da-logo,
+.site-header #agency-logo {
+  filter: drop-shadow(0 8px 18px rgba(255, 255, 255, 0.2));
+}
+
+.site-header.scrolled #agency-heading,
+.site-header.scrolled #agency-tagline,
+.site-header.scrolled #pst-container,
+.site-header.scrolled .site-header__meta-stack,
+.site-header.scrolled .site-header__meta-panel,
+.site-header.scrolled .site-header__meta-panel a,
+.site-header.scrolled .site-header__meta-panel p,
+.site-header.scrolled .site-header__meta-panel span,
+.site-header.scrolled .site-header__meta-panel div {
+  color: #64748b !important;
+}
+
+.site-header.scrolled #agency-name {
+  color: #1f5d2b;
+}
+
+.site-header.scrolled #da-logo,
+.site-header.scrolled #agency-logo {
+  filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.08));
+}
+
+.site-header .search-form {
+  transform: none !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.site-header .search-form:hover,
+.site-header .search-form:focus-within {
+  transform: none !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.site-header .gwt-desktop-nav > ul > li > a,
+.site-header .gwt-desktop-nav > ul > li > a svg {
+  color: rgba(255, 255, 255, 0.96);
+  transition: color 0.5s ease;
+}
+
+.site-header.scrolled .gwt-desktop-nav > ul > li > a,
+.site-header.scrolled .gwt-desktop-nav > ul > li > a svg {
+  color: #1f5d2b;
+}
+
+.site-header .gwt-desktop-nav .absolute {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 22px 42px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.35rem;
+  border-radius: 1rem;
+}
+
+.site-header .gwt-desktop-nav .absolute a,
+.site-header .gwt-desktop-nav .absolute a svg {
+  color: #1f5d2b !important;
+}
+
+.site-header .gwt-desktop-nav .absolute li:hover > a,
+.site-header .gwt-desktop-nav .absolute li:focus-within > a,
+.site-header .gwt-desktop-nav .absolute li:hover > a svg,
+.site-header .gwt-desktop-nav .absolute li:focus-within > a svg {
+  color: #ffffff !important;
+}
+
+.site-mobile-menu-button {
+  flex-shrink: 0;
+}
+
+.site-header.scrolled .site-mobile-menu-button {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.site-header.scrolled .site-mobile-menu-button:hover,
+.site-header.scrolled .site-mobile-menu-button:focus {
+  background: rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+}
+
+.site-mobile-menu-panel {
+  pointer-events: none;
+  transform: translateY(-0.85rem);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.site-header.mobile-menu-open .site-mobile-menu-panel {
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+  opacity: 1;
+}
+
+.site-mobile-menu-list,
+.site-mobile-menu-list .gwt-mobile-submenu {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.site-mobile-menu-list > li + li {
+  margin-top: 0.25rem;
+}
+
+.site-mobile-menu-list .gwt-mobile-submenu {
+  margin-top: 0.35rem;
+  margin-left: 0.25rem;
+}
+
+.site-mobile-menu-list .current-menu-item > a,
+.site-mobile-menu-list .current-menu-ancestor > a,
+.site-mobile-menu-list .current-menu-parent > a {
+  background: rgba(31, 93, 43, 0.1);
+  color: #1f5d2b;
+}
+
 /**
  * 1.0 - Normalize
  *
