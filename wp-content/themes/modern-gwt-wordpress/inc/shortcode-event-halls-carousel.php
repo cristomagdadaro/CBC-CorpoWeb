@@ -387,7 +387,7 @@ if (!function_exists('cbc_event_halls_carousel_shortcode')) {
                         // This provides a noticeable tactile response without being too aggressive
                         // Note: Only works after user interaction (touch, click, keyboard)
                         try {
-                            navigator.vibrate(40);
+                            //navigator.vibrate(40);
                         } catch (e) {
                             // Silently fail if vibration is blocked
                         }

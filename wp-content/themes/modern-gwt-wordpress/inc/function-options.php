@@ -1353,11 +1353,11 @@ if ( ! function_exists( 'govph_displayoptions' ) ) {
                                 <img id="da-logo" draggable="false" loading="eager" decoding="async" alt="Department of Agriculture Official Logo" src="' . $da_logo_render . '" class="h-auto md:w-[4rem] w-10 drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" />
                                 <img id="agency-logo" draggable="false" loading="eager" decoding="async" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $agency_logo_render . '" class="h-auto md:w-[4rem] w-10 drop-shadow-[0_6px_13px_rgba(255,255,255,0.3)]" />
                             </div>
-                        
+                            <div class="absolute inset-0 z-10 bg-gradient-to-b from-green-700/80 via-green-700/50 to-green-700/90"></div>
                             <div id="textlogo-inner-wrapper" class="flex flex-col min-w-0 justify-center sm:mt-2 mt-0 text-white">
-                                <p id="agency-heading" class="text-xs font-medium transition-colors uppercase font-display text-white/80">Department of Agriculture</p>
-                                <p id="agency-name" class="text-lg font-bold font-display transition-colors text-white m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
-                                <p id="agency-tagline" class="text-xs font-medium transition-colors uppercase font-display text-white/80">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
+                                <p id="agency-heading" class="text-xs font-medium transition-colors uppercase font-display text-white/80 m-0">Department of Agriculture</p>
+                                <p id="agency-name" class="text-xl font-bold font-display transition-colors text-white m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
+                                <p id="agency-tagline" class="text-xs font-medium transition-colors uppercase font-display text-white/80 m-0">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
                             </div>
                         </a>';
                 echo $addLogo;

@@ -341,7 +341,7 @@ Press esc, or click the close the button to close this dialog box.
                         </button>
                     </div>
 
-                    <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 pb-4 pt-3 transition-all duration-500 lg:flex">
+                    <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 transition-all duration-500 lg:flex">
                         <div class="flex min-w-0 flex-1 items-center gap-4 xl:gap-6">
                             <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
                                 <nav class="gwt-desktop-nav gwt-desktop-nav--primary min-w-0 flex-1" aria-label="Primary navigation">
