@@ -209,8 +209,64 @@
     <script type="text/javascript" language="javascript">
         var template_directory = '<?php echo esc_js( get_template_directory_uri() ); ?>';
     </script>
+  <?php
+  $govph_preloader_options      = get_option( 'govph_options', array() );
+  $preloader_logo_candidates    = array(
+    array(
+      'path' => trailingslashit( get_theme_root() ) . 'modern-gwt-wordpress/images/cbc-logo.png',
+      'url'  => trailingslashit( get_theme_root_uri() ) . 'modern-gwt-wordpress/images/cbc-logo.png',
+    ),
+    array(
+      'path' => trailingslashit( get_theme_root() ) . 'customcbc/images/cbc-logo.png',
+      'url'  => trailingslashit( get_theme_root_uri() ) . 'customcbc/images/cbc-logo.png',
+    ),
+    array(
+      'path' => WP_CONTENT_DIR . '/uploads/2024/06/DA-CBC-Logo-white-DA.png',
+      'url'  => content_url( '/uploads/2024/06/DA-CBC-Logo-white-DA.png' ),
+    ),
+  );
+  $preloader_logo_src = '';
+  foreach ( $preloader_logo_candidates as $preloader_logo_candidate ) {
+    if ( file_exists( $preloader_logo_candidate['path'] ) ) {
+      $preloader_logo_src = esc_url( $preloader_logo_candidate['url'] );
+      break;
+    }
+  }
+  if ( empty( $preloader_logo_src ) && ! empty( $govph_preloader_options['govph_logo'] ) ) {
+    $preloader_logo_src = esc_url( $govph_preloader_options['govph_logo'] );
+  }
+  if ( empty( $preloader_logo_src ) ) {
+    $preloader_logo_src = esc_url( get_template_directory_uri() . '/images/logo-masthead-large.png' );
+  }
+  $preloader_logo_alt = ! empty( $govph_preloader_options['govph_agency_name'] )
+    ? sprintf( '%s Logo', $govph_preloader_options['govph_agency_name'] )
+    : 'DA-Crop Biotechnology Center Logo';
+  ?>
+  <script type="text/javascript">
+    try {
+      if ( window.sessionStorage && window.sessionStorage.getItem( 'cbcPreloaderSeen' ) === '1' ) {
+        document.documentElement.classList.add( 'cbc-preloader-skip' );
+      }
+    } catch ( error ) {
+      // Ignore storage access issues and fall back to showing the preloader.
+    }
+  </script>
 </head>
 <body <?php body_class(); ?>>
+
+<div id="preloader" role="status" aria-live="polite" aria-hidden="false">
+  <div class="preloader-content">
+    <img src="<?php echo $preloader_logo_src; ?>"
+       alt="<?php echo esc_attr( $preloader_logo_alt ); ?>"
+       class="preloader-logo"
+       decoding="async"
+       fetchpriority="high">
+    <p class="preloader-tagline">BIOTECH FOR BETTER CROP FOR BETTER LIVES</p>
+    <div class="loading-bar" aria-hidden="true">
+      <div class="loading-progress"></div>
+    </div>
+  </div>
+</div>
 
 <div id="accessibility-shortcuts">
     <ul>

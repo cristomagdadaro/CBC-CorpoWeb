@@ -48,6 +48,176 @@ function eraseCookie(name) {
   createCookie(name, "");
 }
 
+function initPreloader() {
+  const preloader = document.getElementById("preloader");
+
+  if (!preloader) {
+    return;
+  }
+
+  const body = document.body;
+  const progress = preloader.querySelector(".loading-progress");
+  const prefersReducedMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const minimumDuration = prefersReducedMotion ? 0 : 3000;
+  const fadeDuration = prefersReducedMotion ? 0 : 500;
+  let currentProgress = 0;
+  let isFinished = false;
+
+  const getStorage = () => {
+    try {
+      return window.sessionStorage;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const storage = getStorage();
+  const hasSeenPreloader =
+    document.documentElement.classList.contains("cbc-preloader-skip") ||
+    (storage && storage.getItem("cbcPreloaderSeen") === "1");
+
+  const setProgress = (value) => {
+    if (!progress) {
+      return;
+    }
+
+    currentProgress = Math.max(currentProgress, Math.min(100, value));
+    progress.style.width = `${currentProgress}%`;
+  };
+
+  const markSeen = () => {
+    if (!storage) {
+      return;
+    }
+
+    try {
+      storage.setItem("cbcPreloaderSeen", "1");
+    } catch (error) {
+      // Ignore storage write issues.
+    }
+  };
+
+  const restoreFocus = () => {
+    const target = document.querySelector(
+      "#main-content, main, [role='main'], #site-header a[rel='home'], body"
+    );
+
+    if (!target || typeof target.focus !== "function") {
+      return;
+    }
+
+    const hadTabIndex = target.hasAttribute("tabindex");
+    if (!hadTabIndex && target !== document.body) {
+      target.setAttribute("tabindex", "-1");
+    }
+
+    window.requestAnimationFrame(() => {
+      try {
+        target.focus({ preventScroll: true });
+      } catch (error) {
+        target.focus();
+      }
+
+      if (!hadTabIndex && target !== document.body) {
+        target.addEventListener(
+          "blur",
+          () => target.removeAttribute("tabindex"),
+          { once: true }
+        );
+      }
+    });
+  };
+
+  const completePreloader = () => {
+    if (isFinished) {
+      return;
+    }
+
+    isFinished = true;
+    setProgress(100);
+    preloader.classList.add("hidden");
+    preloader.setAttribute("aria-hidden", "true");
+    body.classList.remove("cbc-preloader-active");
+    body.classList.add("cbc-preloader-complete");
+    body.setAttribute("aria-busy", "false");
+    markSeen();
+    restoreFocus();
+
+    window.setTimeout(() => {
+      preloader.style.display = "none";
+    }, fadeDuration);
+  };
+
+  if (hasSeenPreloader) {
+    preloader.classList.add("hidden");
+    preloader.setAttribute("aria-hidden", "true");
+    preloader.style.display = "none";
+    body.classList.add("cbc-preloader-complete");
+    body.setAttribute("aria-busy", "false");
+    return;
+  }
+
+  body.classList.add("cbc-preloader-active");
+  body.setAttribute("aria-busy", "true");
+  setProgress(8);
+
+  const trackableImages = Array.from(document.images).filter(
+    (image) => !preloader.contains(image)
+  );
+  const pendingImages = trackableImages.filter((image) => !image.complete);
+  const totalPendingImages = pendingImages.length;
+  let loadedImages = 0;
+
+  const syncProgressWithImages = () => {
+    if (!totalPendingImages) {
+      setProgress(88);
+      return;
+    }
+
+    const imageRatio = loadedImages / totalPendingImages;
+    setProgress(35 + imageRatio * 53);
+  };
+
+  pendingImages.forEach((image) => {
+    const handleImageSettled = () => {
+      loadedImages += 1;
+      syncProgressWithImages();
+      image.removeEventListener("load", handleImageSettled);
+      image.removeEventListener("error", handleImageSettled);
+    };
+
+    image.addEventListener("load", handleImageSettled, { once: true });
+    image.addEventListener("error", handleImageSettled, { once: true });
+  });
+
+  if (document.readyState !== "loading") {
+    setProgress(30);
+    syncProgressWithImages();
+  } else {
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        setProgress(30);
+        syncProgressWithImages();
+      },
+      { once: true }
+    );
+  }
+
+  const finalize = () => {
+    const remaining = Math.max(0, minimumDuration - performance.now());
+    window.setTimeout(completePreloader, remaining);
+  };
+
+  if (document.readyState === "complete") {
+    finalize();
+  } else {
+    window.addEventListener("load", finalize, { once: true });
+  }
+}
+
 function initResponsiveSiteHeader() {
   const header = document.getElementById("site-header");
   const headerBar = document.getElementById("site-header-bar");
@@ -154,6 +324,8 @@ function initResponsiveSiteHeader() {
     });
   });
 }
+
+initPreloader();
 
 (function (jQuery, Foundation) {
   // Orbit Slider play/pause options
