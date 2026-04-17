@@ -18,20 +18,14 @@
             <?php do_action( 'before_sidebar' );
             $homepage_section_title_classes = 'section-title homepage-section-title text-center text-3xl lg:text-4xl font-extrabold text-[#1f5d2b]'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
-            <section class="px-4 pt-12 sm:px-6 md:pt-16 lg:px-8 lg:pt-16">
-                <div class="mx-auto max-w-7xl">
-                    <!-- Left Content (Text + Video) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 relative items-start gap-6 lg:gap-8 pb-12 md:pb-16 lg:pb-24">
-                        <!-- Video Wrapper -->
-                        <div class="relative w-full">
-                            <div class="block md:hidden text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center leading-tight !font-spartan my-3">
-                                <span>DA-CROP BIOTECHNOLOGY CENTER</span>
-                            </div>
-
-                            <!-- Use responsive video container -->
-                            <div class="relative w-full overflow-hidden rounded-lg">
+            <section class="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+                <div class="mx-auto max-w-7xl relative overflow-visible">
+                    <div class="flex flex-col-reverse md:grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-16">
+                        <!-- LEFT: Video -->
+                        <div class="relative w-full z-10">
+                            <div class="relative w-full overflow-hidden rounded-xl aspect-video bg-[#EAF5EE] border border-[#D0EBD8]">
                                 <video
-                                        class="w-full h-auto rounded-lg"
+                                        class="w-full h-full object-cover rounded-xl"
                                         controls
                                         playsinline
                                         preload="metadata"
@@ -42,26 +36,37 @@
                             </div>
                         </div>
 
-                        <!-- Text Section -->
-                        <div class="relative flex h-full flex-col justify-center rounded-md bg-white/80 p-6 lg:p-8">
-                            <div class="hidden md:block text-[#205F26] drop-shadow text-2xl sm:text-3xl font-extrabold text-center lg:text-left leading-tight !font-spartan">
-                                DA-CROP BIOTECHNOLOGY CENTER
+                        <!-- RIGHT: Text -->
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="block w-full md:w-5 h-0.5 bg-[#1A7A42]"></span>
+                                <span class="text-[#1A7A42] text-[10px] font-bold tracking-[2.5px] uppercase !font-spartan">
+                                    About
+                                </span>
+                                <span class="block md:hidden w-full md:w-5 h-0.5 bg-[#1A7A42]"></span>
                             </div>
-                            <p class="mt-3 text-justify md:text-left leading-relaxed">
-                                DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program Office (DA-BPO).
-                                Through DA-Administrative Order No. 26 Series of 2021, we are mandated to develop and apply modern
-                                biotechnology to boost the nation's agricultural productivity, build the skills of our research partners,
-                                and foster a collaborative culture of knowledge-sharing to ensure a more food-secure and resilient Philippines.
+
+                            <h2 id="particles-js-flyAroundText" class="section-title text-center md:text-left">
+                                DA-Crop Biotechnology Center
+                            </h2>
+
+                            <div class="hidden md:block w-10 h-0.5 bg-[#1A7A42] mt-5 mb-5 rounded-full"></div>
+
+                            <p class="text-sm text-gray-600 leading-[1.85] text-justify md:text-left">
+                                DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program
+                                Office (DA-BPO). Through DA-Administrative Order No. 26 Series of 2021, we are mandated
+                                to develop and apply modern biotechnology to boost the nation's agricultural productivity,
+                                build the skills of our research partners, and foster a collaborative culture of
+                                knowledge-sharing to ensure a more food-secure and resilient Philippines.
                             </p>
-                            <div id="particles-js-helix" class="pointer-events-none absolute top-0 left-0 w-full h-full"></div>
                         </div>
                     </div>
+
                 </div>
             </section>
 
             <section class="bg-white px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-24">
                 <div class="mx-auto max-w-7xl">
-                    <h2 class="<?php echo esc_attr($homepage_section_title_classes); ?>">Core Programs</h2>
                     <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
                 </div>
             </section>
@@ -78,7 +83,6 @@
             <section class="px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-24">
                 <div class="mx-auto max-w-7xl">
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12 relative">
-
                         <div class="md:col-span-3">
                             <?php echo do_shortcode( '[gwt_calendar mode="grid" header="1" max="30"]' ); ?>
                         </div>

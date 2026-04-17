@@ -1284,3 +1284,24 @@ this is for mobile menus */
         margin-bottom: 4rem;
     }
 }
+
+body.home .cbc-slider__viewport,
+body.front-page .cbc-slider__viewport {
+    aspect-ratio: auto;
+    height: 50vh;
+}
+
+@media (min-width: 768px) {
+    body.home .cbc-slider__viewport,
+    body.front-page .cbc-slider__viewport {
+        height: 75vh;
+    }
+}
+
+@media (min-width: 1024px) {
+    body.home .cbc-slider__viewport,
+    body.front-page .cbc-slider__viewport {
+        height: 90vh;
+    }
+}
+

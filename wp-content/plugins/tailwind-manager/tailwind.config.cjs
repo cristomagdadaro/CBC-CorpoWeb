@@ -212,6 +212,7 @@ const spacingSafelist = [
     'gap-3',
     'gap-5',
     'gap-6',
+    'gap-8',
     'sm:gap-2',
     'md:gap-5',
     'md:gap-6',
