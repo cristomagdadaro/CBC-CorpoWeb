@@ -38,19 +38,17 @@
 
                         <!-- RIGHT: Text -->
                         <div class="relative z-10">
-                            <div class="flex items-center gap-2 mb-4">
-                                <span class="block w-full md:w-5 h-0.5 bg-[#1A7A42]"></span>
+                            <div class="flex items-center gap-2 mb-4 relative">
+                                <span class="block w-full md:w-1/2 h-0.5 bg-[#1A7A42]"></span>
                                 <span class="text-[#1A7A42] text-[10px] font-bold tracking-[2.5px] uppercase !font-spartan">
                                     About
                                 </span>
-                                <span class="block md:hidden w-full md:w-5 h-0.5 bg-[#1A7A42]"></span>
+                                <span class="block w-full md:w-1/2 h-0.5 bg-[#1A7A42]"></span>
                             </div>
 
                             <h2 id="particles-js-flyAroundText" data-particles-type="flyAroundText" class="section-title text-center md:text-left">
                                 DA-Crop Biotechnology Center
                             </h2>
-
-                            <div class="hidden md:block w-10 h-0.5 bg-[#1A7A42] mt-5 mb-5 rounded-full"></div>
 
                             <p class="text-sm text-gray-600 leading-[1.85] text-justify md:text-left">
                                 DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program
@@ -59,6 +57,7 @@
                                 build the skills of our research partners, and foster a collaborative culture of
                                 knowledge-sharing to ensure a more food-secure and resilient Philippines.
                             </p>
+                            <div class="w-full h-0.5 bg-[#1A7A42] mt-5 mb-5 rounded-full"></div>
                         </div>
                     </div>
 
