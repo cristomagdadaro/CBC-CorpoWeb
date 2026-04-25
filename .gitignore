@@ -1,6 +1,7 @@
 # Configuration
 wp-config.php
 /wp-config.php
+/wp-config-local.php
 wp-content/cache/
 /wp-content/cache
 deploy_log.txt

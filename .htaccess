@@ -1,4 +1,3 @@
-
 # BEGIN Security Headers
 <IfModule mod_headers.c>
     <IfModule mod_setenvif.c>
@@ -19,6 +18,9 @@
 
 # BEGIN Block sensitive files
 <FilesMatch "\.(sql|bak|log|ini|sh|env)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(readme\.html|license\.txt|wp-config(?:-sample)?\.php|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml(\.dist)?)$">
     Require all denied
 </FilesMatch>
 # END Block sensitive files

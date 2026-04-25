@@ -996,7 +996,7 @@ $site_header_classes = implode(
 
                         <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
                             <div class="rounded-2xl bg-slate-50 overflow-hidden p-2">
-                                <ul class="gwt-mobile-nav-list px-2 pb-2">
+                                <div class="gwt-mobile-nav-list px-2 pb-2">
                                     <?php wp_nav_menu( array(
                                             'theme_location' => 'topbar_left',
                                             'items_wrap'     => '%3$s',
@@ -1004,14 +1004,14 @@ $site_header_classes = implode(
                                             'fallback_cb'    => false,
                                             'walker'         => new Off_Canvass_Menu()
                                     ) ); ?>
-                                </ul>
+                                </div>
                             </div>
                         <?php endif; ?>
 
                         <?php if ( has_nav_menu( 'aux_nav' ) ) : ?>
                             <div class="rounded-2xl bg-slate-50 overflow-hidden">
                                 <p class="px-4 pt-3 pb-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-slate-400">Auxiliary</p>
-                                <ul class="gwt-mobile-nav-list px-2 pb-2">
+                                <div class="gwt-mobile-nav-list px-2 pb-2">
                                     <?php wp_nav_menu( array(
                                             'theme_location' => 'aux_nav',
                                             'items_wrap'     => '%3$s',
@@ -1019,14 +1019,14 @@ $site_header_classes = implode(
                                             'fallback_cb'    => false,
                                             'walker'         => new Off_Canvass_Menu()
                                     ) ); ?>
-                                </ul>
+                                </div>
                             </div>
                         <?php endif; ?>
 
                         <?php if ( has_nav_menu( 'topbar_right' ) ) : ?>
                             <div class="rounded-2xl bg-slate-50 overflow-hidden">
                                 <p class="px-4 pt-3 pb-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-slate-400">Contact</p>
-                                <ul class="gwt-mobile-nav-list px-2 pb-2">
+                                <div class="gwt-mobile-nav-list px-2 pb-2">
                                     <?php wp_nav_menu( array(
                                             'theme_location' => 'topbar_right',
                                             'items_wrap'     => '%3$s',
@@ -1034,7 +1034,7 @@ $site_header_classes = implode(
                                             'fallback_cb'    => false,
                                             'walker'         => new Off_Canvass_Menu()
                                     ) ); ?>
-                                </ul>
+                                </div>
                             </div>
                         <?php endif; ?>
 

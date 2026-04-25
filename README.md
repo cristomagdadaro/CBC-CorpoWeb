@@ -16,10 +16,9 @@ The codebase has improved since the original audit. Several important repo-level
 
 But launch is still blocked by core config and deployment posture:
 
-- `wp-config.php` still contains tracked secrets and environment-specific values
-- `wp-config.php` currently defines `ABSPATH` with `_DIR_` instead of `__DIR__`
-- `WP_HOME` / `WP_SITEURL` are still derived from `HTTP_HOST` rather than production-safe environment config
-- root `readme.html` and `license.txt` are still present and not yet denied by `.htaccess`
+- previously exposed secrets still need rotation and redeployment even though the runtime `wp-config.php` and tracked `wp-config-sample.php` now use environment-driven values
+- the new environment-driven `wp-config.php` settings still need staging verification
+- root `readme.html` and `license.txt` are now denied in repo config, but the live hosting stack still needs verification
 - several mitigated items still need staging verification before they can be treated as resolved
 
 Use [docs/LAUNCH_READINESS_AUDIT.md](docs/LAUNCH_READINESS_AUDIT.md) and [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md) as the source of truth for launch decisions.
@@ -169,10 +168,23 @@ Do not use the current tracked `wp-config.php` as a production-ready template.
 
 Before launch:
 
-- move secrets out of the tracked repo
-- replace local/default DB settings
-- fix the `ABSPATH` bootstrap typo
+- populate secrets through environment variables or an untracked `wp-config-local.php`
+- replace placeholder/default DB settings with real deployment values
 - validate startup in a production-like environment
+
+The tracked `wp-config.php` now expects these values outside the repo:
+
+- `WP_DB_NAME`
+- `WP_DB_USER`
+- `WP_DB_PASSWORD`
+- `WP_DB_HOST`
+- `WP_SITEURL`
+- `WP_HOME`
+- `WP_AUTH_KEY`, `WP_SECURE_AUTH_KEY`, `WP_LOGGED_IN_KEY`, `WP_NONCE_KEY`
+- `WP_AUTH_SALT`, `WP_SECURE_AUTH_SALT`, `WP_LOGGED_IN_SALT`, `WP_NONCE_SALT`
+- `CBC_AI_RECAPTCHA_SITE_KEY` or `RECAPTCHA_SITE_KEY`
+- `CBC_AI_RECAPTCHA_SECRET` or `RECAPTCHA_SECRET_KEY`
+- optional `WP_FORCE_HTTPS=true` when HTTPS is terminated upstream
 
 ### Useful checks
 
@@ -200,7 +212,7 @@ Before release, confirm all of the following:
 - rotate and remove committed secrets from the repo and from server history where possible
 - remove or hard-restrict any deployment or debug endpoints
 - move environment-specific configuration out of tracked files
-- fix the WordPress bootstrap path in `wp-config.php`
+- confirm the environment-driven WordPress bootstrap values are populated correctly
 - verify HTTPS and reverse-proxy behavior in the real hosting stack
 - replace broad role access for PII-heavy areas with dedicated capabilities
 - ensure private document uploads are not directly web-accessible
@@ -210,7 +222,7 @@ Before release, confirm all of the following:
 
 ## Launch Checklist
 
-- Close the `OPEN` items in [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md)
+- Close the remaining launch blockers in [docs/VULNERABILITY_TRACKER.md](docs/VULNERABILITY_TRACKER.md)
 - Re-test every `MITIGATED` item in staging before marking it `RESOLVED`
 - Smoke test public pages, forms, AI chat, games, metrics, newsletter, redirects, and event pages
 - Verify HTTPS, cookies, CSP behavior, and login protections in staging

@@ -29,6 +29,8 @@ This hardening pass prioritizes safe, minimal, repo-local changes that:
 - reduce debug/error leakage in custom plugins
 - remove raw request debugging from the theme
 - add privacy-conscious security event logging for key abuse signals
+- move launch-sensitive configuration and secrets out of checked-in config patterns
+- deny common version-disclosure files in Apache as well as nginx
 
 ## OWASP Top 10 Mapping
 
@@ -174,6 +176,35 @@ Implemented:
   - denied monitor endpoint access
 - event logs now use hashed network/user identifiers instead of raw values
 
+### Bootstrap and configuration hardening
+
+Changed files:
+
+- `wp-config.php`
+- `wp-config-sample.php`
+
+Implemented:
+
+- removed tracked DB credentials, salts, and reCAPTCHA keys from the repository copy of `wp-config.php`
+- updated the tracked `wp-config-sample.php` to use the same environment-driven pattern
+- added environment-variable and untracked `wp-config-local.php` support for deployment-specific secrets
+- replaced host-derived `WP_HOME` / `WP_SITEURL` behavior with environment-owned values
+- honored forwarded HTTPS state through deployment configuration instead of forcing scheme behavior globally
+- fixed `ABSPATH` to use PHP's `__DIR__`
+- defaulted `WP_DEBUG` to environment-controlled behavior instead of hardcoding it on
+
+### Root file exposure hardening
+
+Changed files:
+
+- `.htaccess`
+- `nginx.conf`
+
+Implemented:
+
+- deny rules now cover `readme.html`, `license.txt`, `wp-config-sample.php`, Composer/package metadata, and PHPUnit config files
+- Apache and nginx examples now align on blocking common disclosure/config artifacts at the web tier
+
 ## Remediation Plan For This WordPress Repo
 
 ### Immediate code/config actions
@@ -210,8 +241,9 @@ Implemented:
 2. Patch nginx in deployment after validating vendor advisories.
 3. Ensure production server config actually denies `/xmlrpc.php`.
 4. Remove or block `readme.html` in production if currently reachable.
-5. Port the hardened deny rules from `nginx.conf` into the active Windows vhost as needed, including `server_tokens off;`, `readme.html` / `license.txt` denial, and sensitive file blocks for `wp-config-sample.php` and backup artifacts.
-6. Route server/app logs to centralized monitoring and alert on:
+5. Port the hardened deny rules from the repo config into the active web tier as needed, including `server_tokens off;`, `readme.html` / `license.txt` denial, and sensitive file blocks for `wp-config-sample.php` and backup artifacts.
+6. Ensure staging/production populate the new environment-driven `wp-config.php` values outside the tracked repo and rotate any values that were previously committed.
+7. Route server/app logs to centralized monitoring and alert on:
    - repeated login lockouts
    - blocked XML-RPC hits
    - AI abuse/rate-limit events
@@ -270,4 +302,3 @@ Operational follow-up required:
 1. confirm the active production/staging virtual host or reverse proxy includes the intended block for `readme.html`
 2. verify whether a CDN, cache layer, or alternate server block is bypassing the hardened config in `nginx.conf`
 3. remove or deny public access to `readme.html` and then repeat the same `curl.exe -I` verification
-

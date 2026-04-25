@@ -291,7 +291,8 @@ const backgroundAndColorSafelist = [
     'hover:bg-[#a2b917]',
     'opacity-50',
     'opacity-60',
-    'hover:opacity-100'
+    'hover:opacity-100',
+    '!list-none'
 ];
 
 const typographySafelist = [

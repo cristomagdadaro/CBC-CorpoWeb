@@ -102,7 +102,7 @@ function gwt_wp_setup() {
 		 */
 		public function start_lvl( &$output, $depth = 0, $args = null ) {
 			$indent  = str_repeat( "\t", $depth );
-			$output .= "\n{$indent}<ul class=\"gwt-mobile-submenu hidden flex-col gap-0.5 pl-3 pt-1 pb-1\">\n";
+			$output .= "\n{$indent}<ul class=\"gwt-mobile-submenu hidden !list-none flex-col gap-0.5 pl-3 pt-1 pb-1\">\n";
 		}
 
 		/**
