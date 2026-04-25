@@ -20,8 +20,14 @@ add_action('wp_head', function() {
 	}
 
 	$site_key = CBC_AI_RECAPTCHA_SITE_KEY;
+  $language = apply_filters( 'cbc_recaptcha_language', 'en' );
+  $language = is_string( $language ) ? strtolower( trim( $language ) ) : 'en';
+  if ( ! preg_match( '/^[a-z]{2,3}(?:-[a-z]{2})?$/', $language ) ) {
+    $language = 'en';
+  }
+  $script_url = add_query_arg( 'hl', $language, 'https://www.google.com/recaptcha/api.js' );
 
-    echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>' . "\n";
+  echo '<script src="' . esc_url( $script_url ) . '" async defer></script>' . "\n";
 });
 
 /**

@@ -300,7 +300,13 @@ class CBC_Security_Hardening {
 
 	private static function recaptcha_script() {
 		if ( self::recaptcha_enabled() ) {
-			echo "<script src='https://www.google.com/recaptcha/api.js' async defer></script>"; // phpcs:ignore WordPress.Security.EscapeOutput
+			$language = apply_filters( 'cbc_recaptcha_language', 'en' );
+			$language = is_string( $language ) ? strtolower( trim( $language ) ) : 'en';
+			if ( ! preg_match( '/^[a-z]{2,3}(?:-[a-z]{2})?$/', $language ) ) {
+				$language = 'en';
+			}
+			$script_url = add_query_arg( 'hl', $language, 'https://www.google.com/recaptcha/api.js' );
+			echo '<script src="' . esc_url( $script_url ) . '" async defer></script>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 	}
 

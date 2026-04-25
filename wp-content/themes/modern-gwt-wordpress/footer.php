@@ -70,7 +70,7 @@
                                 <li><a href="/about-us">About Us</a></li>
                                 <li><a href="/about-us/organizational-structure/">Directory</a></li>
                                 <li><a href="/stories">Stories</a></li>
-                                <li><a href="/about-us/privacy-policy/">Privacy Prolicy</a></li>
+                                <li><a href="/about-us/privacy-policy/">Privacy Policy</a></li>
                                 <li><a href="/about-us/terms-and-conditions/">T&C</a></li>
                                 <li><a href="/faqs">FAQs</a></li>
                                 <li><a href="/sitemap">Sitemap</a></li>

@@ -230,7 +230,6 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                 line-height: 1.6;
                 margin: 0;
                 flex: 1;
-                text-align: justify;
             }
 
             /* Learn More Link */
