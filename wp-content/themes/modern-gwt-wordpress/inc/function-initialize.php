@@ -94,57 +94,138 @@ function gwt_wp_setup() {
 	// add_theme_support('custom-background', $args );
 	add_editor_style();
 
-	class Off_Canvass_Menu extends Walker_Nav_Menu
-	{
-		function start_lvl( &$output, $depth = 0, $args = array() ) {
-			$indent = str_repeat("\t", $depth);
-			$output .= "\n\t\t\t\t\t" . $indent . "<ul class=\"gwt-mobile-submenu mt-1 space-y-1 border-l border-slate-200/70 pl-4\">\n";
+	class Off_Canvass_Menu extends Walker_Nav_Menu {
+
+		/**
+		 * Start a sub-menu <ul>.
+		 * Hidden by default — toggled open via JS on the parent chevron button.
+		 */
+		public function start_lvl( &$output, $depth = 0, $args = null ) {
+			$indent  = str_repeat( "\t", $depth );
+			$output .= "\n{$indent}<ul class=\"gwt-mobile-submenu hidden flex-col gap-0.5 pl-3 pt-1 pb-1\">\n";
 		}
 
-		function end_lvl( &$output, $depth = 0, $args = array() ) {
-			$indent = str_repeat("\t", $depth);
-			$output .= "\n\t\t\t\t\t". $indent . "</ul>\n";
+		/**
+		 * End a sub-menu <ul>.
+		 */
+		public function end_lvl( &$output, $depth = 0, $args = null ) {
+			$indent  = str_repeat( "\t", $depth );
+			$output .= "{$indent}</ul>\n";
 		}
 
-		function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
-			$indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
-			$class_names = $value = '';
-			$classes = empty( $item->classes ) ? array() : (array) $item->classes;
+		/**
+		 * Output a single menu item <li> + <a>.
+		 *
+		 * Top-level items with children get a separate chevron <button> that
+		 * toggles the sub-menu — keeping the <a> href intact for navigation.
+		 * Sub-items get a small green dot indicator via a CSS pseudo-element.
+		 */
+		public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
+			$has_children = ! empty( $args->has_children );
+			$indent       = str_repeat( "\t", $depth );
 
-			$classes[] = 'gwt-mobile-menu-item menu-item-' . $item->ID;
-			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
-			$class_names = $class_names ? ' class="' . esc_attr( $class_names ) . '"' : '';
+			// ── <li> ────────────────────────────────────────────────────────
+			$li_classes   = 'gwt-mobile-menu-item menu-item-' . $item->ID;
+			$li_classes  .= $has_children ? ' gwt-has-children' : '';
 
-			$id = apply_filters( 'nav_menu_item_id', 'menu-item-'. $item->ID, $item, $args );
-			$id = $id ? ' id="' . esc_attr( $id ) . '"' : '';
+			$extra_classes = empty( $item->classes ) ? [] : (array) $item->classes;
+			$extra_classes = apply_filters( 'nav_menu_css_class', array_filter( $extra_classes ), $item, $args );
+			if ( $extra_classes ) {
+				$li_classes .= ' ' . implode( ' ', $extra_classes );
+			}
 
-			$output .= $indent . "\t\t\t\t\t" . '<li' . $id . $value . $class_names .'>';
+			$li_id = apply_filters( 'nav_menu_item_id', 'menu-item-' . $item->ID, $item, $args );
+			$li_id = $li_id ? ' id="' . esc_attr( $li_id ) . '"' : '';
 
-			$attributes  = ! empty( $item->attr_title ) ? ' title="'  . esc_attr( $item->attr_title ) .'"' : '';
-			$attributes .= ! empty( $item->target )     ? ' target="' . esc_attr( $item->target     ) .'"' : '';
-			$attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
-			$attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
-			$link_classes = $depth === 0
-				? 'gwt-mobile-menu-link block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-800 transition-colors duration-200 hover:bg-[#1f5d2b]/10 hover:text-[#1f5d2b] focus:outline-none focus:ring-2 focus:ring-[#1f5d2b]/25'
-				: 'gwt-mobile-menu-link block rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-100 hover:text-[#1f5d2b] focus:outline-none focus:ring-2 focus:ring-[#1f5d2b]/20';
+			$output .= "{$indent}<li{$li_id} class=\"" . esc_attr( $li_classes ) . "\">\n";
 
-			// Check if $args is an array or an object
-			$item_output = is_array($args) ? $args['before'] : $args->before;
-			$item_output .= '<a class="' . esc_attr( $link_classes ) . '"'. $attributes .'>';
-			$item_output .= (is_array($args) ? $args['link_before'] : $args->link_before) . apply_filters( 'the_title', $item->title, $item->ID ) . (is_array($args) ? $args['link_after'] : $args->link_after);
+			// ── link wrapper (flex row so chevron sits beside the link) ─────
+			if ( $has_children && $depth === 0 ) {
+				$output .= "{$indent}\t<div class=\"gwt-mobile-item-row flex items-center gap-1\">\n";
+			}
+
+			// ── <a> ─────────────────────────────────────────────────────────
+			$atts = [
+				'title'  => ! empty( $item->attr_title ) ? $item->attr_title : '',
+				'target' => ! empty( $item->target )     ? $item->target     : '',
+				'rel'    => ! empty( $item->xfn )        ? $item->xfn        : '',
+				'href'   => ! empty( $item->url )        ? $item->url        : '',
+			];
+
+			if ( $depth === 0 ) {
+				$link_class = 'gwt-mobile-menu-link flex-1 flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-800 transition-colors duration-150 hover:bg-[#1f5d2b]/8 hover:text-[#1f5d2b] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5d2b]/30';
+			} else {
+				$link_class = 'gwt-mobile-menu-link gwt-mobile-sub-link flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors duration-150 hover:bg-[#a2b917]/10 hover:text-[#1f5d2b] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a2b917]/30';
+			}
+
+			$attr_str = ' class="' . esc_attr( $link_class ) . '"';
+			foreach ( $atts as $attr => $value ) {
+				if ( ! empty( $value ) ) {
+					$attr_str .= ' ' . $attr . '="' . esc_attr( $value ) . '"';
+				}
+			}
+
+			$before      = is_object( $args ) ? $args->before     : '';
+			$link_before = is_object( $args ) ? $args->link_before : '';
+			$link_after  = is_object( $args ) ? $args->link_after  : '';
+			$after       = is_object( $args ) ? $args->after       : '';
+
+			$title = apply_filters( 'the_title', $item->title, $item->ID );
+
+			$item_output  = $before;
+			$item_output .= '<a' . $attr_str . '>';
+
+			// Green dot for sub-items
+			if ( $depth > 0 ) {
+				$item_output .= '<span class="gwt-mobile-dot shrink-0 inline-block w-1.5 h-1.5 rounded-full bg-[#a2b917]" aria-hidden="true"></span>';
+			}
+
+			$item_output .= $link_before . esc_html( $title ) . $link_after;
 			$item_output .= '</a>';
-			$item_output .= is_array($args) ? $args['after'] : $args->after;
+			$item_output .= $after;
+
+			// ── Chevron toggle button (top-level parents only) ────────────
+			if ( $has_children && $depth === 0 ) {
+				$item_output .= '<button type="button"
+                    class="gwt-mobile-submenu-toggle shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 transition-colors duration-150 hover:bg-[#1f5d2b]/8 hover:text-[#1f5d2b] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5d2b]/30"
+                    aria-expanded="false"
+                    aria-label="Toggle submenu for ' . esc_attr( $title ) . '">
+                    <svg class="gwt-chevron w-4 h-4 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>';
+			}
 
 			$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
+
+			// Close the flex wrapper for top-level parents
+			if ( $has_children && $depth === 0 ) {
+				$output .= "\n{$indent}\t</div>\n";
+			}
 		}
 
-
-		function end_el( &$output, $item, $depth = 0, $args = array() ) {
-			$indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
-			$output .= $indent . "\t\t\t\t\t</li>\n";
+		/**
+		 * End the <li> element.
+		 */
+		public function end_el( &$output, $item, $depth = 0, $args = null ) {
+			$indent  = str_repeat( "\t", $depth );
+			$output .= "{$indent}</li>\n";
 		}
 
-		
+		/**
+		 * Set has_children on the args object before delegating to parent.
+		 */
+		public function display_element( $element, &$children_elements, $max_depth, $depth = 0, $args = [], &$output = '' ) {
+			if ( ! $element ) return;
+
+			$id_field = $this->db_fields['id'];
+
+			if ( isset( $args[0] ) && is_object( $args[0] ) ) {
+				$args[0]->has_children = ! empty( $children_elements[ $element->$id_field ] );
+			}
+
+			parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
+		}
 	}
 	
 	class Topbar_Nav_Menu extends Walker_Nav_Menu

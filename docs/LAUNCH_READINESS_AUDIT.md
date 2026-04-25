@@ -1,25 +1,45 @@
 # Launch Readiness Audit
 
-Audit date: `2026-04-10`
+Audit date: `2026-04-25`
 
 Scope reviewed:
 
 - root configuration and deployment files
 - custom plugins under `wp-content/plugins/`
-- primary customized theme under `wp-content/themes/modern-gwt-wordpress/`
-- repository hygiene issues that affect launch risk
+- customized themes and repo-level web server rules
+- launch documentation created from the previous audit
 
 ## Executive Summary
 
-The codebase is not ready for a public launch next week without remediation.
+The repository is safer than it was on `2026-04-10`, but it is still **not ready for full public launch or full-blown deployment**.
 
-### Critical blockers
+Several previously reported code-level risks have been mitigated:
 
-1. Committed secrets and credentials exist in the repository.
-2. A web-accessible deployment script can execute `git pull` through PHP.
-3. `wp-config.php` forces `http://` site URLs for non-CLI requests.
-4. Sensitive PII and uploaded documents are stored with broad access patterns.
-5. Public-facing feature ownership is inconsistent, especially around forms and REST.
+- the public deploy script has been removed from the repo
+- committed Google OAuth JSON files have been deleted
+- overlapping form shortcodes now default to `cbc-form-manager` ownership
+- sensitive uploads in `cbc-client-engagement` and `cbc-form-manager` now use private storage patterns
+- `cbc-ai-messenger` and `wp-cbc-games` now use stronger permission and abuse controls
+
+However, launch remains blocked by core configuration and operational issues:
+
+1. `wp-config.php` still contains committed secrets and local/default credentials.
+2. `wp-config.php` currently defines `ABSPATH` using `_DIR_` instead of `__DIR__`, which is a likely fatal bootstrap defect.
+3. `wp-config.php` still derives `WP_HOME` / `WP_SITEURL` directly from `HTTP_HOST`, which is not a production-safe environment strategy.
+4. root web hardening is incomplete because `readme.html` and `license.txt` are still present and not denied by `.htaccess`.
+5. several tracker entries are only mitigated in code and still require staging or production-like verification before go-live.
+
+## Launch Verdict
+
+Current verdict: **No-Go for public launch**
+
+Minimum blockers to close before approving launch:
+
+1. externalize and rotate secrets in `wp-config.php`
+2. fix the `ABSPATH` bootstrap typo immediately
+3. replace host-derived runtime URL config with environment-owned configuration
+4. deploy stronger root file access rules for `readme.html`, `license.txt`, and similar sensitive/version-disclosure files
+5. re-run staging smoke tests for forms, AI, games, metrics, redirects, and admin-only submission access
 
 ## Findings
 
@@ -28,57 +48,48 @@ The codebase is not ready for a public launch next week without remediation.
 #### `CBCV-20260410-001` Public deployment endpoint can execute server-side Git commands
 
 - Severity: Critical
-- Status: Open
+- Status: Mitigated in repository, still needs deployment verification
 - Files:
   - `deploy_xitrixgx3z790.php`
 
-Why this matters:
+Current state:
 
-- The file is web-accessible at the repository root.
-- It calls `shell_exec()` and runs `git pull`.
-- It reveals repository pathing and runtime user details in the browser.
-- If reachable in production, it expands the attack surface for deployment abuse and information disclosure.
+- The reviewed repository no longer contains `deploy_xitrixgx3z790.php`.
 
-Evidence:
+Remaining launch requirement:
 
-- `deploy_xitrixgx3z790.php:54-74`
+- Confirm the deleted path returns `404` or equivalent denial in staging and production.
+- Confirm no replacement ad hoc deploy endpoint exists outside the repo.
 
-Recommended action:
-
-- Remove the file from the public web root.
-- Replace it with authenticated CI/CD or a server-side deploy job.
-- If temporary retention is unavoidable, restrict by IP, auth, and server config immediately.
-
-#### `CBCV-20260410-002` Secrets are committed in tracked files
+#### `CBCV-20260410-002` Secrets are still committed in tracked configuration
 
 - Severity: Critical
 - Status: Open
 - Files:
   - `wp-config.php`
-  - `google_credentials.json`
-  - `client_secret_791440731519-patj7mol2ahjmdsetim833rhed5m3ab2.apps.googleusercontent.com.json`
 
-Why this matters:
+Why this still matters:
 
-- The repository contains DB config, salts, reCAPTCHA secrets, and Google OAuth client secrets.
-- Once committed, these should be treated as compromised.
-- Secret reuse across environments would make production launch unsafe.
+- The repo no longer contains the tracked Google OAuth JSON files from the original audit.
+- But `wp-config.php` still contains:
+  - database settings
+  - WordPress salts
+  - reCAPTCHA site and secret keys
+- These values must still be treated as compromised because they remain committed in a tracked file.
 
 Evidence:
 
-- `wp-config.php:18-23`
-- `wp-config.php:45-56`
-- `wp-config.php:57-58`
-- `google_credentials.json`
-- `client_secret_791440731519-patj7mol2ahjmdsetim833rhed5m3ab2.apps.googleusercontent.com.json`
+- `wp-config.php:23-32`
+- `wp-config.php:59-66`
+- `wp-config.php:94-95`
 
-Recommended action:
+Required action before launch:
 
-- Rotate all affected secrets before launch.
-- Move secrets to environment variables or untracked environment-specific config.
-- Remove tracked secret files from version control history where feasible.
+- Rotate all affected secrets.
+- Move secrets and environment-specific DB credentials out of the tracked repo.
+- Ensure production uses environment variables or an untracked server-local config include.
 
-#### `CBCV-20260410-003` WordPress bootstrap forces insecure `http://` URLs
+#### `CBCV-20260425-001` WordPress bootstrap path is misconfigured and may break runtime startup
 
 - Severity: Critical
 - Status: Open
@@ -87,294 +98,268 @@ Recommended action:
 
 Why this matters:
 
-- The config unconditionally sets `$_SERVER['REQUEST_SCHEME'] = 'http'` for non-CLI execution.
-- `WP_SITEURL` and `WP_HOME` are then derived from that forced scheme.
-- This conflicts with HSTS and can generate insecure URLs, mixed-content behavior, wrong canonical URLs, and broken secure assumptions in production.
+- `ABSPATH` is currently defined with `_DIR_` instead of PHP's built-in `__DIR__`.
+- That is not a valid PHP magic constant and is likely to cause a fatal error or undefined constant behavior depending on runtime settings.
+- A launch cannot proceed while the core bootstrap path is suspect.
 
 Evidence:
 
-- `wp-config.php:31-35`
-- `.htaccess:8`
+- `wp-config.php:99-100`
 
-Recommended action:
+Required action before launch:
 
-- Remove the forced scheme override.
-- Let the actual HTTPS/proxy configuration determine the scheme.
-- If behind a proxy, handle forwarded HTTPS headers correctly instead of hardcoding `http`.
+- Change `_DIR_` to `__DIR__`.
+- Re-run PHP lint and a real WordPress bootstrap test in the target environment.
 
-#### `CBCV-20260410-004` AI chat endpoint is publicly callable, cost-bearing, and stores PII with broad CPT permissions
+#### `CBCV-20260410-003` WordPress URL/bootstrap configuration remains environment-unsafe
 
 - Severity: Critical
+- Status: In Progress
+- Files:
+  - `wp-config.php`
+
+Why this still matters:
+
+- The earlier forced `http://` behavior has been removed.
+- But the current config still forces `$_SERVER['REQUEST_SCHEME'] = 'https'` and builds `WP_SITEURL` / `WP_HOME` directly from `HTTP_HOST`.
+- This is better than hardcoding `http`, but it is still fragile behind proxies, alternate hostnames, CLI contexts, and deployment mistakes.
+
+Evidence:
+
+- `wp-config.php:40-44`
+
+Required action before launch:
+
+- Move site URL handling to environment-owned values.
+- If a reverse proxy or load balancer is involved, honor forwarded HTTPS headers correctly instead of overriding scheme by hand.
+- Verify canonical URLs, admin URLs, and asset URLs in staging.
+
+#### `CBCV-20260410-015` Root-level version disclosure and web-server hardening are incomplete
+
+- Severity: High
 - Status: Open
 - Files:
-  - `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php`
+  - `.htaccess`
+  - `readme.html`
+  - `license.txt`
 
 Why this matters:
 
-- The REST route is registered with `permission_callback => '__return_true'`.
-- The route can trigger external LLM calls, which creates cost abuse risk.
-- Rate limiting is only one request per 10 seconds per IP, which is weak for public launch.
-- The feature logs names, emails, IPs, user agents, prompts, and replies.
-- Logs are stored in a CPT using default `post` capabilities, which is broader than a dedicated private capability model.
+- Root `readme.html` and `license.txt` are still present in the repo.
+- `.htaccess` currently blocks only `sql`, `bak`, `log`, `ini`, `sh`, and `env` files.
+- The current repo state does not yet deny direct access to common version-disclosure files.
 
 Evidence:
 
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:342-350`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:463-468`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:522-533`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:17-30`
+- `.htaccess:20-23`
+- root files present: `readme.html`, `license.txt`
 
-Recommended action:
+Required action before launch:
 
-- Require stronger anti-abuse controls.
-- Revisit whether the route should be public at all.
-- Add dedicated capabilities for log access.
-- Minimize retained PII and document retention rules.
-
-#### `CBCV-20260410-005` Internship documents are uploaded into publicly accessible media storage
-
-- Severity: Critical
-- Status: Open
-- Files:
-  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
-  - `wp-content/plugins/cbc-form-manager/src/Application/FormService.php`
-
-Why this matters:
-
-- Internship and file-upload flows store documents using normal WordPress upload handling and attachment creation.
-- This produces direct file URLs in the uploads directory.
-- For applications containing personal documents, public URL exposure is unacceptable.
-
-Evidence:
-
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:780-826`
-- `wp-content/plugins/cbc-form-manager/src/Application/FormService.php:90-139`
-- `wp-content/plugins/cbc-form-manager/src/Application/FormService.php:261-300`
-
-Recommended action:
-
-- Move sensitive documents to protected storage.
-- Do not expose direct public URLs for application files.
-- Add download authorization and retention/deletion policy.
+- Deny public access to `readme.html`, `license.txt`, and similar metadata files at the web-server layer.
+- Confirm the production server also disables version leakage such as `server_tokens`.
+- Re-run header and direct-file access checks in staging.
 
 ### High
 
-#### `CBCV-20260410-006` Two active form systems register the same shortcodes
+#### `CBCV-20260410-004` AI endpoint is better protected, but privacy and launch verification are still required
 
-- Severity: High
-- Status: Open
+- Severity: Critical
+- Status: Mitigated in code, verification still required
 - Files:
-  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
-  - `wp-content/plugins/cbc-form-manager/cbc-form-manager.php`
-  - `wp-content/plugins/cbc-form-manager/presentation/cbc_appointment_form/Form.php`
-  - `wp-content/plugins/cbc-form-manager/presentation/cbc_feedback_form/Form.php`
-  - `wp-content/plugins/cbc-form-manager/presentation/cbc_internship_form/Form.php`
+  - `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php`
+  - `wp-config.php`
 
-Why this matters:
+What changed:
 
-- `cbc-client-engagement` registers:
-  - `cbc_appointment_form`
-  - `cbc_feedback_form`
-  - `cbc_internship_form`
-- `cbc-form-manager` auto-discovers and registers the same shortcode tags.
-- In WordPress, duplicate shortcode tags collide and the last registered handler wins.
-- This makes behavior environment-dependent and hard to reason about.
+- REST registration now uses `cbc_ai_rest_permission` instead of `__return_true`.
+- reCAPTCHA is required when configured outside local/dev.
+- throttling now includes short, hourly, and daily limits.
+- raw IP and UA values are no longer stored directly; hashes/prefixes are logged instead.
 
 Evidence:
 
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:27-31`
-- `wp-content/plugins/cbc-form-manager/cbc-form-manager.php:35-46`
-- `wp-content/plugins/cbc-form-manager/presentation/cbc_appointment_form/Form.php:9-12`
-- `wp-content/plugins/cbc-form-manager/presentation/cbc_feedback_form/Form.php:11-18`
-- `wp-content/plugins/cbc-form-manager/presentation/cbc_internship_form/Form.php:9-12`
+- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:381-384`
+- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:393-402`
+- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:497-522`
+- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:548-583`
+- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:635-638`
 
-Recommended action:
+Residual concerns:
 
-- Pick one canonical form platform.
-- Remove or rename duplicate shortcodes.
-- Migrate storage/admin handling into one path before launch.
+- reCAPTCHA secrets are still sourced from tracked constants in `wp-config.php` today.
+- AI logs still retain names, emails, prompts, and responses, so retention and access control still matter.
+- The endpoint currently only accepts Gmail addresses, which is a product/UX restriction that should be intentionally approved before launch.
 
-#### `CBCV-20260410-007` Theme-level REST lockdown conflicts with plugins that expect anonymous REST access
+Required action before launch:
+
+- externalize the reCAPTCHA keys
+- verify admin-only access to AI logs in staging
+- confirm the Gmail-only requirement is intentional
+
+#### `CBCV-20260410-005` Sensitive upload handling is improved and now uses private storage patterns
+
+- Severity: Critical
+- Status: Mitigated in code, verification still required
+- Files:
+  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
+  - `wp-content/plugins/cbc-form-manager/src/Infrastructure/Storage/PrivateUploadManager.php`
+
+What changed:
+
+- internship files are stored under `cbc-private-uploads/client-engagement`
+- form-manager uploads are stored under `cbc-private-uploads/form-manager`
+- stored filenames are randomized
+- file permissions are tightened to `0600` when available
+- downloads require admin-side capability and nonce checks
+
+Evidence:
+
+- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:972-1022`
+- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:1034-1057`
+- `wp-content/plugins/cbc-form-manager/src/Infrastructure/Storage/PrivateUploadManager.php:31-38`
+- `wp-content/plugins/cbc-form-manager/src/Infrastructure/Storage/PrivateUploadManager.php:55-109`
+- `wp-content/plugins/cbc-form-manager/src/Infrastructure/Storage/PrivateUploadManager.php:124-157`
+
+Remaining launch requirement:
+
+- Upload and download a real test document in staging.
+- Confirm no direct public URL is created or leaked for submitted files.
+
+#### `CBCV-20260410-006` Duplicate form shortcode ownership is now controlled
 
 - Severity: High
-- Status: Open
+- Status: Mitigated in code, verification still required
+- Files:
+  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
+  - `wp-content/plugins/cbc-form-manager/cbc-form-manager.php`
+
+What changed:
+
+- `cbc-client-engagement` now disables its legacy duplicate shortcodes by default when `cbc-form-manager` is active.
+
+Evidence:
+
+- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:92-106`
+
+Remaining launch requirement:
+
+- Confirm production plugin activation order matches expectations.
+- Smoke test appointment, feedback, and internship public forms and admin submission views.
+
+#### `CBCV-20260410-007` REST policy mismatch is partially reduced, but overall policy still needs to be explicit
+
+- Severity: High
+- Status: In Progress
 - Files:
   - `wp-content/themes/modern-gwt-wordpress/inc/function-disable_api.php`
   - `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php`
   - `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php`
-  - `wp-content/plugins/cbc-security-hardening/cbc-security-hardening.php`
-  - `wp-content/plugins/tailwind-manager/tailwind-manager.php`
 
-Why this matters:
+Why this still matters:
 
-- The theme blocks REST requests for all logged-out users.
-- Several plugins register public REST endpoints anyway.
-- That means either:
-  - public features are broken, or
-  - future changes will bypass the theme restriction in inconsistent ways.
+- `wp-cbc-games` now requires authenticated access for game and leaderboard routes.
+- `cbc-ai-messenger` is still intentionally callable by unauthenticated visitors, subject to its own anti-abuse checks.
+- The theme-level blanket REST restriction still creates policy ambiguity for future maintainers.
 
 Evidence:
 
-- `wp-content/themes/modern-gwt-wordpress/inc/function-disable_api.php:1-8`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:288-289`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:342-345`
-- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:19-50`
-- `wp-content/plugins/cbc-security-hardening/cbc-security-hardening.php:36-47`
-- `wp-content/plugins/tailwind-manager/tailwind-manager.php:187-192`
+- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:15-40`
+- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:48-79`
 
-Recommended action:
+Required action before launch:
 
-- Decide a single public REST policy.
-- Prefer endpoint-by-endpoint permission hardening instead of a blanket theme block.
-- Smoke test AI chat and games anonymously after fixing policy.
-
-#### `CBCV-20260410-008` PII-heavy admin data is exposed with broad `edit_posts`/default post capabilities
-
-- Severity: High
-- Status: Open
-- Files:
-  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
-  - `wp-content/plugins/cbc-form-manager/src/Infrastructure/Setup/Installer.php`
-  - `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php`
-
-Why this matters:
-
-- Appointment, feedback, internship, form submission, and AI log records all use default post capabilities or menu access based on `edit_posts`.
-- That is too broad for personal and operational data.
-- Editors or other non-admin content roles may gain access to submissions/logs that should be restricted.
-
-Evidence:
-
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:111-116`
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:132-137`
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:153-158`
-- `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php:198-220`
-- `wp-content/plugins/cbc-form-manager/src/Infrastructure/Setup/Installer.php:20-30`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:23-30`
-
-Recommended action:
-
-- Introduce dedicated capabilities such as `cbc_view_submissions`, `cbc_manage_ai_logs`, etc.
-- Restrict menus and post types to the minimum required roles.
+- Document the intended anonymous REST policy explicitly.
+- Test anonymous AI use and logged-out REST responses in staging.
 
 ### Medium
 
-#### `CBCV-20260410-009` Games leaderboard can be trivially forged from the client
+#### `CBCV-20260410-008` Sensitive admin data access is improved but still must be role-tested
+
+- Severity: High
+- Status: Mitigated in code, verification still required
+- Files:
+  - `wp-content/plugins/cbc-client-engagement/cbc-client-engagement.php`
+  - `wp-content/plugins/cbc-form-manager/src/Infrastructure/Storage/PrivateUploadManager.php`
+
+What changed:
+
+- client engagement now uses `cbc_manage_client_engagement`
+- form-manager private downloads require `cbc_manage_form_submissions`
+
+Required action before launch:
+
+- Confirm editors and non-admin users cannot access submissions, uploads, or AI logs.
+- Confirm administrators retain required access.
+
+#### `CBCV-20260410-009` Games leaderboard forgery risk is reduced, but the feature is still not authoritative
 
 - Severity: Medium
-- Status: Open
+- Status: Mitigated in code, verification still required
 - Files:
   - `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php`
 
-Why this matters:
+What changed:
 
-- Anyone can POST leaderboard scores anonymously.
-- The server trusts client-submitted scores and times.
-- This weakens integrity for public-facing rankings and contests.
+- game routes now require login
+- leaderboard submission now requires a nonce, signed submission token, valid game, and rate limits
 
 Evidence:
 
-- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:47-50`
-- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:96-159`
+- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:15-40`
+- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:48-79`
+- `wp-content/plugins/wp-cbc-games/src/Infrastructure/Api/Routes.php:213-305`
 
-Recommended action:
+Residual concern:
 
-- If the leaderboard matters, sign results server-side or validate game state.
-- If it is purely promotional, document that it is non-authoritative.
+- The server still trusts client-reported score and timing values within bounded validation.
+- Treat the leaderboard as promotional unless server-authoritative gameplay verification is added.
 
-#### `CBCV-20260410-010` `lmstudio` is offered in the AI UI but rejected by settings sanitization
+#### `CBCV-20260410-010` AI provider handling may still need product-level cleanup
 
 - Severity: Medium
-- Status: Open
-- Files:
-  - `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php`
+- Status: Mitigated in code, verify in staging
 
-Why this matters:
+Launch note:
 
-- The provider selector offers `LM Studio`.
-- Settings sanitization only accepts `openai` and `openrouter`.
-- This causes configuration drift and operator confusion.
+- This item no longer appears to be a primary launch blocker, but settings persistence and runtime provider selection should still be checked in staging before closure.
 
-Evidence:
-
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:121-123`
-- `wp-content/plugins/cbc-ai-messenger/cbc-ai-messenger.php:158-166`
-
-Recommended action:
-
-- Make the allowed provider list consistent across defaults, settings, validation, and runtime branching.
-
-#### `CBCV-20260410-011` Repository hygiene is drifting from `.gitignore`
+#### `CBCV-20260410-011` Repo hygiene remains mixed and should be cleaned before release packaging
 
 - Severity: Medium
-- Status: Open
-- Files:
-  - `.gitignore`
-  - `wp-content/plugins/tailwind-manager/node_modules/`
-  - `wp-content/plugins/tailwind-manager/package-lock.json`
+- Status: Mitigated in tracker, but still worth checking before release
 
-Why this matters:
+Launch note:
 
-- The repository currently contains tracked build dependencies and lock artifacts under a plugin.
-- `.gitignore` already indicates these should not be committed.
-- This increases repository size and creates stale dependency surface inside production code.
-
-Evidence:
-
-- `.gitignore`
-- tracked contents under `wp-content/plugins/tailwind-manager/node_modules/`
-
-Recommended action:
-
-- Remove tracked vendor/build artifacts from version control unless intentionally vendored.
-- Rebuild assets in CI or as part of release preparation.
-
-### Low / Quality
-
-#### `CBCV-20260410-012` Theme markup/code consistency issues exist in core presentation layer
-
-- Severity: Low
-- Status: Open
-- Files:
-  - `wp-content/themes/modern-gwt-wordpress/inc/function-options.php`
-  - `wp-content/themes/modern-gwt-wordpress/functions.php`
-
-Examples:
-
-- stray `SAS` token inside an anchor tag
-- duplicate inclusion of `template-tags.php`
-
-Evidence:
-
-- `wp-content/themes/modern-gwt-wordpress/inc/function-options.php:1146`
-- `wp-content/themes/modern-gwt-wordpress/functions.php:49-58`
-- `wp-content/themes/modern-gwt-wordpress/functions.php:95-103`
-
-Why this matters:
-
-- These are not launch blockers by themselves, but they signal avoidable drift in the most central theme code.
+- Reconfirm no vendored build artifacts that should stay out of production packaging are being shipped unintentionally.
 
 ## Recommended Launch Sequence
 
-1. Remove/disable the public deploy endpoint.
-2. Rotate and externalize all committed secrets.
-3. Fix `wp-config.php` scheme handling for HTTPS.
-4. Choose one form platform and disable the duplicate shortcode owner.
-5. Move private uploads out of public media access paths.
-6. Replace broad content-role access with dedicated capabilities.
-7. Align the site-wide REST policy with actual feature needs.
-8. Smoke test:
-   - anonymous site browsing
-   - AI chat
-   - newsletter subscribe
-   - appointments/feedback/internship forms
-   - games
-   - branded redirects
-   - events/calendar
-9. Update the vulnerability tracker with owners, target dates, and resolved evidence.
+1. Fix `wp-config.php` bootstrap immediately:
+  - replace `_DIR_` with `__DIR__`
+  - lint the file
+  - test a real WordPress bootstrap
+2. Remove secrets from tracked config and rotate all exposed values.
+3. Replace host-derived runtime URL logic with environment-specific configuration.
+4. Harden root file access:
+  - deny `readme.html`
+  - deny `license.txt`
+  - extend sensitive-file rules as needed for the real server stack
+5. Re-run staging smoke tests:
+  - homepage and main navigation
+  - appointments, feedback, and internship submissions
+  - AI chat
+  - newsletter
+  - branded redirects
+  - games
+  - events/calendar
+  - admin-only submission downloads and logs
+6. Promote tracker items from `MITIGATED` to `RESOLVED` only after evidence exists.
 
 ## Review Notes
 
-- This was a codebase audit, not a running-environment penetration test.
-- Findings are based on repository evidence and cross-file behavior analysis.
-- Production server configuration, database contents, active-theme selection, and real plugin activation state should still be verified in staging.
+- This remains a repository audit, not a running-environment penetration test.
+- The docs have been updated to distinguish:
+  - code mitigations already present in the repo
+  - deployment or staging verification that still has to happen
+- Based on the current repository state alone, launch approval should not be given yet.

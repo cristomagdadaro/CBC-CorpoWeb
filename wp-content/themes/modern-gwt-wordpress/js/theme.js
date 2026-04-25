@@ -16,473 +16,511 @@
 // }
 
 function createCookie(name, value, days) {
-  let cookie = `${name}=${encodeURIComponent(value)}`;
+    let cookie = `${name}=${encodeURIComponent(value)}`;
 
-  // Add expiry date
-  if (days) {
-    const expiry = new Date();
-    expiry.setTime(expiry.getTime() + days * 24 * 60 * 60 * 1000);
-    cookie += `; expires=${expiry.toUTCString()}`;
-  }
-  // Add Secure
-  cookie += `; secure`;
-  cookie += `; HttpOnly`;
-  // Set an HTTP cookie
-  document.cookie = cookie;
-  //console.log(document.cookie);
-  //console.log(cookie);
+    // Add expiry date
+    if (days) {
+        const expiry = new Date();
+        expiry.setTime(expiry.getTime() + days * 24 * 60 * 60 * 1000);
+        cookie += `; expires=${expiry.toUTCString()}`;
+    }
+    // Add Secure
+    cookie += `; secure`;
+    cookie += `; HttpOnly`;
+    // Set an HTTP cookie
+    document.cookie = cookie;
+    //console.log(document.cookie);
+    //console.log(cookie);
 }
 
 function readCookie(name) {
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(";");
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) === " ") c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === " ") c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }
 
 function eraseCookie(name) {
-  createCookie(name, "");
+    createCookie(name, "");
 }
 
 function initResponsiveSiteHeader() {
-  const header = document.getElementById("site-header");
-  const headerBar = document.getElementById("site-header-bar");
-  const mobileMenuButton = document.getElementById("site-mobile-menu-button");
-  const mobileMenuPanel = document.getElementById("site-mobile-menu-panel");
+    const header = document.getElementById("site-header");
+    const headerBar = document.getElementById("site-header-bar");
+    const mobileMenuButton = document.getElementById("site-mobile-menu-button");
+    const mobileMenuPanel = document.getElementById("site-mobile-menu-panel");
 
-  if (!header || !headerBar || !mobileMenuButton || !mobileMenuPanel) {
-    return;
-  }
-
-  if (header.dataset.mobileMenuInitialized === "true") {
-    return;
-  }
-
-  header.dataset.mobileMenuInitialized = "true";
-
-  const desktopBreakpoint = 1024;
-  const isOverlayHeader = header.classList.contains("site-header--overlay");
-  let isTicking = false;
-
-  const syncHeaderHeight = () => {
-    const expandedMobilePanelHeight =
-      window.innerWidth < desktopBreakpoint &&
-      header.classList.contains("mobile-menu-open")
-        ? mobileMenuPanel.offsetHeight
-        : 0;
-
-    document.documentElement.style.setProperty(
-      "--gwt-site-header-height",
-      `${headerBar.offsetHeight + expandedMobilePanelHeight}px`
-    );
-  };
-
-  const syncScrollState = () => {
-    header.classList.toggle("scrolled", window.scrollY > (isOverlayHeader ? 50 : 12));
-    syncHeaderHeight();
-  };
-
-  const closeMobileMenu = (returnFocus = false) => {
-    header.classList.remove("mobile-menu-open");
-    mobileMenuButton.setAttribute("aria-expanded", "false");
-    mobileMenuPanel.setAttribute("aria-hidden", "true");
-    syncHeaderHeight();
-
-    if (returnFocus) {
-      mobileMenuButton.focus();
-    }
-  };
-
-  const openMobileMenu = () => {
-    header.classList.add("mobile-menu-open");
-    mobileMenuButton.setAttribute("aria-expanded", "true");
-    mobileMenuPanel.setAttribute("aria-hidden", "false");
-    syncHeaderHeight();
-  };
-
-  const toggleMobileMenu = () => {
-    if (header.classList.contains("mobile-menu-open")) {
-      closeMobileMenu();
-      return;
-    }
-
-    openMobileMenu();
-  };
-
-  syncScrollState();
-
-  if (typeof ResizeObserver !== "undefined") {
-    const headerResizeObserver = new ResizeObserver(() => {
-      syncHeaderHeight();
-    });
-
-    headerResizeObserver.observe(headerBar);
-    headerResizeObserver.observe(mobileMenuPanel);
-  }
-
-  mobileMenuButton.addEventListener("click", toggleMobileMenu);
-
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (isTicking) {
+    if (!header || !headerBar || !mobileMenuButton || !mobileMenuPanel) {
         return;
-      }
-
-      isTicking = true;
-
-      window.requestAnimationFrame(() => {
-        syncScrollState();
-        isTicking = false;
-      });
-    },
-    { passive: true }
-  );
-
-  window.addEventListener("resize", () => {
-    syncHeaderHeight();
-
-    if (window.innerWidth >= desktopBreakpoint) {
-      closeMobileMenu();
-    }
-  });
-
-  window.addEventListener("load", syncHeaderHeight, { once: true });
-
-  document.addEventListener("click", (event) => {
-    if (
-      window.innerWidth >= desktopBreakpoint ||
-      !header.classList.contains("mobile-menu-open")
-    ) {
-      return;
     }
 
-    if (!header.contains(event.target)) {
-      closeMobileMenu();
+    if (header.dataset.mobileMenuInitialized === "true") {
+        return;
     }
-  });
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && header.classList.contains("mobile-menu-open")) {
-      closeMobileMenu(true);
+    header.dataset.mobileMenuInitialized = "true";
+
+    const desktopBreakpoint = 1024;
+    const isOverlayHeader = header.classList.contains("site-header--overlay");
+    let isTicking = false;
+
+    const syncHeaderHeight = () => {
+        const expandedMobilePanelHeight =
+            window.innerWidth < desktopBreakpoint &&
+            header.classList.contains("mobile-menu-open")
+                ? mobileMenuPanel.offsetHeight
+                : 0;
+
+        document.documentElement.style.setProperty(
+            "--gwt-site-header-height",
+            `${headerBar.offsetHeight + expandedMobilePanelHeight}px`
+        );
+    };
+
+    const syncScrollState = () => {
+        header.classList.toggle("scrolled", window.scrollY > (isOverlayHeader ? 50 : 12));
+        syncHeaderHeight();
+    };
+
+    const closeMobileMenu = (returnFocus = false) => {
+        header.classList.remove("mobile-menu-open");
+        mobileMenuButton.setAttribute("aria-expanded", "false");
+        mobileMenuPanel.setAttribute("aria-hidden", "true");
+        mobileMenuPanel.style.maxHeight = "0";
+        mobileMenuPanel.style.opacity = "0";
+        mobileMenuPanel.style.pointerEvents = "none";
+        syncHeaderHeight();
+
+        if (returnFocus) {
+            mobileMenuButton.focus();
+        }
+    };
+
+    const openMobileMenu = () => {
+        header.classList.add("mobile-menu-open");
+        mobileMenuButton.setAttribute("aria-expanded", "true");
+        mobileMenuPanel.setAttribute("aria-hidden", "false");
+        mobileMenuPanel.style.maxHeight = mobileMenuPanel.scrollHeight + "px";
+        mobileMenuPanel.style.opacity = "1";
+        mobileMenuPanel.style.pointerEvents = "auto";
+        syncHeaderHeight();
+    };
+
+    const toggleMobileMenu = () => {
+        if (header.classList.contains("mobile-menu-open")) {
+            closeMobileMenu();
+            return;
+        }
+
+        openMobileMenu();
+    };
+
+    mobileMenuPanel.querySelectorAll( '.gwt-mobile-submenu-toggle' ).forEach( ( btn ) => {
+        btn.addEventListener( 'click', ( e ) => {
+            e.stopPropagation();
+
+            const li      = btn.closest( '.gwt-has-children' );
+            const submenu = li ? li.querySelector( '.gwt-mobile-submenu' ) : null;
+
+            if ( ! submenu ) return;
+
+            const isOpen = btn.getAttribute( 'aria-expanded' ) === 'true';
+
+            if ( isOpen ) {
+                submenu.classList.add( 'hidden' );
+                submenu.classList.remove( 'flex' );
+                btn.setAttribute( 'aria-expanded', 'false' );
+                btn.querySelector( '.gwt-chevron' ).style.transform = '';
+            } else {
+                submenu.classList.remove( 'hidden' );
+                submenu.classList.add( 'flex' );
+                btn.setAttribute( 'aria-expanded', 'true' );
+                btn.querySelector( '.gwt-chevron' ).style.transform = 'rotate(180deg)';
+            }
+
+            // Re-sync panel max-height so the animation expands to new content height
+            if ( header.classList.contains( 'mobile-menu-open' ) ) {
+                mobileMenuPanel.style.maxHeight = mobileMenuPanel.scrollHeight + 'px';
+            }
+        } );
+    } );
+
+    const _origClose = closeMobileMenu;
+
+    syncScrollState();
+
+    if (typeof ResizeObserver !== "undefined") {
+        const headerResizeObserver = new ResizeObserver(() => {
+            syncHeaderHeight();
+        });
+
+        headerResizeObserver.observe(headerBar);
+        headerResizeObserver.observe(mobileMenuPanel);
     }
-  });
 
-  mobileMenuPanel.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth < desktopBreakpoint) {
-        closeMobileMenu();
-      }
+    mobileMenuButton.addEventListener("click", toggleMobileMenu);
+
+    window.addEventListener(
+        "scroll",
+        () => {
+            if (isTicking) {
+                return;
+            }
+
+            isTicking = true;
+
+            window.requestAnimationFrame(() => {
+                syncScrollState();
+                isTicking = false;
+            });
+        },
+        {passive: true}
+    );
+
+    window.addEventListener("resize", () => {
+        syncHeaderHeight();
+
+        if (window.innerWidth >= desktopBreakpoint) {
+            closeMobileMenu();
+        }
     });
-  });
+
+    window.addEventListener("load", syncHeaderHeight, {once: true});
+
+    document.addEventListener("click", (event) => {
+        if (
+            window.innerWidth >= desktopBreakpoint ||
+            !header.classList.contains("mobile-menu-open")
+        ) {
+            return;
+        }
+
+        if (!header.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && header.classList.contains("mobile-menu-open")) {
+            closeMobileMenu(true);
+        }
+    });
+
+    mobileMenuPanel.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+            if (window.innerWidth < desktopBreakpoint) {
+                closeMobileMenu();
+            }
+        });
+    });
 }
 
 
 (function bootstrapResponsiveSiteHeader() {
-  const start = function () {
-    initResponsiveSiteHeader();
-  };
+    const start = function () {
+        initResponsiveSiteHeader();
+    };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start, { once: true });
-    return;
-  }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start, {once: true});
+        return;
+    }
 
-  start();
+    start();
 })();
 
 
 (function (jQuery, Foundation) {
-  if (!jQuery) {
-    return;
-  }
+    if (!jQuery) {
+        return;
+    }
 
-  // Orbit Slider play/pause options
-  if (Foundation && Foundation.Orbit && Foundation.Orbit.defaults) {
-    Foundation.Orbit.defaults.controls = true;
-    Foundation.Orbit.defaults.controlClass = "orbit-button-controls";
-    Foundation.Orbit.defaults.controlPauseText = "Pause";
-    Foundation.Orbit.defaults.controlPlayText = "Play";
-  }
+    // Orbit Slider play/pause options
+    if (Foundation && Foundation.Orbit && Foundation.Orbit.defaults) {
+        Foundation.Orbit.defaults.controls = true;
+        Foundation.Orbit.defaults.controlClass = "orbit-button-controls";
+        Foundation.Orbit.defaults.controlPauseText = "Pause";
+        Foundation.Orbit.defaults.controlPlayText = "Play";
+    }
 
-  if (Foundation && Foundation.Orbit && Foundation.Orbit.prototype) {
-    Foundation.Orbit.prototype.initControls = function () {
-      var _this = this;
-      var statusElement = document.createElement("button");
-      var buttonControl = document.createElement("span");
-      if (this.options.accessible) {
-        var srText = document.createElement("span");
-        jQuery(srText).addClass("show-for-sr").text(this.options.controlPauseText);
-        jQuery(statusElement).append(srText);
-      }
-      jQuery(buttonControl).addClass("orbit-button-text").html("&#10073;&#10073;");
-      jQuery(statusElement)
-        .addClass(this.options.controlClass)
-        .append(buttonControl)
-        .attr("title", this.options.controlPlayText);
-      jQuery(this.$element).prepend(statusElement);
-      if (this.options.autoPlay) {
-        this.controlPlay();
-      }
+    if (Foundation && Foundation.Orbit && Foundation.Orbit.prototype) {
+        Foundation.Orbit.prototype.initControls = function () {
+            var _this = this;
+            var statusElement = document.createElement("button");
+            var buttonControl = document.createElement("span");
+            if (this.options.accessible) {
+                var srText = document.createElement("span");
+                jQuery(srText).addClass("show-for-sr").text(this.options.controlPauseText);
+                jQuery(statusElement).append(srText);
+            }
+            jQuery(buttonControl).addClass("orbit-button-text").html("&#10073;&#10073;");
+            jQuery(statusElement)
+                .addClass(this.options.controlClass)
+                .append(buttonControl)
+                .attr("title", this.options.controlPlayText);
+            jQuery(this.$element).prepend(statusElement);
+            if (this.options.autoPlay) {
+                this.controlPlay();
+            }
 
-      this.$button = this.$element.find("." + this.options.controlClass);
+            this.$button = this.$element.find("." + this.options.controlClass);
 
-      this.$button.on("click.zf.orbit", function () {
-        _this.options.pauseOnHover = false;
-        _this.$element.off("mouseenter.zf.orbit");
-        _this.$element.off("mouseleave.zf.orbit");
-        if (_this.options.autoPlay) {
-          _this.options.autoPlay = false;
-          _this.controlPause();
-        } else {
-          _this.options.autoPlay = true;
-          _this.controlPlay();
+            this.$button.on("click.zf.orbit", function () {
+                _this.options.pauseOnHover = false;
+                _this.$element.off("mouseenter.zf.orbit");
+                _this.$element.off("mouseleave.zf.orbit");
+                if (_this.options.autoPlay) {
+                    _this.options.autoPlay = false;
+                    _this.controlPause();
+                } else {
+                    _this.options.autoPlay = true;
+                    _this.controlPlay();
+                }
+            });
+        };
+
+        Foundation.Orbit.prototype.controlPause = function () {
+            if (!this.timer) return;
+            this.timer.restart();
+            this.timer.pause();
+            this.$wrapper = this.$element.find("." + this.options.controlClass);
+            this.$wrapper.attr("title", this.options.controlPlayText);
+            this.$buttonText = this.$element.find(
+                "." + this.options.controlClass + " .orbit-button-text"
+            );
+            this.$srText = this.$element.find(
+                "." + this.options.controlClass + " .show-for-sr"
+            );
+            if (this.options.accessible) {
+                jQuery(this.$srText).text(this.options.controlPlayText);
+            }
+            jQuery(this.$buttonText).html("<i class='fa fa-play' aria-hidden='true'></i>");
+        };
+
+        Foundation.Orbit.prototype.controlPlay = function () {
+            if (!this.timer) return;
+            this.timer.restart();
+            this.timer.start();
+            this.$wrapper = this.$element.find("." + this.options.controlClass);
+            this.$wrapper.attr("title", this.options.controlPauseText);
+            this.$buttonText = this.$element.find(
+                "." + this.options.controlClass + " .orbit-button-text"
+            );
+            this.$srText = this.$element.find(
+                "." + this.options.controlClass + " .show-for-sr"
+            );
+            if (this.options.accessible) {
+                jQuery(this.$srText).text(this.options.controlPauseText);
+            }
+            jQuery(this.$buttonText).html("<i class='fa fa-pause' aria-hidden='true'></i>");
+        };
+
+        jQuery("[data-orbit]").on("init.zf.orbit", function (e) {
+            jQuery(e.target).foundation("initControls");
+        });
+    }
+
+    jQuery(document).ready(function ($) {
+        // Transparency Seal
+        $("#tp-seal").parent().parent().addClass("text-center");
+
+        // High contrast handler
+        if (readCookie("a11y-high-contrast")) {
+            $("body").addClass("contrast");
+            $("head").append(
+                $(
+                    "<link href='" +
+                    template_directory +
+                    "/accessibility/a11y-contrast.css' id='highContrastStylesheet' rel='stylesheet' type='text/css' />"
+                )
+            );
+            $("#accessibility-contrast")
+                .attr("aria-checked", true)
+                .addClass("active");
         }
-      });
-    };
+        $(".toggle-contrast").on("click", function () {
+            if (!$(this).hasClass("active")) {
+                $("head").append(
+                    $(
+                        "<link href='" +
+                        template_directory +
+                        "/accessibility/a11y-contrast.css' id='highContrastStylesheet' rel='stylesheet' type='text/css' />"
+                    )
+                );
+                $("body").addClass("contrast");
+                // createCookie("a11y-high-contrast", "1");
+                $(this).attr("aria-checked", true).addClass("active");
+                return false;
+            } else {
+                $("#highContrastStylesheet").remove();
+                $("body").removeClass("contrast");
+                $(this).removeAttr("aria-checked").removeClass("active");
+                // eraseCookie("a11y-high-contrast");
+                return false;
+            }
+        });
 
-    Foundation.Orbit.prototype.controlPause = function () {
-        if (!this.timer) return;
-      this.timer.restart();
-      this.timer.pause();
-      this.$wrapper = this.$element.find("." + this.options.controlClass);
-      this.$wrapper.attr("title", this.options.controlPlayText);
-      this.$buttonText = this.$element.find(
-        "." + this.options.controlClass + " .orbit-button-text"
-      );
-      this.$srText = this.$element.find(
-        "." + this.options.controlClass + " .show-for-sr"
-      );
-      if (this.options.accessible) {
-        jQuery(this.$srText).text(this.options.controlPlayText);
-      }
-      jQuery(this.$buttonText).html("<i class='fa fa-play' aria-hidden='true'></i>");
-    };
+        // Saturation handler
+        if (readCookie("a11y-desaturated")) {
+            $("body").addClass("desaturated");
+            $("head").append(
+                $(
+                    "<link href='" +
+                    template_directory +
+                    "/accessibility/a11y-desaturate.css' id='desaturateStylesheet' rel='stylesheet' type='text/css' />"
+                )
+            );
+            $("#accessibility-grayscale")
+                .attr("aria-checked", true)
+                .addClass("active");
+        }
+        $(".toggle-grayscale").on("click", function () {
+            if (!$(this).hasClass("active")) {
+                $("head").append(
+                    $(
+                        "<link href='" +
+                        template_directory +
+                        "/accessibility/a11y-desaturate.css' id='desaturateStylesheet' rel='stylesheet' type='text/css' />"
+                    )
+                );
+                $("body").addClass("desaturated");
+                $(this).attr("aria-checked", true).addClass("active");
+                createCookie("a11y-desaturated", "1");
+                return false;
+            } else {
+                $("#desaturateStylesheet").remove();
+                $("body").removeClass("desaturated");
+                $(this).removeAttr("aria-checked").removeClass("active");
+                eraseCookie("a11y-desaturated");
+                return false;
+            }
+        });
 
-    Foundation.Orbit.prototype.controlPlay = function () {
-        if (!this.timer) return;
-      this.timer.restart();
-      this.timer.start();
-      this.$wrapper = this.$element.find("." + this.options.controlClass);
-      this.$wrapper.attr("title", this.options.controlPauseText);
-      this.$buttonText = this.$element.find(
-        "." + this.options.controlClass + " .orbit-button-text"
-      );
-      this.$srText = this.$element.find(
-        "." + this.options.controlClass + " .show-for-sr"
-      );
-      if (this.options.accessible) {
-        jQuery(this.$srText).text(this.options.controlPauseText);
-      }
-      jQuery(this.$buttonText).html("<i class='fa fa-pause' aria-hidden='true'></i>");
-    };
+        // Fontsize handler
+        if (readCookie("a11y-larger-fontsize")) {
+            $("body").addClass("fontsize");
+            $("head").append(
+                $(
+                    "<link href='" +
+                    template_directory +
+                    "/accessibility/a11y-fontsize.css' id='fontsizeStylesheet' rel='stylesheet' type='text/css' />"
+                )
+            );
+            $("#accessibility-fontsize")
+                .attr("aria-checked", true)
+                .addClass("active");
+        }
+        $(".toggle-fontsize").on("click", function () {
+            if (!$(this).hasClass("active")) {
+                $("head").append(
+                    $(
+                        "<link href='" +
+                        template_directory +
+                        "/accessibility/a11y-fontsize.css' id='fontsizeStylesheet' rel='stylesheet' type='text/css' />"
+                    )
+                );
+                $("body").addClass("fontsize");
+                $(this).attr("aria-checked", true).addClass("active");
+                createCookie("a11y-larger-fontsize", "1");
+                return false;
+            } else {
+                $("#fontsizeStylesheet").remove();
+                $("body").removeClass("fontsize");
+                $(this).removeAttr("aria-checked").removeClass("active");
+                eraseCookie("a11y-larger-fontsize");
+                return false;
+            }
+        });
 
-    jQuery("[data-orbit]").on("init.zf.orbit", function (e) {
-      jQuery(e.target).foundation("initControls");
-    });
-  }
+        // Back to top elavator
+        var offset = 220;
+        var duration = 500;
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > offset) {
+                $("#back-to-top").fadeIn(duration);
+            } else {
+                $("#back-to-top").fadeOut(duration);
+            }
+        });
+        $("#back-to-top").click(function (event) {
+            event.preventDefault();
+            $("html, body").animate({scrollTop: 0}, duration);
+            return false;
+        });
 
-  jQuery(document).ready(function ($) {
-    // Transparency Seal
-    $("#tp-seal").parent().parent().addClass("text-center");
+        // Skip to Content handler
+        // var stc = $('#main-content').position().top;
+        // b = $('.sticky ').height();
+        // c = stc-58;
+        $("#accessibility-skip-content").click(function (event) {
+            var stc = $("#main-content").position().top;
+            b = $(".sticky ").height();
+            c = stc - 58;
+            event.preventDefault();
+            $("html, body").animate({scrollTop: c}, duration);
+            return false;
+        });
 
-    // High contrast handler
-    if (readCookie("a11y-high-contrast")) {
-      $("body").addClass("contrast");
-      $("head").append(
-        $(
-          "<link href='" +
-            template_directory +
-            "/accessibility/a11y-contrast.css' id='highContrastStylesheet' rel='stylesheet' type='text/css' />"
-        )
-      );
-      $("#accessibility-contrast")
-        .attr("aria-checked", true)
-        .addClass("active");
-    }
-    $(".toggle-contrast").on("click", function () {
-      if (!$(this).hasClass("active")) {
-        $("head").append(
-          $(
-            "<link href='" +
-              template_directory +
-              "/accessibility/a11y-contrast.css' id='highContrastStylesheet' rel='stylesheet' type='text/css' />"
-          )
-        );
-        $("body").addClass("contrast");
-        // createCookie("a11y-high-contrast", "1");
-        $(this).attr("aria-checked", true).addClass("active");
-        return false;
-      } else {
-        $("#highContrastStylesheet").remove();
-        $("body").removeClass("contrast");
-        $(this).removeAttr("aria-checked").removeClass("active");
-        // eraseCookie("a11y-high-contrast");
-        return false;
-      }
-    });
+        // Skip to Footer handler
+        // var stf = $('#gwt-standard-footer').position().top;
+        $("#accessibility-skip-footer").click(function (event) {
+            var stf = $("#gwt-standard-footer").position().top;
+            event.preventDefault();
+            $("html, body").animate({scrollTop: stf}, duration);
+            return false;
+        });
 
-    // Saturation handler
-    if (readCookie("a11y-desaturated")) {
-      $("body").addClass("desaturated");
-      $("head").append(
-        $(
-          "<link href='" +
-            template_directory +
-            "/accessibility/a11y-desaturate.css' id='desaturateStylesheet' rel='stylesheet' type='text/css' />"
-        )
-      );
-      $("#accessibility-grayscale")
-        .attr("aria-checked", true)
-        .addClass("active");
-    }
-    $(".toggle-grayscale").on("click", function () {
-      if (!$(this).hasClass("active")) {
-        $("head").append(
-          $(
-            "<link href='" +
-              template_directory +
-              "/accessibility/a11y-desaturate.css' id='desaturateStylesheet' rel='stylesheet' type='text/css' />"
-          )
-        );
-        $("body").addClass("desaturated");
-        $(this).attr("aria-checked", true).addClass("active");
-        createCookie("a11y-desaturated", "1");
-        return false;
-      } else {
-        $("#desaturateStylesheet").remove();
-        $("body").removeClass("desaturated");
-        $(this).removeAttr("aria-checked").removeClass("active");
-        eraseCookie("a11y-desaturated");
-        return false;
-      }
+        // For Testing
+        // Adjust Text Sizing
+        var zoom = 0;
+        $("p").each(function () {
+            var el = $(this),
+                size = parseInt(el.css("font-size"));
+            el.data("font-size", size);
+        });
+        // For font text default size
+        $("#text-default").click(function (event) {
+            event.preventDefault();
+            zoom = 0;
+            $("p").each(function () {
+                var el = $(this),
+                    size = el.data("font-size");
+                el.css("font-size", Math.max(size + zoom, 0) + "px");
+            });
+        });
+        // For font text size reducer
+        $("#text-reduce").click(function (event) {
+            event.preventDefault();
+            zoom--;
+            $("p").each(function () {
+                var el = $(this),
+                    size = el.data("font-size");
+                el.css("font-size", Math.max(size + zoom, 0) + "px");
+            });
+        });
+        // For font text size enlarger
+        $("#text-enlarge").click(function (event) {
+            event.preventDefault();
+            zoom++;
+            $("p").each(function () {
+                var el = $(this),
+                    size = el.data("font-size");
+                el.css("font-size", Math.max(size + zoom, 0) + "px");
+            });
+        });
+        // End for Adjust Text Sizing
+        // End for Testing
     });
-
-    // Fontsize handler
-    if (readCookie("a11y-larger-fontsize")) {
-      $("body").addClass("fontsize");
-      $("head").append(
-        $(
-          "<link href='" +
-            template_directory +
-            "/accessibility/a11y-fontsize.css' id='fontsizeStylesheet' rel='stylesheet' type='text/css' />"
-        )
-      );
-      $("#accessibility-fontsize")
-        .attr("aria-checked", true)
-        .addClass("active");
-    }
-    $(".toggle-fontsize").on("click", function () {
-      if (!$(this).hasClass("active")) {
-        $("head").append(
-          $(
-            "<link href='" +
-              template_directory +
-              "/accessibility/a11y-fontsize.css' id='fontsizeStylesheet' rel='stylesheet' type='text/css' />"
-          )
-        );
-        $("body").addClass("fontsize");
-        $(this).attr("aria-checked", true).addClass("active");
-        createCookie("a11y-larger-fontsize", "1");
-        return false;
-      } else {
-        $("#fontsizeStylesheet").remove();
-        $("body").removeClass("fontsize");
-        $(this).removeAttr("aria-checked").removeClass("active");
-        eraseCookie("a11y-larger-fontsize");
-        return false;
-      }
-    });
-
-    // Back to top elavator
-    var offset = 220;
-    var duration = 500;
-    $(window).scroll(function () {
-      if ($(this).scrollTop() > offset) {
-        $("#back-to-top").fadeIn(duration);
-      } else {
-        $("#back-to-top").fadeOut(duration);
-      }
-    });
-    $("#back-to-top").click(function (event) {
-      event.preventDefault();
-      $("html, body").animate({ scrollTop: 0 }, duration);
-      return false;
-    });
-
-    // Skip to Content handler
-    // var stc = $('#main-content').position().top;
-    // b = $('.sticky ').height();
-    // c = stc-58;
-    $("#accessibility-skip-content").click(function (event) {
-      var stc = $("#main-content").position().top;
-      b = $(".sticky ").height();
-      c = stc - 58;
-      event.preventDefault();
-      $("html, body").animate({ scrollTop: c }, duration);
-      return false;
-    });
-
-    // Skip to Footer handler
-    // var stf = $('#gwt-standard-footer').position().top;
-    $("#accessibility-skip-footer").click(function (event) {
-      var stf = $("#gwt-standard-footer").position().top;
-      event.preventDefault();
-      $("html, body").animate({ scrollTop: stf }, duration);
-      return false;
-    });
-
-    // For Testing
-    // Adjust Text Sizing
-    var zoom = 0;
-    $("p").each(function () {
-      var el = $(this),
-        size = parseInt(el.css("font-size"));
-      el.data("font-size", size);
-    });
-    // For font text default size
-    $("#text-default").click(function (event) {
-      event.preventDefault();
-      zoom = 0;
-      $("p").each(function () {
-        var el = $(this),
-          size = el.data("font-size");
-        el.css("font-size", Math.max(size + zoom, 0) + "px");
-      });
-    });
-    // For font text size reducer
-    $("#text-reduce").click(function (event) {
-      event.preventDefault();
-      zoom--;
-      $("p").each(function () {
-        var el = $(this),
-          size = el.data("font-size");
-        el.css("font-size", Math.max(size + zoom, 0) + "px");
-      });
-    });
-    // For font text size enlarger
-    $("#text-enlarge").click(function (event) {
-      event.preventDefault();
-      zoom++;
-      $("p").each(function () {
-        var el = $(this),
-          size = el.data("font-size");
-        el.css("font-size", Math.max(size + zoom, 0) + "px");
-      });
-    });
-    // End for Adjust Text Sizing
-    // End for Testing
-  });
 })(window.jQuery, window.Foundation);
 
 if (
-  window.jQuery &&
-  window.jQuery.fn &&
-  typeof window.jQuery.fn.foundation === "function"
+    window.jQuery &&
+    window.jQuery.fn &&
+    typeof window.jQuery.fn.foundation === "function"
 ) {
-  window.jQuery(document).foundation();
+    window.jQuery(document).foundation();
 }

@@ -217,7 +217,7 @@ function cbc_render_latest_posts( $attributes, $content = '', $block = null ) {
 				}
 			}
 		} else {
-			$container_classes = $base_container . 'flex border hover:border-[#1f5d2b] md:items-center ';
+			$container_classes = $base_container . 'flex rounded-md border-2 hover:border-[#1f5d2b] md:items-center ';
 			if ( ! $is_first_group ) {
 				$list_items_markup .= $render_item( $post, $attributes, $container_classes . 'hover:shadow-lg p-0', $img_wrapper_later_list, true, true );
 			} else {
