@@ -864,7 +864,7 @@ Press esc, or click the close the button to close this dialog box.
                                         </div>
                                     <?php endif; ?>
 
-                                    <div id="pst-container" class="site-header__time text-xs font-medium tracking-[0.2em] uppercase" style="display: none; color: white !important; font-size: 0.7rem !important;">
+                                    <div id="pst-container" class="site-header__time text-xs font-medium tracking-[0.2em] uppercase" style="display: none; font-size: 0.7rem !important;">
                                         <div>Philippine Standard Time</div>
                                         <div id="pst-time" class="whitespace-nowrap tracking-normal"></div>
                                     </div>

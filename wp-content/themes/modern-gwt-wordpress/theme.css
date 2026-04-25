@@ -139,9 +139,9 @@ body.admin-bar .site-header {
 }
 
 .site-header.scrolled .site-header-bar {
-  background: rgba(31, 93, 43, 0.96);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 40px rgba(8, 40, 18, 0.24);
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
@@ -169,7 +169,7 @@ body.admin-bar .site-header {
 }
 
 .site-header.scrolled .site-header__desktop-nav {
-  border-color: rgba(148, 163, 184, 0.2);
+  border-color: rgba(15, 23, 42, 0.08);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
@@ -220,17 +220,17 @@ body.admin-bar .site-header {
 .site-header.scrolled .site-header__meta-panel p,
 .site-header.scrolled .site-header__meta-panel span,
 .site-header.scrolled .site-header__meta-panel div {
-  color: rgba(255, 255, 255, 0.84) !important;
+  color: rgba(15, 23, 42, 0.72) !important;
 }
 
 .site-header.scrolled #agency-name {
-  color: #ffffff;
+  color: #111827 !important;
 }
 
 .site-header.scrolled #header-gradient-bg {
   opacity: 1;
   visibility: visible;
-  background: linear-gradient(180deg, #1f7a34 0%, #1f7a34 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
 }
 
 .site-header.scrolled #da-logo,
@@ -257,8 +257,9 @@ body.admin-bar .site-header {
 
 .site-header.scrolled .gwt-desktop-nav > ul > li > a,
 .site-header.scrolled .gwt-desktop-nav > ul > li > a svg {
-  color: rgba(255, 255, 255, 0.96);
+  color: #111827 !important;
 }
+
 
 .site-header .gwt-desktop-nav .absolute {
   background: rgba(255, 255, 255, 0.96);
@@ -287,16 +288,16 @@ body.admin-bar .site-header {
 }
 
 .site-header.scrolled .site-mobile-menu-button {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(8, 40, 18, 0.22);
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #111827 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
 .site-header.scrolled .site-mobile-menu-button:hover,
 .site-header.scrolled .site-mobile-menu-button:focus {
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  background: #f8fafc !important;
+  color: #111827 !important;
 }
 
 .site-mobile-menu-panel {
