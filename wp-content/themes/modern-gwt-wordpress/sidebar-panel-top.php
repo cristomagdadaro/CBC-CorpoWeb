@@ -24,15 +24,7 @@
                         <!-- LEFT: Video -->
                         <div class="relative w-full z-10">
                             <div class="relative w-full overflow-hidden rounded-xl aspect-video bg-[#EAF5EE] border border-[#D0EBD8]">
-                                <video
-                                        class="w-full h-full object-cover rounded-xl"
-                                        controls
-                                        playsinline
-                                        preload="metadata"
-                                >
-                                    <source src="/wp-content/uploads/2025/09/DA-Crop-Biotechnology-Center-2021-1-1.mp4" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
+                                <iframe src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1530085758685692%2F&show_text=false&width=560&t=0" class="absolute inset-0 w-full h-full" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
                             </div>
                         </div>
 
