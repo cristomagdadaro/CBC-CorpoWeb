@@ -91,15 +91,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         ob_start();
         ?>
         <style>
-            /* ============================================
-               COMPACT BENTO GRID - OUR IMPACT SECTION
-               ============================================ */
             .our-impact-section {
                 color: #1f2937;
                 padding: 3rem 1rem;
                 position: relative;
                 overflow: hidden;
-                background: #ffffff;
             }
 
             .our-impact-container {
@@ -380,7 +376,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <?php foreach ($impact_stats as $key => $stat):
                         $stat_numeric_value = (int) str_replace(',', '', $stat['number']);
                         ?>
-                        <div class="impact-card shadow-lg rounded-lg" style="--card-color: <?php echo esc_attr($stat['color']); ?>">
+                        <div class="impact-card shadow-lg rounded-lg bg-white" style="--card-color: <?php echo esc_attr($stat['color']); ?>">
                             <div class="impact-card-header">
                                 <div class="impact-stat-number"
                                      data-count-target="<?php echo esc_attr($stat_numeric_value); ?>"

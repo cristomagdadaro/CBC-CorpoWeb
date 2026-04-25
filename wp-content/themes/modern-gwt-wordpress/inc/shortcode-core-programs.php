@@ -62,7 +62,6 @@ if (!function_exists('cbc_core_programs_shortcode')) {
 
             .core-programs-section {
                 padding: 4rem 1rem;
-                background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
             }
 
             .core-programs-container {
@@ -188,6 +187,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
+                background: white;
             }
 
             /* Icon */

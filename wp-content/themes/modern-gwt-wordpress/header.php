@@ -690,6 +690,7 @@
         #panel-top {
         <?php govph_displayoptions('govph_custom_panel_top');
         ?>
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
         }
 
         #panel-bottom {
@@ -822,12 +823,12 @@ $site_header_classes = implode(
         )
 );
 ?>
-<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper overflow-hidden">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <header id="site-header" class="<?php echo esc_attr( $site_header_classes ); ?>">
             <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
                 <div class="site-header__chrome relative isolate">
-                    <div id="header-gradient-bg" class="absolute inset-0 z-0 bg-gradient-to-b from-green-700 to-transparent w-full"></div>
+                    <div id="header-gradient-bg" class="absolute inset-0 z-0 w-full" style="background: linear-gradient(90deg, #1f5d2b 0%, #55A147 50%, #a2b917 100%); -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); mask-image: linear-gradient(to bottom, black 10%, transparent 100%);"></div>
                     <div class="site-header__bar-inner relative z-10 mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8">
                         <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
                             <div class="min-w-0 flex-1">

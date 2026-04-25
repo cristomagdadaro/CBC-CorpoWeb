@@ -18,7 +18,7 @@
             <?php do_action( 'before_sidebar' );
             $homepage_section_title_classes = 'section-title homepage-section-title text-center text-3xl lg:text-4xl font-extrabold text-[#1f5d2b]'; ?>
             <!-- Panel Top 1 - Hardcoded to avoid database malfunctioning-->
-            <section class="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+            <section class="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
                 <div class="mx-auto max-w-7xl relative overflow-visible">
                     <div class="flex flex-col-reverse md:grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-16">
                         <!-- LEFT: Video -->
@@ -64,7 +64,7 @@
                 </div>
             </section>
 
-            <section class="bg-white px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-24">
+            <section class="px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-24">
                 <div class="mx-auto max-w-7xl">
                     <?php echo do_shortcode('[core_programs auto_advance="true" auto_interval="3500" show_arrows="true"]'); ?>
                 </div>
