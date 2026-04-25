@@ -1,25 +1,13 @@
-/* GWT Walker Nav Menu: show submenus on hover/focus */
-
-.dropdown.menu li.relative > ul.absolute {
-	display: none;
+/* GWT Walker Nav Menu: submenu visibility, positioning, and keyboard/focus support */
+/* Show submenu on hover or focus-within — works regardless of wrapper class */
+li:hover > .gwt-submenu,
+li:focus-within > .gwt-submenu {
+display: flex !important;
+flex-direction: column;
 }
-
-.dropdown.menu li.relative:hover > ul.absolute,
-.dropdown.menu li.relative:focus-within > ul.absolute,
-.dropdown.menu li.relative > ul.absolute:hover {
-	display: flex;
-}
-
-.dropdown.menu li.relative > ul.absolute {
-	flex-direction: column;
-	gap: 0.125rem;
-}
-
-.dropdown.menu li.relative > ul.absolute li.relative:hover > ul.absolute,
-.dropdown.menu li.relative > ul.absolute li.relative:focus-within > ul.absolute {
-	display: flex;
-}
-
-.dropdown.menu li .absolute a {
-	color: #166534 !important;
+/* Nested flyout submenu: open to the right instead of downward */
+.gwt-submenu li:hover > .gwt-submenu,
+.gwt-submenu li:focus-within > .gwt-submenu {
+display: flex !important;
+flex-direction: column;
 }

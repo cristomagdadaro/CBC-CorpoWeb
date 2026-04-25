@@ -177,6 +177,8 @@ const spacingSafelist = [
     'p-8',
     'p-10',
     'px-1',
+    '!p-0',
+    '!pr-0',
     'px-2',
     'px-3',
     'px-4',

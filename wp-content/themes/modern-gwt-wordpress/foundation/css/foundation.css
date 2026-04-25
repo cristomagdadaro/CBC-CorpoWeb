@@ -2155,7 +2155,6 @@ input:checked + label > .switch-inactive {
 }
 
 .dropdown.menu > li.is-dropdown-submenu-parent > a {
-  padding-right: 1.5rem;
   position: relative;
 }
 
@@ -2233,7 +2232,7 @@ input:checked + label > .switch-inactive {
     top: 100%;
   }
   .dropdown.menu.medium-horizontal > li.is-dropdown-submenu-parent > a {
-    padding-right: 1.5rem;
+    padding-right: 0rem;
     position: relative;
   }
   .dropdown.menu.medium-horizontal > li.is-dropdown-submenu-parent > a::after {

@@ -806,28 +806,27 @@ Press esc, or click the close the button to close this dialog box.
 </div>
 
 <?php
-  $has_custom_image_logo = govph_displayoptions( 'govph_logo_enable' );
-  $has_header_search     = govph_displayoptions( 'govph_disable_search' );
-  $site_header_classes   = implode(
-    ' ',
-    array(
-      'site-header',
-      'fixed',
-      'top-0',
-      'left-0',
-      'right-0',
-      'z-50',
-      'transition-all',
-      'duration-500',
-      is_front_page() ? 'site-header--overlay' : 'site-header--with-offset',
-    )
-  );
+$has_custom_image_logo = govph_displayoptions( 'govph_logo_enable' );
+$has_header_search     = govph_displayoptions( 'govph_disable_search' );
+
+$site_header_classes = implode(
+        ' ',
+        array(
+                'site-header',
+                'z-50',
+                'transition-all',
+                'duration-500',
+                is_front_page()
+                        ? 'fixed top-0 left-0 right-0 site-header--overlay'
+                        : 'relative site-header--with-offset',
+        )
+);
 ?>
-<div class="off-canvas-wrapper overflow-hidden">
+<div class="off-canvas-wrapper">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
         <header id="site-header" class="<?php echo esc_attr( $site_header_classes ); ?>">
             <div id="site-header-bar" class="site-header-bar bg-transparent transition-all duration-500">
-                <div class="site-header__chrome relative isolate overflow-hidden">
+                <div class="site-header__chrome relative isolate">
                     <div id="header-gradient-bg" class="absolute inset-0 z-0 bg-gradient-to-b from-green-700 to-transparent w-full"></div>
                     <div class="site-header__bar-inner relative z-10 mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 lg:px-8">
                         <div class="site-header__row flex items-center justify-between gap-4 py-4 transition-all duration-500 lg:gap-8 lg:py-5">
@@ -890,7 +889,7 @@ Press esc, or click the close the button to close this dialog box.
                             </button>
                         </div>
 
-                        <div class="site-header__desktop-nav hidden items-center justify-between gap-6 border-t border-white/10 transition-all duration-500 lg:flex z-10">
+                        <div class="site-header__desktop-nav hidden items-center justify-between gap-6 transition-all duration-500 lg:flex z-10">
                             <div class="flex min-w-0 flex-1 items-center gap-4 xl:gap-6">
                                 <?php if ( has_nav_menu( 'topbar_left' ) ) : ?>
                                     <nav class="gwt-desktop-nav gwt-desktop-nav--primary min-w-0 flex-1" aria-label="Primary navigation">
