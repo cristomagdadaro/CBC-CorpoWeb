@@ -107,5 +107,5 @@ function cbc_recaptcha_field() {
 
     $site_key = CBC_AI_RECAPTCHA_SITE_KEY;
 
-    echo '<div class="g-recaptcha" data-sitekey="' . esc_attr($site_key) . '"></div>';
+    echo '<div class="g-recaptcha flex justify-center" data-sitekey="' . esc_attr($site_key) . '"></div>';
 }

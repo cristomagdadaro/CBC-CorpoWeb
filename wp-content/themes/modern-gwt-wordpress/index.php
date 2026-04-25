@@ -22,7 +22,12 @@ include_once( 'inc/banner.php' );
                  class="text-justify overflow-hidden gap-4 <?php govph_displayoptions( 'govph_content_position' ); ?>columns"
                  style="display: flex; flex-direction: column; justify-content: space-between;"
                  role="main">
-
+                <div>
+                    <?php echo govph_section_header( 'Subscribe Now!', [ 'id' => 'popular_posts_header'] ); ?>
+                    <aside class="widget callout border-none secondary widget_block">
+                        <?php echo  do_shortcode('[newsletter_subscribe]'); ?>
+                    </aside>
+                </div>
                 <div class="hidden grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-3 relative box-border">
                     <div>
                         <?php echo govph_section_header('Vision', ['id' => 'vision_header']); ?>

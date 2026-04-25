@@ -8,45 +8,19 @@
 <aside id="sidebar-right"
        class="mt-5 sm:mt-0 <?php govph_displayoptions( 'govph_sidebar_position_right' ); ?>columns"
        role="complementary">
+    <?php do_action( 'before_sidebar' ); ?>
+    <?php if ( is_active_sidebar( 'right-sidebar' ) ) {
+        dynamic_sidebar( 'right-sidebar' );
+    } ?>
     <?php if ( !is_front_page()) :
     echo govph_section_header( 'Popular Posts', [ 'id' => 'popular_posts_header'] ); ?>
     <aside class="widget callout border-none secondary widget_block reveal-on-scroll-500 opacity-0">
         <?php echo do_shortcode( '[pm_popular_posts cache_minutes="0" titles_only="1"]' ); ?>
     </aside>
-    <?php endif; ?>
+
     <?php echo govph_section_header( 'Subscribe Now!', [ 'id' => 'popular_posts_header'] ); ?>
     <aside class="widget callout border-none secondary widget_block">
         <?php echo  do_shortcode('[newsletter_subscribe]'); ?>
     </aside>
-    <aside class="widget callout border-none secondary widget_block">
-        <div class="flex flex-col items-center gap-2">
-            <div class="grid grid-cols-2 gap-4 items-center">
-                <a href="https://privacy.gov.ph/transparency-seal/" class="flex justify-center">
-                    <img
-                            decoding="async"
-
-                     id="tp-seal"
-                            src="/wp-content/themes/modern-gwt-wordpress/images/transparency-seal-160x160.png"
-                            alt="transparency seal logo"
-                            title="Transparency Seal"
-                            class="w-32 h-32 object-contain md:w-40 md:h-40"
-                    >
-                </a>
-                <a href="https://www.foi.gov.ph/" class="flex justify-center">
-                    <img
-                            decoding="async"
-                            id="foi-logo"
-                            src="/wp-content/themes/modern-gwt-wordpress/images/foi-logo-160x160.png"
-                            alt="freedom of information logo"
-                            title="Freedom of Information"
-                            class="w-32 h-32 object-contain md:w-40 md:h-40"
-                    >
-                </a>
-            </div>
-        </div>
-    </aside>
-    <?php do_action( 'before_sidebar' ); ?>
-    <?php if ( is_active_sidebar( 'right-sidebar' ) ) {
-        dynamic_sidebar( 'right-sidebar' );
-    } ?>
+    <?php endif; ?>
 </aside>

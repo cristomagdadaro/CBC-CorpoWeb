@@ -81,11 +81,12 @@ function cbc_newsletter_subscribe_form() {
         /* Using a standard button class for a slightly better UI */
         .cbc-newsletter-form input[type="submit"] {
             cursor: pointer;
-            padding: 8px 15px;
+            padding: 10px 15px;
             background-color: #1f5d2b; /* WordPress primary color */
             color: white;
             border: none;
             border-radius: 3px;
+            width: 100%;
         }
 	</style>
 	<div class="cbc-newsletter-form">
@@ -95,11 +96,13 @@ function cbc_newsletter_subscribe_form() {
 			?>
 			<p class="text-sm leading-none text-center">Receive email updates whenever we post new biotechnology updates</p>
 			<label class="text-sm" for="newsletter_email">Email:</label>
-			<input type="email" name="newsletter_email" id="newsletter_email" required>		<?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
-			<div style="margin: 15px 0;">
-				<?php cbc_recaptcha_field(); ?>
-			</div>
-		<?php endif; ?>			<input type="submit" name="newsletter_subscribe" value="Subscribe">
+			<input type="email" name="newsletter_email" id="newsletter_email" required>
+            <input type="submit" name="newsletter_subscribe" value="Subscribe">
+            <?php if ( function_exists( 'cbc_recaptcha_field' ) ) : ?>
+                <div style="margin: 15px 0;">
+                    <?php cbc_recaptcha_field(); ?>
+                </div>
+            <?php endif; ?>
 		</form>
 	</div>
 	<script>
