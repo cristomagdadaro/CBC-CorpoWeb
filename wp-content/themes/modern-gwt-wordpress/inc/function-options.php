@@ -1354,9 +1354,9 @@ if ( ! function_exists( 'govph_displayoptions' ) ) {
                                 <img id="agency-logo" draggable="false" loading="eager" decoding="async" alt="' . esc_attr( $option['govph_agency_name'] ) . ' Official Logo" src="' . $agency_logo_render . '" class="h-auto md:w-[4rem] w-10 drop-shadow-[0_6px_13px_rgba(255,255,255,0.9)]" />
                             </div>
                             <div id="textlogo-inner-wrapper" class="flex flex-col min-w-0 justify-center sm:mt-2 mt-0 text-white z-10 whitespace-nowrap leading-none">
-                                <p id="agency-heading" class="text-[0.5rem] md:text-xs font-medium transition-colors uppercase font-display text-white/80 m-0">Department of Agriculture</p>
-                                <p id="agency-name" class="text-lg md:text-2xl font-bold font-display transition-colors text-white m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
-                                <p id="agency-tagline" class="text-[0.5rem] md:text-xs font-medium transition-colors uppercase font-display text-white/80 m-0">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
+                                <p id="agency-heading" class="text-[0.5rem] md:text-xs font-medium transition-colors font-display text-white/80 m-0">Department of Agriculture</p>
+                                <p id="agency-name" class="text-lg md:text-2xl font-bold font-display uppercase transition-colors text-white m-0">' . esc_html( $option['govph_agency_name'] ) . '</p>
+                                <p id="agency-tagline" class="text-[0.5rem] md:text-xs font-medium transition-colors font-display text-white/80 m-0">' . esc_html( $option['govph_agency_tagline'] ) . '</p>
                             </div>
                         </a>';
                 echo $addLogo;

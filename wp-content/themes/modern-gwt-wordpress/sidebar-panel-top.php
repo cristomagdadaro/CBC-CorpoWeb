@@ -42,14 +42,17 @@
                                 DA-Crop Biotechnology Center
                             </h2>
 
-                            <p class="text-sm text-gray-600 leading-[1.85] text-justify md:text-left">
+                            <p class="text-sm text-gray-600 leading-[1.85] text-justify md:text-left z-10 relative">
                                 DA-CBC is one of the three biotechnology centers under the DA-Biotechnology Program
                                 Office (DA-BPO). Through DA-Administrative Order No. 26 Series of 2021, we are mandated
                                 to develop and apply modern biotechnology to boost the nation's agricultural productivity,
                                 build the skills of our research partners, and foster a collaborative culture of
                                 knowledge-sharing to ensure a more food-secure and resilient Philippines.
                             </p>
-                            <div class="w-full h-0.5 bg-[#1A7A42] mt-5 mb-5 rounded-full"></div>
+
+                            <img decoding="async" width="1024" height="201" src="https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-1024x201.webp" alt="DA-CBC Full Front View" class="wp-image-3298 w-full h-auto object-cover mt-4 mb-4 drop-shadow" srcset="https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-1024x201.webp 1024w, https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-300x59.webp 300w, https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-768x150.webp 768w, https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-1536x301.webp 1536w, https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-2048x401.webp 2048w, https://dacbc.philrice.gov.ph/wp-content/uploads/2025/10/front-view-500x98.webp 500w" sizes="(max-width: 1024px) 100vw, 1024px">
+
+                            <div class="w-full h-0.5 bg-[#1A7A42] rounded-full"></div>
                         </div>
                     </div>
 

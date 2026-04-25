@@ -15,20 +15,20 @@ function gwt_wp_breadcrumb() {
 	if (!is_home()) {
 		echo '<ul class="breadcrumbs">';
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
-			echo '<li class="select-none">Navigate:</li>';
+			echo '<li class="select-none"><span>Navigate:</span></li>';
 			echo '<li><a class="pathway" href="';
 			echo home_url();
 			echo '">';
 			echo 'Home';
 			echo '</a>'.$separator_block.'</li>';
 		} else {
-			echo '<li class="select-none">Navigate:</li>';
+			echo '<li class="select-none"><span>Navigate:</span></li>';
 		}
 		
 	} else {
 		if($option['govph_breadcrumbs_show_home'] == 'true'){
 			echo '<ul class="breadcrumbs">';
-			echo '<li class="select-none">Navigate:</li>';
+			echo '<li class="select-none"><span>Navigate:</span></li>';
 			echo '<li><a class="pathway" href="';
 			echo home_url();
 			echo '">';
@@ -45,9 +45,9 @@ function gwt_wp_breadcrumb() {
 
 		if (is_single()) {
 			the_category('</li><li> ');
-			echo $separator_block.'<li>';
+			echo $separator_block.'<li><span>';
 			the_title();
-			echo '</li>';
+			echo '</span></li>';
 		}
 		echo '</li>';
 	} elseif (is_page()) {
@@ -58,12 +58,12 @@ function gwt_wp_breadcrumb() {
 				$output = '<li><a class="pathway" href="'.get_permalink($ancestor).'" title="'.get_the_title($ancestor).'">'.get_the_title($ancestor).'</a>'.$separator_block.'</li>';
 			}
 			echo $output;
-			echo '<li><span class="current show-for-sr">Current: </span>'.get_the_title().'</li>';
+			echo '<li><span class="current show-for-sr">Current: </span><span>'.get_the_title().'</span></li>';
 		} else {
-			echo '<li><span class="current show-for-sr">Current: </span>'.get_the_title().'</li>';
+			echo '<li><span class="current show-for-sr">Current: </span><span>'.get_the_title().'</span></li>';
 		}
 	}
-	
+
 	if (is_archive()) {
 		if (is_day()) {echo "<li>"; the_time('F jS, Y'); echo '</li>';}
 		elseif (is_month()) {echo "<li>"; the_time('F Y'); echo '</li>';}
