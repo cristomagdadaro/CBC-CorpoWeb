@@ -15,15 +15,13 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         // Impact Statistics Data
         $impact_stats = array(
                 'research_projects' => array(
-                        'number' => 'NULL',
+                        'number' => '8',
                         'label' => 'Active Research Initiatives',
                         'sublabel' => 'Ongoing R&D Projects',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
-                                array('label' => 'Crop Improvement', 'value' => '18', 'color' => '#1f5d2b'),
-                                array('label' => 'Biotech Tools', 'value' => '12', 'color' => '#55A147'),
-                                array('label' => 'Policy Studies', 'value' => '9', 'color' => '#D5DA65'),
-                                array('label' => 'Field Trials', 'value' => '8', 'color' => '#8BC34A'),
+                                array('label' => 'Programs', 'value' => '3', 'color' => '#1f5d2b'),
+                                array('label' => 'Projects ', 'value' => '5', 'color' => '#55A147'),
                         )
                 ),
                 'capacity_building' => array(
@@ -36,6 +34,17 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 array('label' => 'Regulators', 'value' => '16', 'color' => '#55A147'),
                                 array('label' => 'Educators', 'value' => '16', 'color' => '#D5DA65'),
                                 array('label' => 'Students', 'value' => '8', 'color' => '#D5DA65'),
+                        )
+                ),
+                'partners_collaborators' => array(
+                        'number' => '1284',
+                        'label' => 'Public Engagement',
+                        'sublabel' => 'Information & Education Campaigns',
+                        'color' => '#1f5d2b',
+                        'breakdown' => array(
+                                array('label' => 'SUCs', 'value' => '27', 'color' => '#1f5d2b'),
+                                array('label' => 'DA Agencies', 'value' => '3', 'color' => '#D5DA65'),
+                                array('label' => 'International', 'value' => '2', 'color' => '#8BC34A'),
                         )
                 ),
                 'iec_reach' => array(
