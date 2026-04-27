@@ -27,14 +27,15 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'capacity_building' => array(
-                        'number' => '147',
+                        'number' => '121',
                         'label' => 'Stakeholders Empowered',
                         'sublabel' => 'Through Training & Workshops',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Researchers', 'value' => '115', 'color' => '#1f5d2b'),
-                                array('label' => 'Institutions', 'value' => '28', 'color' => '#55A147'),
-                                array('label' => 'Countries', 'value' => '4', 'color' => '#D5DA65'),
+                                array('label' => 'Researchers', 'value' => '81', 'color' => '#1f5d2b'),
+                                array('label' => 'Regulators', 'value' => '16', 'color' => '#55A147'),
+                                array('label' => 'Educators', 'value' => '16', 'color' => '#D5DA65'),
+                                array('label' => 'Students', 'value' => '8', 'color' => '#D5DA65'),
                         )
                 ),
                 'iec_reach' => array(
@@ -58,7 +59,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 array('label' => 'Undergraduate', 'value' => '106', 'color' => '#55A147'),
                                 array('label' => 'Graduate', 'value' => '6', 'color' => '#D5DA65'),
                                 array('label' => 'PhD', 'value' => '3', 'color' => '#1f5d2b'),
-                                array('label' => 'Universities', 'value' => '22', 'color' => '#55A147'),
                         )
                 ),
                 'thesis_support' => array(
@@ -67,7 +67,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Research Support & Mentorship',
                         'color' => '#D5DA65',
                         'breakdown' => array(
-                                array('label' => 'Local Universities', 'value' => '34', 'color' => '#1f5d2b'),
+                                array('label' => 'Local University Students', 'value' => '34', 'color' => '#1f5d2b'),
                                 array('label' => 'International Students', 'value' => '4', 'color' => '#55A147'),
                         )
                 ),
