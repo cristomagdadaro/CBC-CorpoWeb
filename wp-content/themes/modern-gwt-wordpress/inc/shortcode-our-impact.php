@@ -15,7 +15,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         // Impact Statistics Data
         $impact_stats = array(
                 'research_projects' => array(
-                        'number' => '8',
+                        'number' => null,
                         'label' => 'Active Research Initiatives',
                         'sublabel' => 'Ongoing R&D Projects',
                         'color' => '#1f5d2b',
@@ -25,7 +25,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'capacity_building' => array(
-                        'number' => '121',
+                        'number' => null,
                         'label' => 'Stakeholders Empowered',
                         'sublabel' => 'Through Training & Workshops',
                         'color' => '#55A147',
@@ -37,7 +37,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'partners_collaborators' => array(
-                        'number' => '32',
+                        'number' => null,
                         'label' => 'Partners and Collaborators',
                         'sublabel' => 'Academic, Government & Global Partners',
                         'color' => '#1f5d2b',
@@ -48,7 +48,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'iec_reach' => array(
-                        'number' => '41',
+                        'number' => null,
                         'label' => 'Public Engagement',
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
@@ -59,7 +59,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'internship_program' => array(
-                        'number' => '192',
+                        'number' => null,
                         'label' => 'Next-Gen Scientists',
                         'sublabel' => 'Internship & Attachment Program',
                         'color' => '#FACD15',
@@ -71,7 +71,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'thesis_support' => array(
-                        'number' => '38',
+                        'number' => null,
                         'label' => 'Thesis & Dissertations',
                         'sublabel' => 'Research Support & Mentorship',
                         'color' => '#D5DA65',
@@ -83,6 +83,20 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         );
 
         $impact_stats = apply_filters('cbc_impact_stats_data', $impact_stats);
+
+        foreach ($impact_stats as $skey => $sval) {
+            if (( ! isset($sval['number']) || $sval['number'] === '' || is_null($sval['number']) )
+                && isset($sval['breakdown']) && is_array($sval['breakdown'])) {
+                $sum = 0;
+                foreach ($sval['breakdown'] as $item) {
+                    $v = isset($item['value']) ? $item['value'] : 0;
+                    $num = (float) str_replace(',', '', $v);
+                    $sum += $num;
+                }
+
+                $impact_stats[$skey]['number'] = (string) (int) round($sum);
+            }
+        }
 
         ob_start();
         ?>
@@ -355,13 +369,34 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <div class="impact-map-card rounded-lg">
                         <div class="impact-map-wrapper">
                             <?php
-                            $map_path = get_template_directory() . $atts['map_svg_path'];
-                            $map_url = esc_url($atts['map_svg_path']);
+                            // Resolve the provided path to an absolute filesystem path.
+                            // $atts['map_svg_path'] may be a site-relative path like '/wp-content/uploads/2025/09/phMap.svg'
+                            // or an absolute URL. We want to safely inline SVGs from disk when appropriate.
+                            $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
+                            $map_relative = ltrim($provided, '/');
 
-                            if (file_exists($map_path)) {
-                                echo file_get_contents($map_path);
+                            // Filesystem path to the file (assume site root when a site-relative path is provided).
+                            $map_path = ABSPATH . $map_relative;
+
+                            // Build a safe URL for fallback display. If the provided value looks like an absolute URL, use it.
+                            if (preg_match('#^https?://#i', $provided)) {
+                                $map_src = esc_url($provided);
                             } else {
-                                echo '<img src="' . $map_url . '" alt="Philippines Map showing our nationwide impact">';
+                                $map_src = esc_url( site_url( '/' ) . $map_relative );
+                            }
+
+                            // Only inline SVGs from disk and only when small enough and readable.
+                            $map_is_svg = strtolower( pathinfo( $map_path, PATHINFO_EXTENSION ) ) === 'svg';
+                            $max_inline_size = 200 * 1024; // 200 KB
+
+                            if ( $map_is_svg && is_readable( $map_path ) && filesize( $map_path ) > 0 && filesize( $map_path ) <= $max_inline_size ) {
+                                $svg = file_get_contents( $map_path );
+                                // Minimal sanitization: remove <script>...</script> blocks to reduce injection risk.
+                                $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
+                                echo $svg;
+                            } else {
+                                // Fallback to an <img> tag pointing to the constructed URL. Escaped for safety.
+                                echo '<img src="' . $map_src . '" alt="Philippines Map showing our nationwide impact">';
                             }
                             ?>
                         </div>
@@ -524,3 +559,4 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
     add_shortcode('our_impact', 'cbc_our_impact_shortcode');
 }
+
