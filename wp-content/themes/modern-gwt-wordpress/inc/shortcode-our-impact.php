@@ -15,7 +15,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         // Impact Statistics Data
         $impact_stats = array(
                 'research_projects' => array(
-                        'number' => '47',
+                        'number' => 'NULL',
                         'label' => 'Active Research Initiatives',
                         'sublabel' => 'Ongoing R&D Projects',
                         'color' => '#1f5d2b',
@@ -27,61 +27,48 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'capacity_building' => array(
-                        'number' => '8,640',
+                        'number' => '147',
                         'label' => 'Stakeholders Empowered',
                         'sublabel' => 'Through Training & Workshops',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Researchers', 'value' => '2,150', 'color' => '#1f5d2b'),
-                                array('label' => 'Extension Workers', 'value' => '3,420', 'color' => '#55A147'),
-                                array('label' => 'Farmers & Coops', 'value' => '2,890', 'color' => '#D5DA65'),
-                                array('label' => 'Students', 'value' => '180', 'color' => '#8BC34A'),
+                                array('label' => 'Researchers', 'value' => '115', 'color' => '#1f5d2b'),
+                                array('label' => 'Institutions', 'value' => '28', 'color' => '#55A147'),
+                                array('label' => 'Countries', 'value' => '4', 'color' => '#D5DA65'),
                         )
                 ),
                 'iec_reach' => array(
-                        'number' => '284,750',
+                        'number' => '1284',
                         'label' => 'Public Engagement',
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
-                                array('label' => 'Print Materials', 'value' => '45,200', 'color' => '#1f5d2b'),
-                                array('label' => 'Digital Reach', 'value' => '198,500', 'color' => '#55A147'),
-                                array('label' => 'Media Features', 'value' => '42', 'color' => '#D5DA65'),
-                                array('label' => 'Building Visits', 'value' => '1,562', 'color' => '#8BC34A'),
-                        )
-                ),
-                'rcbs_symposium' => array(
-                        'number' => '12,847',
-                        'label' => 'Symposium Participation',
-                        'sublabel' => 'Annual Regional Biotech Events',
-                        'color' => '#1f5d2b',
-                        'breakdown' => array(
-                                array('label' => 'Student Delegates', 'value' => '8,230', 'color' => '#1f5d2b'),
-                                array('label' => 'Farmer Participants', 'value' => '2,156', 'color' => '#55A147'),
-                                array('label' => 'Research Exhibits', 'value' => '89', 'color' => '#D5DA65'),
-                                array('label' => 'Expert Speakers', 'value' => '124', 'color' => '#8BC34A'),
+                                array('label' => 'RCBS Conducted', 'value' => '6', 'color' => '#1f5d2b'),
+                                array('label' => 'Media Articles', 'value' => '42', 'color' => '#D5DA65'),
+                                array('label' => 'Building Visits', 'value' => '1236', 'color' => '#8BC34A'),
                         )
                 ),
                 'internship_program' => array(
-                        'number' => '1,256',
+                        'number' => '192',
                         'label' => 'Next-Gen Scientists',
                         'sublabel' => 'Internship & Attachment Program',
                         'color' => '#FACD15',
                         'breakdown' => array(
-                                array('label' => 'Senior High School', 'value' => '486', 'color' => '#1f5d2b'),
-                                array('label' => 'Undergraduate', 'value' => '612', 'color' => '#55A147'),
-                                array('label' => 'Graduate Students', 'value' => '158', 'color' => '#D5DA65'),
+                                array('label' => 'High School', 'value' => '55', 'color' => '#1f5d2b'),
+                                array('label' => 'Undergraduate', 'value' => '106', 'color' => '#55A147'),
+                                array('label' => 'Graduate', 'value' => '6', 'color' => '#D5DA65'),
+                                array('label' => 'PhD', 'value' => '3', 'color' => '#1f5d2b'),
+                                array('label' => 'Universities', 'value' => '22', 'color' => '#55A147'),
                         )
                 ),
                 'thesis_support' => array(
-                        'number' => '89',
+                        'number' => '38',
                         'label' => 'Thesis & Dissertations',
                         'sublabel' => 'Research Support & Mentorship',
                         'color' => '#D5DA65',
                         'breakdown' => array(
-                                array('label' => 'Local Universities', 'value' => '67', 'color' => '#1f5d2b'),
-                                array('label' => 'International', 'value' => '15', 'color' => '#55A147'),
-                                array('label' => 'Institutional Collab', 'value' => '7', 'color' => '#D5DA65'),
+                                array('label' => 'Local Universities', 'value' => '34', 'color' => '#1f5d2b'),
+                                array('label' => 'International Students', 'value' => '4', 'color' => '#55A147'),
                         )
                 ),
         );
