@@ -37,9 +37,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'partners_collaborators' => array(
-                        'number' => '1284',
-                        'label' => 'Public Engagement',
-                        'sublabel' => 'Information & Education Campaigns',
+                        'number' => '32',
+                        'label' => 'Partners and Collaborators',
+                        'sublabel' => 'Academic, Government & Global Partners',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
                                 array('label' => 'SUCs', 'value' => '27', 'color' => '#1f5d2b'),
@@ -48,14 +48,14 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         )
                 ),
                 'iec_reach' => array(
-                        'number' => '1284',
+                        'number' => '41',
                         'label' => 'Public Engagement',
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
                                 array('label' => 'RCBS Conducted', 'value' => '6', 'color' => '#1f5d2b'),
-                                array('label' => 'Media Articles', 'value' => '42', 'color' => '#D5DA65'),
-                                array('label' => 'Building Visits', 'value' => '1236', 'color' => '#8BC34A'),
+                                array('label' => 'Knowledge Products', 'value' => '7', 'color' => '#D5DA65'),
+                                array('label' => 'International Visitors', 'value' => '28', 'color' => '#8BC34A'),
                         )
                 ),
                 'internship_program' => array(
