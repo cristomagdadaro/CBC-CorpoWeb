@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
 Sitemap: https://dacbc.philrive.gov.ph/sitemap.xml
