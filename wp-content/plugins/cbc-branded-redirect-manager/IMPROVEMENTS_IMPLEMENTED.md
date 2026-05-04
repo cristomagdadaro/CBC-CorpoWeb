@@ -46,11 +46,11 @@
 - **Benefit**: Eliminates database hits for frequently visited short links
 - **Expected Impact**: 80% reduction in redirect query load
 
-### 2. **Async/Batched Click Counting** ✓
-- **Implementation**: Batch click updates (flush every 50 clicks or 1 hour)
-- **File**: Lines ~203-210
-- **Benefit**: Reduces UPDATE lock contention; improves response time
-- **Expected Impact**: 85% fewer database writes, sub-millisecond more responsive
+### 2. **Reliable Click Counting** ✓
+- **Implementation**: Atomic click update on every valid GoLink visit
+- **File**: Lines ~238-359
+- **Benefit**: Counts every link visit without transient batch loss
+- **Expected Impact**: Accurate click totals for both low-volume and high-volume links
 
 ### 3. **Paginated Admin List** ✓
 - **Implementation**: 50 links per page with WordPress pagination UI
@@ -90,7 +90,7 @@ data.brm_nonce = brm_ajax.brm_nonce;
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
 | Redirect Query Hits | Every 1 request | Every 1 request (cached) | ~80% reduction |
-| Database Writes per Click | 1 per click | 1 per 50 clicks | 98% reduction |
+| Database Writes per Click | 1 per click | 1 per click | Accurate per-visit counting |
 | Admin List Load Time (1K links) | ~2-3s | ~100ms | 20-30x faster |
 | Memory Usage (Admin) | RAM bloat | Fixed 50-item page | 95% less |
 
@@ -99,31 +99,25 @@ data.brm_nonce = brm_ajax.brm_nonce;
 ## 🚀 RECOMMENDED FUTURE ENHANCEMENTS
 
 ### High Priority:
-1. **Async Click Flush via Cron**: Scheduled task to flush click batches to DB (prevents data loss on plugin deactivation)
-   ```php
-   add_action('init', array($this, 'schedule_click_flush'));
-   add_action('brm_flush_clicks', array($this, 'flush_all_click_batches'));
-   ```
-
-2. **Database Index Creation**: Add indexes in `activate()` function
+1. **Database Index Creation**: Add indexes in `activate()` function
    ```sql
    ALTER TABLE wp_brm_redirects ADD INDEX idx_slug_status_expires (slug, status, expires);
    ```
 
-3. **Redirect Analytics Dashboard**: Track top links by clicks, add date filter
+2. **Redirect Analytics Dashboard**: Track top links by clicks, add date filter
    - Add chart visualization (e.g., Chart.js)
 
-4. **Bulk Operations**: Bulk delete/disable/expire links from admin list
+3. **Bulk Operations**: Bulk delete/disable/expire links from admin list
 
 ### Medium Priority:
-5. **Link Preview/QR Customization**: Allow custom colors, logos in QR codes
-6. **Geo-targeting**: Redirect based on country/region
-7. **A/B Testing**: Split traffic between multiple URLs
-8. **Click Verification**: Verify clicks aren't bots (add honeypot, rate limit per IP)
+4. **Link Preview/QR Customization**: Allow custom colors, logos in QR codes
+5. **Geo-targeting**: Redirect based on country/region
+6. **A/B Testing**: Split traffic between multiple URLs
+7. **Click Verification**: Verify clicks aren't bots (add honeypot, rate limit per IP)
 
 ### Low Priority:
-9. **Link Expiration Cleanup**: Delete expired links older than 30 days
-10. **CSV Export**: Download all links + click stats
+8. **Link Expiration Cleanup**: Delete expired links older than 30 days
+9. **CSV Export**: Download all links + click stats
 
 ---
 
@@ -137,7 +131,7 @@ data.brm_nonce = brm_ajax.brm_nonce;
 - ✅ Fixed URL escaping in OG tags
 - ✅ Prepared all SQL queries
 - ✅ Added transient caching (1-hour TTL)
-- ✅ Implemented batched click counting
+- ✅ Implemented reliable per-visit click counting
 - ✅ Paginated admin list (50 per page)
 - 📋 Recommended database index optimization
 
@@ -149,7 +143,7 @@ data.brm_nonce = brm_ajax.brm_nonce;
 - [ ] Test admin form submission with CSRF token
 - [ ] Test public form creates link with rate limiting
 - [ ] Test admin list pagination works correctly
-- [ ] Test click counter batching (create 60 clicks, verify batch flush)
+- [ ] Test click counter accuracy (visit a link repeatedly, verify each visit increments)
 - [ ] Verify old links still work (backward compatibility)
 - [ ] Monitor database query count before/after caching
 - [ ] Check admin page load time with 1000+ links
@@ -159,7 +153,7 @@ data.brm_nonce = brm_ajax.brm_nonce;
 ## 📞 SUPPORT NOTES
 
 **Backward Compatibility**: ✅ Fully maintained - no breaking changes
-**Deactivation Safety**: Click batches may not flush if plugin deactivated abruptly (future cron task will fix)
+**Click Counting**: Every valid GoLink visit now writes an atomic increment immediately.
 **Cache Clearing**: Visit WordPress Settings → Transients to manually clear cache if needed
 
 ---

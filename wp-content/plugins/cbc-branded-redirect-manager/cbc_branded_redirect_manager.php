@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CBC GoLink
  * Description: Create and manage branded short links that redirect to external URLs and log clicks. Adds shortlinks at /go/{slug} and an admin UI to create/manage links.
- * Version: 1.4
+ * Version: 1.5
  * Author: Cristo Rey C. Magdadaro
  * Text Domain: cbc-golink
  */
@@ -235,16 +235,7 @@ class BRM_Plugin {
             exit;
         }
 
-        // Increment click count asynchronously via transient (batch updates - flush every 50 clicks for performance)
-        $click_counter_key = 'brm_clicks_batch_' . $row->id;
-        $click_batch = ( get_transient( $click_counter_key ) ?: 0 ) + 1;
-        set_transient( $click_counter_key, $click_batch, 3600 );
-        
-        // Flush batch to DB when threshold reached
-        if ( $click_batch >= 50 ) {
-            $wpdb->query( $wpdb->prepare( "UPDATE {$this->table} SET clicks = clicks + %d WHERE id = %d", $click_batch, $row->id ) );
-            delete_transient( $click_counter_key );
-        }
+        $this->increment_click_count( $row );
 
         // Prevent indexing
         header( 'X-Robots-Tag: noindex, nofollow', true );
@@ -357,6 +348,16 @@ class BRM_Plugin {
 
         echo '<meta http-equiv="refresh" content="2;url=' . esc_attr( $row->target_url ) . '">';
         exit;
+    }
+
+    private function increment_click_count( $row ) {
+        global $wpdb;
+
+        $updated = $wpdb->query( $wpdb->prepare( "UPDATE {$this->table} SET clicks = clicks + 1 WHERE id = %d", $row->id ) );
+
+        if ( $updated !== false ) {
+            $row->clicks = (int) $row->clicks + 1;
+        }
     }
 
     /* Admin menu, pages, and settings */
@@ -895,9 +896,6 @@ class BRM_Plugin {
         }
 
         delete_transient( 'brm_redirect_' . md5( $slug ) );
-        if ( $id ) {
-            delete_transient( 'brm_clicks_batch_' . $id );
-        }
 
         // --- QR Code Generation ---
         $qr_url_path = $this->generate_and_save_qr_code( $slug, $id );
@@ -989,7 +987,6 @@ class BRM_Plugin {
             if ( $slug ) {
                 delete_transient( 'brm_redirect_' . md5( $slug ) );
             }
-            delete_transient( 'brm_clicks_batch_' . $id );
         }
         wp_safe_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
         exit;
@@ -998,4 +995,3 @@ class BRM_Plugin {
 
 // Instantiate the class
 BRM_Plugin::instance();
-
