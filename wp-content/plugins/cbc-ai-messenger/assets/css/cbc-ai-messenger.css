@@ -258,6 +258,7 @@
 
 .cbc-ai-send {
   min-width: 4.5rem;
+  height: 100%;
   border: 0;
   border-radius: 10px;
   background: #1f5d2b;

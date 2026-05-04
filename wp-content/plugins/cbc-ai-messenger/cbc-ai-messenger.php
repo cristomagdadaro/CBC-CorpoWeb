@@ -75,6 +75,22 @@ register_deactivation_hook(__FILE__, function(){
     flush_rewrite_rules();
 });
 
+function cbc_ai_default_opening_statements(): array {
+    return array(
+        "Hello! My name is Sprout. I’m your little assistant here at the center. I like to think of myself as the place where big data meets a friendly helping hand. I’m still growing every day, but I’d love to help you turn your questions into bright new discoveries!",
+        "Hi there! I'm Sprout. Just like a tiny seedling reaching for the sun, I’m here to help your ideas grow! Whether you're curious about lab research or looking for ways to help our farmers, I’m excited to learn and find the answers together. Let’s grow something great!",
+        "Hi! I’m Sprout. 🌱 I’m here to help our research bloom into real-world solutions. What can we explore together today?",
+        "Hi! I’m Sprout. 🌱 I’m still a little new to the world, but I have a big appetite for biotech knowledge! What are we learning about today?",
+        "Hello! I'm Sprout. I’ve been busy soaking up all the latest research like sunshine. Do you have a question I can help answer?",
+        "Hi there! I'm Sprout. I’m here to make sure your visit to the CBC website is as bright as a summer morning. How can I help you today?",
+        "Hello, friend! My name is Sprout. I’m here to help turn your big questions into little discoveries. What’s on your mind?",
+        "Oh, hello! I’m Sprout. I’m just a little helper trying to bridge the gap between the lab and the field. Want to explore some science with me?",
+        "Hi! I'm Sprout. Just like a tiny plant, I'm here to help things grow! Whether it’s data or ideas, I’m ready to help you find what you need.",
+        "Hi! I'm Sprout. Every great discovery starts as a tiny seed of an idea. I'm here to help yours bloom! What can we look for today?",
+        "Hello! I’m Sprout. I believe even the smallest questions can lead to the biggest harvests. What can I help you harvest today?",
+    );
+}
+
 // Settings Page
 add_action('admin_menu', function(){
     add_options_page(
@@ -103,6 +119,9 @@ add_action('admin_init', function(){
     add_settings_field('cbc_ai_max_tokens', 'Max Tokens', 'cbc_ai_field_max_tokens', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_max_tokens'));
     add_settings_field('cbc_ai_system_prompt', 'System Prompt', 'cbc_ai_field_system_prompt', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_system_prompt'));
     add_settings_field('cbc_ai_enforce_scope', 'Enforce Topic Scope', 'cbc_ai_field_enforce_scope', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_enforce_scope'));
+
+    add_settings_section('cbc_ai_opening_section', 'Sprout Opening Statements', 'cbc_ai_opening_section_callback', 'cbc-ai-messenger');
+    add_settings_field('cbc_ai_opening_statements', 'Opening Statements', 'cbc_ai_field_opening_statements', 'cbc-ai-messenger', 'cbc_ai_opening_section', array('label_for' => 'cbc_ai_opening_statements'));
 
     // New settings for site context
     add_settings_field('cbc_ai_include_site_context', 'Use Site Content (RAG)', 'cbc_ai_field_include_site_context', 'cbc-ai-messenger', 'cbc_ai_main', array('label_for' => 'cbc_ai_include_site_context'));
@@ -133,6 +152,7 @@ function cbc_ai_default_settings(){
             "Key crops include rice (including Golden Rice / Malusog 1 and high iron/zinc rice), corn, coconut, coffee, sugarcane, banana, abaca, cotton, and cassava. " .
             "DA-CBC also uses the OneCBC Portal for laboratory equipment logging, venue rentals, and experiment monitoring. " .
             "When uncertain, state uncertainty briefly and suggest contacting DA-CBC through official channels for confirmation.",
+        'opening_statements' => implode("\n", cbc_ai_default_opening_statements()),
         'enforce_scope' => 1,
         'openai_org' => '',
         // New defaults for site context
@@ -173,6 +193,9 @@ function cbc_ai_sanitize_settings($input): array {
     $out['presence_penalty'] = is_numeric($input['presence_penalty'] ?? null) ? max(-2, min(2, floatval($input['presence_penalty']))) : $out['presence_penalty'];
     $out['max_tokens'] = is_numeric($input['max_tokens'] ?? null) ? max(1, min(4096, intval($input['max_tokens']))) : $out['max_tokens'];
     $out['system_prompt'] = wp_kses_post($input['system_prompt'] ?? $out['system_prompt']);
+    $opening_statements = sanitize_textarea_field($input['opening_statements'] ?? $out['opening_statements']);
+    $opening_lines = array_values(array_filter(array_map('trim', preg_split('/\R+/', $opening_statements))));
+    $out['opening_statements'] = $opening_lines ? implode("\n", $opening_lines) : implode("\n", cbc_ai_default_opening_statements());
     $out['enforce_scope'] = !empty($input['enforce_scope']) ? 1 : 0;
     // New sanitization for site context
     $out['include_site_context'] = !empty($input['include_site_context']) ? 1 : 0;
@@ -197,6 +220,10 @@ function cbc_ai_render_settings_page(): void {
         <p class="description">Use the shortcode <code>[cbc_ai_messenger]</code> to render the chat form on any page.</p>
     </div>
     <?php
+}
+
+function cbc_ai_opening_section_callback(): void {
+    echo '<p class="description">Manage the statements Sprout randomly uses when a new conversation starts. Add one statement per line.</p>';
 }
 
 function cbc_ai_field_provider($args): void {
@@ -263,6 +290,12 @@ function cbc_ai_field_system_prompt($args): void {
     echo "<textarea id='{$args['label_for']}' name='" . CBC_AI_OPT . "[system_prompt]' rows='5' class='large-text'>" . esc_textarea($val) . "</textarea>";
 }
 
+function cbc_ai_field_opening_statements($args): void {
+    $val = cbc_ai_get_settings()['opening_statements'] ?? implode("\n", cbc_ai_default_opening_statements());
+    echo "<textarea id='" . esc_attr($args['label_for']) . "' name='" . esc_attr(CBC_AI_OPT) . "[opening_statements]' rows='12' class='large-text code'>" . esc_textarea($val) . "</textarea>";
+    echo "<p class='description'>Write one opening statement per line. Sprout will randomly choose one when a fresh conversation starts.</p>";
+}
+
 function cbc_ai_field_enforce_scope($args): void {
     $val = cbc_ai_get_settings()['enforce_scope'] ?? 0;
     echo "<input type='checkbox' id='{$args['label_for']}' name='" . CBC_AI_OPT . "[enforce_scope]' value='1' " . checked(1, $val, false) . " />";
@@ -297,6 +330,19 @@ function cbc_ai_field_render_in_footer($args): void{
     echo "<p class='description'>Outputs the floating chat in the site footer on pages that don’t already include the shortcode.</p>";
 }
 
+function cbc_ai_get_opening_statements($opts = null): array {
+    $opts = is_array($opts) ? $opts : cbc_ai_get_settings();
+    $raw = (string)($opts['opening_statements'] ?? '');
+    $statements = array_values(array_filter(array_map('trim', preg_split('/\R+/', $raw))));
+
+    return $statements ? $statements : cbc_ai_default_opening_statements();
+}
+
+function cbc_ai_get_random_opening_statement($opts = null): string {
+    $statements = cbc_ai_get_opening_statements($opts);
+    return $statements[array_rand($statements)];
+}
+
 // Shortcode to render the messenger UI
 add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
@@ -329,11 +375,17 @@ add_shortcode('cbc_ai_messenger', function($atts){
         wp_enqueue_script('cbc-ai-messenger', plugins_url('assets/js/cbc-ai-messenger.js', __FILE__), array('jquery'), '1.5.0', true);
     }
 
+    $opts = cbc_ai_get_settings();
+    $opening_statements = cbc_ai_get_opening_statements($opts);
+    $opening_statement = cbc_ai_get_random_opening_statement($opts);
+
     wp_localize_script('cbc-ai-messenger', 'CBCAI', array(
         'restUrl' => esc_url_raw(rest_url('cbc-ai/v1/ask')),
         'nonce' => is_user_logged_in() ? wp_create_nonce('wp_rest') : '',
         'placeholder' => (string)$atts['placeholder'],
         'title' => (string)$atts['title'],
+        'introMessage' => $opening_statement,
+        'openingStatements' => $opening_statements,
         'recaptchaSiteKey' => $recaptcha_site_key,
         'recaptchaAction' => 'cbc_ai_chat',
     ));
@@ -376,7 +428,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
                 <div class="cbc-ai-user-info hidden"></div>
                 <span class="cbc-ai-convo-label hidden">Conversation</span>
                 <div class="cbc-ai-log hidden" aria-live="polite">
-                    <div class="cbc-ai-msg cbc-ai-bot">Hello, I am Sprout. Sprout represents the bridge between laboratory research and field-ready innovation--an intelligent starting point where data germinates into actionable agricultural knowledge.</div>
+                    <div class="cbc-ai-msg cbc-ai-bot"><?php echo esc_html($opening_statement); ?></div>
                 </div>
                 <div class="cbc-ai-typing hidden" aria-live="polite">
                     <span></span><span></span><span></span>

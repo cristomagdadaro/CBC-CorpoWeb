@@ -108,7 +108,14 @@
 
         history: {
             key: 'cbc_ai_chat_history',
-            introText: 'Hello, I am Sprout. Sprout represents the bridge between laboratory research and field-ready innovation--an intelligent starting point where data germinates into actionable agricultural knowledge.',
+            fallbackIntroText: 'Hello, I am Sprout. Sprout represents the bridge between laboratory research and field-ready innovation--an intelligent starting point where data germinates into actionable agricultural knowledge.',
+            getIntroText: function () {
+                const statements = CBCAI && Array.isArray(CBCAI.openingStatements) ? CBCAI.openingStatements.filter(Boolean) : [];
+                if (statements.length) {
+                    return statements[Math.floor(Math.random() * statements.length)];
+                }
+                return (CBCAI && CBCAI.introMessage) || this.fallbackIntroText;
+            },
             get: function () {
                 try {
                     const stored = localStorage.getItem(this.key);
@@ -121,7 +128,7 @@
             renderIntro: function () {
                 const { $log, $convoLabel } = CBCAIChat.elements;
                 $log.empty();
-                $('<div/>').addClass('cbc-ai-msg cbc-ai-bot').text(this.introText).appendTo($log);
+                $('<div/>').addClass('cbc-ai-msg cbc-ai-bot').text(this.getIntroText()).appendTo($log);
                 $log.removeClass('hidden').addClass('block flex');
                 $convoLabel.addClass('hidden');
             },
