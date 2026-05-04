@@ -332,45 +332,50 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div id="cbc-ai-chat-container" aria-hidden="false">
-        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-md flex flex-col">
-            <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
-                <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
-                <button type="button" class="cbc-ai-clear-history text-xs" title="Clear conversation history">Clear</button>
+    <div id="cbc-ai-chat-container" class="collapsed" aria-hidden="false">
+        <button id="cbc-ai-chat-toggle" aria-expanded="false" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
+            <span class="cbc-ai-icon-collapsed" aria-hidden="true">AI</span>
+            <span class="cbc-ai-icon-expanded hidden" aria-hidden="true">x</span>
+            <span class="sr-only">Toggle AI Chat</span>
+        </button>
+        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel">
+            <div class="cbc-ai-header">
+                <div class="cbc-ai-heading">
+                    <div class="cbc-ai-title">Biotech Assistant</div>
+                    <div class="cbc-ai-subtitle">Powered by Qwen3</div>
+                </div>
+                <div class="cbc-ai-header-actions">
+                    <span class="cbc-ai-status-dot" aria-hidden="true"></span>
+                    <button type="button" class="cbc-ai-clear-history" title="Clear conversation history">Clear</button>
+                </div>
             </div>
-            <div class="cbc-ai-body p-4 flex flex-col gap-2">
-                <div class="cbc-ai-user-info w-full mb-1 hidden text-sm text-gray-700"></div>
-                <span class="cbc-ai-convo-label hidden text-xs text-gray-400">Conversation:</span>
-                <div class="cbc-ai-log hidden bg-gray-300 rounded p-2 my-1 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
-                <form class="cbc-ai-form flex flex-col gap-2 mt-1">
-                    <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
-                        <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
-                        <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
+            <div class="cbc-ai-body">
+                <div class="cbc-ai-user-info hidden"></div>
+                <span class="cbc-ai-convo-label hidden">Conversation</span>
+                <div class="cbc-ai-log hidden" aria-live="polite">
+                    <div class="cbc-ai-msg cbc-ai-bot">Ask anything about DA-CBC, biotechnology, or agriculture.</div>
+                </div>
+                <div class="cbc-ai-typing hidden" aria-live="polite">
+                    <span></span><span></span><span></span>
+                </div>
+                <form class="cbc-ai-form">
+                    <div class="cbc-ai-contact-fields">
+                        <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name" aria-label="Your name" autocomplete="name" />
+                        <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email" aria-label="Your email" autocomplete="email" />
                         <label for="cbc-ai-website" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">Leave this field empty</label>
                         <input id="cbc-ai-website" type="text" name="website" class="cbc-ai-input-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true" />
                     </div>
-                    <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-fit" style="height: 100px;" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
-                    <div class="flex items-center justify-center">
+                    <div class="cbc-ai-recaptcha-wrap">
                         <?php if (function_exists('cbc_recaptcha_field')) { cbc_recaptcha_field(); } ?>
                     </div>
-                    <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
+                    <div class="cbc-ai-compose">
+                        <textarea name="message" class="cbc-ai-input" placeholder="Type your message..." aria-label="Your question"></textarea>
+                        <button type="submit" class="cbc-ai-send">Send</button>
+                    </div>
                 </form>
-                <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our <a href="/about-us/terms-and-conditions/">Terms and Conditions</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
+                <div class="cbc-ai-note">Experimental assistant. Responses may be inaccurate. By chatting, you agree to our <a href="/about-us/terms-and-conditions/">Terms</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
             </div>
         </div>
-        <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
-            <span class="cbc-ai-icon-expanded" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                </svg>
-            </span>
-            <span class="cbc-ai-icon-collapsed hidden" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
-                  <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-                </svg>
-            </span>
-            <span class="sr-only">Toggle AI Chat</span>
-        </button>
     </div>
     <?php
     return ob_get_clean();
@@ -395,7 +400,7 @@ function cbc_ai_rest_permission( WP_REST_Request $request ) {
         return new WP_Error('cbc_ai_method_not_allowed', __('Only POST requests are allowed for this endpoint.', 'cbc-ai-messenger'), array('status' => 405));
     }
 
-    if (!cbc_ai_is_local_or_dev() && '' === cbc_ai_get_recaptcha_secret()) {
+    if (!cbc_ai_is_local_or_dev() && !function_exists('cbc_recaptcha_verify') && '' === cbc_ai_get_recaptcha_secret()) {
         return new WP_Error('cbc_ai_not_ready', __('The AI service is temporarily unavailable.', 'cbc-ai-messenger'), array('status' => 503));
     }
 
@@ -548,8 +553,16 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     // --- reCAPTCHA verification (if secret configured) ---
     // Skip reCAPTCHA validation on local/development environments
     $is_local = cbc_ai_is_local_or_dev();
-    $recaptcha_secret = ($is_local) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
+    $recaptcha_secret = ($is_local || function_exists('cbc_recaptcha_verify')) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
     $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
+    if (!$is_local && function_exists('cbc_recaptcha_verify')) {
+        if ($recaptcha_token === '') {
+            return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
+        }
+        if (!cbc_recaptcha_verify($recaptcha_token)) {
+            return new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
+        }
+    }
     if ($recaptcha_secret !== '') {
         if ($recaptcha_token === '') {
             return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
@@ -603,7 +616,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
 
     // Let the model decide scope based on the system prompt; no keyword pre-blocking
     $api_key = cbc_ai_get_effective_api_key($opts);
-    if ($api_key === '') {
+    if (($opts['provider'] ?? '') !== 'lmstudio' && $api_key === '') {
         $reply = 'The AI service is not configured. Please contact the site administrator.';
         $post_id = cbc_ai_log_message($message, $reply, array('provider' => 'none','model' => '','status' => 'not_configured'), $name, $email);
         return new WP_REST_Response(array('reply' => $reply), 200);
@@ -874,7 +887,7 @@ function cbc_ai_get_effective_api_key($opts): string {
     $key = trim((string)($opts['api_key'] ?? ''));
     if ($key !== '') return $key;
     if ($prov === 'openrouter') { $env = getenv('OPENROUTER_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENROUTER_API_KEY')) return (string)constant('CBC_AI_OPENROUTER_API_KEY'); }
-    else { $env = getenv('OPENAI_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENAI_API_KEY')) return (string)constant('CBC_AI_OPENAI_API_KEY'); }
+    elseif ($prov === 'openai') { $env = getenv('OPENAI_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENAI_API_KEY')) return (string)constant('CBC_AI_OPENAI_API_KEY'); }
     return '';
 }
 function cbc_ai_get_effective_openai_org($opts): string {

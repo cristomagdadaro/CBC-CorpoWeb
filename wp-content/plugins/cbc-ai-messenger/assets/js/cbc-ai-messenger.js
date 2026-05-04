@@ -57,6 +57,15 @@
                 }, 2800);
             },
 
+            setProcessing: function (isProcessing) {
+                const { $form, $typing } = CBCAIChat.elements;
+                const $btn = $form.find('.cbc-ai-send');
+                $btn.prop('disabled', isProcessing).text(isProcessing ? '...' : 'Send');
+                if ($typing && $typing.length) {
+                    $typing.toggleClass('hidden', !isProcessing);
+                }
+            },
+
             mobile: {
                 ensureBackdrop: function () {
                     if ($('#cbc-ai-backdrop').length) {
@@ -123,6 +132,7 @@
                 const history = this.get();
                 const { $log, $convoLabel } = CBCAIChat.elements;
                 if (history.length > 0) {
+                    $log.empty();
                     history.forEach(item => {
                         const $div = $('<div/>').addClass('cbc-ai-msg ' + (item.who === 'user' ? 'cbc-ai-user' : 'cbc-ai-bot'));
                         if (item.who === 'user') {
@@ -135,6 +145,8 @@
                     $log.removeClass('hidden').addClass('block flex');
                     $convoLabel.removeClass('hidden').addClass('block');
                     $log.scrollTop($log[0].scrollHeight);
+                } else {
+                    $log.removeClass('hidden').addClass('block flex');
                 }
             }
         },
@@ -145,8 +157,8 @@
             getInfo: function () {
                 try {
                     return {
-                        name: localStorage.getItem(this.nameKey),
-                        email: localStorage.getItem(this.emailKey)
+                        name: localStorage.getItem(this.nameKey) || sessionStorage.getItem(this.nameKey),
+                        email: localStorage.getItem(this.emailKey) || sessionStorage.getItem(this.emailKey)
                     };
                 } catch (e) { return { name: null, email: null }; }
             },
@@ -154,12 +166,16 @@
                 try {
                     localStorage.setItem(this.nameKey, name);
                     localStorage.setItem(this.emailKey, email);
+                    sessionStorage.setItem(this.nameKey, name);
+                    sessionStorage.setItem(this.emailKey, email);
                 } catch (e) { }
             },
             clearInfo: function () {
                 try {
                     localStorage.removeItem(this.nameKey);
                     localStorage.removeItem(this.emailKey);
+                    sessionStorage.removeItem(this.nameKey);
+                    sessionStorage.removeItem(this.emailKey);
                 } catch (e) { }
             },
             showInfo: function (name, email) {
@@ -202,15 +218,17 @@
                 }
             } catch (e) { }
 
-            let collapsed = false;
+            let collapsed = true;
             try {
-                collapsed = localStorage.getItem(stateKey) === '1';
+                const storedState = localStorage.getItem(stateKey);
+                collapsed = storedState === null ? true : storedState === '1';
             } catch (e) { }
 
             if (collapsed) {
                 container.classList.add('collapsed');
                 toggle.setAttribute('aria-expanded', 'false');
             } else {
+                container.classList.remove('collapsed');
                 toggle.setAttribute('aria-expanded', 'true');
                 if (this.isMobile()) {
                     this.ui.mobile.applyFullscreen();
@@ -269,7 +287,7 @@
 
             this.elements.$form.on('submit', async (e) => {
                 e.preventDefault();
-                const { $input, $nameInput, $emailInput, $websiteInput } = this.elements;
+                const { $input, $nameInput, $emailInput, $websiteInput, $recaptchaInput } = this.elements;
                 const msg = ($input.val() || '').trim();
                 if (!msg) return;
 
@@ -287,34 +305,36 @@
                 }
                 if (invalid) return;
 
+                this.user.saveInfo(name, email);
+                this.user.showInfo(name, email);
                 this.ui.addMsg('user', msg);
                 $input.val('');
-                const $btn = this.elements.$form.find('.cbc-ai-send');
-                const oldText = $btn.text();
-                $btn.prop('disabled', true).text('Thinking…');
+                this.ui.setProcessing(true);
 
                 const headers = { 'Content-Type': 'application/json' };
                 if (CBCAI && CBCAI.nonce) {
                     headers['X-WP-Nonce'] = CBCAI.nonce;
                 }
 
-                let recaptchaToken = '';
+                let recaptchaToken = ($recaptchaInput.val() || '').trim();
                 if (CBCAI && CBCAI.recaptchaSiteKey) {
-                    if (!(window.grecaptcha && typeof window.grecaptcha.execute === 'function')) {
+                    if (!recaptchaToken && !(window.grecaptcha && typeof window.grecaptcha.execute === 'function')) {
                         this.ui.addMsg('bot', 'Security validation is still loading. Please try again in a moment.');
-                        $btn.prop('disabled', false).text(oldText);
+                        this.ui.setProcessing(false);
                         return;
                     }
 
-                    try {
-                        await new Promise((resolve) => window.grecaptcha.ready(resolve));
-                        recaptchaToken = await window.grecaptcha.execute(CBCAI.recaptchaSiteKey, {
-                            action: CBCAI.recaptchaAction || 'cbc_ai_chat'
-                        });
-                    } catch (error) {
-                        this.ui.addMsg('bot', 'Security validation failed. Please refresh the page and try again.');
-                        $btn.prop('disabled', false).text(oldText);
-                        return;
+                    if (!recaptchaToken) {
+                        try {
+                            await new Promise((resolve) => window.grecaptcha.ready(resolve));
+                            recaptchaToken = await window.grecaptcha.execute(CBCAI.recaptchaSiteKey, {
+                                action: CBCAI.recaptchaAction || 'cbc_ai_chat'
+                            });
+                        } catch (error) {
+                            this.ui.addMsg('bot', 'Security validation failed. Please refresh the page and try again.');
+                            this.ui.setProcessing(false);
+                            return;
+                        }
                     }
                 }
 
@@ -338,14 +358,12 @@
                     } else {
                         this.ui.addMsg('bot', 'Sorry, I could not generate a response right now.');
                     }
-                    this.user.saveInfo(name, email);
-                    this.user.showInfo(name, email);
                 })
                 .catch(() => {
                     this.ui.addMsg('bot', 'Network error. Please try again.');
                 })
                 .finally(() => {
-                    $btn.prop('disabled', false).text(oldText);
+                    this.ui.setProcessing(false);
                 });
             });
 
@@ -381,6 +399,8 @@
                 $nameInput: $('.cbc-ai-input-name'),
                 $emailInput: $('.cbc-ai-input-email'),
                 $websiteInput: $('.cbc-ai-input-website'),
+                $recaptchaInput: $('[name="g-recaptcha-response"]'),
+                $typing: $('.cbc-ai-typing'),
             };
 
             if (!this.elements.container) return;
