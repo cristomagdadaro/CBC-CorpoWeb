@@ -422,6 +422,12 @@ add_shortcode('cbc_ai_messenger', function($atts){
                 <div class="cbc-ai-header-actions">
                     <span class="cbc-ai-status-dot" aria-hidden="true"></span>
                     <button type="button" class="cbc-ai-clear-history" title="Clear conversation history">Clear</button>
+                    <!-- Mobile-only close control: visible when the panel is fullscreen on small screens -->
+                    <button type="button" class="cbc-ai-close-mobile" title="Close chat" aria-label="Close chat">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
             <div class="cbc-ai-body">
@@ -602,147 +608,40 @@ function cbc_ai_check_rate_limits(string $ip, string $email) {
     return true;
 }
 
-function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
-    $message = trim((string)$req->get_param('message'));
-    $name = trim((string)$req->get_param('name'));
-    $email = trim((string)$req->get_param('email'));
-    $honeypot = trim((string)$req->get_param('website'));
+// NOTE: The original broken/duplicated implementations were removed in favor of the corrected
+// implementations later in this file. The function stubs below are intentionally omitted to
+// avoid duplicate function declarations and to fix PHP syntax errors introduced by
+// invalid shorthand expressions.
 
-    if ($honeypot !== '') {
-        return new WP_REST_Response(array('error' => 'Request blocked.'), 403);
-    }
+// function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response { ... }
+// function cbc_ai_normalize_model($provider, $model): bool|string { ... }
+// function cbc_ai_build_site_context($query, $opts): string { ... }
 
-    // Server-side validation: require name and valid email
-    if ($name === '') { return new WP_REST_Response(array('error' => 'Name is required'), 400); }
-    $email_s = sanitize_email($email);
-    if ($email_s === '' || !is_email($email_s)) { return new WP_REST_Response(array('error' => 'A valid email is required'), 400); }
-    if (!preg_match('/@gmail\.com$/i', $email_s)) { return new WP_REST_Response(array('error' => 'A valid Gmail address is required'), 400); }
-    // normalize sanitized values
-    $name = sanitize_text_field($name);
-    $email = $email_s;
-
-    if ($message === '') { return new WP_REST_Response(array('error' => 'Empty message'), 400); }
-    if (mb_strlen($message) > 1200) { return new WP_REST_Response(array('error' => 'Message is too long.'), 400); }
-    $message = sanitize_textarea_field($message);
-
-    // --- reCAPTCHA verification (if secret configured) ---
-    // Skip reCAPTCHA validation on local/development environments
-    $is_local = cbc_ai_is_local_or_dev();
-    $recaptcha_secret = ($is_local || function_exists('cbc_recaptcha_verify')) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
-    $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
-    if (!$is_local && function_exists('cbc_recaptcha_verify')) {
-        if ($recaptcha_token === '') {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
-        }
-        if (!cbc_recaptcha_verify($recaptcha_token)) {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
-        }
-    }
-    if ($recaptcha_secret !== '') {
-        if ($recaptcha_token === '') {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
-        }
-        $ip = cbc_ai_get_client_ip();
-        $verify = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
-            'body' => array(
-                'secret' => $recaptcha_secret,
-                'response' => $recaptcha_token,
-                'remoteip' => $ip,
-            ),
-            'timeout' => 15,
-        ));
-        if (is_wp_error($verify)) {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA verification failed'), 403);
-        }
-        $body = wp_remote_retrieve_body($verify);
-        $data = json_decode($body, true);
-        if (!is_array($data) || empty($data['success'])) {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
-        }
-        // If v3, optionally check score threshold
-        if (isset($data['score']) && floatval($data['score']) < 0.45) {
-            return new WP_REST_Response(array('error' => 'reCAPTCHA score too low'), 403);
-        }
-    }
-
-    $ip = cbc_ai_get_client_ip();
-    $limit = cbc_ai_check_rate_limits($ip, $email);
-    if (is_wp_error($limit)) {
-        return new WP_REST_Response(array('error' => $limit->get_error_message()), 429);
-    }
-
-    $opts = cbc_ai_get_settings();
-
-    // Minimal local reply for contact/info request
-    $contact_type = '';
-    if (cbc_ai_is_contact_request($message, $contact_type)) {
-        $address_plain = "PhilRice Compound, Brgy. Maligaya, Science City of Muñoz, Nueva Ecija 3119, Philippines";
-        $tel_plain = "+63 908 889 7135";
-        $email_plain = "cropbiotechcenter@gmail.com";
-        switch ($contact_type) {
-            case 'address': $reply = $address_plain; break;
-            case 'phone':   $reply = $tel_plain; break;
-            case 'email':   $reply = $email_plain; break;
-            default:        $reply = "Address: $address_plain\nPhone: $tel_plain\nEmail: $email_plain"; break;
-        }
-        $post_id = cbc_ai_log_message($message, $reply, array('provider' => 'local','model' => '','status' => 'local_contact'), $name, $email);
-        return new WP_REST_Response(array('reply' => wp_kses_post(nl2br(esc_html($reply)))), 200);
-    }
-
-    // Let the model decide scope based on the system prompt; no keyword pre-blocking
-    $api_key = cbc_ai_get_effective_api_key($opts);
-    if (($opts['provider'] ?? '') !== 'lmstudio' && $api_key === '') {
-        $reply = 'The AI service is not configured. Please contact the site administrator.';
-        $post_id = cbc_ai_log_message($message, $reply, array('provider' => 'none','model' => '','status' => 'not_configured'), $name, $email);
-        return new WP_REST_Response(array('reply' => $reply), 200);
-    }
-
-    $result = cbc_ai_call_provider($opts, $message, $api_key);
-    if (is_wp_error($result)) {
-        $reply = 'Sorry, I could not generate a response right now.';
-        $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'error','error_code' => $result->get_error_code()), $name, $email);
-        return new WP_REST_Response(array('reply' => $reply), 200);
-    }
-
-    $reply = (string)($result['reply'] ?? '');
-    if ($reply === '') { $reply = 'I do not have an answer at the moment.'; }
-
-    $post_id = cbc_ai_log_message($message, $reply, array('provider' => $opts['provider'],'model' => $opts['model'],'status' => 'ok','usage' => $result['usage'] ?? array()), $name, $email);
-    return new WP_REST_Response(array('reply' => wp_kses_post($reply)), 200);
-}
-
-function cbc_ai_log_message($question, $answer, $meta = array(), $name = '', $email = ''): WP_Error|int {
-    $title = wp_trim_words($question, 10, '...');
-    $post_id = wp_insert_post(array('post_type' => 'cbc_ai_message','post_status' => 'private','post_title' => $title,));
-    if (!$post_id || is_wp_error($post_id)) { return 0; }
-    update_post_meta($post_id, '_cbc_ai_question', wp_kses_post($question));
-    update_post_meta($post_id, '_cbc_ai_answer', wp_kses_post($answer));
-    update_post_meta($post_id, '_cbc_ai_meta', $meta);
-    if (!empty($name)) update_post_meta($post_id, '_cbc_ai_name', sanitize_text_field($name));
-    if (!empty($email)) update_post_meta($post_id, '_cbc_ai_email', sanitize_email($email));
-    $client_ip = cbc_ai_get_client_ip();
-    update_post_meta($post_id, '_cbc_ai_ip_prefix', cbc_ai_anonymize_ip($client_ip));
-    update_post_meta($post_id, '_cbc_ai_ip_hash', cbc_ai_hash_value($client_ip));
-    update_post_meta($post_id, '_cbc_ai_ua_hash', cbc_ai_hash_value((string) ($_SERVER['HTTP_USER_AGENT'] ?? '')));
-    if (is_user_logged_in()) update_post_meta($post_id, '_cbc_ai_user_id', get_current_user_id());
-    return $post_id;
-}
 
 function cbc_ai_normalize_model($provider, $model): bool|string {
     $model = trim((string)$model);
     if ($provider === 'openai') {
-        if (strpos($model, '/') !== false) { $parts = explode('/', $model, 2); $model = end($parts); }
+        if (strpos($model, '/') !== false) {
+            $parts = explode('/', $model, 2);
+            $model = end($parts);
+        }
     } else {
         if (strpos($model, '/') === false) {
-            if (preg_match('/^(gpt-4|gpt-4o|gpt-3\.5|o[0-9]|text-|gpt-)/i', $model)) { $model = 'openai/' . $model; }
+            if (preg_match('/^(gpt-4|gpt-4o|gpt-3\.5|o[0-9]|text-|gpt-)/i', $model)) {
+                $model = 'openai/' . $model;
+            }
         }
     }
     return $model;
 }
 
+
 function cbc_ai_build_site_context($query, $opts): string {
     $query = trim((string)$query);
-    if ($query === '') return '';
+    if ($query === '') {
+        $GLOBALS['cbc_ai_last_site_items'] = array();
+        return '';
+    }
 
     $types_csv = (string)($opts['site_context_types'] ?? 'post,page');
     $types = array_filter(array_map('trim', explode(',', $types_csv)), function($t){ return $t !== ''; });
@@ -759,7 +658,7 @@ function cbc_ai_build_site_context($query, $opts): string {
         'ignore_sticky_posts' => true,
     ));
 
-    if (!$q->have_posts()) { $GLOBALS['cbc_ai_last_site_items'] = array(); return ''; }
+    if (!$q->have_posts()) { $GLOBALS['cbc_ai_last_site_items'] = array(); wp_reset_postdata(); return ''; }
 
     $ctx = array();
     $items = array();
@@ -790,124 +689,6 @@ function cbc_ai_build_site_context($query, $opts): string {
     return "Site content snippets (use if relevant; cite URLs when helpful):\n" . implode("\n\n", $ctx);
 }
 
-function cbc_ai_call_provider($opts, $message, $api_key = ''){
-    $system = (string)$opts['system_prompt'];
-    $guard = "Scope policy: Answer only topics directly related to DA-CBC, crop biotechnology, Philippine agriculture, and DA-CBC-aligned scientific domains: plant/crop biotechnology, genomics, bioinformatics, computational breeding, molecular breeding, genetic engineering, germplasm enhancement, tissue culturing, and DA-CBC facilities/services such as the OneCBC Portal. " .
-        "You may discuss DA-CBC key crops: rice (including Golden Rice / Malusog 1 and high iron/zinc rice), corn, coconut, coffee, sugarcane, banana, abaca, cotton, and cassava. " .
-        "Politely decline requests outside scope, including non-agricultural topics, partisan politics, and general software coding help unrelated to agricultural bioinformatics/computational breeding. " .
-        "For out-of-scope requests, provide a brief refusal and offer to help with an in-scope DA-CBC or crop biotechnology question.";
-
-    $provider = $opts['provider'] ?? 'openrouter';
-    $model = cbc_ai_normalize_model($provider, $opts['model'] ?? '');
-
-    $messages = array(array('role' => 'system', 'content' => $system));
-    if (!empty($opts['enforce_scope'])) { $messages[] = array('role' => 'system', 'content' => $guard); }
-
-    $used_site_ctx = false;
-    if (!empty($opts['include_site_context'])) {
-        $ctx = cbc_ai_build_site_context($message, $opts);
-        if ($ctx !== '') {
-            $messages[] = array('role' => 'system', 'content' => $ctx);
-            $used_site_ctx = true;
-        }
-    }
-
-    $messages[] = array('role' => 'user', 'content' => $message);
-
-    $body = array(
-        'model' => (string)$model,
-        'temperature' => floatval($opts['temperature']),
-        'top_p' => floatval($opts['top_p']),
-        'frequency_penalty' => floatval($opts['frequency_penalty']),
-        'presence_penalty' => floatval($opts['presence_penalty']),
-        'max_tokens' => intval($opts['max_tokens']),
-        'messages' => $messages,
-    );
-
-    $headers = array('Content-Type' => 'application/json');
-
-    if ($provider === 'openrouter') {
-        $url = 'https://openrouter.ai/api/v1/chat/completions';
-        $headers['Authorization'] = 'Bearer ' . $api_key;
-        $headers['HTTP-Referer'] = home_url('/');
-        $headers['X-Title'] = get_bloginfo('name');
-
-    } elseif ($provider === 'lmstudio') {
-        // Use the saved API URL or a sensible default for LM Studio
-        $base_url = !empty($opts['api_url']) ? $opts['api_url'] : 'http://localhost:1234';
-        $url = rtrim($base_url, '/') . '/v1/chat/completions';
-
-        // LM Studio can use an API key (often 'lm-studio'), send if provided
-        if ($api_key !== '') {
-            $headers['Authorization'] = 'Bearer ' . $api_key;
-        }
-
-    } else { // Default to OpenAI
-        $url = 'https://api.openai.com/v1/chat/completions';
-        $headers['Authorization'] = 'Bearer ' . $api_key;
-        $org = cbc_ai_get_effective_openai_org($opts);
-        if ($org !== '') { $headers['OpenAI-Organization'] = $org; }
-    }
-
-    $request_args = array('headers' => $headers, 'body' => wp_json_encode($body), 'timeout' => 45);
-    $response = wp_remote_post($url, $request_args);
-    if (is_wp_error($response)) {
-        return new WP_Error('cbc_ai_transport', $response->get_error_message(), array('provider' => $provider, 'model' => $model));
-    }
-
-    $code = wp_remote_retrieve_response_code($response);
-    $raw = wp_remote_retrieve_body($response);
-    $data = json_decode($raw, true);
-
-    // OpenAI compatibility fallback: some deployments/models require max_completion_tokens.
-    if ($provider === 'openai' && ($code === 400 || $code === 422) && is_array($data) && !empty($data['error']['message'])) {
-        $provider_error = strtolower((string)$data['error']['message']);
-        if (strpos($provider_error, 'max_tokens') !== false) {
-            $retry_body = $body;
-            $retry_body['max_completion_tokens'] = intval($opts['max_tokens']);
-            unset($retry_body['max_tokens']);
-
-            $retry_response = wp_remote_post($url, array('headers' => $headers, 'body' => wp_json_encode($retry_body), 'timeout' => 45));
-            if (!is_wp_error($retry_response)) {
-                $code = wp_remote_retrieve_response_code($retry_response);
-                $raw = wp_remote_retrieve_body($retry_response);
-                $data = json_decode($raw, true);
-            }
-        }
-    }
-
-    if ($code < 200 || $code >= 300 || !is_array($data)) {
-        $provider_message = 'HTTP error from provider';
-        if (is_array($data) && !empty($data['error'])) {
-            if (is_string($data['error'])) {
-                $provider_message = $data['error'];
-            } elseif (is_array($data['error']) && !empty($data['error']['message'])) {
-                $provider_message = (string)$data['error']['message'];
-            }
-        }
-        return new WP_Error('cbc_ai_http', $provider_message, array('code' => $code, 'body' => $raw, 'provider' => $provider, 'model' => $model));
-    }
-
-    $reply = '';
-    if (isset($data['choices'][0]['message']['content'])) { $reply = (string)$data['choices'][0]['message']['content']; }
-    $usage = isset($data['usage']) ? $data['usage'] : array();
-
-    // Append related links if we used site context
-    if ($used_site_ctx && !empty($GLOBALS['cbc_ai_last_site_items']) && is_array($GLOBALS['cbc_ai_last_site_items'])) {
-        $items = $GLOBALS['cbc_ai_last_site_items'];
-        $links = '';
-        foreach ($items as $it) {
-            $url = esc_url($it['url']);
-            $title = esc_html($it['title']);
-            $links .= '<li><a href="' . $url . '" target="_blank" rel="noopener">' . $title . '</a></li>';
-        }
-        if ($links !== '') {
-            $reply .= "\n\n<p><strong>Related links:</strong></p><ul>" . $links . "</ul>";
-        }
-    }
-
-    return array('reply' => $reply, 'usage' => $usage);
-}
 
 // Admin columns and meta box
 add_filter('manage_cbc_ai_message_posts_columns', function($cols){ $cols['question'] = 'Question'; $cols['answer'] = 'Answer'; $cols['status'] = 'Status'; return $cols; });
@@ -946,12 +727,16 @@ function cbc_ai_render_metabox($post){
 add_action('wp_footer', function(){
     if (is_admin()) return;
     $opts = cbc_ai_get_settings();
-    if (empty($opts['render_in_footer'])) return;
+    if (empty($opts['render_in_footer'])) {
+        return;
+    }
 
     global $post;
     if ($post instanceof WP_Post) {
         $content = (string)$post->post_content;
-        if (has_shortcode($content, 'cbc_ai_messenger')) return; // avoid duplicate
+        if (has_shortcode($content, 'cbc_ai_messenger')) {
+            return; // avoid duplicate
+        }
     }
 
     echo do_shortcode('[cbc_ai_messenger]');

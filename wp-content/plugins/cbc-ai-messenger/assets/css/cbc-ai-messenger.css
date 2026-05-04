@@ -111,6 +111,17 @@
   cursor: pointer;
 }
 
+/* Mobile-only close control in header */
+.cbc-ai-close-mobile {
+  display: none; /* shown on small screens via media query */
+  border: 0;
+  background: transparent;
+  color: #fff;
+  padding: 0.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .cbc-ai-body {
   flex: 1;
   min-height: 0;
@@ -328,5 +339,12 @@
 
   .cbc-ai-compose {
     align-items: center;
+  }
+
+  /* show the close button in the header on mobile when panel is fullscreen */
+  #cbc-ai-chat-container.cbc-ai-mobile-open .cbc-ai-close-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -286,6 +286,12 @@
             });
 
             panel.addEventListener('click', (e) => {
+                // Mobile close button handling: delegate to the toggle so state is consistent
+                if (e.target.closest && e.target.closest('.cbc-ai-close-mobile')) {
+                    e.preventDefault();
+                    try { toggle.click(); } catch (err) { /* ignore */ }
+                    return;
+                }
                 if (e.target.closest('.cbc-ai-clear-history')) {
                     e.preventDefault();
                     if (confirm('Are you sure you want to clear the conversation history?')) {

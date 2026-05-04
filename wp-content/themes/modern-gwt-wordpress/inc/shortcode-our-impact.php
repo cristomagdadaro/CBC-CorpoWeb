@@ -98,6 +98,20 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
         }
 
+        // Auto-sort impact stats by numeric `number` descending (highest first).
+        // This runs after numbers are calculated so it respects auto-computed totals.
+        if (!empty($impact_stats) && is_array($impact_stats)) {
+            uasort($impact_stats, function ($a, $b) {
+                $na = isset($a['number']) ? (float) str_replace(',', '', $a['number']) : 0.0;
+                $nb = isset($b['number']) ? (float) str_replace(',', '', $b['number']) : 0.0;
+                // Descending order: compare b to a
+                if ($nb === $na) {
+                    return 0;
+                }
+                return ($nb < $na) ? -1 : 1;
+            });
+        }
+
         ob_start();
         ?>
         <style>
@@ -298,7 +312,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             .impact-map-wrapper svg,
             .impact-map-wrapper img {
                 max-width: 100%;
-                max-height: 350px;
                 width: auto;
                 height: auto;
                 filter: drop-shadow(0 4px 20px rgba(31, 93, 43, 0.15));
@@ -400,7 +413,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                             }
                             ?>
                         </div>
-                        <div class="impact-map-caption uppercase">Nationwide Impact</div>
                     </div>
 
                     <!-- Stat Cards -->
