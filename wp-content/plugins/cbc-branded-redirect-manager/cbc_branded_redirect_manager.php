@@ -360,6 +360,20 @@ class BRM_Plugin {
         }
     }
 
+    private function normalize_target_url( $target ) {
+        $target = trim( (string) $target );
+
+        if ( $target === '' ) {
+            return '';
+        }
+
+        if ( strpos( $target, '/' ) === 0 && strpos( $target, '//' ) !== 0 ) {
+            $target = home_url( $target );
+        }
+
+        return esc_url_raw( $target, array( 'http', 'https' ) );
+    }
+
     /* Admin menu, pages, and settings */
     public function admin_menu() {
         add_menu_page( 'GoLink Manager', 'GoLink Manager', 'manage_options', 'brm_redirects', array(
@@ -676,10 +690,11 @@ class BRM_Plugin {
                     <tr>
                         <th scope="row"><label for="target_url">Target URL <span class="brm-required text-red-500">*</span></label></th>
                         <td>
-                            <input name="target_url" type="url" id="target_url"
+                            <input name="target_url" type="text" id="target_url"
                                    value="<?php echo $is_edit ? esc_attr( $edit->target_url ) : ''; ?>"
                                    class="regular-text brm-input-url !m-0"
-                                   placeholder="https://example.com/zoom/meeting..." required/>
+                                   placeholder="https://example.com/page or /2811/" required/>
+                            <p class="description">Use a full URL or a site-relative path such as <code>/2811/</code>.</p>
                         </td>
                     </tr>
 
@@ -818,7 +833,7 @@ class BRM_Plugin {
         global $wpdb;
         $id      = ! empty( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
         $slug    = sanitize_title_with_dashes( wp_unslash( $_POST['slug'] ?? '' ) );
-        $target  = esc_url_raw( trim( wp_unslash( $_POST['target_url'] ?? '' ) ) );
+        $target  = $this->normalize_target_url( wp_unslash( $_POST['target_url'] ?? '' ) );
 
         if ( ! $is_admin_submission && $id > 0 ) {
             wp_send_json_error( array( 'message' => 'Only administrators can update existing links.' ) );
@@ -832,12 +847,6 @@ class BRM_Plugin {
         $parsed = wp_parse_url( $target );
         if ( ! $parsed || empty( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], $allowed_protocols ) ) {
             wp_send_json_error( array( 'message' => 'Invalid target URL protocol. Use http or https.' ) );
-        }
-
-        $site_host   = wp_parse_url( home_url(), PHP_URL_HOST );
-        $target_host = wp_parse_url( $target, PHP_URL_HOST );
-        if ( $target_host && $site_host && strtolower( $site_host ) === strtolower( $target_host ) ) {
-            wp_send_json_error( array( 'message' => 'Target URL must point to an external host.' ) );
         }
 
         if ( empty( $id ) && empty( $slug ) ) {

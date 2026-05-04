@@ -257,9 +257,19 @@ body.admin-bar .site-header {
 
 .site-header.scrolled .gwt-desktop-nav > ul > li > a,
 .site-header.scrolled .gwt-desktop-nav > ul > li > a svg {
-  color: #111827 !important;
+  color: #1f5d2b !important;
 }
 
+.site-header .gwt-desktop-nav > ul > li.bg-green-700 > a,
+.site-header .gwt-desktop-nav > ul > li.bg-green-800 > a,
+.site-header .gwt-desktop-nav > ul > li.bg-green-700 > a svg,
+.site-header .gwt-desktop-nav > ul > li.bg-green-800 > a svg,
+.site-header.scrolled .gwt-desktop-nav > ul > li.bg-green-700 > a,
+.site-header.scrolled .gwt-desktop-nav > ul > li.bg-green-800 > a,
+.site-header.scrolled .gwt-desktop-nav > ul > li.bg-green-700 > a svg,
+.site-header.scrolled .gwt-desktop-nav > ul > li.bg-green-800 > a svg {
+  color: #ffffff !important;
+}
 
 .site-header .gwt-desktop-nav .absolute {
   background: rgba(255, 255, 255, 0.96);

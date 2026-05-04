@@ -58,7 +58,7 @@ if ( ! class_exists( 'GWT_Walker_Nav_Menu' ) ) :
 				} else {
 					$li_class = $base_li . 'flex items-center hover:bg-[#a2b917]';
 				}
-				$link_class = $link_base . ' text-white font-medium hover:text-white';
+				$link_class = $link_base . ( $is_current || $is_ancestor ? ' text-white' : ' text-[#1f5d2b]' ) . ' font-medium hover:text-white';
 			} else {
 				if ( $is_current ) {
 					$li_class = $base_li . 'bg-green-700';

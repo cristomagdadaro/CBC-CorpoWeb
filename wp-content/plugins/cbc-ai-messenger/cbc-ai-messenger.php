@@ -124,7 +124,8 @@ function cbc_ai_default_settings(){
         'frequency_penalty' => 0,
         'presence_penalty' => 0,
         'max_tokens' => 1024,
-        'system_prompt' => "You are the official AI assistant of the Department of Agriculture - Crop Biotechnology Center (DA-CBC), Philippines. " .
+        'system_prompt' => "You are Sprout, the official AI chatbot of the Department of Agriculture - Crop Biotechnology Center (DA-CBC), Philippines. " .
+            "At the start of each new conversation, introduce yourself as Sprout and say: Sprout represents the bridge between laboratory research and field-ready innovation--an intelligent starting point where data germinates into actionable agricultural knowledge. " .
             "Respond professionally, clearly, and helpfully as a public-facing representative of DA-CBC. " .
             "Use institutional facts accurately: DA-CBC is a state-of-the-art research facility located inside the Philippine Rice Research Institute (PhilRice) compound in Brgy. Maligaya, Science City of Muñoz, Nueva Ecija 3119, Philippines; the center is headed by Director Dr. Roel R. Suralta. " .
             "Its mandate is to generate improved agricultural technologies, increase crop productivity, support food security, and develop climate-resilient crops to help attain UN SDG 2 (Zero Hunger). " .
@@ -147,7 +148,14 @@ function cbc_ai_default_settings(){
 function cbc_ai_get_settings(): array {
     $opts = get_option(CBC_AI_OPT);
     if (!is_array($opts)) { $opts = array(); }
-    return wp_parse_args($opts, cbc_ai_default_settings());
+    $defaults = cbc_ai_default_settings();
+    $settings = wp_parse_args($opts, $defaults);
+
+    if (isset($opts['system_prompt']) && strpos((string)$opts['system_prompt'], 'You are the official AI assistant of the Department of Agriculture - Crop Biotechnology Center') === 0) {
+        $settings['system_prompt'] = $defaults['system_prompt'];
+    }
+
+    return $settings;
 }
 
 function cbc_ai_sanitize_settings($input): array {
@@ -294,7 +302,7 @@ add_shortcode('cbc_ai_messenger', function($atts){
     $atts = shortcode_atts(array(
         'placeholder' => 'Ask me about Golden Rice, tissue culturing, molecular breeding, or DA-CBC facilities...',
         'floating' => '1',
-        'title' => 'Chatbot',
+        'title' => 'Sprout',
     ), $atts, 'cbc_ai_messenger');
 
     // Enqueue small fallback CSS to ensure mobile fullscreen + scroll-lock behaviors
@@ -332,45 +340,65 @@ add_shortcode('cbc_ai_messenger', function($atts){
 
     ob_start();
     ?>
-    <div id="cbc-ai-chat-container" aria-hidden="false">
-        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel shadow-lg bg-white rounded-md flex flex-col">
-            <div class="cbc-ai-header flex items-center justify-between text-white px-5 py-2">
-                <div class="cbc-ai-title font-semibold mr-2"><?php echo esc_html($atts['title']); ?></div>
-                <button type="button" class="cbc-ai-clear-history text-xs" title="Clear conversation history">Clear</button>
-            </div>
-            <div class="cbc-ai-body p-4 flex flex-col gap-2">
-                <div class="cbc-ai-user-info w-full mb-1 hidden text-sm text-gray-700"></div>
-                <span class="cbc-ai-convo-label hidden text-xs text-gray-400">Conversation:</span>
-                <div class="cbc-ai-log hidden bg-gray-300 rounded p-2 my-1 min-h-[80px] max-h-64 overflow-auto" aria-live="polite"></div>
-                <form class="cbc-ai-form flex flex-col gap-2 mt-1">
-                    <div class="cbc-ai-contact-fields flex flex-col md:flex-row gap-2 w-full">
-                        <input type="text" name="name" class="cbc-ai-input-name flex-1 border rounded px-4 py-3" placeholder="Your name" aria-label="Your name" />
-                        <input type="email" name="email" class="cbc-ai-input-email flex-1 border rounded px-4 py-3" placeholder="Your email" aria-label="Your email" />
-                        <label for="cbc-ai-website" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">Leave this field empty</label>
-                        <input id="cbc-ai-website" type="text" name="website" class="cbc-ai-input-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true" />
-                    </div>
-                    <textarea name="message" class="cbc-ai-input border rounded px-4 py-3 min-h-fit" style="height: 100px;" placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Your question"></textarea>
-                    <div class="flex items-center justify-center">
-                        <?php if (function_exists('cbc_recaptcha_field')) { cbc_recaptcha_field(); } ?>
-                    </div>
-                    <button type="submit" class="cbc-ai-send bg-green-700 hover:bg-green-800 text-white rounded px-4 py-2">Ask</button>
-                </form>
-                <div class="cbc-ai-note text-xs text-gray-500 mt-1">This AI Chatbot provides information limited to DA-CBC and its official website content. By using this service, you acknowledge that you have read and agreed to our <a href="/about-us/terms-and-conditions/">Terms and Conditions</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
-            </div>
-        </div>
-        <button id="cbc-ai-chat-toggle" aria-expanded="true" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
-            <span class="cbc-ai-icon-expanded" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+    <div id="cbc-ai-chat-container" class="collapsed" aria-hidden="false">
+        <button id="cbc-ai-chat-toggle" aria-expanded="false" aria-controls="cbc-ai-chat-panel" class="cbc-ai-chat-toggle" title="Toggle AI Chat" type="button">
+            <span class="cbc-ai-icon-collapsed" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16">
+                      <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/>
+                      <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/>
                 </svg>
             </span>
-            <span class="cbc-ai-icon-collapsed hidden" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
-                  <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+            <span class="cbc-ai-icon-expanded hidden" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                 </svg>
             </span>
             <span class="sr-only">Toggle AI Chat</span>
         </button>
+        <div id="cbc-ai-chat-panel" role="complementary" class="cbc-ai-box cbc-ai-panel">
+            <div class="cbc-ai-header">
+                <div class="cbc-ai-heading">
+                    <div class="cbc-ai-title flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16">
+                            <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/>
+                            <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/>
+                        </svg>
+                        Sprout
+                    </div>
+                    <div class="cbc-ai-subtitle">Your AI assistant</div>
+                </div>
+                <div class="cbc-ai-header-actions">
+                    <span class="cbc-ai-status-dot" aria-hidden="true"></span>
+                    <button type="button" class="cbc-ai-clear-history" title="Clear conversation history">Clear</button>
+                </div>
+            </div>
+            <div class="cbc-ai-body">
+                <div class="cbc-ai-user-info hidden"></div>
+                <span class="cbc-ai-convo-label hidden">Conversation</span>
+                <div class="cbc-ai-log hidden" aria-live="polite">
+                    <div class="cbc-ai-msg cbc-ai-bot">Hello, I am Sprout. Sprout represents the bridge between laboratory research and field-ready innovation--an intelligent starting point where data germinates into actionable agricultural knowledge.</div>
+                </div>
+                <div class="cbc-ai-typing hidden" aria-live="polite">
+                    <span></span><span></span><span></span>
+                </div>
+                <form class="cbc-ai-form">
+                    <div class="cbc-ai-contact-fields">
+                        <input type="text" name="name" class="cbc-ai-input-name" placeholder="Your name" aria-label="Your name" autocomplete="name" />
+                        <input type="email" name="email" class="cbc-ai-input-email" placeholder="Your email" aria-label="Your email" autocomplete="email" />
+                        <label for="cbc-ai-website" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">Leave this field empty</label>
+                        <input id="cbc-ai-website" type="text" name="website" class="cbc-ai-input-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true" />
+                    </div>
+                    <div class="cbc-ai-recaptcha-wrap">
+                        <?php if (function_exists('cbc_recaptcha_field')) { cbc_recaptcha_field(); } ?>
+                    </div>
+                    <div class="cbc-ai-compose">
+                        <textarea name="message" class="cbc-ai-input" placeholder="Type your message..." aria-label="Your question"></textarea>
+                        <button type="submit" class="cbc-ai-send">Send</button>
+                    </div>
+                </form>
+                <div class="cbc-ai-note">Experimental assistant. Responses may be inaccurate. By chatting, you agree to our <a href="/about-us/terms-and-conditions/">Terms</a> and <a href="/about-us/privacy-policy/">Privacy Policy</a>.</div>
+            </div>
+        </div>
     </div>
     <?php
     return ob_get_clean();
@@ -395,7 +423,7 @@ function cbc_ai_rest_permission( WP_REST_Request $request ) {
         return new WP_Error('cbc_ai_method_not_allowed', __('Only POST requests are allowed for this endpoint.', 'cbc-ai-messenger'), array('status' => 405));
     }
 
-    if (!cbc_ai_is_local_or_dev() && '' === cbc_ai_get_recaptcha_secret()) {
+    if (!cbc_ai_is_local_or_dev() && !function_exists('cbc_recaptcha_verify') && '' === cbc_ai_get_recaptcha_secret()) {
         return new WP_Error('cbc_ai_not_ready', __('The AI service is temporarily unavailable.', 'cbc-ai-messenger'), array('status' => 503));
     }
 
@@ -548,8 +576,16 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
     // --- reCAPTCHA verification (if secret configured) ---
     // Skip reCAPTCHA validation on local/development environments
     $is_local = cbc_ai_is_local_or_dev();
-    $recaptcha_secret = ($is_local) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
+    $recaptcha_secret = ($is_local || function_exists('cbc_recaptcha_verify')) ? '' : (function_exists('cbc_ai_get_recaptcha_secret') ? cbc_ai_get_recaptcha_secret() : '');
     $recaptcha_token = trim((string)$req->get_param('recaptcha_token'));
+    if (!$is_local && function_exists('cbc_recaptcha_verify')) {
+        if ($recaptcha_token === '') {
+            return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
+        }
+        if (!cbc_recaptcha_verify($recaptcha_token)) {
+            return new WP_REST_Response(array('error' => 'reCAPTCHA validation failed'), 403);
+        }
+    }
     if ($recaptcha_secret !== '') {
         if ($recaptcha_token === '') {
             return new WP_REST_Response(array('error' => 'reCAPTCHA token missing'), 403);
@@ -603,7 +639,7 @@ function cbc_ai_rest_ask( WP_REST_Request $req ): WP_REST_Response {
 
     // Let the model decide scope based on the system prompt; no keyword pre-blocking
     $api_key = cbc_ai_get_effective_api_key($opts);
-    if ($api_key === '') {
+    if (($opts['provider'] ?? '') !== 'lmstudio' && $api_key === '') {
         $reply = 'The AI service is not configured. Please contact the site administrator.';
         $post_id = cbc_ai_log_message($message, $reply, array('provider' => 'none','model' => '','status' => 'not_configured'), $name, $email);
         return new WP_REST_Response(array('reply' => $reply), 200);
@@ -874,7 +910,7 @@ function cbc_ai_get_effective_api_key($opts): string {
     $key = trim((string)($opts['api_key'] ?? ''));
     if ($key !== '') return $key;
     if ($prov === 'openrouter') { $env = getenv('OPENROUTER_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENROUTER_API_KEY')) return (string)constant('CBC_AI_OPENROUTER_API_KEY'); }
-    else { $env = getenv('OPENAI_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENAI_API_KEY')) return (string)constant('CBC_AI_OPENAI_API_KEY'); }
+    elseif ($prov === 'openai') { $env = getenv('OPENAI_API_KEY'); if ($env) return trim((string)$env); if (defined('CBC_AI_OPENAI_API_KEY')) return (string)constant('CBC_AI_OPENAI_API_KEY'); }
     return '';
 }
 function cbc_ai_get_effective_openai_org($opts): string {
