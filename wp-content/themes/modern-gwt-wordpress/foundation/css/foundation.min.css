@@ -2084,7 +2084,6 @@ input:checked + label > .switch-inactive {
   left: 100%;
   min-width: 200px;
   z-index: 1;
-  background: #fefefe;
   border: 1px solid #cacaca;
 }
 .is-dropdown-submenu .is-dropdown-submenu-parent > a:after {

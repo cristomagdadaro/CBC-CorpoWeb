@@ -23,7 +23,7 @@ if ( ! class_exists( 'GWT_Walker_Nav_Menu' ) ) :
 			$pos_class = $is_top ? 'left-0 top-full' : 'left-full top-0';
 			// Hidden by default; shown via CSS li:hover > .gwt-submenu
 			$output .= "
-{$indent}<ul class=\"gwt-submenu absolute {$pos_class} hidden list-none flex-col bg-white shadow-lg z-[999] p-1 rounded-md min-w-[180px]\">
+{$indent}<ul class=\"gwt-submenu mt-2 absolute {$pos_class} hidden list-none flex-col bg-white/80 backdrop-blur shadow-lg z-[999] p-1 rounded-md min-w-[180px]\">
 ";
 		}
 		/**

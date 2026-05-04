@@ -231,6 +231,8 @@ const spacingSafelist = [
 const backgroundAndColorSafelist = [
     'bg-white',
     'bg-white/50',
+    'bg-white/80',
+    'bg-white/10',
     'bg-[#ffffff]',
     'bg-[#1f5d2b]',
     'bg-gray-50',
@@ -422,6 +424,7 @@ const mediaAndUtilitySafelist = [
     'object-contain',
     'cursor-pointer',
     'cursor-zoom-in',
+    'backdrop-blur',
     'backdrop-blur-sm',
     'backdrop-blur-md',
     'wrap',
