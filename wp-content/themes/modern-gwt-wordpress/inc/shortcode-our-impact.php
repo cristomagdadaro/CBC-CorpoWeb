@@ -9,7 +9,7 @@
 if (!function_exists('cbc_our_impact_shortcode')) {
     function cbc_our_impact_shortcode($atts) {
         $atts = shortcode_atts(array(
-                'map_svg_path' => get_template_directory() . '/images/phMap.svg',
+                'map_svg_path' => get_template_directory() . '/assets/svgs/phMap.svg',
         ), $atts, 'our_impact');
 
         // Impact Statistics Data
@@ -412,8 +412,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-map-lines {
+                filter: none;
                 inset: 0;
                 height: 100%;
+                max-height: none;
+                max-width: none;
                 overflow: visible;
                 pointer-events: none;
                 position: absolute;
@@ -580,7 +583,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 <div class="impact-bento-grid">
                     <!-- Map Card -->
                     <div class="impact-map-card rounded-lg">
-                        <h3 class="impact-map-title">Top Producing Provinces of Selected High Value Crops</h3>
                         <div class="impact-map-wrapper">
                             <div class="impact-map-figure">
                                 <?php
@@ -588,30 +590,38 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 // $atts['map_svg_path'] may be an absolute filesystem path, a site-relative path,
                                 // or an absolute URL. Inline readable local SVGs so provinces can be colored.
                                 $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
+                                $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
 
-                                if (preg_match('#^https?://#i', $provided)) {
-                                    $map_path = '';
-                                    $map_src = esc_url($provided);
-                                } elseif (file_exists($provided)) {
+                                if ($provided && !preg_match('#^https?://#i', $provided) && file_exists($provided)) {
                                     $map_path = $provided;
-                                    $map_src = esc_url(trailingslashit(get_template_directory_uri()) . 'images/phMap.svg');
+                                } elseif ($provided && !preg_match('#^https?://#i', $provided)) {
+                                    $map_path = ABSPATH . ltrim($provided, '/');
                                 } else {
-                                    $map_relative = ltrim($provided, '/');
-                                    $map_path = ABSPATH . $map_relative;
-                                    $map_src = esc_url(site_url('/') . $map_relative);
+                                    $map_path = $theme_map_path;
                                 }
 
                                 $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
-                                $max_inline_size = 200 * 1024; // 200 KB
+
+                                if (!$map_is_svg || !is_readable($map_path)) {
+                                    $map_path = $theme_map_path;
+                                    $map_is_svg = is_readable($map_path) && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+                                }
+
+                                $max_inline_size = 1024 * 1024; // 1 MB
 
                                 if ($map_is_svg && is_readable($map_path) && filesize($map_path) > 0 && filesize($map_path) <= $max_inline_size) {
                                     $svg = file_get_contents($map_path);
                                     $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
-                                    $svg = preg_replace('/id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+
+                                    $svg = preg_replace('/@click="[^"]*"/', '', $svg);
+                                    $svg = preg_replace('/\s*ref="[^"]*"/', '', $svg);
+
+                                    $svg = preg_replace('/:?id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+
                                     $svg = preg_replace('/<svg\b/', '<svg class="impact-philippine-map" role="img" aria-label="Philippines commodity map"', $svg, 1);
                                     echo $svg;
                                 } else {
-                                    echo '<img src="' . $map_src . '" alt="Philippines Map showing our nationwide impact">';
+                                    echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
                                 }
                                 ?>
                             </div>
@@ -735,6 +745,142 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     return Array.from(map.querySelectorAll('[id]')).filter((item) => item.id === provinceKey);
                 }
 
+                function clamp(value, min, max) {
+                    return Math.min(Math.max(value, min), max);
+                }
+
+                function getProvinceAnchor(elements, wrapperRect) {
+                    const anchors = elements.map((element) => {
+                        if (typeof element.getBBox !== 'function' || typeof element.getScreenCTM !== 'function') {
+                            return null;
+                        }
+
+                        const box = element.getBBox();
+                        const matrix = element.getScreenCTM();
+
+                        if (!box || !matrix || !box.width || !box.height) {
+                            return null;
+                        }
+
+                        const point = element.ownerSVGElement.createSVGPoint();
+                        point.x = box.x + (box.width / 2);
+                        point.y = box.y + (box.height / 2);
+
+                        const transformed = point.matrixTransform(matrix);
+
+                        return {
+                            x: transformed.x - wrapperRect.left,
+                            y: transformed.y - wrapperRect.top,
+                            weight: box.width * box.height,
+                        };
+                    }).filter(Boolean);
+
+                    if (!anchors.length) return null;
+
+                    const totalWeight = anchors.reduce((sum, anchor) => sum + anchor.weight, 0);
+
+                    return anchors.reduce((result, anchor) => {
+                        return {
+                            x: result.x + (anchor.x * anchor.weight / totalWeight),
+                            y: result.y + (anchor.y * anchor.weight / totalWeight),
+                        };
+                    }, { x: 0, y: 0 });
+                }
+
+                function getPinAnchor(pinRect, provinceAnchor, wrapperRect) {
+                    const localLeft = pinRect.left - wrapperRect.left;
+                    const localRight = pinRect.right - wrapperRect.left;
+                    const localTop = pinRect.top - wrapperRect.top;
+                    const localBottom = pinRect.bottom - wrapperRect.top;
+                    const localCenterX = localLeft + (pinRect.width / 2);
+                    const localCenterY = localTop + (pinRect.height / 2);
+                    const edgePadding = 6;
+
+                    if (provinceAnchor.y < localTop) {
+                        return {
+                            x: clamp(provinceAnchor.x, localLeft + edgePadding, localRight - edgePadding),
+                            y: localTop,
+                        };
+                    }
+
+                    if (provinceAnchor.y > localBottom) {
+                        return {
+                            x: clamp(provinceAnchor.x, localLeft + edgePadding, localRight - edgePadding),
+                            y: localBottom,
+                        };
+                    }
+
+                    if (provinceAnchor.x < localCenterX) {
+                        return {
+                            x: localLeft,
+                            y: clamp(provinceAnchor.y, localTop + edgePadding, localBottom - edgePadding),
+                        };
+                    }
+
+                    return {
+                        x: localRight,
+                        y: clamp(provinceAnchor.y, localTop + edgePadding, localBottom - edgePadding),
+                    };
+                }
+
+                function drawCommodityLines(section) {
+                    const wrapper = section.querySelector('.impact-map-wrapper');
+                    const map = section.querySelector('.impact-philippine-map');
+                    const pins = Array.from(section.querySelectorAll('.impact-map-pin'));
+
+                    if (!wrapper || !map || !pins.length) return;
+
+                    wrapper.querySelectorAll('.impact-map-lines').forEach((existingLines) => existingLines.remove());
+
+                    const wrapperRect = wrapper.getBoundingClientRect();
+                    const lineLayer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    lineLayer.setAttribute('class', 'impact-map-lines');
+                    lineLayer.setAttribute('viewBox', `0 0 ${wrapperRect.width} ${wrapperRect.height}`);
+                    lineLayer.setAttribute('preserveAspectRatio', 'none');
+                    lineLayer.setAttribute('aria-hidden', 'true');
+
+                    pins.forEach((pin) => {
+                        const provinceKey = pin.dataset.provinceKey;
+                        const provinceAnchor = getProvinceAnchor(getProvincePaths(map, provinceKey), wrapperRect);
+                        const pinRect = pin.getBoundingClientRect();
+
+                        if (!provinceAnchor || !pinRect.width || !pinRect.height) return;
+
+                        const pinAnchor = getPinAnchor(pinRect, provinceAnchor, wrapperRect);
+                        const x1 = provinceAnchor.x;
+                        const y1 = provinceAnchor.y;
+                        const x2 = pinAnchor.x;
+                        const y2 = pinAnchor.y;
+                        const color = pin.dataset.color || '#237823';
+
+                        const pinTop = pinRect.top - wrapperRect.top;
+                        const pinBottom = pinRect.bottom - wrapperRect.top;
+                        const verticalApproach = Math.abs(y2 - pinTop) < 1 || Math.abs(y2 - pinBottom) < 1;
+                        const linePoints = verticalApproach
+                            ? `${x1.toFixed(2)},${y1.toFixed(2)} ${x1.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`
+                            : `${x1.toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y2.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`;
+
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                        line.setAttribute('class', 'impact-map-line');
+                        line.setAttribute('data-province-key', provinceKey);
+                        line.setAttribute('points', linePoints);
+                        line.setAttribute('stroke', color);
+
+                        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        dot.setAttribute('class', 'impact-map-line-dot');
+                        dot.setAttribute('data-province-key', provinceKey);
+                        dot.setAttribute('cx', x1.toFixed(2));
+                        dot.setAttribute('cy', y1.toFixed(2));
+                        dot.setAttribute('r', '3');
+                        dot.setAttribute('fill', color);
+
+                        lineLayer.appendChild(line);
+                        lineLayer.appendChild(dot);
+                    });
+
+                    wrapper.prepend(lineLayer);
+                }
+
                 function initCommodityMaps() {
                     sections.forEach((section) => {
                         const map = section.querySelector('.impact-philippine-map');
@@ -754,6 +900,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                             getProvincePaths(map, provinceKey).forEach((path) => {
                                 path.classList.toggle('is-hovered', isHovered);
+                            });
+
+                            section.querySelectorAll(`.impact-map-line[data-province-key="${provinceKey}"], .impact-map-line-dot[data-province-key="${provinceKey}"]`).forEach((line) => {
+                                line.classList.toggle('is-hovered', isHovered);
                             });
                         }
 
@@ -778,7 +928,20 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                             pin.addEventListener('mouseenter', () => setHovered(provinceKey, true));
                             pin.addEventListener('mouseleave', () => setHovered(provinceKey, false));
                         });
+
+                        drawCommodityLines(section);
                     });
+                }
+
+                function redrawAllCommodityLines() {
+                    sections.forEach(drawCommodityLines);
+                }
+
+                let mapLineResizeTimer;
+
+                function scheduleCommodityLineRedraw() {
+                    window.clearTimeout(mapLineResizeTimer);
+                    mapLineResizeTimer = window.setTimeout(redrawAllCommodityLines, 120);
                 }
 
                 function formatNumber(value) {
@@ -838,6 +1001,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 initCommodityMaps();
+                window.addEventListener('load', redrawAllCommodityLines);
+                window.addEventListener('resize', scheduleCommodityLineRedraw);
 
                 sections.forEach((section) => {
                     if (!prefersReducedMotion) {
