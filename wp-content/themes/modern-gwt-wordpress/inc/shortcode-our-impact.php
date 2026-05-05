@@ -17,7 +17,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         $impact_stats = array(
                 'research_projects' => array(
                         'number' => null,
-                        'label' => 'Active Research Initiatives',
+                        'label' => 'Research Initiatives',
                         'sublabel' => 'Ongoing R&D Projects',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
@@ -25,6 +25,18 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 array('label' => 'Projects', 'value' => '5', 'color' => '#55A147'),
                                 array('label' => 'Project Sites', 'value' => '#', 'color' => '#D5DA65'),
                                 array('label' => 'Crops', 'value' => '13', 'color' => '#D5DA65'),
+                        )
+                ),
+                'breakthroughs' => array(
+                        'number' => null,
+                        'label' => 'Publications',
+                        'sublabel' => 'Disseminating Scientific Knowledge',
+                        'color' => '#55A147',
+                        'breakdown' => array(
+                                array('label' => 'Scientific Journal Articles', 'value' => '13', 'color' => '#1f5d2b'),
+                                array('label' => 'Technical Reports', 'value' => '7', 'color' => '#55A147'),
+                                array('label' => 'Policy Briefs', 'value' => '5', 'color' => '#D5DA65'),
+                                array('label' => 'IP/Patents', 'value' => '2', 'color' => '#D5DA65'),
                         )
                 ),
                 'capacity_building' => array(
@@ -108,17 +120,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         // Auto-sort impact stats by numeric `number` descending (highest first).
         // This runs after numbers are calculated so it respects auto-computed totals.
-        if (!empty($impact_stats) && is_array($impact_stats)) {
-            uasort($impact_stats, function ($a, $b) {
-                $na = isset($a['number']) ? (float) str_replace(',', '', $a['number']) : 0.0;
-                $nb = isset($b['number']) ? (float) str_replace(',', '', $b['number']) : 0.0;
-                // Descending order: compare b to a
-                if ($nb === $na) {
-                    return 0;
-                }
-                return ($nb < $na) ? -1 : 1;
-            });
-        }
+
 
         ob_start();
         ?>
