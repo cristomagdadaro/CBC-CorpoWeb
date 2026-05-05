@@ -45,7 +45,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                 'image' => get_template_directory_uri() . '/assets/images/commodities/p-abaca.webp',
                 'route' => home_url('/commodity/abaca'),
             ),
-                array(
+                /*array(
                         'name' => 'Coffee',
                         'image' => get_template_directory_uri() . '/assets/images/commodities/p-coffee.webp',
                         'route' => home_url('/commodity/coffee'),
@@ -84,7 +84,7 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                         'name' => 'Rubber',
                         'image' => get_template_directory_uri() . '/assets/images/commodities/p-rubber`.webp',
                         'route' => home_url('/commodity/rubber'),
-                ),
+                ),*/
         );
 
         // Allow filtering of commodities data

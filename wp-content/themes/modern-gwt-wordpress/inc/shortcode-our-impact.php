@@ -110,7 +110,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'tomato' => array('commodity' => 'Tomato', 'image' => $commodity_image_base . 'p-tomato.webp', 'color' => '#e9422f', 'province' => 'Bukidnon', 'projects' => '2'),
                 'garlic' => array('commodity' => 'Garlic', 'image' => $commodity_image_base . 'p-garlic.webp', 'color' => '#c7a55b', 'province' => 'Ilocos Norte', 'projects' => '1'),
                 'mungbean' => array('commodity' => 'Mungbean', 'image' => $commodity_image_base . 'p-mungbean.webp', 'color' => '#7abf35', 'province' => 'Tarlac', 'projects' => '2'),
-                'onion' => array('commodity' => 'Onion', 'image' => $commodity_image_base . 'p-onion.webp', 'color' => '#ba2f88', 'province' => 'Nueva Ecija', 'projects' => '2'),
+                'onion' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ba2f88', 'province' => 'Nueva Ecija', 'projects' => '10'),
                 'eggplant' => array('commodity' => 'Eggplant', 'image' => $commodity_image_base . 'p-eggplant.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '2'),
                 'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6b4b2a', 'province' => 'Benguet', 'projects' => '1'),
                 'sweetpotato' => array('commodity' => 'Sweet Potato', 'image' => $commodity_image_base . 'p-sweetpotato.webp', 'color' => '#d98b31', 'province' => 'Albay', 'projects' => '1'),
@@ -658,7 +658,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 </div>
                 <div class="impact-bento-grid">
                     <!-- Map Card -->
-                    <div class="impact-map-card rounded-lg">
+                    <div class="impact-map-card rounded-lg select-none">
                         <div class="impact-map-wrapper">
                             <!-- Left List -->
                             <div class="impact-map-list impact-map-list-left">
