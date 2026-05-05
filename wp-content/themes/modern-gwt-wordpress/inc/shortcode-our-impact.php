@@ -9,7 +9,7 @@
 if (!function_exists('cbc_our_impact_shortcode')) {
     function cbc_our_impact_shortcode($atts) {
         $atts = shortcode_atts(array(
-                'map_svg_path' => '/wp-content/uploads/2025/09/phMap.svg',
+                'map_svg_path' => get_template_directory() . '/images/phMap.svg',
         ), $atts, 'our_impact');
 
         // Impact Statistics Data
@@ -104,6 +104,49 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         $impact_stats = apply_filters('cbc_impact_stats_data', $impact_stats);
 
+        $commodity_image_base = trailingslashit(get_template_directory_uri()) . 'assets/images/commodities/';
+        $impact_commodities = array(
+                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#237823', 'province' => 'Bukidnon', 'projects' => '3'),
+                'tomato' => array('commodity' => 'Tomato', 'image' => $commodity_image_base . 'p-tomato.webp', 'color' => '#e9422f', 'province' => 'Bukidnon', 'projects' => '2'),
+                'garlic' => array('commodity' => 'Garlic', 'image' => $commodity_image_base . 'p-garlic.webp', 'color' => '#c7a55b', 'province' => 'Ilocos Norte', 'projects' => '1'),
+                'mungbean' => array('commodity' => 'Mungbean', 'image' => $commodity_image_base . 'p-mungbean.webp', 'color' => '#7abf35', 'province' => 'Tarlac', 'projects' => '2'),
+                'onion' => array('commodity' => 'Onion', 'image' => $commodity_image_base . 'p-onion.webp', 'color' => '#ba2f88', 'province' => 'Nueva Ecija', 'projects' => '2'),
+                'eggplant' => array('commodity' => 'Eggplant', 'image' => $commodity_image_base . 'p-eggplant.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '2'),
+                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6b4b2a', 'province' => 'Benguet', 'projects' => '1'),
+                'sweetpotato' => array('commodity' => 'Sweet Potato', 'image' => $commodity_image_base . 'p-sweetpotato.webp', 'color' => '#d98b31', 'province' => 'Albay', 'projects' => '1'),
+                'durian' => array('commodity' => 'Durian', 'image' => $commodity_image_base . 'p-durian.webp', 'color' => '#92a636', 'province' => 'Davao del Sur', 'projects' => '2'),
+                'banana' => array('commodity' => 'Banana', 'image' => $commodity_image_base . 'p-banana.webp', 'color' => '#e6b72d', 'province' => 'Davao del Norte', 'projects' => '2'),
+                'pineapple' => array('commodity' => 'Pineapple', 'image' => $commodity_image_base . 'p-pineapple.webp', 'color' => '#d8a321', 'province' => 'South Cotabato', 'projects' => '1'),
+                'rubber' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#3a5f2c', 'province' => 'North Cotabato', 'projects' => '1'),
+        );
+
+        $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
+        $province_commodities = array();
+
+        foreach ($impact_commodities as $commodity_key => $commodity) {
+            if (empty($commodity['province']) || empty($commodity['commodity'])) {
+                continue;
+            }
+
+            $province_key = sanitize_title($commodity['province']);
+            $commodity['key'] = $commodity_key;
+
+            if (!isset($province_commodities[$province_key])) {
+                $province_commodities[$province_key] = array(
+                        'key' => $province_key,
+                        'province' => $commodity['province'],
+                        'color' => isset($commodity['color']) ? $commodity['color'] : '#237823',
+                        'projects' => 0,
+                        'commodities' => array(),
+                );
+            }
+
+            $province_commodities[$province_key]['projects'] += isset($commodity['projects']) ? (int) $commodity['projects'] : 0;
+            $province_commodities[$province_key]['commodities'][] = $commodity;
+        }
+
+        $province_commodities = array_values($province_commodities);
+
         foreach ($impact_stats as $skey => $sval) {
             if (( ! isset($sval['number']) || $sval['number'] === '' || is_null($sval['number']) )
                 && isset($sval['breakdown']) && is_array($sval['breakdown'])) {
@@ -114,7 +157,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     $sum += $num;
                 }
 
-                $impact_stats[$skey]['number'] = (string) (int) round($sum);
+                $impact_stats[$skey]['number'] = number_format((int) round($sum));
+            } elseif (isset($sval['number']) && is_numeric(str_replace(',', '', $sval['number']))) {
+                $impact_stats[$skey]['number'] = number_format((int) str_replace(',', '', $sval['number']));
             }
         }
 
@@ -284,58 +329,203 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             /* Map Card - Featured */
             .impact-map-card {
                 background: #ffffff;
-                padding: 1.5rem;
+                padding: 1rem;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
+                justify-content: flex-start;
                 min-height: 200px;
                 position: relative;
                 overflow: hidden;
-                opacity: 50% !important;
+            }
+
+            .impact-map-title {
+                color: #1f5d2b;
+                font-size: 0.95rem;
+                font-weight: 800;
+                line-height: 1.15;
+                margin: 0 0 0.75rem;
+                text-align: center;
+                text-transform: uppercase;
             }
 
             @media (min-width: 640px) {
                 .impact-map-card {
                     grid-column: span 2;
-                    min-height: 250px;
+                    min-height: 360px;
                 }
             }
 
             @media (min-width: 1024px) {
                 .impact-map-card {
-                    grid-column: span 1;
+                    grid-column: span 2;
                     grid-row: span 3;
-                    min-height: auto;
+                    min-height: 560px;
                 }
             }
 
             .impact-map-wrapper {
                 width: 100%;
-                height: 100%;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 0.75rem;
+                position: relative;
+            }
+
+            .impact-map-figure {
+                position: relative;
+                min-height: 300px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                z-index: 1;
             }
 
-            .impact-map-wrapper svg,
-            .impact-map-wrapper img {
+            .impact-map-wrapper svg {
                 max-width: 100%;
                 width: auto;
                 height: auto;
                 filter: drop-shadow(0 4px 20px rgba(31, 93, 43, 0.15));
             }
 
-            .impact-map-caption {
+            .impact-map-wrapper svg {
+                max-height: 420px;
+            }
+
+            .impact-map-wrapper svg [id] {
+                fill: #d7ddd6;
+                stroke: #ffffff;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 0.35;
+                transition: fill 0.25s ease, filter 0.25s ease, stroke 0.25s ease;
+            }
+
+            .impact-map-wrapper svg .impact-province-active {
+                cursor: pointer;
+            }
+
+            .impact-map-wrapper svg .impact-province-active.is-hovered {
+                filter: drop-shadow(0 0 3px rgba(31, 93, 43, 0.55));
+                stroke: #f7c806;
+                stroke-width: 0.75;
+            }
+
+            .impact-map-lines {
+                inset: 0;
+                height: 100%;
+                overflow: visible;
+                pointer-events: none;
                 position: absolute;
-                bottom: 1rem;
-                left: 50%;
-                transform: translateX(-50%);
+                width: 100%;
+                z-index: 2;
+            }
+
+            .impact-map-line {
+                fill: none;
+                opacity: 0.62;
+                stroke-linecap: round;
+                stroke-width: 1.5;
+                vector-effect: non-scaling-stroke;
+            }
+
+            .impact-map-line-dot {
+                opacity: 0.9;
+            }
+
+            .impact-map-line.is-hovered,
+            .impact-map-line-dot.is-hovered {
+                opacity: 1;
+            }
+
+            .impact-map-list {
+                display: grid;
+                gap: 0.55rem;
+                position: relative;
+                width: 100%;
+                z-index: 3;
+            }
+
+            .impact-map-pin {
+                border-left: 4px solid var(--pin-color, #237823);
+                background: #f8faf7;
+                display: grid;
+                grid-template-columns: 2.25rem minmax(0, 1fr);
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.45rem 0.55rem;
+                transition: background 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .impact-map-pin.is-hovered {
+                background: #fff8d6;
+                box-shadow: 0 4px 16px rgba(31, 93, 43, 0.12);
+            }
+
+            .impact-map-icons {
+                display: flex;
+                align-items: center;
+                min-width: 0;
+            }
+
+            .impact-map-icons img {
+                background: #ffffff;
+                border: 1px solid rgba(31, 93, 43, 0.15);
+                border-radius: 50%;
+                height: 1.65rem;
+                margin-left: -0.45rem;
+                object-fit: contain;
+                padding: 0.12rem;
+                width: 1.65rem;
+            }
+
+            .impact-map-icons img:first-child {
+                margin-left: 0;
+            }
+
+            .impact-map-province {
+                color: #1f2937;
+                font-size: 0.76rem;
+                font-weight: 800;
+                line-height: 1.1;
+                text-transform: uppercase;
+            }
+
+            .impact-map-commodities {
+                color: #64748b;
+                font-size: 0.68rem;
+                line-height: 1.25;
+                margin-top: 0.12rem;
+            }
+
+            .impact-map-projects {
+                color: #1f5d2b;
+                font-size: 0.66rem;
+                font-weight: 700;
+                margin-top: 0.12rem;
+            }
+
+            .impact-map-unavailable {
+                color: #64748b;
+                font-size: 0.78rem;
                 text-align: center;
-                font-size: 0.875rem;
-                color: #404040;
-                background: rgba(255,255,255,0.9);
-                padding: 0.25rem 0.75rem;
+            }
+
+            @media (min-width: 768px) {
+                .impact-map-wrapper {
+                    grid-template-columns: minmax(220px, 0.95fr) minmax(230px, 1fr);
+                    align-items: center;
+                }
+
+                .impact-map-list {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .impact-map-wrapper svg {
+                    max-height: 500px;
+                }
             }
 
             /* Animation */
@@ -390,38 +580,64 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 <div class="impact-bento-grid">
                     <!-- Map Card -->
                     <div class="impact-map-card rounded-lg">
+                        <h3 class="impact-map-title">Top Producing Provinces of Selected High Value Crops</h3>
                         <div class="impact-map-wrapper">
-                            <?php
-                            // Resolve the provided path to an absolute filesystem path.
-                            // $atts['map_svg_path'] may be a site-relative path like '/wp-content/uploads/2025/09/phMap.svg'
-                            // or an absolute URL. We want to safely inline SVGs from disk when appropriate.
-                            $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
-                            $map_relative = ltrim($provided, '/');
+                            <div class="impact-map-figure">
+                                <?php
+                                // Resolve the provided path to an absolute filesystem path.
+                                // $atts['map_svg_path'] may be an absolute filesystem path, a site-relative path,
+                                // or an absolute URL. Inline readable local SVGs so provinces can be colored.
+                                $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
 
-                            // Filesystem path to the file (assume site root when a site-relative path is provided).
-                            $map_path = ABSPATH . $map_relative;
+                                if (preg_match('#^https?://#i', $provided)) {
+                                    $map_path = '';
+                                    $map_src = esc_url($provided);
+                                } elseif (file_exists($provided)) {
+                                    $map_path = $provided;
+                                    $map_src = esc_url(trailingslashit(get_template_directory_uri()) . 'images/phMap.svg');
+                                } else {
+                                    $map_relative = ltrim($provided, '/');
+                                    $map_path = ABSPATH . $map_relative;
+                                    $map_src = esc_url(site_url('/') . $map_relative);
+                                }
 
-                            // Build a safe URL for fallback display. If the provided value looks like an absolute URL, use it.
-                            if (preg_match('#^https?://#i', $provided)) {
-                                $map_src = esc_url($provided);
-                            } else {
-                                $map_src = esc_url( site_url( '/' ) . $map_relative );
-                            }
+                                $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+                                $max_inline_size = 200 * 1024; // 200 KB
 
-                            // Only inline SVGs from disk and only when small enough and readable.
-                            $map_is_svg = strtolower( pathinfo( $map_path, PATHINFO_EXTENSION ) ) === 'svg';
-                            $max_inline_size = 200 * 1024; // 200 KB
-
-                            if ( $map_is_svg && is_readable( $map_path ) && filesize( $map_path ) > 0 && filesize( $map_path ) <= $max_inline_size ) {
-                                $svg = file_get_contents( $map_path );
-                                // Minimal sanitization: remove <script>...</script> blocks to reduce injection risk.
-                                $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
-                                echo $svg;
-                            } else {
-                                // Fallback to an <img> tag pointing to the constructed URL. Escaped for safety.
-                                echo '<img src="' . $map_src . '" alt="Philippines Map showing our nationwide impact">';
-                            }
-                            ?>
+                                if ($map_is_svg && is_readable($map_path) && filesize($map_path) > 0 && filesize($map_path) <= $max_inline_size) {
+                                    $svg = file_get_contents($map_path);
+                                    $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
+                                    $svg = preg_replace('/id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+                                    $svg = preg_replace('/<svg\b/', '<svg class="impact-philippine-map" role="img" aria-label="Philippines commodity map"', $svg, 1);
+                                    echo $svg;
+                                } else {
+                                    echo '<img src="' . $map_src . '" alt="Philippines Map showing our nationwide impact">';
+                                }
+                                ?>
+                            </div>
+                            <div class="impact-map-list" aria-label="Province commodity list">
+                                <?php foreach ($province_commodities as $province_item):
+                                    $commodity_names = wp_list_pluck($province_item['commodities'], 'commodity');
+                                    $projects_label = number_format((int) $province_item['projects']) . ' project' . ((int) $province_item['projects'] === 1 ? '' : 's');
+                                    ?>
+                                    <div class="impact-map-pin"
+                                         data-province-key="<?php echo esc_attr($province_item['key']); ?>"
+                                         data-color="<?php echo esc_attr($province_item['color']); ?>"
+                                         data-count="<?php echo esc_attr(count($province_item['commodities'])); ?>"
+                                         style="--pin-color: <?php echo esc_attr($province_item['color']); ?>">
+                                        <div class="impact-map-icons" aria-hidden="true">
+                                            <?php foreach (array_slice($province_item['commodities'], 0, 3) as $commodity): ?>
+                                                <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <div>
+                                            <div class="impact-map-province"><?php echo esc_html($province_item['province']); ?></div>
+                                            <div class="impact-map-commodities"><?php echo esc_html(implode(', ', $commodity_names)); ?></div>
+                                            <div class="impact-map-projects"><?php echo esc_html($projects_label); ?></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     </div>
 
@@ -491,6 +707,80 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                 const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+                function hexToRgba(hex, alpha) {
+                    const cleanHex = String(hex || '#237823').replace('#', '');
+                    const normalized = cleanHex.length === 3
+                        ? cleanHex.split('').map((part) => part + part).join('')
+                        : cleanHex;
+                    const color = parseInt(normalized, 16);
+
+                    if (Number.isNaN(color)) {
+                        return `rgba(35, 120, 35, ${alpha})`;
+                    }
+
+                    const red = (color >> 16) & 255;
+                    const green = (color >> 8) & 255;
+                    const blue = color & 255;
+
+                    return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+                }
+
+                function getProvincePaths(map, provinceKey) {
+                    if (!map || !provinceKey) return [];
+
+                    if (window.CSS && CSS.escape) {
+                        return Array.from(map.querySelectorAll(`#${CSS.escape(provinceKey)}`));
+                    }
+
+                    return Array.from(map.querySelectorAll('[id]')).filter((item) => item.id === provinceKey);
+                }
+
+                function initCommodityMaps() {
+                    sections.forEach((section) => {
+                        const map = section.querySelector('.impact-philippine-map');
+                        const pins = Array.from(section.querySelectorAll('.impact-map-pin'));
+
+                        if (!map || !pins.length) return;
+
+                        const highestCount = pins.reduce((max, pin) => {
+                            return Math.max(max, parseInt(pin.dataset.count || '1', 10));
+                        }, 1);
+
+                        function setHovered(provinceKey, isHovered) {
+                            const pin = pins.find((item) => item.dataset.provinceKey === provinceKey);
+                            if (pin) {
+                                pin.classList.toggle('is-hovered', isHovered);
+                            }
+
+                            getProvincePaths(map, provinceKey).forEach((path) => {
+                                path.classList.toggle('is-hovered', isHovered);
+                            });
+                        }
+
+                        pins.forEach((pin) => {
+                            const provinceKey = pin.dataset.provinceKey;
+                            const color = pin.dataset.color || '#237823';
+                            const count = parseInt(pin.dataset.count || '1', 10);
+                            const fillAlpha = Math.max(0.35, count / highestCount);
+                            const provincePaths = getProvincePaths(map, provinceKey);
+
+                            provincePaths.forEach((path) => {
+                                path.classList.add('impact-province-active');
+                                path.style.fill = hexToRgba(color, fillAlpha);
+
+                                path.addEventListener('mouseenter', () => setHovered(provinceKey, true));
+                                path.addEventListener('mouseleave', () => setHovered(provinceKey, false));
+                                path.addEventListener('focus', () => setHovered(provinceKey, true));
+                                path.addEventListener('blur', () => setHovered(provinceKey, false));
+                                path.setAttribute('tabindex', '0');
+                            });
+
+                            pin.addEventListener('mouseenter', () => setHovered(provinceKey, true));
+                            pin.addEventListener('mouseleave', () => setHovered(provinceKey, false));
+                        });
+                    });
+                }
+
                 function formatNumber(value) {
                     return Number(value).toLocaleString('en-US');
                 }
@@ -546,6 +836,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         });
                     });
                 }
+
+                initCommodityMaps();
 
                 sections.forEach((section) => {
                     if (!prefersReducedMotion) {
