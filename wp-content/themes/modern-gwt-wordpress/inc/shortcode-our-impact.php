@@ -13,6 +13,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
         ), $atts, 'our_impact');
 
         // Impact Statistics Data
+        // source https://docs.google.com/spreadsheets/d/17EzyEyIvq8SEPTFwCOO2F47IBkqaNkSHmtepKmkS8uQ/edit?gid=1300839281#gid=1300839281
         $impact_stats = array(
                 'research_projects' => array(
                         'number' => null,
@@ -21,7 +22,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'color' => '#1f5d2b',
                         'breakdown' => array(
                                 array('label' => 'Programs', 'value' => '3', 'color' => '#1f5d2b'),
-                                array('label' => 'Projects ', 'value' => '5', 'color' => '#55A147'),
+                                array('label' => 'Projects', 'value' => '5', 'color' => '#55A147'),
+                                array('label' => 'Project Sites', 'value' => '#', 'color' => '#D5DA65'),
+                                array('label' => 'Crops', 'value' => '13', 'color' => '#D5DA65'),
                         )
                 ),
                 'capacity_building' => array(
@@ -30,10 +33,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Through Training & Workshops',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Researchers', 'value' => '81', 'color' => '#1f5d2b'),
-                                array('label' => 'Regulators', 'value' => '16', 'color' => '#55A147'),
-                                array('label' => 'Educators', 'value' => '16', 'color' => '#D5DA65'),
-                                array('label' => 'Students', 'value' => '8', 'color' => '#D5DA65'),
+                                array('label' => 'Balik Scientist Program', 'value' => '3', 'color' => '#1f5d2b'),
+                                array('label' => 'Researchers', 'value' => '81', 'color' => '#55A147'),
+                                array('label' => 'Regulators', 'value' => '16', 'color' => '#D5DA65'),
+                                array('label' => 'Educators', 'value' => '16', 'color' => '#1f5d2b'),
+                                array('label' => 'Students', 'value' => '8', 'color' => '#55A147'),
                         )
                 ),
                 'partners_collaborators' => array(
@@ -44,7 +48,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'breakdown' => array(
                                 array('label' => 'SUCs', 'value' => '27', 'color' => '#1f5d2b'),
                                 array('label' => 'DA Agencies', 'value' => '3', 'color' => '#D5DA65'),
-                                array('label' => 'International', 'value' => '2', 'color' => '#8BC34A'),
+                                array('label' => 'International', 'value' => '3', 'color' => '#8BC34A'),
                         )
                 ),
                 'iec_reach' => array(
@@ -53,9 +57,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
-                                array('label' => 'RCBS Conducted', 'value' => '6', 'color' => '#1f5d2b'),
-                                array('label' => 'Knowledge Products', 'value' => '7', 'color' => '#D5DA65'),
-                                array('label' => 'International Visitors', 'value' => '28', 'color' => '#8BC34A'),
+                                array('label' => 'RCBS Participants', 'value' => '3,803', 'color' => '#1f5d2b'),
+                                array('label' => 'Farmers Engaged', 'value' => '604', 'color' => '#1f5d2b'),
+                                array('label' => 'IEC Distributed', 'value' => '#', 'color' => '#D5DA65'),
+                                array('label' => 'SocMed Followers', 'value' => '7,115', 'color' => '#1f5d2b'),
+                                array('label' => 'Visitors', 'value' => '1,236', 'color' => '#8BC34A'),
                         )
                 ),
                 'internship_program' => array(
@@ -64,9 +70,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Internship & Attachment Program',
                         'color' => '#FACD15',
                         'breakdown' => array(
-                                array('label' => 'High School', 'value' => '55', 'color' => '#1f5d2b'),
-                                array('label' => 'Undergraduate', 'value' => '106', 'color' => '#55A147'),
-                                array('label' => 'Graduate', 'value' => '6', 'color' => '#D5DA65'),
+                                array('label' => 'Senior High School', 'value' => '55', 'color' => '#1f5d2b'),
+                                array('label' => 'Undergraduate', 'value' => '103', 'color' => '#55A147'),
+                                array('label' => 'Graduate', 'value' => '9', 'color' => '#D5DA65'),
                                 array('label' => 'PhD', 'value' => '3', 'color' => '#1f5d2b'),
                         )
                 ),
@@ -76,8 +82,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Research Support & Mentorship',
                         'color' => '#D5DA65',
                         'breakdown' => array(
+                                array('label' => 'Internship', 'value' => '75', 'color' => '#1f5d2b'),
+                                array('label' => 'International Students', 'value' => '13', 'color' => '#55A147'),
                                 array('label' => 'Local University Students', 'value' => '34', 'color' => '#1f5d2b'),
-                                array('label' => 'International Students', 'value' => '4', 'color' => '#55A147'),
+                                array('label' => 'Immersion', 'value' => '57', 'color' => '#1f5d2b'),
                         )
                 ),
         );
@@ -239,7 +247,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
             .breakdown-item {
                 display: grid;
-                grid-template-columns: auto 1fr auto;
+                grid-template-columns: minmax(108px, 1.3fr) minmax(72px, 2fr) minmax(44px, auto);
                 align-items: center;
                 gap: 0.5rem;
                 font-size: 0.75rem;
@@ -248,8 +256,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             .breakdown-label {
                 color: #64748b;
                 font-size: 0.7rem;
-                white-space: nowrap;
-                min-width: 70px;
+                line-height: 1.2;
             }
 
             .breakdown-bar-bg {
@@ -362,6 +369,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 .breakdown-item {
+                    grid-template-columns: minmax(96px, 1.2fr) minmax(64px, 2fr) minmax(40px, auto);
                     gap: 0.35rem;
                 }
 
@@ -437,18 +445,28 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                             <?php if (isset($stat['breakdown']) && !empty($stat['breakdown'])):
                                 $stat_total = (float) str_replace(',', '', $stat['number']);
+                                $breakdown_values = array_map(
+                                    static function ($item) {
+                                        return (float) str_replace(',', '', $item['value']);
+                                    },
+                                    $stat['breakdown']
+                                );
+                                $max_breakdown_value = !empty($breakdown_values) ? max($breakdown_values) : 0;
                                 ?>
                                 <div class="impact-breakdown">
                                     <?php foreach ($stat['breakdown'] as $item):
                                         $item_total = (float) str_replace(',', '', $item['value']);
                                         $percentage = $stat_total > 0 ? ($item_total / $stat_total) * 100 : 0;
+                                        $normalized_percentage = $max_breakdown_value > 0 ? ($item_total / $max_breakdown_value) * 100 : 0;
+                                        $normalized_percentage = max($normalized_percentage, 12);
+                                        $weighted_percentage = min(100, ($percentage * 0.35) + ($normalized_percentage * 0.65));
                                         ?>
                                         <div class="breakdown-item">
                                             <span class="breakdown-label"><?php echo esc_html($item['label']); ?></span>
                                             <div class="breakdown-bar-bg">
                                                 <div class="breakdown-bar-fill"
-                                                     data-target-width="<?php echo esc_attr($percentage); ?>"
-                                                     style="width: <?php echo esc_attr($percentage); ?>%; background: <?php echo esc_attr($item['color']); ?>"></div>
+                                                     data-target-width="<?php echo esc_attr($weighted_percentage); ?>"
+                                                     style="width: <?php echo esc_attr($weighted_percentage); ?>%; background: <?php echo esc_attr($item['color']); ?>"></div>
                                             </div>
                                             <span class="breakdown-value"><?php echo esc_html($item['value']); ?></span>
                                         </div>
@@ -571,4 +589,3 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
     add_shortcode('our_impact', 'cbc_our_impact_shortcode');
 }
-

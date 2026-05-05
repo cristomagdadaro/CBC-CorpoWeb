@@ -45,6 +45,46 @@ if (!function_exists('cbc_priority_commodities_carousel_shortcode')) {
                 'image' => get_template_directory_uri() . '/assets/images/commodities/p-abaca.webp',
                 'route' => home_url('/commodity/abaca'),
             ),
+                array(
+                        'name' => 'Coffee',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-coffee.webp',
+                        'route' => home_url('/commodity/coffee'),
+                ),
+                array(
+                        'name' => 'Cacao',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-cacao.webp',
+                        'route' => home_url('/commodity/cacao'),
+                ),
+                array(
+                        'name' => 'Pili Nut',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-pili.webp',
+                        'route' => home_url('/commodity/pili'),
+                ),
+                array(
+                        'name' => 'Purple Yam',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-purple-yam.webp',
+                        'route' => home_url('/commodity/purple-yam'),
+                ),
+                array(
+                        'name' => 'Adlai',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-adlai.webp',
+                        'route' => home_url('/commodity/adlai'),
+                ),
+                array(
+                        'name' => 'Cassava',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-cassava.webp',
+                        'route' => home_url('/commodity/cassava'),
+                ),
+                array(
+                        'name' => 'Mango',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-mango.webp',
+                        'route' => home_url('/commodity/mango'),
+                ),
+                array(
+                        'name' => 'Rubber',
+                        'image' => get_template_directory_uri() . '/assets/images/commodities/p-rubber`.webp',
+                        'route' => home_url('/commodity/rubber'),
+                ),
         );
 
         // Allow filtering of commodities data
