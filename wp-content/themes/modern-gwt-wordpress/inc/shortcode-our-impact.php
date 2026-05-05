@@ -114,10 +114,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'eggplant' => array('commodity' => 'Eggplant', 'image' => $commodity_image_base . 'p-eggplant.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '2'),
                 'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6b4b2a', 'province' => 'Benguet', 'projects' => '1'),
                 'sweetpotato' => array('commodity' => 'Sweet Potato', 'image' => $commodity_image_base . 'p-sweetpotato.webp', 'color' => '#d98b31', 'province' => 'Albay', 'projects' => '1'),
-                'durian' => array('commodity' => 'Durian', 'image' => $commodity_image_base . 'p-durian.webp', 'color' => '#92a636', 'province' => 'Davao del Sur', 'projects' => '2'),
+                /*'durian' => array('commodity' => 'Durian', 'image' => $commodity_image_base . 'p-durian.webp', 'color' => '#92a636', 'province' => 'Davao del Sur', 'projects' => '2'),
                 'banana' => array('commodity' => 'Banana', 'image' => $commodity_image_base . 'p-banana.webp', 'color' => '#e6b72d', 'province' => 'Davao del Norte', 'projects' => '2'),
                 'pineapple' => array('commodity' => 'Pineapple', 'image' => $commodity_image_base . 'p-pineapple.webp', 'color' => '#d8a321', 'province' => 'South Cotabato', 'projects' => '1'),
-                'rubber' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#3a5f2c', 'province' => 'North Cotabato', 'projects' => '1'),
+                'rubber' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#3a5f2c', 'province' => 'North Cotabato', 'projects' => '1'),*/
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
@@ -163,9 +163,36 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
         }
 
-        // Auto-sort impact stats by numeric `number` descending (highest first).
-        // This runs after numbers are calculated so it respects auto-computed totals.
+        // Split provinces into two groups for left and right positioning
+        $total_provinces = count($province_commodities);
+        $midpoint = ceil($total_provinces / 2);
+        $left_provinces = array_slice($province_commodities, 0, $midpoint);
+        $right_provinces = array_slice($province_commodities, $midpoint);
 
+        $render_impact_pin = static function ($province_item, $side = 'left') {
+            $commodity_names = wp_list_pluck($province_item['commodities'], 'commodity');
+            $projects_label = number_format((int) $province_item['projects']) . ' project' . ((int) $province_item['projects'] === 1 ? '' : 's');
+            ?>
+            <div class="impact-map-pin impact-map-pin-<?php echo esc_attr($side); ?>"
+                 data-province-key="<?php echo esc_attr($province_item['key']); ?>"
+                 data-color="<?php echo esc_attr($province_item['color']); ?>"
+                 data-count="<?php echo esc_attr(count($province_item['commodities'])); ?>"
+                 style="--pin-color: <?php echo esc_attr($province_item['color']); ?>">
+
+                <div class="impact-map-icons" aria-hidden="true">
+                    <?php foreach (array_slice($province_item['commodities'], 0, 3) as $commodity): ?>
+                        <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="impact-map-content">
+                    <div class="impact-map-province"><?php echo esc_html($province_item['province']); ?></div>
+                    <div class="impact-map-commodities"><?php echo esc_html(implode(', ', $commodity_names)); ?></div>
+                    <div class="impact-map-projects"><?php echo esc_html($projects_label); ?></div>
+                </div>
+            </div>
+            <?php
+        };
 
         ob_start();
         ?>
@@ -328,7 +355,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
             /* Map Card - Featured */
             .impact-map-card {
-                background: #ffffff;
                 padding: 1rem;
                 display: flex;
                 flex-direction: column;
@@ -337,16 +363,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 min-height: 200px;
                 position: relative;
                 overflow: hidden;
-            }
-
-            .impact-map-title {
-                color: #1f5d2b;
-                font-size: 0.95rem;
-                font-weight: 800;
-                line-height: 1.15;
-                margin: 0 0 0.75rem;
-                text-align: center;
-                text-transform: uppercase;
+                height: 100%;
             }
 
             @media (min-width: 640px) {
@@ -359,17 +376,19 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             @media (min-width: 1024px) {
                 .impact-map-card {
                     grid-column: span 2;
-                    grid-row: span 3;
+                    grid-row: span 2;
                     min-height: 560px;
+                    height: 100%;
                 }
             }
 
             .impact-map-wrapper {
                 width: 100%;
                 display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 0.75rem;
+                grid-template-columns: 0.5fr 2fr 0.5fr;
+                gap: 1rem;
                 position: relative;
+                align-items: center;
             }
 
             .impact-map-figure {
@@ -450,14 +469,47 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-map-pin {
-                border-left: 4px solid var(--pin-color, #237823);
                 background: #f8faf7;
                 display: grid;
-                grid-template-columns: 2.25rem minmax(0, 1fr);
                 align-items: center;
-                gap: 0.5rem;
-                padding: 0.45rem 0.55rem;
-                transition: background 0.2s ease, box-shadow 0.2s ease;
+                gap: 0.65rem;
+                padding: 0.45rem 0.65rem;
+                transition: all 0.2s ease;
+                border: none;
+            }
+
+            .impact-map-pin-left {
+                grid-template-columns: 1fr 2.25rem;
+                text-align: right;
+                border-right: 4px solid var(--pin-color);
+                border-left: none;
+            }
+
+            .impact-map-pin-left .impact-map-icons {
+                order: 2;
+                justify-content: flex-end;
+            }
+
+            .impact-map-pin-right {
+                grid-template-columns: 2.25rem 1fr;
+                text-align: left;
+                border-left: 4px solid var(--pin-color, #237823);
+                border-right: none;
+            }
+
+            .impact-map-pin-right .impact-map-icons {
+                justify-content: flex-start;
+            }
+
+            .impact-map-pin-right .impact-map-icons img {
+                margin-right: -0.45rem;
+                margin-left: 0;
+            }
+
+            .impact-map-pin-left .impact-map-icons img {
+                margin-left: 0;
+                margin-right: -0.45rem;
+                justify-content: start;
             }
 
             .impact-map-pin.is-hovered {
@@ -476,14 +528,16 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 border: 1px solid rgba(31, 93, 43, 0.15);
                 border-radius: 50%;
                 height: 1.65rem;
+                width: auto;
                 margin-left: -0.45rem;
                 object-fit: contain;
                 padding: 0.12rem;
-                width: 1.65rem;
             }
 
             .impact-map-icons img:first-child {
                 margin-left: 0;
+                margin-right: 0;
+                z-index: 3;
             }
 
             .impact-map-province {
@@ -514,15 +568,37 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 text-align: center;
             }
 
+            /* Reverse the pin alignment for the right side */
+            .impact-map-list-right .impact-map-pin {
+                border-left: 4px solid var(--pin-color, #237823);
+                border-right: 0;
+                text-align: left;
+            }
+
+            .impact-map-list-right .impact-map-icons {
+                justify-content: flex-end;
+            }
+
+            .impact-map-list-right .impact-map-icons img {
+                margin-left: 0;
+                margin-right: -0.45rem;
+            }
+
+            .impact-map-list-right .impact-map-icons img:last-child {
+                margin-right: 0;
+            }
+
             @media (min-width: 768px) {
                 .impact-map-wrapper {
-                    grid-template-columns: minmax(220px, 0.95fr) minmax(230px, 1fr);
-                    align-items: center;
+                    grid-template-columns: 1fr 1.5fr 1fr;
                 }
+            }
 
-                .impact-map-list {
-                    grid-template-columns: 1fr;
-                }
+            .impact-map-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.55rem;
+                z-index: 3;
             }
 
             @media (min-width: 1024px) {
@@ -584,6 +660,13 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <!-- Map Card -->
                     <div class="impact-map-card rounded-lg">
                         <div class="impact-map-wrapper">
+                            <!-- Left List -->
+                            <div class="impact-map-list impact-map-list-left">
+                                <?php foreach ($left_provinces as $province_item): ?>
+                                    <?php $render_impact_pin($province_item, 'left'); ?>
+                                <?php endforeach; ?>
+                            </div>
+
                             <div class="impact-map-figure">
                                 <?php
                                 // Resolve the provided path to an absolute filesystem path.
@@ -625,27 +708,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 }
                                 ?>
                             </div>
-                            <div class="impact-map-list" aria-label="Province commodity list">
-                                <?php foreach ($province_commodities as $province_item):
-                                    $commodity_names = wp_list_pluck($province_item['commodities'], 'commodity');
-                                    $projects_label = number_format((int) $province_item['projects']) . ' project' . ((int) $province_item['projects'] === 1 ? '' : 's');
-                                    ?>
-                                    <div class="impact-map-pin"
-                                         data-province-key="<?php echo esc_attr($province_item['key']); ?>"
-                                         data-color="<?php echo esc_attr($province_item['color']); ?>"
-                                         data-count="<?php echo esc_attr(count($province_item['commodities'])); ?>"
-                                         style="--pin-color: <?php echo esc_attr($province_item['color']); ?>">
-                                        <div class="impact-map-icons" aria-hidden="true">
-                                            <?php foreach (array_slice($province_item['commodities'], 0, 3) as $commodity): ?>
-                                                <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
-                                            <?php endforeach; ?>
-                                        </div>
-                                        <div>
-                                            <div class="impact-map-province"><?php echo esc_html($province_item['province']); ?></div>
-                                            <div class="impact-map-commodities"><?php echo esc_html(implode(', ', $commodity_names)); ?></div>
-                                            <div class="impact-map-projects"><?php echo esc_html($projects_label); ?></div>
-                                        </div>
-                                    </div>
+
+                            <!-- Right List -->
+                            <div class="impact-map-list impact-map-list-right">
+                                <?php foreach ($right_provinces as $province_item): ?>
+                                    <?php $render_impact_pin($province_item, 'right'); ?>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -751,27 +818,18 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                 function getProvinceAnchor(elements, wrapperRect) {
                     const anchors = elements.map((element) => {
-                        if (typeof element.getBBox !== 'function' || typeof element.getScreenCTM !== 'function') {
+                        // Use getBoundingClientRect to get exact screen pixels
+                        // instead of SVG internal coordinates, ensuring perfect alignment.
+                        const rect = element.getBoundingClientRect();
+
+                        if (!rect || !rect.width || !rect.height) {
                             return null;
                         }
-
-                        const box = element.getBBox();
-                        const matrix = element.getScreenCTM();
-
-                        if (!box || !matrix || !box.width || !box.height) {
-                            return null;
-                        }
-
-                        const point = element.ownerSVGElement.createSVGPoint();
-                        point.x = box.x + (box.width / 2);
-                        point.y = box.y + (box.height / 2);
-
-                        const transformed = point.matrixTransform(matrix);
 
                         return {
-                            x: transformed.x - wrapperRect.left,
-                            y: transformed.y - wrapperRect.top,
-                            weight: box.width * box.height,
+                            x: rect.left + (rect.width / 2) - wrapperRect.left,
+                            y: rect.top + (rect.height / 2) - wrapperRect.top,
+                            weight: rect.width * rect.height,
                         };
                     }).filter(Boolean);
 
@@ -779,6 +837,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                     const totalWeight = anchors.reduce((sum, anchor) => sum + anchor.weight, 0);
 
+                    // Calculate the weighted center if a province has multiple path pieces (like islands)
                     return anchors.reduce((result, anchor) => {
                         return {
                             x: result.x + (anchor.x * anchor.weight / totalWeight),
@@ -787,39 +846,19 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     }, { x: 0, y: 0 });
                 }
 
-                function getPinAnchor(pinRect, provinceAnchor, wrapperRect) {
+                function getPinAnchor(pin, pinRect, provinceAnchor, wrapperRect) {
+                    // If it's in the left list, the 'inner' side facing the map is the RIGHT edge (pinRect.right)
+                    // If it's in the right list, the 'inner' side facing the map is the LEFT edge (pinRect.left)
+                    const isLeftList = pin.closest('.impact-map-list-left') !== null;
+
                     const localLeft = pinRect.left - wrapperRect.left;
                     const localRight = pinRect.right - wrapperRect.left;
                     const localTop = pinRect.top - wrapperRect.top;
                     const localBottom = pinRect.bottom - wrapperRect.top;
-                    const localCenterX = localLeft + (pinRect.width / 2);
-                    const localCenterY = localTop + (pinRect.height / 2);
-                    const edgePadding = 6;
-
-                    if (provinceAnchor.y < localTop) {
-                        return {
-                            x: clamp(provinceAnchor.x, localLeft + edgePadding, localRight - edgePadding),
-                            y: localTop,
-                        };
-                    }
-
-                    if (provinceAnchor.y > localBottom) {
-                        return {
-                            x: clamp(provinceAnchor.x, localLeft + edgePadding, localRight - edgePadding),
-                            y: localBottom,
-                        };
-                    }
-
-                    if (provinceAnchor.x < localCenterX) {
-                        return {
-                            x: localLeft,
-                            y: clamp(provinceAnchor.y, localTop + edgePadding, localBottom - edgePadding),
-                        };
-                    }
 
                     return {
-                        x: localRight,
-                        y: clamp(provinceAnchor.y, localTop + edgePadding, localBottom - edgePadding),
+                        x: isLeftList ? localRight : localLeft,
+                        y: clamp(provinceAnchor.y, localTop + 5, localBottom - 5),
                     };
                 }
 
@@ -829,6 +868,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     const pins = Array.from(section.querySelectorAll('.impact-map-pin'));
 
                     if (!wrapper || !map || !pins.length) return;
+
+                    // Toggle this or pass it as a parameter/data-attribute
+                    const useZigZag = false;
 
                     wrapper.querySelectorAll('.impact-map-lines').forEach((existingLines) => existingLines.remove());
 
@@ -846,25 +888,35 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                         if (!provinceAnchor || !pinRect.width || !pinRect.height) return;
 
-                        const pinAnchor = getPinAnchor(pinRect, provinceAnchor, wrapperRect);
+                        const pinAnchor = getPinAnchor(pin, pinRect, provinceAnchor, wrapperRect);
+
                         const x1 = provinceAnchor.x;
                         const y1 = provinceAnchor.y;
                         const x2 = pinAnchor.x;
                         const y2 = pinAnchor.y;
                         const color = pin.dataset.color || '#237823';
 
-                        const pinTop = pinRect.top - wrapperRect.top;
-                        const pinBottom = pinRect.bottom - wrapperRect.top;
-                        const verticalApproach = Math.abs(y2 - pinTop) < 1 || Math.abs(y2 - pinBottom) < 1;
-                        const linePoints = verticalApproach
-                            ? `${x1.toFixed(2)},${y1.toFixed(2)} ${x1.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`
-                            : `${x1.toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y2.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`;
+                        let linePoints;
+
+                        if (useZigZag) {
+                            const pinTop = pinRect.top - wrapperRect.top;
+                            const pinBottom = pinRect.bottom - wrapperRect.top;
+                            const verticalApproach = Math.abs(y2 - pinTop) < 1 || Math.abs(y2 - pinBottom) < 1;
+
+                            linePoints = verticalApproach
+                                ? `${x1.toFixed(2)},${y1.toFixed(2)} ${x1.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${((y1 + y2) / 2).toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`
+                                : `${x1.toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y1.toFixed(2)} ${((x1 + x2) / 2).toFixed(2)},${y2.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`;
+                        } else {
+                            // Clean Direct Line
+                            linePoints = `${x1.toFixed(2)},${y1.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`;
+                        }
 
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
                         line.setAttribute('class', 'impact-map-line');
                         line.setAttribute('data-province-key', provinceKey);
                         line.setAttribute('points', linePoints);
                         line.setAttribute('stroke', color);
+                        line.setAttribute('fill', 'none'); // Ensure polyline doesn't try to fill
 
                         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         dot.setAttribute('class', 'impact-map-line-dot');
@@ -1001,6 +1053,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 initCommodityMaps();
+                setTimeout(redrawAllCommodityLines, 150);
                 window.addEventListener('load', redrawAllCommodityLines);
                 window.addEventListener('resize', scheduleCommodityLineRedraw);
 
