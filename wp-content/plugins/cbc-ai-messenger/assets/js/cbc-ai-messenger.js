@@ -306,7 +306,7 @@
 
             this.elements.$form.on('submit', async (e) => {
                 e.preventDefault();
-                const { $input, $nameInput, $emailInput, $websiteInput, $recaptchaInput } = this.elements;
+                const { $input, $nameInput, $emailInput, $websiteInput, $form } = this.elements;
                 const msg = ($input.val() || '').trim();
                 if (!msg) return;
 
@@ -335,15 +335,9 @@
                     headers['X-WP-Nonce'] = CBCAI.nonce;
                 }
 
-                let recaptchaToken = ($recaptchaInput.val() || '').trim();
+                let recaptchaToken = (($form.find('[name="g-recaptcha-response"]').first().val() || '') + '').trim();
                 if (CBCAI && CBCAI.recaptchaSiteKey) {
-                    if (!recaptchaToken && !(window.grecaptcha && typeof window.grecaptcha.execute === 'function')) {
-                        this.ui.addMsg('bot', 'Security validation is still loading. Please try again in a moment.');
-                        this.ui.setProcessing(false);
-                        return;
-                    }
-
-                    if (!recaptchaToken) {
+                    if (!recaptchaToken && window.grecaptcha && typeof window.grecaptcha.execute === 'function') {
                         try {
                             await new Promise((resolve) => window.grecaptcha.ready(resolve));
                             recaptchaToken = await window.grecaptcha.execute(CBCAI.recaptchaSiteKey, {
@@ -354,6 +348,13 @@
                             this.ui.setProcessing(false);
                             return;
                         }
+                    }
+
+                    // For checkbox reCAPTCHA (v2), the token must already be present after user verification.
+                    if (!recaptchaToken) {
+                        this.ui.addMsg('bot', 'Please complete the security verification and try again.');
+                        this.ui.setProcessing(false);
+                        return;
                     }
                 }
 
@@ -418,7 +419,6 @@
                 $nameInput: $('.cbc-ai-input-name'),
                 $emailInput: $('.cbc-ai-input-email'),
                 $websiteInput: $('.cbc-ai-input-website'),
-                $recaptchaInput: $('[name="g-recaptcha-response"]'),
                 $typing: $('.cbc-ai-typing'),
             };
 
