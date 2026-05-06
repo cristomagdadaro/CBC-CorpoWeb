@@ -396,7 +396,7 @@ body.admin-bar .site-header {
 
 /* Main font for body and general content */
 body {
-    font-family: "League Spartan", Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 h1,
