@@ -33,10 +33,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Disseminating Scientific Knowledge',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Scientific Journal Articles', 'value' => '13', 'color' => '#1f5d2b'),
-                                array('label' => 'Technical Reports', 'value' => '7', 'color' => '#55A147'),
-                                array('label' => 'Policy Briefs', 'value' => '5', 'color' => '#D5DA65'),
-                                array('label' => 'IP/Patents', 'value' => '2', 'color' => '#D5DA65'),
+                                array('label' => 'Scientific Journal Articles', 'value' => '#', 'color' => '#1f5d2b'),
+                                array('label' => 'Policy Briefs', 'value' => '#', 'color' => '#55A147'),
+                                array('label' => 'IP/Patents/PVP', 'value' => '2', 'color' => '#D5DA65'),
                         )
                 ),
                 'capacity_building' => array(
@@ -50,6 +49,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 array('label' => 'Regulators', 'value' => '16', 'color' => '#D5DA65'),
                                 array('label' => 'Educators', 'value' => '16', 'color' => '#1f5d2b'),
                                 array('label' => 'Students', 'value' => '8', 'color' => '#55A147'),
+                                array('label' => 'Staff', 'value' => '18', 'color' => '#55A147'),
                         )
                 ),
                 'partners_collaborators' => array(
