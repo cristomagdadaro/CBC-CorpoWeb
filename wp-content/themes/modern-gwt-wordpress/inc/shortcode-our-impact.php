@@ -30,7 +30,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 ),
                 'breakthroughs' => array(
                         'number' => null,
-                        'label' => 'Publications',
+                        'label' => 'Publications ',
                         'sublabel' => 'Disseminating Scientific Knowledge',
                         'color' => '#55A147',
                         'breakdown' => array(
@@ -232,7 +232,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             <?php
         };
 
-        $render_inline_map = static function ($provided_path, $fallback_path, $map_class, $aria_label, $normalize_province_ids = false) {
+        $render_inline_map = static function ($provided_path, $fallback_path, $map_class, $aria_label, $normalize_province_ids = false, $unavailable_message = 'SVG map is unavailable.') {
             $map_path = $fallback_path;
 
             if ($provided_path && !preg_match('#^https?://#i', $provided_path) && file_exists($provided_path)) {
@@ -245,16 +245,17 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+            $unavailable_message = esc_html($unavailable_message);
 
             if (!$map_is_svg || !is_readable($map_path)) {
-                echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
+                echo '<p class="impact-map-unavailable">' . $unavailable_message . '</p>';
                 return;
             }
 
-            $max_inline_size = 1024 * 1024; // 1 MB
+            $max_inline_size = (int) apply_filters('cbc_impact_map_max_inline_svg_size', 2 * 1024 * 1024);
 
             if (filesize($map_path) <= 0 || filesize($map_path) > $max_inline_size) {
-                echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
+                echo '<p class="impact-map-unavailable">' . $unavailable_message . '</p>';
                 return;
             }
 
@@ -265,6 +266,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
             if ($normalize_province_ids) {
                 $svg = preg_replace('/:?id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+            }
+
+            if (!preg_match('/<svg\b[^>]*\sviewBox=/i', $svg)
+                && preg_match('/<svg\b[^>]*\swidth="([0-9.]+)"[^>]*\sheight="([0-9.]+)"/i', $svg, $dimensions)) {
+                $svg = preg_replace('/<svg\b/', '<svg viewBox="0 0 ' . esc_attr($dimensions[1]) . ' ' . esc_attr($dimensions[2]) . '"', $svg, 1);
             }
 
             $svg = preg_replace('/<svg\b/', '<svg class="' . esc_attr($map_class) . '" role="img" aria-label="' . esc_attr($aria_label) . '"', $svg, 1);
@@ -547,7 +553,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             .impact-map-wrapper {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 2fr 0.5fr;
+                grid-template-columns: minmax(0, 1fr) minmax(220px, 2fr) minmax(0, 1fr);
                 gap: 1rem;
                 position: relative;
                 align-items: center;
@@ -559,23 +565,35 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                min-width: 0;
                 z-index: 1;
             }
 
-            .world-impact-map-figure svg {
+            .impact-location-map {
+                display: block;
+                filter: drop-shadow(0 4px 20px rgba(31, 93, 43, 0.15));
+                height: auto;
+                max-width: 100%;
+            }
+
+            .impact-philippine-map {
+                height: 420px;
+                max-width: 100%;
+                width: auto;
+            }
+
+            .impact-world-map {
                 max-height: 320px;
                 width: 100%;
             }
 
-            .impact-map-wrapper svg {
-                max-width: 100%;
-                width: auto;
-                height: auto;
-                filter: drop-shadow(0 4px 20px rgba(31, 93, 43, 0.15));
-            }
-
-            .impact-map-wrapper svg {
-                max-height: 420px;
+            .impact-philippine-map .cls-1 {
+                fill: #d7ddd6;
+                stroke: #ffffff;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 0.35;
+                transition: fill 0.25s ease, filter 0.25s ease, stroke 0.25s ease;
             }
 
             .impact-map-wrapper svg [id] {
@@ -777,25 +795,22 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 margin-right: 0;
             }
 
-            @media (min-width: 768px) {
-                .impact-map-wrapper {
-                    grid-template-columns: 1fr 1.5fr 1fr;
-                }
-            }
-
             .impact-map-list {
                 display: flex;
                 flex-direction: column;
                 gap: 0.55rem;
+                min-width: 0;
                 z-index: 3;
             }
 
             @media (min-width: 1024px) {
-                .impact-map-wrapper svg {
-                    max-height: 500px;
+                .impact-philippine-map {
+                    height: 500px;
+                    max-width: 100%;
+                    width: auto;
                 }
 
-                .world-impact-map-figure svg {
+                .impact-world-map {
                     max-height: 360px;
                 }
             }
@@ -855,76 +870,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <h2 class="our-impact-title section-title homepage-section-title text-center text-3xl lg:text-4xl font-extrabold text-[#1f5d2b]">OUR IMPACT</h2>
                 </div>
                 <div class="impact-bento-grid">
-                    <!-- Map Card -->
-                    <div class="impact-map-card rounded-lg select-none">
-                        <div class="impact-map-carousel" data-impact-carousel>
-                            <div class="impact-map-carousel-header">
-                                <div>
-                                    <span class="impact-map-carousel-kicker">Impact Maps</span>
-                                    <div class="impact-map-carousel-title" data-impact-carousel-title>Philippine Commodity Footprint</div>
-                                </div>
-                                <div class="impact-map-carousel-nav">
-                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-prev aria-label="Show previous impact map">&larr;</button>
-                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-next aria-label="Show next impact map">&rarr;</button>
-                                </div>
-                            </div>
-
-                            <div class="impact-map-slides">
-                                <div class="impact-map-slide" data-impact-slide data-slide-title="Philippine Commodity Footprint">
-                                    <div class="impact-map-wrapper">
-                                        <div class="impact-map-list impact-map-list-left">
-                                            <?php foreach ($left_provinces as $province_item): ?>
-                                                <?php $render_impact_pin($province_item, 'left'); ?>
-                                            <?php endforeach; ?>
-                                        </div>
-
-                                        <div class="impact-map-figure">
-                                            <?php
-                                            $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
-                                            $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
-                                            $render_inline_map($provided, $theme_map_path, 'impact-location-map impact-philippine-map', 'Philippines commodity map', true);
-                                            ?>
-                                        </div>
-
-                                        <div class="impact-map-list impact-map-list-right">
-                                            <?php foreach ($right_provinces as $province_item): ?>
-                                                <?php $render_impact_pin($province_item, 'right'); ?>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="impact-map-slide" data-impact-slide data-slide-title="Global Training Engagements" hidden>
-                                    <div class="impact-map-wrapper">
-                                        <div class="impact-map-list impact-map-list-left">
-                                            <?php foreach ($left_countries as $country_item): ?>
-                                                <?php $render_impact_pin($country_item, 'left'); ?>
-                                            <?php endforeach; ?>
-                                        </div>
-
-                                        <div class="impact-map-figure world-impact-map-figure">
-                                            <?php
-                                            $world_map_path = get_template_directory() . '/assets/svgs/worldMap.svg';
-                                            $render_inline_map($world_map_path, $world_map_path, 'impact-location-map impact-world-map', 'World training engagement map', false);
-                                            ?>
-                                        </div>
-
-                                        <div class="impact-map-list impact-map-list-right">
-                                            <?php foreach ($right_countries as $country_item): ?>
-                                                <?php $render_impact_pin($country_item, 'right'); ?>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="impact-map-pagination" aria-label="Impact map pages">
-                                <button type="button" class="is-active" data-impact-carousel-dot aria-label="Show Philippine impact map"></button>
-                                <button type="button" data-impact-carousel-dot aria-label="Show world impact map"></button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Stat Cards -->
                     <?php foreach ($impact_stats as $key => $stat):
                         $stat_numeric_value = (int) str_replace(',', '', $stat['number']);
@@ -978,6 +923,74 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         </div>
                     <?php endforeach; ?>
                 </div>
+                                    <!-- Map Card -->
+                    <div class="impact-map-card rounded-lg select-none">
+                        <div class="impact-map-carousel" data-impact-carousel>
+                            <div class="impact-map-carousel-header">
+                                <div>
+                                    <div class="impact-map-carousel-title" data-impact-carousel-title>National Footprint</div>
+                                </div>
+                                <div class="impact-map-carousel-nav">
+                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-prev aria-label="Show previous impact map">&larr;</button>
+                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-next aria-label="Show next impact map">&rarr;</button>
+                                </div>
+                            </div>
+
+                            <div class="impact-map-slides">
+                                <div class="impact-map-slide" data-impact-slide data-slide-title="National Footprint">
+                                    <div class="impact-map-wrapper">
+                                        <div class="impact-map-list impact-map-list-left">
+                                            <?php foreach ($left_provinces as $province_item): ?>
+                                                <?php $render_impact_pin($province_item, 'left'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+
+                                        <div class="impact-map-figure">
+                                            <?php
+                                            $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
+                                            $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
+                                            $render_inline_map($provided, $theme_map_path, 'impact-location-map impact-philippine-map', 'Philippines commodity map', true, 'Province SVG map is unavailable.');
+                                            ?>
+                                        </div>
+
+                                        <div class="impact-map-list impact-map-list-right">
+                                            <?php foreach ($right_provinces as $province_item): ?>
+                                                <?php $render_impact_pin($province_item, 'right'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="impact-map-slide" data-impact-slide data-slide-title="Global Footprint" hidden>
+                                    <div class="impact-map-wrapper">
+                                        <div class="impact-map-list impact-map-list-left">
+                                            <?php foreach ($left_countries as $country_item): ?>
+                                                <?php $render_impact_pin($country_item, 'left'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+
+                                        <div class="impact-map-figure world-impact-map-figure">
+                                            <?php
+                                            $world_map_path = get_template_directory() . '/assets/svgs/worldMap.svg';
+                                            $render_inline_map($world_map_path, $world_map_path, 'impact-location-map impact-world-map', 'World training engagement map', false, 'World SVG map is unavailable.');
+                                            ?>
+                                        </div>
+
+                                        <div class="impact-map-list impact-map-list-right">
+                                            <?php foreach ($right_countries as $country_item): ?>
+                                                <?php $render_impact_pin($country_item, 'right'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="impact-map-pagination" aria-label="Impact map pages">
+                                <button type="button" class="is-active" data-impact-carousel-dot aria-label="Show Philippine impact map"></button>
+                                <button type="button" data-impact-carousel-dot aria-label="Show world impact map"></button>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </section>
 
