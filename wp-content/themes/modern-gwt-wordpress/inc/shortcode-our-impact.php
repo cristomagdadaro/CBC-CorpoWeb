@@ -110,17 +110,17 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         $commodity_image_base = trailingslashit(get_template_directory_uri()) . 'assets/images/commodities/';
         $impact_commodities = array(
-                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#237823', 'province' => 'Cavite', 'projects' => '5'),
-                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '4'),
-                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '3'),
-                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Manila', 'projects' => '3'),
-                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Camarines Sur', 'projects' => '1'),
-                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Bohol', 'projects' => '1'),
-                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Camarines Sur', 'projects' => '8'),
-                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Laguna', 'projects' => '7'),
-                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Northern Samar', 'projects' => '4'),
-                'purpleyam' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#ba2f88', 'province' => 'Bohol', 'projects' => '4'),
-                'purpleyam' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '11'),
+                'coffee-cavite' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#237823', 'province' => 'Cavite', 'projects' => '5'),
+                'coffee-benguet' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '4'),
+                'cacao-benguet' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '3'),
+                'cacao-metro-manila' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Metro Manila', 'projects' => '3'),
+                'cacao-camarines-sur' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Camarines Sur', 'projects' => '1'),
+                'cacao-bohol' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Bohol', 'projects' => '1'),
+                'pili-camarines-sur' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Camarines Sur', 'projects' => '8'),
+                'pili-laguna' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Laguna', 'projects' => '7'),
+                'pili-northern-samar' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Northern Samar', 'projects' => '4'),
+                'purpleyam-bohol' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#ba2f88', 'province' => 'Bohol', 'projects' => '4'),
+                'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
