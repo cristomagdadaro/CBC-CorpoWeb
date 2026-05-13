@@ -71,7 +71,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
-                                array('label' => 'RCBS Participants', 'value' => '3,803', 'color' => '#1f5d2b'),
+                                array('label' => 'Regional Crop Biotechnology Symposium Participants', 'value' => '3,803', 'color' => '#1f5d2b'),
                                 array('label' => 'Farmers Engaged', 'value' => '604', 'color' => '#1f5d2b'),
                                 array('label' => 'IEC Distributed', 'value' => '#', 'color' => '#D5DA65'),
                                 array('label' => 'SocMed Followers', 'value' => '7,115', 'color' => '#1f5d2b'),
