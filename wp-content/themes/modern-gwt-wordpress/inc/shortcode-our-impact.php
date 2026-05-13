@@ -14,6 +14,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         // Impact Statistics Data
         // source https://docs.google.com/spreadsheets/d/17EzyEyIvq8SEPTFwCOO2F47IBkqaNkSHmtepKmkS8uQ/edit?gid=1300839281#gid=1300839281
+        // https://docs.google.com/spreadsheets/d/1IUsPVUw9smJfWQdl6TrTeuxhp30K6Ia2OWFeJ0l47aM/edit?gid=1339515758#gid=1339515758
         $impact_stats = array(
                 'research_projects' => array(
                         'number' => null,
@@ -33,9 +34,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Disseminating Scientific Knowledge',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Scientific Journal Articles', 'value' => '170', 'color' => '#1f5d2b'),
+                                array('label' => 'Scientific Journal Articles', 'value' => '134', 'color' => '#1f5d2b'),
+                                array('label' => 'Abstracts', 'value' => '52', 'color' => '#D5DA65'),
                                 array('label' => 'Book/Chapter Book/Handbook', 'value' => '8', 'color' => '#55A147'),
-                                array('label' => 'IP/Patents/PVP', 'value' => '3', 'color' => '#D5DA65'),
+                                array('label' => 'IP/Patents/PVP', 'value' => '7', 'color' => '#D5DA65'),
                         )
                 ),
                 'capacity_building' => array(
@@ -108,18 +110,17 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         $commodity_image_base = trailingslashit(get_template_directory_uri()) . 'assets/images/commodities/';
         $impact_commodities = array(
-                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#237823', 'province' => 'Bukidnon', 'projects' => '3'),
-                'tomato' => array('commodity' => 'Tomato', 'image' => $commodity_image_base . 'p-tomato.webp', 'color' => '#e9422f', 'province' => 'Bukidnon', 'projects' => '2'),
-                'garlic' => array('commodity' => 'Garlic', 'image' => $commodity_image_base . 'p-garlic.webp', 'color' => '#c7a55b', 'province' => 'Ilocos Norte', 'projects' => '1'),
-                'mungbean' => array('commodity' => 'Mungbean', 'image' => $commodity_image_base . 'p-mungbean.webp', 'color' => '#7abf35', 'province' => 'Tarlac', 'projects' => '2'),
-                'onion' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ba2f88', 'province' => 'Nueva Ecija', 'projects' => '10'),
-                'eggplant' => array('commodity' => 'Eggplant', 'image' => $commodity_image_base . 'p-eggplant.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '2'),
-                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6b4b2a', 'province' => 'Benguet', 'projects' => '1'),
-                'sweetpotato' => array('commodity' => 'Sweet Potato', 'image' => $commodity_image_base . 'p-sweetpotato.webp', 'color' => '#d98b31', 'province' => 'Albay', 'projects' => '1'),
-                /*'durian' => array('commodity' => 'Durian', 'image' => $commodity_image_base . 'p-durian.webp', 'color' => '#92a636', 'province' => 'Davao del Sur', 'projects' => '2'),
-                'banana' => array('commodity' => 'Banana', 'image' => $commodity_image_base . 'p-banana.webp', 'color' => '#e6b72d', 'province' => 'Davao del Norte', 'projects' => '2'),
-                'pineapple' => array('commodity' => 'Pineapple', 'image' => $commodity_image_base . 'p-pineapple.webp', 'color' => '#d8a321', 'province' => 'South Cotabato', 'projects' => '1'),
-                'rubber' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#3a5f2c', 'province' => 'North Cotabato', 'projects' => '1'),*/
+                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#237823', 'province' => 'Cavite', 'projects' => '5'),
+                'coffee' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '4'),
+                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Benguet', 'projects' => '3'),
+                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Manila', 'projects' => '3'),
+                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#e9422f', 'province' => 'Camarines Sur', 'projects' => '1'),
+                'cacao' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#c7a55b', 'province' => 'Bohol', 'projects' => '1'),
+                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Camarines Sur', 'projects' => '8'),
+                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Laguna', 'projects' => '7'),
+                'pili' => array('commodity' => 'Pili', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#c7a55b', 'province' => 'Northern Samar', 'projects' => '4'),
+                'purpleyam' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#ba2f88', 'province' => 'Bohol', 'projects' => '4'),
+                'purpleyam' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Pangasinan', 'projects' => '11'),
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);

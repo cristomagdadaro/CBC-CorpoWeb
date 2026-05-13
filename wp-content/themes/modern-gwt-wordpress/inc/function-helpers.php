@@ -430,7 +430,7 @@ if ( ! function_exists( 'gwt_calendar_shortcode' ) ) {
             }
 
             // Render as HTML table with colspan in day cells
-            echo '<table class="calendar-grid reveal-on-scroll-300 opacity-0 mb-[1rem]" style="width:100%;height:100%;border-collapse:separate;border-spacing:6px;margin-bottom: 0">';
+            echo '<table class="calendar-grid reveal-on-scroll-300 opacity-0 mb-[1rem]" style="width:100%;height:90%;border-collapse:separate;border-spacing:6px;margin-bottom: 0">';
 
             // Header row
             echo '<thead><tr>';
