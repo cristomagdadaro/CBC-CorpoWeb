@@ -121,34 +121,67 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'pili-northern-samar' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Northern Samar', 'projects' => '4'),
                 'purpleyam-bohol' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Bohol', 'projects' => '4'),
                 'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
+                'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '1'),
+                'rice-agusan-del-sur' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Agusan del Sur', 'projects' => '1'),
+                'rice-negreño' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negreño', 'projects' => '1'),
+                'rubber-zamboanga-del-sur' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#0891b2', 'province' => 'Zamboanga del Sur', 'projects' => '2'),
+                'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '2'),
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
-        $province_commodities = array();
+        $impact_global_engagements = array(
+                // Replace the sample training counts below with the latest engagement totals when available.
+                'south-korea-training' => array('commodity' => 'Training', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '1', 'count_label' => 'training'),
+                'japan-training' => array('commodity' => 'Training', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '1', 'count_label' => 'training'),
+                'thailand-training' => array('commodity' => 'Training', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '1', 'count_label' => 'training'),
+                'malaysia-training' => array('commodity' => 'Training', 'icon_label' => 'MY', 'color' => '#0891b2', 'country' => 'Malaysia', 'map_key' => 'MY', 'projects' => '1', 'count_label' => 'training'),
+                'vietnam-training' => array('commodity' => 'Training', 'icon_label' => 'VN', 'color' => '#ca8a04', 'country' => 'Vietnam', 'map_key' => 'VN', 'projects' => '1', 'count_label' => 'training'),
+        );
 
-        foreach ($impact_commodities as $commodity_key => $commodity) {
-            if (empty($commodity['province']) || empty($commodity['commodity'])) {
-                continue;
+        $impact_global_engagements = apply_filters('cbc_impact_global_engagements_data', $impact_global_engagements);
+
+        $build_location_groups = static function ($items, $location_field) {
+            $location_groups = array();
+
+            foreach ($items as $item_key => $item) {
+                if (empty($item[$location_field]) || empty($item['commodity'])) {
+                    continue;
+                }
+
+                $location_name = $item[$location_field];
+                $location_key = !empty($item['map_key']) ? $item['map_key'] : sanitize_title($location_name);
+                $item['key'] = $item_key;
+
+                if (!isset($location_groups[$location_key])) {
+                    $location_groups[$location_key] = array(
+                            'key' => $location_key,
+                            'location' => $location_name,
+                            'color' => isset($item['color']) ? $item['color'] : '#237823',
+                            'projects' => 0,
+                            'count_label' => isset($item['count_label']) ? $item['count_label'] : 'project',
+                            'items' => array(),
+                    );
+                }
+
+                $location_groups[$location_key]['projects'] += isset($item['projects']) ? (int) $item['projects'] : 0;
+                $location_groups[$location_key]['items'][] = $item;
             }
 
-            $province_key = sanitize_title($commodity['province']);
-            $commodity['key'] = $commodity_key;
+            return array_values($location_groups);
+        };
 
-            if (!isset($province_commodities[$province_key])) {
-                $province_commodities[$province_key] = array(
-                        'key' => $province_key,
-                        'province' => $commodity['province'],
-                        'color' => isset($commodity['color']) ? $commodity['color'] : '#237823',
-                        'projects' => 0,
-                        'commodities' => array(),
-                );
-            }
+        $split_location_groups = static function ($location_groups) {
+            $total_locations = count($location_groups);
+            $midpoint = (int) ceil($total_locations / 2);
 
-            $province_commodities[$province_key]['projects'] += isset($commodity['projects']) ? (int) $commodity['projects'] : 0;
-            $province_commodities[$province_key]['commodities'][] = $commodity;
-        }
+            return array(
+                    array_slice($location_groups, 0, $midpoint),
+                    array_slice($location_groups, $midpoint),
+            );
+        };
 
-        $province_commodities = array_values($province_commodities);
+        $province_commodities = $build_location_groups($impact_commodities, 'province');
+        $global_engagement_countries = $build_location_groups($impact_global_engagements, 'country');
 
         foreach ($impact_stats as $skey => $sval) {
             if (( ! isset($sval['number']) || $sval['number'] === '' || is_null($sval['number']) )
@@ -166,35 +199,77 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
         }
 
-        // Split provinces into two groups for left and right positioning
-        $total_provinces = count($province_commodities);
-        $midpoint = ceil($total_provinces / 2);
-        $left_provinces = array_slice($province_commodities, 0, $midpoint);
-        $right_provinces = array_slice($province_commodities, $midpoint);
+        list($left_provinces, $right_provinces) = $split_location_groups($province_commodities);
+        list($left_countries, $right_countries) = $split_location_groups($global_engagement_countries);
 
-        $render_impact_pin = static function ($province_item, $side = 'left') {
-            $commodity_names = wp_list_pluck($province_item['commodities'], 'commodity');
-            $projects_label = number_format((int) $province_item['projects']) . ' project' . ((int) $province_item['projects'] === 1 ? '' : 's');
+        $render_impact_pin = static function ($location_item, $side = 'left') {
+            $commodity_names = array_values(array_unique(wp_list_pluck($location_item['items'], 'commodity')));
+            $count_label = !empty($location_item['count_label']) ? $location_item['count_label'] : 'project';
+            $projects_label = number_format((int) $location_item['projects']) . ' ' . $count_label . ((int) $location_item['projects'] === 1 ? '' : 's');
             ?>
             <div class="impact-map-pin impact-map-pin-<?php echo esc_attr($side); ?>"
-                 data-province-key="<?php echo esc_attr($province_item['key']); ?>"
-                 data-color="<?php echo esc_attr($province_item['color']); ?>"
-                 data-count="<?php echo esc_attr(count($province_item['commodities'])); ?>"
-                 style="--pin-color: <?php echo esc_attr($province_item['color']); ?>">
+                 data-location-key="<?php echo esc_attr($location_item['key']); ?>"
+                 data-color="<?php echo esc_attr($location_item['color']); ?>"
+                 data-count="<?php echo esc_attr(count($location_item['items'])); ?>"
+                 style="--pin-color: <?php echo esc_attr($location_item['color']); ?>">
 
                 <div class="impact-map-icons" aria-hidden="true">
-                    <?php foreach (array_slice($province_item['commodities'], 0, 3) as $commodity): ?>
-                        <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
+                    <?php foreach (array_slice($location_item['items'], 0, 3) as $commodity): ?>
+                        <?php if (!empty($commodity['image'])): ?>
+                            <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
+                        <?php else: ?>
+                            <span class="impact-map-icon-badge"><?php echo esc_html(!empty($commodity['icon_label']) ? $commodity['icon_label'] : strtoupper(substr($commodity['commodity'], 0, 2))); ?></span>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
 
                 <div class="impact-map-content">
-                    <div class="impact-map-province"><?php echo esc_html($province_item['province']); ?></div>
+                    <div class="impact-map-province"><?php echo esc_html($location_item['location']); ?></div>
                     <div class="impact-map-commodities"><?php echo esc_html(implode(', ', $commodity_names)); ?></div>
                     <div class="impact-map-projects"><?php echo esc_html($projects_label); ?></div>
                 </div>
             </div>
             <?php
+        };
+
+        $render_inline_map = static function ($provided_path, $fallback_path, $map_class, $aria_label, $normalize_province_ids = false) {
+            $map_path = $fallback_path;
+
+            if ($provided_path && !preg_match('#^https?://#i', $provided_path) && file_exists($provided_path)) {
+                $map_path = $provided_path;
+            } elseif ($provided_path && !preg_match('#^https?://#i', $provided_path)) {
+                $possible_path = ABSPATH . ltrim($provided_path, '/');
+                if (file_exists($possible_path)) {
+                    $map_path = $possible_path;
+                }
+            }
+
+            $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+
+            if (!$map_is_svg || !is_readable($map_path)) {
+                echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
+                return;
+            }
+
+            $max_inline_size = 1024 * 1024; // 1 MB
+
+            if (filesize($map_path) <= 0 || filesize($map_path) > $max_inline_size) {
+                echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
+                return;
+            }
+
+            $svg = file_get_contents($map_path);
+            $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
+            $svg = preg_replace('/@click="[^"]*"/', '', $svg);
+            $svg = preg_replace('/\s*ref="[^"]*"/', '', $svg);
+
+            if ($normalize_province_ids) {
+                $svg = preg_replace('/:?id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+            }
+
+            $svg = preg_replace('/<svg\b/', '<svg class="' . esc_attr($map_class) . '" role="img" aria-label="' . esc_attr($aria_label) . '"', $svg, 1);
+
+            echo $svg;
         };
 
         ob_start();
@@ -369,6 +444,90 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 height: 100%;
             }
 
+            .impact-map-carousel {
+                width: 100%;
+            }
+
+            .impact-map-carousel-header {
+                align-items: center;
+                display: flex;
+                gap: 0.75rem;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+
+            .impact-map-carousel-kicker {
+                color: #64748b;
+                display: block;
+                font-size: 0.68rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
+            .impact-map-carousel-title {
+                color: #1f5d2b;
+                font-size: 1rem;
+                font-weight: 800;
+                line-height: 1.15;
+                margin-top: 0.18rem;
+            }
+
+            .impact-map-carousel-nav {
+                display: inline-flex;
+                gap: 0.4rem;
+            }
+
+            .impact-map-carousel-button {
+                align-items: center;
+                background: #f1f5f9;
+                border: 1px solid rgba(31, 93, 43, 0.08);
+                color: #1f5d2b;
+                cursor: pointer;
+                display: inline-flex;
+                font-size: 1rem;
+                height: 2rem;
+                justify-content: center;
+                line-height: 1;
+                width: 2rem;
+            }
+
+            .impact-map-carousel-button:hover,
+            .impact-map-carousel-button:focus-visible {
+                background: #e2f1e0;
+                outline: none;
+            }
+
+            .impact-map-slides {
+                position: relative;
+                width: 100%;
+            }
+
+            .impact-map-slide[hidden] {
+                display: none;
+            }
+
+            .impact-map-pagination {
+                display: flex;
+                gap: 0.4rem;
+                justify-content: center;
+                margin-top: 0.85rem;
+            }
+
+            .impact-map-pagination button {
+                background: #cbd5e1;
+                border: 0;
+                cursor: pointer;
+                height: 0.55rem;
+                padding: 0;
+                width: 1.75rem;
+            }
+
+            .impact-map-pagination button.is-active {
+                background: #1f5d2b;
+            }
+
             @media (min-width: 640px) {
                 .impact-map-card {
                     grid-column: span 2;
@@ -401,6 +560,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 align-items: center;
                 justify-content: center;
                 z-index: 1;
+            }
+
+            .world-impact-map-figure svg {
+                max-height: 320px;
+                width: 100%;
             }
 
             .impact-map-wrapper svg {
@@ -537,7 +701,29 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 padding: 0.12rem;
             }
 
+            .impact-map-icon-badge {
+                align-items: center;
+                background: #ffffff;
+                border: 1px solid rgba(31, 93, 43, 0.15);
+                border-radius: 999px;
+                color: #1f5d2b;
+                display: inline-flex;
+                font-size: 0.58rem;
+                font-weight: 800;
+                height: 1.65rem;
+                justify-content: center;
+                margin-left: -0.45rem;
+                min-width: 1.65rem;
+                padding: 0 0.3rem;
+            }
+
             .impact-map-icons img:first-child {
+                margin-left: 0;
+                margin-right: 0;
+                z-index: 3;
+            }
+
+            .impact-map-icons > :first-child {
                 margin-left: 0;
                 margin-right: 0;
                 z-index: 3;
@@ -608,6 +794,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 .impact-map-wrapper svg {
                     max-height: 500px;
                 }
+
+                .world-impact-map-figure svg {
+                    max-height: 360px;
+                }
             }
 
             /* Animation */
@@ -651,6 +841,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     min-height: 180px;
                     order: -1;
                 }
+
+                .impact-map-carousel-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
             }
         </style>
 
@@ -662,61 +857,70 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 <div class="impact-bento-grid">
                     <!-- Map Card -->
                     <div class="impact-map-card rounded-lg select-none">
-                        <div class="impact-map-wrapper">
-                            <!-- Left List -->
-                            <div class="impact-map-list impact-map-list-left">
-                                <?php foreach ($left_provinces as $province_item): ?>
-                                    <?php $render_impact_pin($province_item, 'left'); ?>
-                                <?php endforeach; ?>
+                        <div class="impact-map-carousel" data-impact-carousel>
+                            <div class="impact-map-carousel-header">
+                                <div>
+                                    <span class="impact-map-carousel-kicker">Impact Maps</span>
+                                    <div class="impact-map-carousel-title" data-impact-carousel-title>Philippine Commodity Footprint</div>
+                                </div>
+                                <div class="impact-map-carousel-nav">
+                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-prev aria-label="Show previous impact map">&larr;</button>
+                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-next aria-label="Show next impact map">&rarr;</button>
+                                </div>
                             </div>
 
-                            <div class="impact-map-figure">
-                                <?php
-                                // Resolve the provided path to an absolute filesystem path.
-                                // $atts['map_svg_path'] may be an absolute filesystem path, a site-relative path,
-                                // or an absolute URL. Inline readable local SVGs so provinces can be colored.
-                                $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
-                                $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
+                            <div class="impact-map-slides">
+                                <div class="impact-map-slide" data-impact-slide data-slide-title="Philippine Commodity Footprint">
+                                    <div class="impact-map-wrapper">
+                                        <div class="impact-map-list impact-map-list-left">
+                                            <?php foreach ($left_provinces as $province_item): ?>
+                                                <?php $render_impact_pin($province_item, 'left'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
 
-                                if ($provided && !preg_match('#^https?://#i', $provided) && file_exists($provided)) {
-                                    $map_path = $provided;
-                                } elseif ($provided && !preg_match('#^https?://#i', $provided)) {
-                                    $map_path = ABSPATH . ltrim($provided, '/');
-                                } else {
-                                    $map_path = $theme_map_path;
-                                }
+                                        <div class="impact-map-figure">
+                                            <?php
+                                            $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
+                                            $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
+                                            $render_inline_map($provided, $theme_map_path, 'impact-location-map impact-philippine-map', 'Philippines commodity map', true);
+                                            ?>
+                                        </div>
 
-                                $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+                                        <div class="impact-map-list impact-map-list-right">
+                                            <?php foreach ($right_provinces as $province_item): ?>
+                                                <?php $render_impact_pin($province_item, 'right'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                if (!$map_is_svg || !is_readable($map_path)) {
-                                    $map_path = $theme_map_path;
-                                    $map_is_svg = is_readable($map_path) && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
-                                }
+                                <div class="impact-map-slide" data-impact-slide data-slide-title="Global Training Engagements" hidden>
+                                    <div class="impact-map-wrapper">
+                                        <div class="impact-map-list impact-map-list-left">
+                                            <?php foreach ($left_countries as $country_item): ?>
+                                                <?php $render_impact_pin($country_item, 'left'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
 
-                                $max_inline_size = 1024 * 1024; // 1 MB
+                                        <div class="impact-map-figure world-impact-map-figure">
+                                            <?php
+                                            $world_map_path = get_template_directory() . '/assets/svgs/worldMap.svg';
+                                            $render_inline_map($world_map_path, $world_map_path, 'impact-location-map impact-world-map', 'World training engagement map', false);
+                                            ?>
+                                        </div>
 
-                                if ($map_is_svg && is_readable($map_path) && filesize($map_path) > 0 && filesize($map_path) <= $max_inline_size) {
-                                    $svg = file_get_contents($map_path);
-                                    $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
-
-                                    $svg = preg_replace('/@click="[^"]*"/', '', $svg);
-                                    $svg = preg_replace('/\s*ref="[^"]*"/', '', $svg);
-
-                                    $svg = preg_replace('/:?id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
-
-                                    $svg = preg_replace('/<svg\b/', '<svg class="impact-philippine-map" role="img" aria-label="Philippines commodity map"', $svg, 1);
-                                    echo $svg;
-                                } else {
-                                    echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
-                                }
-                                ?>
+                                        <div class="impact-map-list impact-map-list-right">
+                                            <?php foreach ($right_countries as $country_item): ?>
+                                                <?php $render_impact_pin($country_item, 'right'); ?>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Right List -->
-                            <div class="impact-map-list impact-map-list-right">
-                                <?php foreach ($right_provinces as $province_item): ?>
-                                    <?php $render_impact_pin($province_item, 'right'); ?>
-                                <?php endforeach; ?>
+                            <div class="impact-map-pagination" aria-label="Impact map pages">
+                                <button type="button" class="is-active" data-impact-carousel-dot aria-label="Show Philippine impact map"></button>
+                                <button type="button" data-impact-carousel-dot aria-label="Show world impact map"></button>
                             </div>
                         </div>
                     </div>
@@ -805,14 +1009,14 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
                 }
 
-                function getProvincePaths(map, provinceKey) {
-                    if (!map || !provinceKey) return [];
+                function getMapPaths(map, locationKey) {
+                    if (!map || !locationKey) return [];
 
                     if (window.CSS && CSS.escape) {
-                        return Array.from(map.querySelectorAll(`#${CSS.escape(provinceKey)}`));
+                        return Array.from(map.querySelectorAll(`#${CSS.escape(locationKey)}`));
                     }
 
-                    return Array.from(map.querySelectorAll('[id]')).filter((item) => item.id === provinceKey);
+                    return Array.from(map.querySelectorAll('[id]')).filter((item) => item.id === locationKey);
                 }
 
                 function clamp(value, min, max) {
@@ -865,12 +1069,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     };
                 }
 
-                function drawCommodityLines(section) {
-                    const wrapper = section.querySelector('.impact-map-wrapper');
-                    const map = section.querySelector('.impact-philippine-map');
-                    const pins = Array.from(section.querySelectorAll('.impact-map-pin'));
+                function drawCommodityLines(wrapper) {
+                    const map = wrapper ? wrapper.querySelector('.impact-location-map') : null;
+                    const pins = wrapper ? Array.from(wrapper.querySelectorAll('.impact-map-pin')) : [];
 
-                    if (!wrapper || !map || !pins.length) return;
+                    if (!wrapper || !map || !pins.length || wrapper.offsetParent === null) return;
 
                     // Toggle this or pass it as a parameter/data-attribute
                     const useZigZag = false;
@@ -885,8 +1088,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     lineLayer.setAttribute('aria-hidden', 'true');
 
                     pins.forEach((pin) => {
-                        const provinceKey = pin.dataset.provinceKey;
-                        const provinceAnchor = getProvinceAnchor(getProvincePaths(map, provinceKey), wrapperRect);
+                        const locationKey = pin.dataset.locationKey;
+                        const provinceAnchor = getProvinceAnchor(getMapPaths(map, locationKey), wrapperRect);
                         const pinRect = pin.getBoundingClientRect();
 
                         if (!provinceAnchor || !pinRect.width || !pinRect.height) return;
@@ -916,19 +1119,19 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
                         line.setAttribute('class', 'impact-map-line');
-                        line.setAttribute('data-province-key', provinceKey);
                         line.setAttribute('points', linePoints);
                         line.setAttribute('stroke', color);
                         line.setAttribute('fill', 'none'); // Ensure polyline doesn't try to fill
 
                         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         dot.setAttribute('class', 'impact-map-line-dot');
-                        dot.setAttribute('data-province-key', provinceKey);
+                        dot.setAttribute('data-location-key', locationKey);
                         dot.setAttribute('cx', x1.toFixed(2));
                         dot.setAttribute('cy', y1.toFixed(2));
                         dot.setAttribute('r', '3');
                         dot.setAttribute('fill', color);
 
+                        line.setAttribute('data-location-key', locationKey);
                         lineLayer.appendChild(line);
                         lineLayer.appendChild(dot);
                     });
@@ -937,9 +1140,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 function initCommodityMaps() {
-                    sections.forEach((section) => {
-                        const map = section.querySelector('.impact-philippine-map');
-                        const pins = Array.from(section.querySelectorAll('.impact-map-pin'));
+                    const wrappers = Array.from(document.querySelectorAll('.impact-map-wrapper'));
+
+                    wrappers.forEach((wrapper) => {
+                        const map = wrapper.querySelector('.impact-location-map');
+                        const pins = Array.from(wrapper.querySelectorAll('.impact-map-pin'));
 
                         if (!map || !pins.length) return;
 
@@ -947,49 +1152,49 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                             return Math.max(max, parseInt(pin.dataset.count || '1', 10));
                         }, 1);
 
-                        function setHovered(provinceKey, isHovered) {
-                            const pin = pins.find((item) => item.dataset.provinceKey === provinceKey);
+                        function setHovered(locationKey, isHovered) {
+                            const pin = pins.find((item) => item.dataset.locationKey === locationKey);
                             if (pin) {
                                 pin.classList.toggle('is-hovered', isHovered);
                             }
 
-                            getProvincePaths(map, provinceKey).forEach((path) => {
+                            getMapPaths(map, locationKey).forEach((path) => {
                                 path.classList.toggle('is-hovered', isHovered);
                             });
 
-                            section.querySelectorAll(`.impact-map-line[data-province-key="${provinceKey}"], .impact-map-line-dot[data-province-key="${provinceKey}"]`).forEach((line) => {
+                            wrapper.querySelectorAll(`.impact-map-line[data-location-key="${locationKey}"], .impact-map-line-dot[data-location-key="${locationKey}"]`).forEach((line) => {
                                 line.classList.toggle('is-hovered', isHovered);
                             });
                         }
 
                         pins.forEach((pin) => {
-                            const provinceKey = pin.dataset.provinceKey;
+                            const locationKey = pin.dataset.locationKey;
                             const color = pin.dataset.color || '#237823';
                             const count = parseInt(pin.dataset.count || '1', 10);
                             const fillAlpha = Math.max(0.35, count / highestCount);
-                            const provincePaths = getProvincePaths(map, provinceKey);
+                            const provincePaths = getMapPaths(map, locationKey);
 
                             provincePaths.forEach((path) => {
                                 path.classList.add('impact-province-active');
                                 path.style.fill = hexToRgba(color, fillAlpha);
 
-                                path.addEventListener('mouseenter', () => setHovered(provinceKey, true));
-                                path.addEventListener('mouseleave', () => setHovered(provinceKey, false));
-                                path.addEventListener('focus', () => setHovered(provinceKey, true));
-                                path.addEventListener('blur', () => setHovered(provinceKey, false));
+                                path.addEventListener('mouseenter', () => setHovered(locationKey, true));
+                                path.addEventListener('mouseleave', () => setHovered(locationKey, false));
+                                path.addEventListener('focus', () => setHovered(locationKey, true));
+                                path.addEventListener('blur', () => setHovered(locationKey, false));
                                 path.setAttribute('tabindex', '0');
                             });
 
-                            pin.addEventListener('mouseenter', () => setHovered(provinceKey, true));
-                            pin.addEventListener('mouseleave', () => setHovered(provinceKey, false));
+                            pin.addEventListener('mouseenter', () => setHovered(locationKey, true));
+                            pin.addEventListener('mouseleave', () => setHovered(locationKey, false));
                         });
 
-                        drawCommodityLines(section);
+                        drawCommodityLines(wrapper);
                     });
                 }
 
                 function redrawAllCommodityLines() {
-                    sections.forEach(drawCommodityLines);
+                    document.querySelectorAll('.impact-map-wrapper').forEach(drawCommodityLines);
                 }
 
                 let mapLineResizeTimer;
@@ -997,6 +1202,61 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 function scheduleCommodityLineRedraw() {
                     window.clearTimeout(mapLineResizeTimer);
                     mapLineResizeTimer = window.setTimeout(redrawAllCommodityLines, 120);
+                }
+
+                function initMapCarousels() {
+                    const carousels = Array.from(document.querySelectorAll('[data-impact-carousel]'));
+
+                    carousels.forEach((carousel) => {
+                        if (carousel.dataset.carouselReady === 'true') return;
+
+                        carousel.dataset.carouselReady = 'true';
+
+                        const slides = Array.from(carousel.querySelectorAll('[data-impact-slide]'));
+                        const dots = Array.from(carousel.querySelectorAll('[data-impact-carousel-dot]'));
+                        const title = carousel.querySelector('[data-impact-carousel-title]');
+                        const prevButton = carousel.querySelector('[data-impact-carousel-prev]');
+                        const nextButton = carousel.querySelector('[data-impact-carousel-next]');
+
+                        if (!slides.length) return;
+
+                        let activeIndex = 0;
+
+                        function setActiveSlide(index) {
+                            activeIndex = (index + slides.length) % slides.length;
+
+                            slides.forEach((slide, slideIndex) => {
+                                const isActive = slideIndex === activeIndex;
+                                slide.hidden = !isActive;
+                            });
+
+                            dots.forEach((dot, dotIndex) => {
+                                const isActive = dotIndex === activeIndex;
+                                dot.classList.toggle('is-active', isActive);
+                                dot.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                            });
+
+                            if (title) {
+                                title.textContent = slides[activeIndex].dataset.slideTitle || '';
+                            }
+
+                            window.requestAnimationFrame(redrawAllCommodityLines);
+                        }
+
+                        if (prevButton) {
+                            prevButton.addEventListener('click', () => setActiveSlide(activeIndex - 1));
+                        }
+
+                        if (nextButton) {
+                            nextButton.addEventListener('click', () => setActiveSlide(activeIndex + 1));
+                        }
+
+                        dots.forEach((dot, dotIndex) => {
+                            dot.addEventListener('click', () => setActiveSlide(dotIndex));
+                        });
+
+                        setActiveSlide(0);
+                    });
                 }
 
                 function formatNumber(value) {
@@ -1055,6 +1315,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     });
                 }
 
+                initMapCarousels();
                 initCommodityMaps();
                 setTimeout(redrawAllCommodityLines, 150);
                 window.addEventListener('load', redrawAllCommodityLines);
