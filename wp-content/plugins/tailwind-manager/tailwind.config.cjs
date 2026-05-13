@@ -115,7 +115,17 @@ const layoutSafelist = [
     'md:col-span-1',
     'md:grid-cols-5',
     'col-span-2',
-    'grid-cols-3'
+    'grid-cols-3',
+    'list-decimal',
+    '!list-decimal',
+    'list-inside',
+    '!list-inside',
+    'list-outside',
+    '!list-outside',
+    'list-disc',
+    '!list-disc',
+    'list-none',
+    '!list-none'
 ];
 
 const sizingSafelist = [
