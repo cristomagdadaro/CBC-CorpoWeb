@@ -130,12 +130,32 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
         $impact_global_engagements = array(
-                // Replace the sample training counts below with the latest engagement totals when available.
-                'south-korea-training' => array('commodity' => 'Training', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '1', 'count_label' => 'training'),
-                'japan-training' => array('commodity' => 'Training', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '1', 'count_label' => 'training'),
-                'thailand-training' => array('commodity' => 'Training', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '1', 'count_label' => 'training'),
-                'malaysia-training' => array('commodity' => 'Training', 'icon_label' => 'MY', 'color' => '#0891b2', 'country' => 'Malaysia', 'map_key' => 'MY', 'projects' => '1', 'count_label' => 'training'),
-                'vietnam-training' => array('commodity' => 'Training', 'icon_label' => 'VN', 'color' => '#ca8a04', 'country' => 'Vietnam', 'map_key' => 'VN', 'projects' => '1', 'count_label' => 'training'),
+                'brazil-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'BR', 'color' => '#16a34a', 'country' => 'Brazil', 'map_key' => 'BR', 'projects' => '5', 'count_label' => 'engagement'),
+                'cambodia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KH', 'color' => '#dc2626', 'country' => 'Cambodia', 'map_key' => 'KH', 'projects' => '33', 'count_label' => 'engagement'),
+                'china-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'CN', 'color' => '#b91c1c', 'country' => 'China', 'map_key' => 'CN', 'projects' => '10', 'count_label' => 'engagement'),
+                'ecuador-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'EC', 'color' => '#ca8a04', 'country' => 'Ecuador', 'map_key' => 'EC', 'projects' => '8', 'count_label' => 'engagement'),
+                'india-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'IN', 'color' => '#f97316', 'country' => 'India', 'map_key' => 'IN', 'projects' => '56', 'count_label' => 'engagement'),
+                'india-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'IN', 'color' => '#7c3aed', 'country' => 'India', 'map_key' => 'IN', 'projects' => '1', 'count_label' => 'engagement'),
+                'indonesia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '46', 'count_label' => 'engagement'),
+                'international-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'INT', 'color' => '#64748b', 'country' => 'International', 'map_key' => 'INTL', 'projects' => '11', 'count_label' => 'engagement'),
+                'japan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '26', 'count_label' => 'engagement'),
+                'japan-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'JP', 'color' => '#7c3aed', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '4', 'count_label' => 'engagement'),
+                'malaysia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'MY', 'color' => '#0891b2', 'country' => 'Malaysia', 'map_key' => 'MY', 'projects' => '18', 'count_label' => 'engagement'),
+                'nepal-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'NP', 'color' => '#2563eb', 'country' => 'Nepal', 'map_key' => 'NP', 'projects' => '20', 'count_label' => 'engagement'),
+                'paraguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PY', 'color' => '#0f766e', 'country' => 'Paraguay', 'map_key' => 'PY', 'projects' => '50', 'count_label' => 'engagement'),
+                'philippines-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '824', 'count_label' => 'engagement'),
+                'singapore-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'SG', 'color' => '#dc2626', 'country' => 'Singapore', 'map_key' => 'SG', 'projects' => '12', 'count_label' => 'engagement'),
+                'south-africa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ZA', 'color' => '#16a34a', 'country' => 'South Africa', 'map_key' => 'ZA', 'projects' => '28', 'count_label' => 'engagement'),
+                'south-korea-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '13', 'count_label' => 'engagement'),
+                'sri-lanka-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'LK', 'color' => '#f59e0b', 'country' => 'Sri Lanka', 'map_key' => 'LK', 'projects' => '10', 'count_label' => 'engagement'),
+                'thailand-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '22', 'count_label' => 'engagement'),
+                'turkey-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TR', 'color' => '#dc2626', 'country' => 'Turkey', 'map_key' => 'TR', 'projects' => '2', 'count_label' => 'engagement'),
+                'uk-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UK', 'color' => '#1d4ed8', 'country' => 'UK', 'map_key' => 'GB', 'projects' => '10', 'count_label' => 'engagement'),
+                'usa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'US', 'color' => '#2563eb', 'country' => 'USA', 'map_key' => 'US', 'projects' => '27', 'count_label' => 'engagement'),
+                'uganda-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UG', 'color' => '#ca8a04', 'country' => 'Uganda', 'map_key' => 'UG', 'projects' => '18', 'count_label' => 'engagement'),
+                'uruguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UY', 'color' => '#38bdf8', 'country' => 'Uruguay', 'map_key' => 'UY', 'projects' => '50', 'count_label' => 'engagement'),
+                'uzbekistan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UZ', 'color' => '#0891b2', 'country' => 'Uzbekistan', 'map_key' => 'UZ', 'projects' => '28', 'count_label' => 'engagement'),
+                'vietnam-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'VN', 'color' => '#ca8a04', 'country' => 'Vietnam', 'map_key' => 'VN', 'projects' => '18', 'count_label' => 'engagement'),
         );
 
         $impact_global_engagements = apply_filters('cbc_impact_global_engagements_data', $impact_global_engagements);
@@ -209,6 +229,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             ?>
             <div class="impact-map-pin impact-map-pin-<?php echo esc_attr($side); ?>"
                  data-location-key="<?php echo esc_attr($location_item['key']); ?>"
+                 data-province-key="<?php echo esc_attr($location_item['key']); ?>"
                  data-color="<?php echo esc_attr($location_item['color']); ?>"
                  data-count="<?php echo esc_attr(count($location_item['items'])); ?>"
                  style="--pin-color: <?php echo esc_attr($location_item['color']); ?>">
@@ -274,6 +295,42 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             $svg = preg_replace('/<svg\b/', '<svg class="' . esc_attr($map_class) . '" role="img" aria-label="' . esc_attr($aria_label) . '"', $svg, 1);
+
+            echo $svg;
+        };
+
+        $render_philippine_map = static function ($provided_path, $fallback_path) {
+            $map_path = $fallback_path;
+
+            if ($provided_path && !preg_match('#^https?://#i', $provided_path) && file_exists($provided_path)) {
+                $map_path = $provided_path;
+            } elseif ($provided_path && !preg_match('#^https?://#i', $provided_path)) {
+                $possible_path = ABSPATH . ltrim($provided_path, '/');
+                if (file_exists($possible_path)) {
+                    $map_path = $possible_path;
+                }
+            }
+
+            $map_is_svg = $map_path && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+
+            if (!$map_is_svg || !is_readable($map_path)) {
+                $map_path = $fallback_path;
+                $map_is_svg = is_readable($map_path) && strtolower(pathinfo($map_path, PATHINFO_EXTENSION)) === 'svg';
+            }
+
+            $max_inline_size = 1024 * 1024;
+
+            if (!$map_is_svg || !is_readable($map_path) || filesize($map_path) <= 0 || filesize($map_path) > $max_inline_size) {
+                echo '<p class="impact-map-unavailable">Province SVG map is unavailable.</p>';
+                return;
+            }
+
+            $svg = file_get_contents($map_path);
+            $svg = preg_replace('#<script.*?>.*?</script>#is', '', $svg);
+            $svg = preg_replace('/@click="[^"]*"/', '', $svg);
+            $svg = preg_replace('/\s*ref="[^"]*"/', '', $svg);
+            $svg = preg_replace('/:?id="getProvince\(\'([a-z0-9-]+)\'\)"/', 'id="$1"', $svg);
+            $svg = preg_replace('/<svg\b/', '<svg class="impact-philippine-map" role="img" aria-label="Philippines commodity map"', $svg, 1);
 
             echo $svg;
         };
@@ -577,7 +634,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-philippine-map {
-                height: 420px;
+                filter: drop-shadow(0 4px 20px rgba(31, 93, 43, 0.15));
+                height: auto;
+                max-height: 420px;
                 max-width: 100%;
                 width: auto;
             }
@@ -805,8 +864,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
             @media (min-width: 1024px) {
                 .impact-philippine-map {
-                    height: 500px;
-                    max-width: 100%;
+                    max-height: 500px;
                     width: auto;
                 }
 
@@ -949,7 +1007,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                             <?php
                                             $theme_map_path = get_template_directory() . '/assets/svgs/phMap.svg';
                                             $provided = isset($atts['map_svg_path']) ? $atts['map_svg_path'] : '';
-                                            $render_inline_map($provided, $theme_map_path, 'impact-location-map impact-philippine-map', 'Philippines commodity map', true, 'Province SVG map is unavailable.');
+                                            $render_philippine_map($provided, $theme_map_path);
                                             ?>
                                         </div>
 
@@ -1083,7 +1141,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 function drawCommodityLines(wrapper) {
-                    const map = wrapper ? wrapper.querySelector('.impact-location-map') : null;
+                    const map = wrapper ? wrapper.querySelector('.impact-location-map, .impact-philippine-map') : null;
                     const pins = wrapper ? Array.from(wrapper.querySelectorAll('.impact-map-pin')) : [];
 
                     if (!wrapper || !map || !pins.length || wrapper.offsetParent === null) return;
@@ -1101,7 +1159,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     lineLayer.setAttribute('aria-hidden', 'true');
 
                     pins.forEach((pin) => {
-                        const locationKey = pin.dataset.locationKey;
+                        const locationKey = pin.dataset.locationKey || pin.dataset.provinceKey;
                         const provinceAnchor = getProvinceAnchor(getMapPaths(map, locationKey), wrapperRect);
                         const pinRect = pin.getBoundingClientRect();
 
@@ -1139,12 +1197,14 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         dot.setAttribute('class', 'impact-map-line-dot');
                         dot.setAttribute('data-location-key', locationKey);
+                        dot.setAttribute('data-province-key', locationKey);
                         dot.setAttribute('cx', x1.toFixed(2));
                         dot.setAttribute('cy', y1.toFixed(2));
                         dot.setAttribute('r', '3');
                         dot.setAttribute('fill', color);
 
                         line.setAttribute('data-location-key', locationKey);
+                        line.setAttribute('data-province-key', locationKey);
                         lineLayer.appendChild(line);
                         lineLayer.appendChild(dot);
                     });
@@ -1156,7 +1216,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     const wrappers = Array.from(document.querySelectorAll('.impact-map-wrapper'));
 
                     wrappers.forEach((wrapper) => {
-                        const map = wrapper.querySelector('.impact-location-map');
+                        const map = wrapper.querySelector('.impact-location-map, .impact-philippine-map');
                         const pins = Array.from(wrapper.querySelectorAll('.impact-map-pin'));
 
                         if (!map || !pins.length) return;
@@ -1166,7 +1226,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         }, 1);
 
                         function setHovered(locationKey, isHovered) {
-                            const pin = pins.find((item) => item.dataset.locationKey === locationKey);
+                            const pin = pins.find((item) => (item.dataset.locationKey || item.dataset.provinceKey) === locationKey);
                             if (pin) {
                                 pin.classList.toggle('is-hovered', isHovered);
                             }
@@ -1175,13 +1235,13 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                 path.classList.toggle('is-hovered', isHovered);
                             });
 
-                            wrapper.querySelectorAll(`.impact-map-line[data-location-key="${locationKey}"], .impact-map-line-dot[data-location-key="${locationKey}"]`).forEach((line) => {
+                            wrapper.querySelectorAll(`.impact-map-line[data-location-key="${locationKey}"], .impact-map-line-dot[data-location-key="${locationKey}"], .impact-map-line[data-province-key="${locationKey}"], .impact-map-line-dot[data-province-key="${locationKey}"]`).forEach((line) => {
                                 line.classList.toggle('is-hovered', isHovered);
                             });
                         }
 
                         pins.forEach((pin) => {
-                            const locationKey = pin.dataset.locationKey;
+                            const locationKey = pin.dataset.locationKey || pin.dataset.provinceKey;
                             const color = pin.dataset.color || '#237823';
                             const count = parseInt(pin.dataset.count || '1', 10);
                             const fillAlpha = Math.max(0.35, count / highestCount);
