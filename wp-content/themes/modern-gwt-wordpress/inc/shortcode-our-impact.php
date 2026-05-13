@@ -123,7 +123,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
                 'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '1'),
                 'rice-agusan-del-sur' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Agusan del Sur', 'projects' => '1'),
-                'rice-negreño' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negreño', 'projects' => '1'),
+                'rice-negros-occidental' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negros Occidental', 'projects' => '1'),
                 'rubber-zamboanga-del-sur' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#0891b2', 'province' => 'Zamboanga del Sur', 'projects' => '2'),
                 'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '2'),
         );
