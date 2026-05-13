@@ -33,9 +33,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Disseminating Scientific Knowledge',
                         'color' => '#55A147',
                         'breakdown' => array(
-                                array('label' => 'Scientific Journal Articles', 'value' => '#', 'color' => '#1f5d2b'),
-                                array('label' => 'Policy Briefs', 'value' => '#', 'color' => '#55A147'),
-                                array('label' => 'IP/Patents/PVP', 'value' => '2', 'color' => '#D5DA65'),
+                                array('label' => 'Scientific Journal Articles', 'value' => '170', 'color' => '#1f5d2b'),
+                                array('label' => 'Book/Chapter Book/Handbook', 'value' => '8', 'color' => '#55A147'),
+                                array('label' => 'IP/Patents/PVP', 'value' => '3', 'color' => '#D5DA65'),
                         )
                 ),
                 'capacity_building' => array(
@@ -54,13 +54,15 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 ),
                 'partners_collaborators' => array(
                         'number' => null,
-                        'label' => 'Partners and Collaborators',
-                        'sublabel' => 'Academic, Government & Global Partners',
+                        'label' => 'Manpower and Collaborators',
+                        'sublabel' => 'Personnels, Academic, Government & Global Partners',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
                                 array('label' => 'SUCs', 'value' => '27', 'color' => '#1f5d2b'),
                                 array('label' => 'DA Agencies', 'value' => '3', 'color' => '#D5DA65'),
                                 array('label' => 'International', 'value' => '3', 'color' => '#8BC34A'),
+                                array('label' => 'Scientists', 'value' => '4', 'color' => '#55A147'),
+                                array('label' => 'Researchers', 'value' => '52', 'color' => '#1f5d2b'),
                         )
                 ),
                 'iec_reach' => array(
