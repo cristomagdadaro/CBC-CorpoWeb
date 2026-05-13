@@ -132,7 +132,7 @@ if (!function_exists('cbc_organizational_chart_shortcode')) {
                     array(
                         'name' => 'Paul C. Limson, DVM',
                         'title' => 'Biotechnology Program Director',
-                        'img' => '/wp-content/uploads/2025/10/no-profile.jpg',
+                        'img' => '/wp-content/uploads/2026/05/paulclimson.png',
                         'alt' => 'Paul C. Limson, DVM',
                         'link' => 'https://bpo.da.gov.ph/',
                     ),
