@@ -73,9 +73,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         'sublabel' => 'Information & Education Campaigns',
                         'color' => '#1f5d2b',
                         'breakdown' => array(
-                                array('label' => 'Regional Crop Biotechnology Symposium Participants', 'value' => '3,803', 'color' => '#1f5d2b'),
-                                array('label' => 'Farmers Engaged', 'value' => '604', 'color' => '#1f5d2b'),
-                                array('label' => 'IEC Distributed', 'value' => '#', 'color' => '#D5DA65'),
+                                array('label' => 'Symposia/Exhibit Participants', 'value' => '4,533', 'color' => '#1f5d2b'),
+                                array('label' => 'Farmers Engaged', 'value' => '3,448', 'color' => '#1f5d2b'),
                                 array('label' => 'SocMed Followers', 'value' => '7,115', 'color' => '#1f5d2b'),
                                 array('label' => 'Visitors', 'value' => '1,236', 'color' => '#8BC34A'),
                         )
@@ -121,11 +120,13 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'pili-northern-samar' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Northern Samar', 'projects' => '4'),
                 'purpleyam-bohol' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Bohol', 'projects' => '4'),
                 'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
-                'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '1'),
+                'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '3'),
                 'rice-agusan-del-sur' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Agusan del Sur', 'projects' => '1'),
                 'rice-negros-occidental' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negros Occidental', 'projects' => '1'),
+                'rice-ilocos-norte' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Ilocos Norte', 'projects' => '1'),
                 'rubber-zamboanga-del-sur' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#0891b2', 'province' => 'Zamboanga del Sur', 'projects' => '2'),
-                'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '2'),
+                'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '1'),
+                'mango-laguna' => array('commodity' => 'Mango', 'image' => $commodity_image_base . 'p-mango.webp', 'color' => '#f59e0b', 'province' => 'Laguna', 'projects' => '1'),
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
@@ -137,6 +138,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'india-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'IN', 'color' => '#f97316', 'country' => 'India', 'map_key' => 'IN', 'projects' => '56', 'count_label' => 'engagement'),
                 'india-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'IN', 'color' => '#7c3aed', 'country' => 'India', 'map_key' => 'IN', 'projects' => '1', 'count_label' => 'engagement'),
                 'indonesia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '46', 'count_label' => 'engagement'),
+                'indonesia-trainee' => array('commodity' => 'Trainees', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '4', 'count_label' => 'engagement'),
                 'international-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'INT', 'color' => '#64748b', 'country' => 'International', 'map_key' => 'INTL', 'projects' => '11', 'count_label' => 'engagement'),
                 'japan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '26', 'count_label' => 'engagement'),
                 'japan-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'JP', 'color' => '#7c3aed', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '4', 'count_label' => 'engagement'),
@@ -144,11 +146,14 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 'nepal-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'NP', 'color' => '#2563eb', 'country' => 'Nepal', 'map_key' => 'NP', 'projects' => '20', 'count_label' => 'engagement'),
                 'paraguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PY', 'color' => '#0f766e', 'country' => 'Paraguay', 'map_key' => 'PY', 'projects' => '50', 'count_label' => 'engagement'),
                 'philippines-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '824', 'count_label' => 'engagement'),
+                'philippines-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '115', 'count_label' => 'engagement'),
                 'singapore-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'SG', 'color' => '#dc2626', 'country' => 'Singapore', 'map_key' => 'SG', 'projects' => '12', 'count_label' => 'engagement'),
                 'south-africa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ZA', 'color' => '#16a34a', 'country' => 'South Africa', 'map_key' => 'ZA', 'projects' => '28', 'count_label' => 'engagement'),
                 'south-korea-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '13', 'count_label' => 'engagement'),
                 'sri-lanka-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'LK', 'color' => '#f59e0b', 'country' => 'Sri Lanka', 'map_key' => 'LK', 'projects' => '10', 'count_label' => 'engagement'),
+                'taiwan-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TW', 'color' => '#1f5d2b', 'country' => 'Taiwan', 'map_key' => 'TW', 'projects' => '1', 'count_label' => 'engagement'),
                 'thailand-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '22', 'count_label' => 'engagement'),
+                'thailand-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '1', 'count_label' => 'engagement'),
                 'turkey-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TR', 'color' => '#dc2626', 'country' => 'Turkey', 'map_key' => 'TR', 'projects' => '2', 'count_label' => 'engagement'),
                 'uk-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UK', 'color' => '#1d4ed8', 'country' => 'UK', 'map_key' => 'GB', 'projects' => '10', 'count_label' => 'engagement'),
                 'usa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'US', 'color' => '#2563eb', 'country' => 'USA', 'map_key' => 'US', 'projects' => '27', 'count_label' => 'engagement'),
@@ -610,7 +615,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             .impact-map-wrapper {
                 width: 100%;
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) minmax(220px, 2fr) minmax(0, 1fr);
+                grid-template-columns: minmax(0, 0.5fr) minmax(220px, 2fr) minmax(0, 0.5fr);
                 gap: 1rem;
                 position: relative;
                 align-items: center;
