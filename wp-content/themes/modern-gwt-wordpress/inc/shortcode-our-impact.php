@@ -742,13 +742,38 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 }
 
                 .impact-map-card {
+                    margin-top: 0;
                     min-height: 180px;
                     order: -1;
+                    padding: 0.75rem;
                 }
 
                 .impact-map-carousel-header {
                     align-items: flex-start;
                     flex-direction: column;
+                    gap: 0.6rem;
+                }
+
+                .impact-map-carousel-nav {
+                    align-self: flex-end;
+                }
+
+                .impact-map-slides {
+                    min-height: 240px;
+                }
+
+                .impact-map-wrapper {
+                    gap: 0;
+                    grid-template-columns: minmax(0, 1fr);
+                }
+
+                .impact-map-figure {
+                    min-height: 220px;
+                }
+
+                .impact-philippine-map,
+                .impact-world-map {
+                    max-height: 220px;
                 }
 
                 .impact-map-list,
@@ -976,6 +1001,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 .impact-map-pin {
                     display: none;
                 }
+
+                .impact-map-lines {
+                    display: none;
+                }
             }
         </style>
 
@@ -1039,7 +1068,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <?php endforeach; ?>
                 </div>
                                     <!-- Map Card -->
-                    <div class="impact-map-card rounded-lg select-none mt-14">
+                    <div class="impact-map-card rounded-lg select-none">
                         <div class="impact-map-carousel" data-impact-carousel>
                             <div class="">
                                 <div class="our-impact-header">
