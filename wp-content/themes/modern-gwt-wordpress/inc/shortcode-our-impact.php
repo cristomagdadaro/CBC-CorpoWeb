@@ -239,16 +239,16 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                  data-count="<?php echo esc_attr(count($location_item['items'])); ?>"
                  style="--pin-color: <?php echo esc_attr($location_item['color']); ?>">
 
-                <div class="impact-map-icons" aria-hidden="true">
-                    <?php foreach (array_slice($location_item['items'], 0, 3) as $commodity): ?>
-                        <?php if (!empty($commodity['image'])): ?>
-                            <img src="<?php echo esc_url($commodity['image']); ?>" alt="">
-                        <?php else: ?>
-                            <span class="impact-map-icon-badge"><?php echo esc_html(!empty($commodity['icon_label']) ? $commodity['icon_label'] : strtoupper(substr($commodity['commodity'], 0, 2))); ?></span>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                <!-- <div class="impact-map-icons" aria-hidden="true"> 
+                    <?php //foreach (array_slice($location_item['items'], 0, 3) as $commodity): ?>
+                        <?php //if (!empty($commodity['image'])): ?>
+                            <img src="<?php //echo esc_url($commodity['image']); ?>" alt="">
+                        <?php //else: ?>
+                            <span class="impact-map-icon-badge"><?php //echo esc_html(!empty($commodity['icon_label']) ? $commodity['icon_label'] : strtoupper(substr($commodity['commodity'], 0, 2))); ?></span>
+                        <?php //endif; ?>
+                    <?php //endforeach; ?>
                 </div>
-
+-->
                 <div class="impact-map-content">
                     <div class="impact-map-province"><?php echo esc_html($location_item['location']); ?></div>
                     <div class="impact-map-commodities"><?php echo esc_html(implode(', ', $commodity_names)); ?></div>
@@ -704,6 +704,13 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 opacity: 0.9;
             }
 
+            .impact-map-wrapper.impact-map-lines-on-hover .impact-map-line,
+            .impact-map-wrapper.impact-map-lines-on-hover .impact-map-line-dot {
+                opacity: 0;
+            }
+
+            .impact-map-wrapper.impact-map-lines-on-hover .impact-map-line.is-hovered,
+            .impact-map-wrapper.impact-map-lines-on-hover .impact-map-line-dot.is-hovered,
             .impact-map-line.is-hovered,
             .impact-map-line-dot.is-hovered {
                 opacity: 1;
@@ -728,7 +735,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-map-pin-left {
-                grid-template-columns: 1fr 2.25rem;
                 text-align: right;
                 border-right: 4px solid var(--pin-color);
                 border-left: none;
@@ -740,7 +746,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-map-pin-right {
-                grid-template-columns: 2.25rem 1fr;
                 text-align: left;
                 border-left: 4px solid var(--pin-color, #237823);
                 border-right: none;
@@ -1225,6 +1230,8 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                         const pins = Array.from(wrapper.querySelectorAll('.impact-map-pin'));
 
                         if (!map || !pins.length) return;
+
+                        wrapper.classList.toggle('impact-map-lines-on-hover', pins.length > 14);
 
                         const highestCount = pins.reduce((max, pin) => {
                             return Math.max(max, parseInt(pin.dataset.count || '1', 10));
