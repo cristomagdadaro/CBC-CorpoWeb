@@ -109,57 +109,57 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
         $commodity_image_base = trailingslashit(get_template_directory_uri()) . 'assets/images/commodities/';
         $impact_commodities = array(
-                'coffee-cavite' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6f4e37', 'province' => 'Cavite', 'projects' => '5'),
-                'coffee-benguet' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6f4e37', 'province' => 'Benguet', 'projects' => '4'),
-                'cacao-benguet' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Benguet', 'projects' => '3'),
-                'cacao-metro-manila' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Metro Manila', 'projects' => '3'),
-                'cacao-camarines-sur' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Camarines Sur', 'projects' => '1'),
-                'cacao-bohol' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Bohol', 'projects' => '1'),
-                'pili-camarines-sur' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Camarines Sur', 'projects' => '8'),
-                'pili-laguna' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Laguna', 'projects' => '7'),
-                'pili-northern-samar' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Northern Samar', 'projects' => '4'),
-                'purpleyam-bohol' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Bohol', 'projects' => '4'),
-                'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
-                'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '3'),
-                'rice-agusan-del-sur' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Agusan del Sur', 'projects' => '1'),
-                'rice-negros-occidental' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negros Occidental', 'projects' => '1'),
-                'rice-ilocos-norte' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Ilocos Norte', 'projects' => '1'),
-                'rubber-zamboanga-del-sur' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#0891b2', 'province' => 'Zamboanga del Sur', 'projects' => '2'),
-                'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '1'),
-                'mango-laguna' => array('commodity' => 'Mango', 'image' => $commodity_image_base . 'p-mango.webp', 'color' => '#f59e0b', 'province' => 'Laguna', 'projects' => '1'),
+            'cacao-benguet' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Benguet', 'projects' => '3'),
+            'cacao-bohol' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Bohol', 'projects' => '1'),
+            'cacao-camarines-sur' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Camarines Sur', 'projects' => '1'),
+            'cacao-metro-manila' => array('commodity' => 'Cacao', 'image' => $commodity_image_base . 'p-cacao.webp', 'color' => '#8b5a2b', 'province' => 'Metro Manila', 'projects' => '3'),
+            'cassava-laguna' => array('commodity' => 'Cassava', 'image' => $commodity_image_base . 'p-cassava.webp', 'color' => '#0f766e', 'province' => 'Laguna', 'projects' => '1'),
+            'coffee-benguet' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6f4e37', 'province' => 'Benguet', 'projects' => '4'),
+            'coffee-cavite' => array('commodity' => 'Coffee', 'image' => $commodity_image_base . 'p-coffee.webp', 'color' => '#6f4e37', 'province' => 'Cavite', 'projects' => '5'),
+            'mango-laguna' => array('commodity' => 'Mango', 'image' => $commodity_image_base . 'p-mango.webp', 'color' => '#f59e0b', 'province' => 'Laguna', 'projects' => '1'),
+            'pili-camarines-sur' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Camarines Sur', 'projects' => '8'),
+            'pili-laguna' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Laguna', 'projects' => '7'),
+            'pili-northern-samar' => array('commodity' => 'Pili Nut', 'image' => $commodity_image_base . 'p-pili.webp', 'color' => '#237823', 'province' => 'Northern Samar', 'projects' => '4'),
+            'purpleyam-bohol' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Bohol', 'projects' => '4'),
+            'purpleyam-leyte' => array('commodity' => 'Purple Yam', 'image' => $commodity_image_base . 'p-purple-yam.webp', 'color' => '#6f2da8', 'province' => 'Leyte', 'projects' => '11'),
+            'rice-agusan-del-sur' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Agusan del Sur', 'projects' => '1'),
+            'rice-ilocos-norte' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Ilocos Norte', 'projects' => '1'),
+            'rice-negros-occidental' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Negros Occidental', 'projects' => '1'),
+            'rice-nueva-ecija' => array('commodity' => 'Rice', 'image' => $commodity_image_base . 'p-rice.webp', 'color' => '#ca8a04', 'province' => 'Nueva Ecija', 'projects' => '3'),
+            'rubber-zamboanga-del-sur' => array('commodity' => 'Rubber', 'image' => $commodity_image_base . 'p-rubber.webp', 'color' => '#0891b2', 'province' => 'Zamboanga del Sur', 'projects' => '2'),
         );
 
         $impact_commodities = apply_filters('cbc_impact_commodities_data', $impact_commodities);
         $impact_global_engagements = array(
-                'brazil-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'BR', 'color' => '#16a34a', 'country' => 'Brazil', 'map_key' => 'BR', 'projects' => '5', 'count_label' => 'engagement'),
-                'cambodia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KH', 'color' => '#dc2626', 'country' => 'Cambodia', 'map_key' => 'KH', 'projects' => '33', 'count_label' => 'engagement'),
-                'china-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'CN', 'color' => '#b91c1c', 'country' => 'China', 'map_key' => 'CN', 'projects' => '10', 'count_label' => 'engagement'),
-                'ecuador-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'EC', 'color' => '#ca8a04', 'country' => 'Ecuador', 'map_key' => 'EC', 'projects' => '8', 'count_label' => 'engagement'),
-                'india-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'IN', 'color' => '#f97316', 'country' => 'India', 'map_key' => 'IN', 'projects' => '56', 'count_label' => 'engagement'),
-                'india-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'IN', 'color' => '#7c3aed', 'country' => 'India', 'map_key' => 'IN', 'projects' => '1', 'count_label' => 'engagement'),
-                'indonesia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '46', 'count_label' => 'engagement'),
-                'indonesia-trainee' => array('commodity' => 'Trainees', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '4', 'count_label' => 'engagement'),
-                'japan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '26', 'count_label' => 'engagement'),
-                'japan-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'JP', 'color' => '#7c3aed', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '4', 'count_label' => 'engagement'),
-                'malaysia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'MY', 'color' => '#0891b2', 'country' => 'Malaysia', 'map_key' => 'MY', 'projects' => '18', 'count_label' => 'engagement'),
-                'nepal-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'NP', 'color' => '#2563eb', 'country' => 'Nepal', 'map_key' => 'NP', 'projects' => '20', 'count_label' => 'engagement'),
-                'paraguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PY', 'color' => '#0f766e', 'country' => 'Paraguay', 'map_key' => 'PY', 'projects' => '50', 'count_label' => 'engagement'),
-                'philippines-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '824', 'count_label' => 'engagement'),
-                'philippines-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '115', 'count_label' => 'engagement'),
-                'singapore-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'SG', 'color' => '#dc2626', 'country' => 'Singapore', 'map_key' => 'SG', 'projects' => '12', 'count_label' => 'engagement'),
-                'south-africa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ZA', 'color' => '#16a34a', 'country' => 'South Africa', 'map_key' => 'ZA', 'projects' => '28', 'count_label' => 'engagement'),
-                'south-korea-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '13', 'count_label' => 'engagement'),
-                'sri-lanka-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'LK', 'color' => '#f59e0b', 'country' => 'Sri Lanka', 'map_key' => 'LK', 'projects' => '10', 'count_label' => 'engagement'),
-                'taiwan-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TW', 'color' => '#1f5d2b', 'country' => 'Taiwan', 'map_key' => 'TW', 'projects' => '1', 'count_label' => 'engagement'),
-                'thailand-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '22', 'count_label' => 'engagement'),
-                'thailand-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '1', 'count_label' => 'engagement'),
-                'turkey-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TR', 'color' => '#dc2626', 'country' => 'Turkey', 'map_key' => 'TR', 'projects' => '2', 'count_label' => 'engagement'),
-                'uk-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UK', 'color' => '#1d4ed8', 'country' => 'UK', 'map_key' => 'GB', 'projects' => '10', 'count_label' => 'engagement'),
-                'usa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'US', 'color' => '#2563eb', 'country' => 'USA', 'map_key' => 'US', 'projects' => '27', 'count_label' => 'engagement'),
-                'uganda-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UG', 'color' => '#ca8a04', 'country' => 'Uganda', 'map_key' => 'UG', 'projects' => '18', 'count_label' => 'engagement'),
-                'uruguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UY', 'color' => '#38bdf8', 'country' => 'Uruguay', 'map_key' => 'UY', 'projects' => '50', 'count_label' => 'engagement'),
-                'uzbekistan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UZ', 'color' => '#0891b2', 'country' => 'Uzbekistan', 'map_key' => 'UZ', 'projects' => '28', 'count_label' => 'engagement'),
-                'vietnam-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'VN', 'color' => '#ca8a04', 'country' => 'Vietnam', 'map_key' => 'VN', 'projects' => '18', 'count_label' => 'engagement'),
+            'brazil-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'BR', 'color' => '#16a34a', 'country' => 'Brazil', 'map_key' => 'BR', 'projects' => '5', 'count_label' => 'engagement'),
+            'cambodia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KH', 'color' => '#dc2626', 'country' => 'Cambodia', 'map_key' => 'KH', 'projects' => '33', 'count_label' => 'engagement'),
+            'china-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'CN', 'color' => '#b91c1c', 'country' => 'China', 'map_key' => 'CN', 'projects' => '10', 'count_label' => 'engagement'),
+            'ecuador-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'EC', 'color' => '#ca8a04', 'country' => 'Ecuador', 'map_key' => 'EC', 'projects' => '8', 'count_label' => 'engagement'),
+            'india-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'IN', 'color' => '#7c3aed', 'country' => 'India', 'map_key' => 'IN', 'projects' => '1', 'count_label' => 'engagement'),
+            'india-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'IN', 'color' => '#f97316', 'country' => 'India', 'map_key' => 'IN', 'projects' => '56', 'count_label' => 'engagement'),
+            'indonesia-trainee' => array('commodity' => 'Trainees', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '4', 'count_label' => 'engagement'),
+            'indonesia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ID', 'color' => '#ef4444', 'country' => 'Indonesia', 'map_key' => 'ID', 'projects' => '46', 'count_label' => 'engagement'),
+            'japan-exchange-students' => array('commodity' => 'Exchange Students', 'icon_label' => 'JP', 'color' => '#7c3aed', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '4', 'count_label' => 'engagement'),
+            'japan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'JP', 'color' => '#dc2626', 'country' => 'Japan', 'map_key' => 'JP', 'projects' => '26', 'count_label' => 'engagement'),
+            'malaysia-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'MY', 'color' => '#0891b2', 'country' => 'Malaysia', 'map_key' => 'MY', 'projects' => '18', 'count_label' => 'engagement'),
+            'nepal-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'NP', 'color' => '#2563eb', 'country' => 'Nepal', 'map_key' => 'NP', 'projects' => '20', 'count_label' => 'engagement'),
+            'paraguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PY', 'color' => '#0f766e', 'country' => 'Paraguay', 'map_key' => 'PY', 'projects' => '50', 'count_label' => 'engagement'),
+            'philippines-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '115', 'count_label' => 'engagement'),
+            'philippines-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'PH', 'color' => '#1f5d2b', 'country' => 'Philippines', 'map_key' => 'PH', 'projects' => '824', 'count_label' => 'engagement'),
+            'singapore-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'SG', 'color' => '#dc2626', 'country' => 'Singapore', 'map_key' => 'SG', 'projects' => '12', 'count_label' => 'engagement'),
+            'south-africa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'ZA', 'color' => '#16a34a', 'country' => 'South Africa', 'map_key' => 'ZA', 'projects' => '28', 'count_label' => 'engagement'),
+            'south-korea-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'KR', 'color' => '#2563eb', 'country' => 'South Korea', 'map_key' => 'KR', 'projects' => '13', 'count_label' => 'engagement'),
+            'sri-lanka-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'LK', 'color' => '#f59e0b', 'country' => 'Sri Lanka', 'map_key' => 'LK', 'projects' => '10', 'count_label' => 'engagement'),
+            'taiwan-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TW', 'color' => '#1f5d2b', 'country' => 'Taiwan', 'map_key' => 'TW', 'projects' => '1', 'count_label' => 'engagement'),
+            'thailand-trainees' => array('commodity' => 'Trainees', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '1', 'count_label' => 'engagement'),
+            'thailand-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TH', 'color' => '#0f766e', 'country' => 'Thailand', 'map_key' => 'TH', 'projects' => '22', 'count_label' => 'engagement'),
+            'turkey-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'TR', 'color' => '#dc2626', 'country' => 'Turkey', 'map_key' => 'TR', 'projects' => '2', 'count_label' => 'engagement'),
+            'uganda-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UG', 'color' => '#ca8a04', 'country' => 'Uganda', 'map_key' => 'UG', 'projects' => '18', 'count_label' => 'engagement'),
+            'uk-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UK', 'color' => '#1d4ed8', 'country' => 'UK', 'map_key' => 'GB', 'projects' => '10', 'count_label' => 'engagement'),
+            'uruguay-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UY', 'color' => '#38bdf8', 'country' => 'Uruguay', 'map_key' => 'UY', 'projects' => '50', 'count_label' => 'engagement'),
+            'usa-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'US', 'color' => '#2563eb', 'country' => 'USA', 'map_key' => 'US', 'projects' => '27', 'count_label' => 'engagement'),
+            'uzbekistan-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'UZ', 'color' => '#0891b2', 'country' => 'Uzbekistan', 'map_key' => 'UZ', 'projects' => '28', 'count_label' => 'engagement'),
+            'vietnam-visitors' => array('commodity' => 'International Visitors', 'icon_label' => 'VN', 'color' => '#ca8a04', 'country' => 'Vietnam', 'map_key' => 'VN', 'projects' => '18', 'count_label' => 'engagement'),
         );
 
         $impact_global_engagements = apply_filters('cbc_impact_global_engagements_data', $impact_global_engagements);
@@ -509,6 +509,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 position: relative;
                 overflow: hidden;
                 height: 100%;
+                margin-top: 10rem;
             }
 
             .impact-map-carousel {
@@ -991,15 +992,11 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                     <?php endforeach; ?>
                 </div>
                                     <!-- Map Card -->
-                    <div class="impact-map-card rounded-lg select-none">
+                    <div class="impact-map-card rounded-lg select-none mt-14">
                         <div class="impact-map-carousel" data-impact-carousel>
-                            <div class="impact-map-carousel-header">
-                                <div>
-                                    <div class="impact-map-carousel-title" data-impact-carousel-title>National Footprint</div>
-                                </div>
-                                <div class="impact-map-carousel-nav">
-                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-prev aria-label="Show previous impact map">&larr;</button>
-                                    <button class="impact-map-carousel-button" type="button" data-impact-carousel-next aria-label="Show next impact map">&rarr;</button>
+                            <div class="">
+                                <div class="our-impact-header">
+                                    <h2 class="impact-map-carousel-title section-title homepage-section-title text-center text-3xl lg:text-4xl font-extrabold text-[#1f5d2b]" data-impact-carousel-title>National Footprint</h2>
                                 </div>
                             </div>
 
@@ -1230,7 +1227,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                         if (!map || !pins.length) return;
 
-                        wrapper.classList.toggle('impact-map-lines-on-hover', pins.length > 14);
+                        wrapper.classList.toggle('impact-map-lines-on-hover', pins.length > 0);
 
                         const highestCount = pins.reduce((max, pin) => {
                             return Math.max(max, parseInt(pin.dataset.count || '1', 10));
