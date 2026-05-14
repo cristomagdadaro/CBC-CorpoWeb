@@ -567,13 +567,53 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 outline: none;
             }
 
+            /* Slides container */
             .impact-map-slides {
                 position: relative;
-                width: 100%;
+                overflow: hidden;
+                transition: height 0.85s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-            .impact-map-slide[hidden] {
+            /* Slide state machine - managed via JS data-slide-state */
+            [data-impact-slide] {
+                will-change: transform, opacity;
+            }
+
+            [data-impact-slide][data-slide-state="idle"] {
                 display: none;
+            }
+
+            [data-impact-slide][data-slide-state="active"] {
+                display: block;
+                position: relative;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            [data-impact-slide][data-slide-state="entering"],
+            [data-impact-slide][data-slide-state="leaving"] {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                pointer-events: none;
+            }
+
+            /* Title swap animation */
+            [data-impact-carousel-title] {
+                display: inline-block;
+                transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            [data-impact-carousel-title].title-leaving {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            [data-impact-carousel-title].title-entering {
+                opacity: 0;
+                transform: translateY(5px);
             }
 
             .impact-map-pagination {
@@ -590,10 +630,12 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 height: 0.55rem;
                 padding: 0;
                 width: 1.75rem;
+                transition: background 0.3s ease, width 0.3s ease;
             }
 
             .impact-map-pagination button.is-active {
                 background: #1f5d2b;
+                width: 2.5rem;
             }
 
             @media (min-width: 640px) {
@@ -649,6 +691,70 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             .impact-world-map {
                 max-height: 320px;
                 width: 100%;
+            }
+
+            @media (min-width: 1024px) {
+                .impact-philippine-map {
+                    max-height: 500px;
+                    width: auto;
+                }
+
+                .impact-world-map {
+                    max-height: 360px;
+                }
+            }
+
+            /* Animation */
+            @keyframes countUp {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .our-impact-section.impact-is-ready .impact-card {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            .our-impact-section.impact-is-visible .impact-card {
+                animation: countUp 0.5s ease-out forwards;
+            }
+
+            .our-impact-section.impact-is-visible .impact-card:nth-child(1) { animation-delay: 0.05s; }
+            .our-impact-section.impact-is-visible .impact-card:nth-child(2) { animation-delay: 0.1s; }
+            .our-impact-section.impact-is-visible .impact-card:nth-child(3) { animation-delay: 0.15s; }
+            .our-impact-section.impact-is-visible .impact-card:nth-child(4) { animation-delay: 0.2s; }
+            .our-impact-section.impact-is-visible .impact-card:nth-child(5) { animation-delay: 0.25s; }
+            .our-impact-section.impact-is-visible .impact-card:nth-child(6) { animation-delay: 0.3s; }
+
+            /* Mobile optimizations */
+            @media (max-width: 639px) {
+                .impact-card {
+                    padding: 1rem;
+                }
+
+                .impact-breakdown {
+                    gap: 0.35rem;
+                }
+
+                .breakdown-item {
+                    grid-template-columns: minmax(96px, 1.2fr) minmax(64px, 2fr) minmax(40px, auto);
+                    gap: 0.35rem;
+                }
+
+                .impact-map-card {
+                    min-height: 180px;
+                    order: -1;
+                }
+
+                .impact-map-carousel-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .impact-map-list,
+                .impact-map-pin {
+                    display: none;
+                }
             }
 
             .impact-philippine-map .cls-1 {
@@ -717,8 +823,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
             }
 
             .impact-map-list {
-                display: grid;
+                display: flex;
+                flex-direction: column;
                 gap: 0.55rem;
+                min-width: 0;
                 position: relative;
                 width: 100%;
                 z-index: 3;
@@ -844,7 +952,6 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 text-align: center;
             }
 
-            /* Reverse the pin alignment for the right side */
             .impact-map-list-right .impact-map-pin {
                 border-left: 4px solid var(--pin-color, #237823);
                 border-right: 0;
@@ -864,70 +971,10 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                 margin-right: 0;
             }
 
-            .impact-map-list {
-                display: flex;
-                flex-direction: column;
-                gap: 0.55rem;
-                min-width: 0;
-                z-index: 3;
-            }
-
-            @media (min-width: 1024px) {
-                .impact-philippine-map {
-                    max-height: 500px;
-                    width: auto;
-                }
-
-                .impact-world-map {
-                    max-height: 360px;
-                }
-            }
-
-            /* Animation */
-            @keyframes countUp {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .our-impact-section.impact-is-ready .impact-card {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            .our-impact-section.impact-is-visible .impact-card {
-                animation: countUp 0.5s ease-out forwards;
-            }
-
-            .our-impact-section.impact-is-visible .impact-card:nth-child(1) { animation-delay: 0.05s; }
-            .our-impact-section.impact-is-visible .impact-card:nth-child(2) { animation-delay: 0.1s; }
-            .our-impact-section.impact-is-visible .impact-card:nth-child(3) { animation-delay: 0.15s; }
-            .our-impact-section.impact-is-visible .impact-card:nth-child(4) { animation-delay: 0.2s; }
-            .our-impact-section.impact-is-visible .impact-card:nth-child(5) { animation-delay: 0.25s; }
-            .our-impact-section.impact-is-visible .impact-card:nth-child(6) { animation-delay: 0.3s; }
-
-            /* Mobile optimizations */
             @media (max-width: 639px) {
-                .impact-card {
-                    padding: 1rem;
-                }
-
-                .impact-breakdown {
-                    gap: 0.35rem;
-                }
-
-                .breakdown-item {
-                    grid-template-columns: minmax(96px, 1.2fr) minmax(64px, 2fr) minmax(40px, auto);
-                    gap: 0.35rem;
-                }
-
-                .impact-map-card {
-                    min-height: 180px;
-                    order: -1;
-                }
-
-                .impact-map-carousel-header {
-                    align-items: flex-start;
-                    flex-direction: column;
+                .impact-map-list,
+                .impact-map-pin {
+                    display: none;
                 }
             }
         </style>
@@ -1025,7 +1072,7 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                                     </div>
                                 </div>
 
-                                <div class="impact-map-slide" data-impact-slide data-slide-title="Global Footprint" hidden>
+                                <div class="impact-map-slide" data-impact-slide data-slide-title="Global Footprint">
                                     <div class="impact-map-wrapper">
                                         <div class="impact-map-list impact-map-list-left">
                                             <?php foreach ($left_countries as $country_item): ?>
@@ -1282,7 +1329,22 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                 function scheduleCommodityLineRedraw() {
                     window.clearTimeout(mapLineResizeTimer);
-                    mapLineResizeTimer = window.setTimeout(redrawAllCommodityLines, 120);
+                    mapLineResizeTimer = window.setTimeout(() => {
+                        document.querySelectorAll('[data-impact-carousel]').forEach((carousel) => {
+                            const slidesContainer = carousel.querySelector('.impact-map-slides');
+                            const slides = Array.from(carousel.querySelectorAll('[data-impact-slide]'));
+
+                            if (!slidesContainer || !slides.length) return;
+
+                            const tallest = slides.reduce((maxHeight, slide) => {
+                                return Math.max(maxHeight, slide.offsetHeight);
+                            }, 0);
+
+                            slidesContainer.style.height = tallest > 0 ? `${tallest}px` : '';
+                        });
+
+                        redrawAllCommodityLines();
+                    }, 120);
                 }
 
                 function initMapCarousels() {
@@ -1290,39 +1352,289 @@ if (!function_exists('cbc_our_impact_shortcode')) {
 
                     carousels.forEach((carousel) => {
                         if (carousel.dataset.carouselReady === 'true') return;
-
                         carousel.dataset.carouselReady = 'true';
 
                         const slides = Array.from(carousel.querySelectorAll('[data-impact-slide]'));
                         const dots = Array.from(carousel.querySelectorAll('[data-impact-carousel-dot]'));
-                        const title = carousel.querySelector('[data-impact-carousel-title]');
+                        const titleEl = carousel.querySelector('[data-impact-carousel-title]');
+                        const slidesContainer = carousel.querySelector('.impact-map-slides');
                         const prevButton = carousel.querySelector('[data-impact-carousel-prev]');
                         const nextButton = carousel.querySelector('[data-impact-carousel-next]');
 
                         if (!slides.length) return;
 
                         let activeIndex = 0;
+                        let isAnimating = false;
 
-                        function setActiveSlide(index) {
-                            activeIndex = (index + slides.length) % slides.length;
+                        const DURATION = 850;
+                        const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
-                            slides.forEach((slide, slideIndex) => {
-                                const isActive = slideIndex === activeIndex;
-                                slide.hidden = !isActive;
+                        slides.forEach((slide, i) => {
+                            slide.removeAttribute('hidden');
+                            slide.dataset.slideState = i === 0 ? 'active' : 'idle';
+                        });
+
+                        function applyStyles(el, styles) {
+                            if (!el) return;
+                            Object.assign(el.style, styles);
+                        }
+
+                        function clearStyles(el) {
+                            if (!el) return;
+                            el.style.cssText = '';
+                        }
+
+                        function reflow(el) {
+                            void el.offsetHeight;
+                        }
+
+                        function clamp(value, min, max) {
+                            return Math.min(Math.max(value, min), max);
+                        }
+
+                        function getRectCenter(rect) {
+                            return {
+                                x: rect.left + (rect.width / 2),
+                                y: rect.top + (rect.height / 2),
+                            };
+                        }
+
+                        function getPhAnchor(slide) {
+                            if (!slide) return null;
+
+                            const worldFigure = slide.querySelector('.world-impact-map-figure');
+                            const worldMap = worldFigure ? worldFigure.querySelector('.impact-world-map') : null;
+
+                            if (!worldFigure || !worldMap) return null;
+
+                            const directSelectors = ['#PH', '#ph', '#PHL', '#Philippines'];
+                            let phPath = null;
+
+                            directSelectors.some((selector) => {
+                                phPath = worldMap.querySelector(selector);
+                                return !!phPath;
                             });
 
-                            dots.forEach((dot, dotIndex) => {
-                                const isActive = dotIndex === activeIndex;
-                                dot.classList.toggle('is-active', isActive);
-                                dot.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-                            });
-
-                            if (title) {
-                                title.textContent = slides[activeIndex].dataset.slideTitle || '';
+                            if (!phPath) {
+                                phPath = Array.from(worldMap.querySelectorAll('[id]')).find((element) => {
+                                    return /^(ph|phl|philippines)$/i.test(element.id) || /philippines/i.test(element.id);
+                                }) || worldMap.querySelector('[title="Philippines"]');
                             }
 
+                            if (!phPath) return null;
+
+                            const pathRect = phPath.getBoundingClientRect();
+                            const figureRect = worldFigure.getBoundingClientRect();
+
+                            if (!pathRect.width || !pathRect.height || !figureRect.width || !figureRect.height) {
+                                return null;
+                            }
+
+                            const pathCenter = getRectCenter(pathRect);
+                            const originX = ((pathCenter.x - figureRect.left) / figureRect.width) * 100;
+                            const originY = ((pathCenter.y - figureRect.top) / figureRect.height) * 100;
+
+                            return {
+                                rect: pathRect,
+                                center: pathCenter,
+                                transformOrigin: `${originX}% ${originY}%`,
+                            };
+                        }
+
+                        function getScaleFromAnchor(anchorRect, figureRect) {
+                            if (!anchorRect || !figureRect || !figureRect.width || !figureRect.height) {
+                                return 0.06;
+                            }
+
+                            return clamp(anchorRect.width / figureRect.width, 0.04, 0.08);
+                        }
+
+                        function animateTitle(newText) {
+                            if (!titleEl) return;
+
+                            titleEl.classList.add('title-leaving');
+
+                            setTimeout(() => {
+                                titleEl.textContent = newText;
+                                titleEl.classList.remove('title-leaving');
+                                titleEl.classList.add('title-entering');
+                                reflow(titleEl);
+                                requestAnimationFrame(() => titleEl.classList.remove('title-entering'));
+                            }, 220);
+                        }
+
+                        function updateDots(index) {
+                            dots.forEach((dot, i) => {
+                                dot.classList.toggle('is-active', i === index);
+                                dot.setAttribute('aria-pressed', i === index ? 'true' : 'false');
+                            });
+                        }
+
+                        function syncContainerHeight(height) {
+                            if (!slidesContainer) return;
+
+                            if (typeof height === 'number') {
+                                slidesContainer.style.height = `${height}px`;
+                                return;
+                            }
+
+                            const tallest = slides.reduce((maxHeight, slide) => {
+                                return Math.max(maxHeight, slide.offsetHeight);
+                            }, 0);
+
+                            slidesContainer.style.height = tallest > 0 ? `${tallest}px` : '';
+                        }
+
+                        function setImmediateSlide(newIndex) {
+                            slides.forEach((slide, i) => {
+                                slide.dataset.slideState = i === newIndex ? 'active' : 'idle';
+                                clearStyles(slide.querySelector('.impact-map-figure'));
+                                slide.querySelectorAll('.impact-map-list').forEach(clearStyles);
+                            });
+
+                            activeIndex = newIndex;
+                            updateDots(newIndex);
+
+                            if (titleEl) {
+                                titleEl.textContent = slides[newIndex].dataset.slideTitle || '';
+                                titleEl.classList.remove('title-leaving', 'title-entering');
+                            }
+
+                            syncContainerHeight();
                             window.requestAnimationFrame(redrawAllCommodityLines);
                         }
+
+                        function setActiveSlide(index) {
+                            const newIndex = (index + slides.length) % slides.length;
+
+                            if (isAnimating || newIndex === activeIndex) return;
+
+                            if (prefersReducedMotion) {
+                                setImmediateSlide(newIndex);
+                                return;
+                            }
+
+                            isAnimating = true;
+
+                            const oldSlide = slides[activeIndex];
+                            const newSlide = slides[newIndex];
+                            const goingToWorld = newIndex > activeIndex;
+
+                            updateDots(newIndex);
+                            animateTitle(slides[newIndex].dataset.slideTitle || '');
+
+                            if (slidesContainer) {
+                                slidesContainer.style.height = `${oldSlide.offsetHeight}px`;
+                            }
+
+                            const oldFig = oldSlide.querySelector('.impact-map-figure');
+                            const oldLists = Array.from(oldSlide.querySelectorAll('.impact-map-list'));
+                            const newFig = newSlide.querySelector('.impact-map-figure');
+                            const newLists = Array.from(newSlide.querySelectorAll('.impact-map-list'));
+
+                            newSlide.dataset.slideState = 'entering';
+                            reflow(newSlide);
+
+                            const phAnchor = goingToWorld ? getPhAnchor(newSlide) : getPhAnchor(oldSlide);
+                            const oldFigRect = oldFig ? oldFig.getBoundingClientRect() : null;
+                            const newFigRect = newFig ? newFig.getBoundingClientRect() : null;
+                            const oldFigCenter = oldFigRect ? getRectCenter(oldFigRect) : null;
+                            const newFigCenter = newFigRect ? getRectCenter(newFigRect) : null;
+
+                            const phAnchorScaleForOld = phAnchor && oldFigRect
+                                ? getScaleFromAnchor(phAnchor.rect, oldFigRect)
+                                : 0.06;
+                            const phAnchorScaleForNew = phAnchor && newFigRect
+                                ? getScaleFromAnchor(phAnchor.rect, newFigRect)
+                                : 0.06;
+
+                            const oldTranslateX = phAnchor && oldFigCenter ? (phAnchor.center.x - oldFigCenter.x) : 0;
+                            const oldTranslateY = phAnchor && oldFigCenter ? (phAnchor.center.y - oldFigCenter.y) : 0;
+                            const newTranslateX = phAnchor && newFigCenter ? (phAnchor.center.x - newFigCenter.x) : 0;
+                            const newTranslateY = phAnchor && newFigCenter ? (phAnchor.center.y - newFigCenter.y) : 0;
+
+                            applyStyles(newFig, {
+                                opacity: '0',
+                                transform: goingToWorld
+                                    ? 'scale(1.07)'
+                                    : `translate(${newTranslateX}px, ${newTranslateY}px) scale(${phAnchorScaleForNew})`,
+                                transformOrigin: goingToWorld && phAnchor ? phAnchor.transformOrigin : 'center center',
+                                transition: 'none',
+                            });
+
+                            newLists.forEach((listEl, listIndex) => {
+                                const nudge = listIndex === 0 ? -10 : 10;
+                                applyStyles(listEl, {
+                                    opacity: '0',
+                                    transform: `translateX(${goingToWorld ? nudge : -nudge}px)`,
+                                    transition: 'none',
+                                });
+                            });
+
+                            oldSlide.dataset.slideState = 'leaving';
+                            applyStyles(oldFig, {
+                                transformOrigin: !goingToWorld && phAnchor ? phAnchor.transformOrigin : 'center center',
+                                transition: 'none',
+                            });
+
+                            applyStyles(oldFig, {
+                                transition: `transform ${DURATION}ms ${EASE}, opacity ${Math.round(DURATION * 0.55)}ms ease`,
+                                transform: goingToWorld
+                                    ? `translate(${oldTranslateX}px, ${oldTranslateY}px) scale(${phAnchorScaleForOld})`
+                                    : 'scale(6)',
+                                opacity: '0',
+                            });
+
+                            oldLists.forEach((listEl, listIndex) => {
+                                const nudge = listIndex === 0 ? -12 : 12;
+                                applyStyles(listEl, {
+                                    transition: `opacity 220ms ease ${listIndex * 30}ms, transform 220ms ease ${listIndex * 30}ms`,
+                                    opacity: '0',
+                                    transform: `translateX(${goingToWorld ? nudge : -nudge}px)`,
+                                });
+                            });
+
+                            setTimeout(() => {
+                                applyStyles(newFig, {
+                                    transition: `transform ${DURATION}ms ${EASE}, opacity ${Math.round(DURATION * 0.7)}ms ease`,
+                                    transform: 'scale(1)',
+                                    opacity: '1',
+                                });
+                            }, 90);
+
+                            const pinEnterAt = Math.round(DURATION * 0.42);
+
+                            newLists.forEach((listEl, listIndex) => {
+                                setTimeout(() => {
+                                    applyStyles(listEl, {
+                                        transition: `opacity 380ms ease, transform 380ms ${EASE}`,
+                                        opacity: '1',
+                                        transform: 'translateX(0)',
+                                    });
+                                }, pinEnterAt + (listIndex * 80));
+                            });
+
+                            setTimeout(() => {
+                                oldSlide.dataset.slideState = 'idle';
+                                newSlide.dataset.slideState = 'active';
+
+                                [oldFig, ...oldLists, newFig, ...newLists].forEach(clearStyles);
+
+                                if (slidesContainer) {
+                                    slidesContainer.style.height = '';
+                                }
+
+                                activeIndex = newIndex;
+                                isAnimating = false;
+
+                                syncContainerHeight();
+                                window.requestAnimationFrame(redrawAllCommodityLines);
+                            }, DURATION + 200);
+                        }
+
+                        dots.forEach((dot, i) => {
+                            dot.addEventListener('click', () => setActiveSlide(i));
+                        });
 
                         if (prevButton) {
                             prevButton.addEventListener('click', () => setActiveSlide(activeIndex - 1));
@@ -1332,11 +1644,9 @@ if (!function_exists('cbc_our_impact_shortcode')) {
                             nextButton.addEventListener('click', () => setActiveSlide(activeIndex + 1));
                         }
 
-                        dots.forEach((dot, dotIndex) => {
-                            dot.addEventListener('click', () => setActiveSlide(dotIndex));
-                        });
-
-                        setActiveSlide(0);
+                        if (titleEl) titleEl.textContent = slides[0].dataset.slideTitle || '';
+                        updateDots(0);
+                        syncContainerHeight();
                     });
                 }
 
