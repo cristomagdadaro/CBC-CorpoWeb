@@ -40,7 +40,7 @@ if (!function_exists('cbc_core_programs_shortcode')) {
                 ),
                 array(
                         'title' => 'Technology Commercialization and Management',
-                        'image' => '/wp-content/uploads/2025/09/CBC06408-768x432.png',
+                        'image' => '/wp-content/uploads/2025/10/CBC06408-768x432.jpg',
                         'description' => 'Transforming innovative research into accessible products and services that improve lives and drive economic growth across the Philippines.',
                         'icon' => 'rocket',
                         'link' => '/about-us/core-programs/technology-commercialization-and-management/',
