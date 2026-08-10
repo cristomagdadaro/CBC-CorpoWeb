@@ -22,6 +22,7 @@ if (! defined('ABSPATH')) {
 <a class="mbw-skip-link" href="#mbw-main"><?php esc_html_e('Skip to content', 'modern-biotech-wordpress'); ?></a>
 
 <header class="mbw-header" id="site-header">
+    <div id="header-gradient-bg" aria-hidden="true"></div>
     <div class="mbw-shell">
         <div class="mbw-nav-wrap">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="mbw-brand" aria-label="<?php esc_attr_e('Go to homepage', 'modern-biotech-wordpress'); ?>">
@@ -43,8 +44,10 @@ if (! defined('ABSPATH')) {
                     array(
                         'theme_location' => 'primary',
                         'container'      => false,
+                        'menu_id'        => 'mbw-primary-menu',
                         'menu_class'     => 'mbw-nav-list',
                         'fallback_cb'    => false,
+                        'depth'          => 3,
                     )
                 );
                 ?>
@@ -65,16 +68,30 @@ if (! defined('ABSPATH')) {
 
     <div class="mbw-mobile-menu" id="mbw-mobile-menu" hidden>
         <div class="mbw-shell">
-            <ul class="mbw-mobile-list">
-                <li><a href="#hero">Home</a></li>
-                <li><a href="#programs">Programs</a></li>
-                <li><a href="#research">Research</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#experts">Experts</a></li>
-                <li><a href="#news">News</a></li>
-                <li><a href="#calendar">Calendar</a></li>
-                <li><a href="#subscribe">Subscribe</a></li>
-            </ul>
+            <?php
+            wp_nav_menu(
+                array(
+                    'theme_location' => 'primary',
+                    'container'      => false,
+                    'menu_id'        => 'mbw-mobile-primary-menu',
+                    'menu_class'     => 'mbw-mobile-list',
+                    'fallback_cb'    => false,
+                    'depth'          => 3,
+                )
+            );
+            ?>
+            <?php if (! has_nav_menu('primary')) : ?>
+                <ul class="mbw-mobile-list">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#programs">Programs</a></li>
+                    <li><a href="#research">Research</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#experts">Experts</a></li>
+                    <li><a href="#news">News</a></li>
+                    <li><a href="#calendar">Calendar</a></li>
+                    <li><a href="#subscribe">Subscribe</a></li>
+                </ul>
+            <?php endif; ?>
         </div>
     </div>
 </header>
