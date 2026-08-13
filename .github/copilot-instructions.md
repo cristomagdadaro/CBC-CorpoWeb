@@ -9,15 +9,9 @@ This repository is a WordPress codebase for the DA-CBC corporate website. Copilo
 - a full WordPress deployment, not a small isolated app
 - theme-led presentation with business features primarily owned by plugins
 - mixed architecture:
-<<<<<<< Updated upstream
-    - classic procedural WordPress code
-    - class-based feature plugins
-    - one stronger layered/DDD-style plugin: `cbc-form-manager`
-=======
   - classic procedural WordPress code
   - class-based feature plugins
   - one stronger layered/DDD-style plugin: `cbc-form-manager`
->>>>>>> Stashed changes
 
 ## Current Engineering Reality
 
@@ -35,19 +29,11 @@ Do not write code that assumes the site is already launch-clean.
 ### Prefer this ownership model
 
 - Theme:
-<<<<<<< Updated upstream
-    - templates
-    - layout
-    - navigation
-    - display-only helpers
-    - presentation shortcodes that do not own business data
-=======
   - templates
   - layout
   - navigation
   - display-only helpers
   - presentation shortcodes that do not own business data
->>>>>>> Stashed changes
 - Plugins:
     - custom post types
     - custom tables
@@ -86,13 +72,8 @@ Do not expose deployment, debugging, or credential-handling code on public route
 - Do not introduce another form system.
 - Use `cbc-form-manager` as the preferred model for future structured forms unless the team explicitly retires it.
 - If touching appointment, feedback, or internship flows, first verify whether the change belongs in:
-<<<<<<< Updated upstream
-    - `cbc-client-engagement`
-    - `cbc-form-manager`
-=======
   - `cbc-client-engagement`
   - `cbc-form-manager`
->>>>>>> Stashed changes
 - If both currently handle the same concern, consolidate instead of extending both in parallel.
 
 ### Use WordPress APIs correctly
@@ -214,19 +195,6 @@ AI features can create direct external cost and privacy exposure. Any AI-related
 1. Identify whether the change belongs to theme, plugin, root config, or server config.
 2. Check for an existing plugin or module already owning that concern.
 3. Verify security boundaries:
-<<<<<<< Updated upstream
-    - roles
-    - nonce
-    - REST or AJAX auth
-    - upload handling
-    - secret management
-4. Make the smallest coherent change.
-5. Update docs if the change affects:
-    - architecture
-    - public routes
-    - deployment
-    - security posture
-=======
    - roles
    - nonce
    - REST or AJAX auth
@@ -238,7 +206,6 @@ AI features can create direct external cost and privacy exposure. Any AI-related
    - public routes
    - deployment
    - security posture
->>>>>>> Stashed changes
 6. Update `docs/VULNERABILITY_TRACKER.md` when resolving or changing the posture of a tracked issue.
 
 ## When Writing New Features
