@@ -11,7 +11,10 @@ if (!defined('ABSPATH')) {
 }
 
 function sproutai_inject_widget() {
+    // Read the token securely from wp-config.php, fallback to empty string
+    $api_token = defined('SPROUTAI_API_TOKEN') ? SPROUTAI_API_TOKEN : '';
+    
     // Inject the AI chatbot widget script into the footer
-    echo '<script src="https://onecbc.philrice.gov.ph/ai/embed.js" data-site-id="dacbc" defer></script>' . "\n";
+    echo '<script src="https://onecbc.philrice.gov.ph/ai/embed.js?v=3" data-site-id="dacbc" data-token="' . esc_attr($api_token) . '" defer></script>' . "\n";
 }
 add_action('wp_footer', 'sproutai_inject_widget', 100);
