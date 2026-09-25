@@ -11,6 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 class BRM_Plugin {
     private $table;
     private static $instance;
@@ -77,6 +81,7 @@ class BRM_Plugin {
             qr_code VARCHAR(255) DEFAULT NULL,
             created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             expires DATETIME NULL,
+            redirect_type VARCHAR(20) NOT NULL DEFAULT 'splash',
             status TINYINT(1) NOT NULL DEFAULT 1,
             is_public TINYINT(1) NOT NULL DEFAULT 0,
             PRIMARY KEY(id),
@@ -115,16 +120,9 @@ class BRM_Plugin {
         header( 'Pragma: no-cache', true );
 
         global $wpdb;
-        // Try to get from cache first (1 hour TTL for performance)
-        $cache_key = 'brm_redirect_' . md5( $slug );
-        $row = get_transient( $cache_key );
         
-        if ( $row === false ) {
-            $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE slug = %s AND status = 1", $slug ) );
-            if ( $row ) {
-                set_transient( $cache_key, $row, HOUR_IN_SECONDS );
-            }
-        }
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE slug = %s AND status = 1", $slug ) );
+        
         if ( ! $row ) {
             wp_safe_redirect( home_url() );
             exit;
@@ -137,101 +135,8 @@ class BRM_Plugin {
         if ( ! empty( $row->expires ) && $row->expires <= current_time( 'mysql' ) ) {
             status_header( 410 );
             header( 'X-Robots-Tag: noindex, nofollow', true );
-
-            echo '<!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1">
-            <title>Link Expired | DA-Crop Biotechnology Center</title>
-            <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&display=swap" rel="stylesheet">
-            <style>
-                body {
-                    font-family: "League Spartan", sans-serif;
-                    background: linear-gradient(135deg, #444, #777);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    height: 100vh;
-                    margin: 0;
-                    color: #fff;
-                }
-                .cbc-card {
-                    background: #fff;
-                    color: #2b2b2b;
-                    border-radius: 16px;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                    max-width: 520px;
-                    padding: 32px 28px;
-                    animation: fadeIn 0.6s ease;
-                }
-                .cbc-redirect-loader {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                    margin: 18px 0 14px;
-                }
-                .cbc-loader-spinner {
-                    width: 38px;
-                    height: 38px;
-                    border-radius: 50%;
-                    border: 4px solid rgba(26, 78, 19, 0.18);
-                    border-top-color: #1a4e13;
-                    animation: brmSpin 0.9s linear infinite;
-                }
-                .cbc-loader-text {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: #1a4e13;
-                    margin: 0;
-                }
-                .cbc-logo {
-                    max-width: 120px;
-                    margin-bottom: 16px;
-                }
-                h2 {
-                    color: #a00;
-                    font-weight: 700;
-                    font-size: 1.5rem;
-                    margin-bottom: 8px;
-                }
-                p {
-                    font-size: 1rem;
-                    color: #444;
-                    margin: 8px 0;
-                }
-                a {
-                    color: #1a4e13;
-                    font-weight: 600;
-                    text-decoration: none;
-                }
-                a:hover { text-decoration: underline; }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes brmSpin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="cbc-card">
-                <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
-                <h2>Link Expired</h2>
-                <div class="cbc-redirect-loader" aria-live="polite" aria-label="Redirect in progress">
-                    <span class="cbc-loader-spinner" aria-hidden="true"></span>
-                    <p class="cbc-loader-text">Redirecting in a few moments…</p>
-                </div>
-                <p>Sorry, this redirect link is no longer active.</p>
-                <p>You can return to the <a href="' . esc_url( home_url() ) . '">main website</a>.</p>
-            </div>
-        </body>
-        </html>';
+            
+            include __DIR__ . '/templates/link-expired.php';
             exit;
         }
 
@@ -240,113 +145,23 @@ class BRM_Plugin {
         // Prevent indexing
         header( 'X-Robots-Tag: noindex, nofollow', true );
 
+        // --- Handle Redirect Type ---
+        $redirect_type = isset($row->redirect_type) ? $row->redirect_type : 'splash';
+        
+        if ( $redirect_type === '301' ) {
+            wp_redirect( $row->target_url, 301 );
+            exit;
+        }
+
         // --- Custom OG Meta ---
         $og_title       = ! empty( $row->og_title ) ? $row->og_title : 'Redirecting | DA-Crop Biotechnology Center';
         $og_description = ! empty( $row->og_description ) ? $row->og_description : 'Redirecting to a verified DA-CBC resource.';
         $og_image       = ! empty( $row->og_image ) ? $row->og_image : esc_url( $logo_image );
+        $target_url     = $row->target_url;
+        $clicks         = $row->clicks;
 
         status_header( 200 );
-        echo '<!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1">
-            <title>' . esc_html( $og_title ) . '</title>
-            <meta property="og:title" content="' . esc_attr( $og_title ) . '">
-            <meta property="og:description" content="' . esc_attr( $og_description ) . '">
-            <meta property="og:image" content="' . esc_url( $og_image ) . '">
-            <meta property="og:url" content="' . esc_url( home_url( '/go/' . $slug ) ) . '">
-            <meta property="og:type" content="website">
-            <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&display=swap" rel="stylesheet">
-            <style>
-                body {
-                    font-family: "League Spartan", sans-serif;
-                    background: linear-gradient(135deg, #2b7a0b, #79c143);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    height: 100vh;
-                    margin: 0;
-                    color: #fff;
-                }
-                .cbc-card {
-                    background: #fff;
-                    color: #2b2b2b;
-                    border-radius: 16px;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                    max-width: 520px;
-                    padding: 32px 28px;
-                    animation: fadeIn 0.6s ease;
-                }
-                .cbc-redirect-loader {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                    margin: 18px 0 14px;
-                }
-                .cbc-loader-spinner {
-                    width: 38px;
-                    height: 38px;
-                    border-radius: 50%;
-                    border: 4px solid rgba(26, 78, 19, 0.18);
-                    border-top-color: #1a4e13;
-                    animation: brmSpin 0.9s linear infinite;
-                }
-                .cbc-loader-text {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: #1a4e13;
-                    margin: 0;
-                }
-                .cbc-logo {
-                    max-width: 120px;
-                    margin-bottom: 16px;
-                }
-                h2 {
-                    color: #1a4e13;
-                    font-weight: 700;
-                    font-size: 1.5rem;
-                    margin-bottom: 8px;
-                }
-                p {
-                    font-size: 1rem;
-                    color: #444;
-                    margin: 8px 0;
-                }
-                a {
-                    color: #1a4e13;
-                    font-weight: 600;
-                    text-decoration: none;
-                }
-                a:hover { text-decoration: underline; }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes brmSpin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="cbc-card">
-                <img src="' . esc_url( $logo_image ) . '" alt="DA-CBC Logo" class="cbc-logo">
-                <h2>Redirecting to External Link</h2>
-                <div class="cbc-redirect-loader" aria-live="polite" aria-label="Redirect in progress">
-                    <span class="cbc-loader-spinner" aria-hidden="true"></span>
-                    <p class="cbc-loader-text">Redirecting in a few moments…</p>
-                </div>
-                <p>If you’re not redirected, <a href="' . esc_url( $row->target_url ) . '">click here</a>.</p>
-                <p>' . number_format_i18n( $row->clicks ) . ' link visits</p>
-            </div>
-        </body>
-        </html>';
-
-        echo '<meta http-equiv="refresh" content="2;url=' . esc_attr( $row->target_url ) . '">';
+        include __DIR__ . '/templates/redirect-splash.php';
         exit;
     }
 
@@ -522,103 +337,23 @@ class BRM_Plugin {
             return;
         }
 
-        global $wpdb;
-        // Pagination: 50 links per page
-        $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
-        $per_page = 50;
-        $offset = ( $paged - 1 ) * $per_page;
+        require_once __DIR__ . '/includes/class-brm-list-table.php';
         
-        // Total count for pagination
-        $total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table}" ) );
-        $total_pages = max( 1, ceil( $total / $per_page ) );
-        
-        // Fetch paginated results
-        $rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->table} ORDER BY created DESC LIMIT %d OFFSET %d", $per_page, $offset ) );
-
-        $base_url = site_url( '/go/' );
+        $list_table = new BRM_List_Table();
+        $list_table->prepare_items();
         ?>
         <div class="wrap brm-admin-list">
-            <h1>GoLink Manager
+            <h1><?php esc_html_e( 'GoLink Manager', 'cbc-golink' ); ?>
                 <a href="<?php echo admin_url( 'admin.php?page=brm_add' ); ?>"
                    class="page-title-action brm-add-button">
-                    Add New
+                    <?php esc_html_e( 'Add New', 'cbc-golink' ); ?>
                 </a>
             </h1>
-            <table class="wp-list-table widefat fixed striped">
-                <thead>
-                <tr>
-                    <th scope="col" class="brm-col-slug">Slug</th>
-                    <th scope="col" class="brm-col-target">Target URL</th>
-                    <th scope="col" class="brm-col-clicks">Clicks</th>
-                    <th scope="col" class="brm-col-expires">Expires</th>
-                    <th scope="col" class="brm-col-public">From Public</th>
-                    <th scope="col" class="brm-col-qr">QR Code</th>
-                    <th scope="col" class="brm-col-actions">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php if ( $rows ): foreach ( $rows as $r ):
-                    $short_url = esc_url( $base_url . $r->slug );
-                    ?>
-                    <tr>
-                        <td data-colname="Slug"><code class="brm-slug-code"><?php echo esc_html( $r->slug ); ?></code></td>
-                        <td data-colname="Target URL" class="brm-target-url"><?php echo esc_html( $r->target_url ); ?></td>
-                        <td data-colname="Clicks"><?php echo number_format_i18n( $r->clicks ); ?></td>
-                        <td data-colname="Expires"><?php echo $r->expires ? esc_html( $r->expires ) : '-'; ?></td>
-                        <td data-colname="From Public"><?php echo $r->is_public ? 'Yes' : 'No'; ?></td>
-                        <td data-colname="QR Code" class="brm-qr-cell">
-                            <?php if ( ! empty( $r->qr_code ) ): ?>
-                                <img src="<?php echo esc_url( $r->qr_code ); ?>" alt="QR Code" class="brm-qr-image">
-                                <a href="<?php echo esc_url( $r->qr_code ); ?>" download class="brm-download-qr">Download</a>
-                            <?php else: ?>
-                                -
-                            <?php endif; ?>
-                        </td>
-                        <td data-colname="Actions" class="brm-actions-cell">
-                            <button class="button button-small brm-copy-url" data-url="<?php echo $short_url; ?>">Copy
-                            </button>
-                            |
-                            <a href="<?php echo $short_url; ?>" target="_blank" class="brm-action-visit">Visit</a>
-                            |
-                            <a href="<?php echo admin_url( 'admin.php?page=brm_add&edit=' . intval( $r->id ) ); ?>" class="brm-action-edit">Edit</a>
-                            |
-                            <button class="button-link brm-action-regenerate-qr" data-id="<?php echo intval($r->id); ?>">Regenerate QR</button>
-                            |
-                            <form class="brm-delete-form" method="post"
-                                  action="<?php echo admin_url( 'admin-post.php' ); ?>">
-                                <?php wp_nonce_field( 'brm_delete_' . $r->id ); ?>
-                                <input type="hidden" name="action" value="brm_delete_link"/>
-                                <input type="hidden" name="id" value="<?php echo intval( $r->id ); ?>"/>
-                                <button class="button-link brm-action-delete" onclick="return confirm('Delete this redirect?')">Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; else: ?>
-                    <tr>
-                        <td colspan="6" class="brm-no-redirects">No redirects found.</td>
-                    </tr>
-                <?php endif; ?>
-                </tbody>
-            </table>
             
-            <?php if ( $total_pages > 1 ): ?>
-                <div class="tablenav bottom">
-                    <div class="tablenav-pages">
-                        <?php
-                        echo paginate_links( array(
-                            'base'      => add_query_arg( 'paged', '%#%' ),
-                            'format'    => '',
-                            'prev_text' => esc_html__( '&laquo; Previous', 'brm' ),
-                            'next_text' => esc_html__( 'Next &raquo;', 'brm' ),
-                            'total'     => $total_pages,
-                            'current'   => $paged,
-                        ) );
-                        echo ' <span class="displaying-num">' . sprintf( esc_html__( '%d–%d of %d', 'brm' ), $offset + 1, min( $offset + $per_page, $total ), $total ) . '</span>';
-                        ?>
-                    </div>
-                </div>
-            <?php endif; ?>
+            <form id="redirects-filter" method="get">
+                <input type="hidden" name="page" value="<?php echo esc_attr( $_REQUEST['page'] ); ?>" />
+                <?php $list_table->display(); ?>
+            </form>
         </div>
         <?php
         // JS is handled by brm-admin-script.js
@@ -727,6 +462,16 @@ class BRM_Plugin {
                                        value="<?php echo $is_edit && $edit->expires ? date( 'Y-m-d\TH:i', strtotime( $edit->expires ) ) : ''; ?>"
                                        class="brm-input-datetime"/>
                                 <p class="description">Optional expiration date/time (local).</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="redirect_type">Redirect Type</label></th>
+                            <td>
+                                <select name="redirect_type" id="redirect_type" class="brm-input-select">
+                                    <option value="splash" <?php selected( $is_edit && isset($edit->redirect_type) ? $edit->redirect_type : 'splash', 'splash' ); ?>>Splash Page (200 OK)</option>
+                                    <option value="301" <?php selected( $is_edit && isset($edit->redirect_type) ? $edit->redirect_type : 'splash', '301' ); ?>>Direct Redirect (301 Permanent)</option>
+                                </select>
                             </td>
                         </tr>
 
@@ -866,6 +611,7 @@ class BRM_Plugin {
         }
 
         $expires = $is_admin_submission && ! empty( $_POST['expires'] ) ? date( 'Y-m-d H:i:s', strtotime( $_POST['expires'] ) ) : null;
+        $redirect_type = $is_admin_submission && ! empty( $_POST['redirect_type'] ) ? sanitize_text_field( $_POST['redirect_type'] ) : 'splash';
         $status  = $is_admin_submission && isset( $_POST['status'] ) ? intval( $_POST['status'] ) : 1;
         $og_title = $is_admin_submission ? sanitize_text_field( wp_unslash( $_POST['og_title'] ?? '' ) ) : '';
         $og_description = $is_admin_submission ? sanitize_textarea_field( wp_unslash( $_POST['og_description'] ?? '' ) ) : '';
@@ -876,6 +622,7 @@ class BRM_Plugin {
             'slug'           => $slug,
             'target_url'     => $target,
             'expires'        => $expires,
+            'redirect_type'  => $redirect_type,
             'status'         => $status,
             'og_title'       => $og_title,
             'og_description' => $og_description,
@@ -883,7 +630,7 @@ class BRM_Plugin {
             'is_public'      => $is_public,
         );
 
-        $format = array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d' );
+        $format = array( '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d' );
 
         // Reset WordPress error state
         $wpdb->last_error = '';
@@ -903,8 +650,6 @@ class BRM_Plugin {
             error_log( 'BRM Plugin DB Error: save_link_failed' );
             wp_send_json_error( array( 'message' => 'A database error occurred. Please check the server logs.' ) );
         }
-
-        delete_transient( 'brm_redirect_' . md5( $slug ) );
 
         // --- QR Code Generation ---
         $qr_url_path = $this->generate_and_save_qr_code( $slug, $id );
@@ -964,21 +709,26 @@ class BRM_Plugin {
             wp_mkdir_p( $qr_base_dir );
         }
 
-        $qr_file = 'brm-qrcode-' . $slug . '.png';
+        $qr_file = 'brm-qrcode-' . $slug . '.svg';
         $qr_path = trailingslashit($qr_base_dir) . $qr_file;
         $qr_url_path = trailingslashit($qr_base_url) . $qr_file;
 
-        $qr_image_url = 'https://quickchart.io/chart?cht=qr&chs=500x500&chl=' . urlencode($qr_url) . '&choe=UTF-8';
-        $response = wp_remote_get( $qr_image_url, array( 'timeout' => 15 ) );
-
-        if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
-            $image_data = wp_remote_retrieve_body( $response );
-            if ( $image_data && file_put_contents( $qr_path, $image_data ) ) {
+        if ( class_exists( '\chillerlan\QRCode\QRCode' ) ) {
+            $options = new \chillerlan\QRCode\QROptions([
+                'version'      => 5,
+                'outputType'   => \chillerlan\QRCode\QRCode::OUTPUT_MARKUP_SVG,
+                'eccLevel'     => \chillerlan\QRCode\QRCode::ECC_L,
+            ]);
+            $qrcode = new \chillerlan\QRCode\QRCode($options);
+            $qrcode->render($qr_url, $qr_path);
+            
+            if ( file_exists( $qr_path ) ) {
                 global $wpdb;
                 $wpdb->update( $this->table, array('qr_code' => $qr_url_path), array('id' => $id), array('%s'), array('%d') );
                 return $qr_url_path;
             }
         }
+        
         return false;
     }
 
@@ -993,9 +743,6 @@ class BRM_Plugin {
             global $wpdb;
             $slug = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM {$this->table} WHERE id = %d", $id ) );
             $wpdb->delete( $this->table, array( 'id' => $id ), array( '%d' ) );
-            if ( $slug ) {
-                delete_transient( 'brm_redirect_' . md5( $slug ) );
-            }
         }
         wp_safe_redirect( admin_url( 'admin.php?page=brm_redirects' ) );
         exit;
